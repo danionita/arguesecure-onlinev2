@@ -1,0 +1,222 @@
+/*
+ * Print stylesheet for the report page (PLAN.md Phase 7, ui.md §9). Loaded
+ * only by resources/js/Pages/Report/Show.vue, not globally — the tree
+ * editor and every other page keep app.css's screen-only rules untouched.
+ *
+ * "A Download PDF button calls window.print() against a dedicated
+ * resources/css/print.css... On every current browser that produces a real
+ * PDF via 'Save as PDF'" (PLAN.md). No headless-Chromium container, no
+ * dompdf (CLAUDE.md never-reintroduce list) — the browser's own print
+ * pipeline against this stylesheet is the whole PDF path.
+ */
+
+@media print {
+    @page {
+        margin: 18mm 15mm;
+    }
+
+    /* Force light-mode colours regardless of the viewer's theme (ui.md §9)
+       — printed output must not depend on whatever the browser happened to
+       be rendering with, and dark-theme colours in particular are chosen
+       for a backlit screen, not paper/toner. */
+    :root {
+        color-scheme: light;
+    }
+
+    html,
+    body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+    }
+
+    /* Hide all navigation, actions and the options panel (ui.md §9). */
+    .no-print {
+        display: none !important;
+    }
+
+    .report-print {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        /* W83, D43/ui.md §9 "The current zoom is ignored" — the report body
+           now carries a CSS `zoom` style from useCanvas.ts (the same
+           primitive the list view uses, D9), reset here for the same reason
+           the list view's own zoom is reset below: a page printed at
+           someone's 140% reading zoom wastes a third of the paper. */
+        zoom: 1 !important;
+    }
+
+    /* Long tables repeat their header row on every printed page. */
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    /* Cards, table rows and chart blocks never split across a page break. */
+    .report-card,
+    .report-section svg,
+    tr {
+        break-inside: avoid;
+    }
+
+    .break-inside-avoid {
+        break-inside: avoid;
+    }
+
+    /* Each top-level report section starts clean rather than leaving a
+       half-empty section straddling a page boundary. */
+    .report-section {
+        break-before: avoid;
+        break-after: auto;
+    }
+
+    .report-section + .report-section {
+        break-before: page;
+    }
+
+    /* Expand link URLs after their text (ui.md §9) — on screen the href is
+       invisible ink on a hover state; on paper it must be readable without
+       a pointer. Skip references already showing their own URL text and
+       internal in-page anchors, which would print a useless "#..." suffix. */
+    a[href]:not([href^='#'])::after {
+        content: ' (' attr(href) ')';
+        font-size: 0.85em;
+        color: #475569;
+        word-break: break-all;
+    }
+
+    /* The reference table already renders the URL as its own cell — avoid
+       doubling it up with the generic rule above. */
+    table a[href]::after {
+        content: '';
+    }
+
+    /* W33: the full-assessment section is now the longest thing in the
+       document — every node with every figure — so it needs to break at the
+       right places rather than wherever the page happens to end. A risk and
+       its attacks stay together where they fit; a defence row never splits
+       from the numbers underneath it; and no heading is left stranded at the
+       foot of a page. */
+    #tree-heading + p,
+    .report-section h3 {
+        break-after: avoid;
+    }
+
+    .report-section li {
+        break-inside: avoid;
+    }
+
+    .report-section li > ul {
+        break-before: auto;
+    }
+
+    /* Orphans and widows: a paragraph never leaves one line behind. */
+    p,
+    li {
+        orphans: 2;
+        widows: 2;
+    }
+}
+
+/*
+ * W49 — the chart and list views print as what is on screen, minus the
+ * chrome (PLAN-2.2.md item 21, ui.md §9 "Print").
+ *
+ * Same browser pipeline as the report, same stylesheet, no new dependency
+ * (D6). The rules below are scoped to `.editor-print`, which
+ * AuthenticatedLayout puts on the editor's own container, so nothing here
+ * can reach the report's carefully-tuned section breaks above.
+ */
+@media print {
+    /* The running header: which assessment, when, and what was filtered.
+       Without it a printed chart is a picture of an unnamed thing from an
+       unknown date, which is exactly the page that ends up in a folder and
+       cannot be trusted six months later. */
+    .print-header {
+        display: block !important;
+        margin-bottom: 6mm;
+        border-bottom: 1px solid #cbd5e1;
+        padding-bottom: 2mm;
+        font-size: 10pt;
+        color: #0f172a;
+    }
+
+    /* Everything that is a control rather than content. The toolbar's own
+       active-filter row is deliberately exempt below — it is the only
+       on-screen statement of what the reader is looking at. */
+    .editor-print [data-print-hide],
+    /* The filter dropdown's trigger. The panel behind it is already closed
+       on paper; the button that opens it is a control. */
+    .editor-print [data-testid='toolbar-row'] button[aria-haspopup],
+    .editor-print [data-testid='toolbar-row'] > [role='status'] {
+        display: none !important;
+    }
+
+    /* …except this one. The active-filter row is the only on-screen
+       statement of what the reader is looking at, and a printed tree with
+       three of five risks dimmed out is misleading without it. Its chips
+       carry remove-buttons, which mean nothing on paper — the icons go, the
+       words stay. */
+    .editor-print [aria-label='Active filters'] {
+        display: flex !important;
+    }
+
+    .editor-print [aria-label='Active filters'] svg,
+    .editor-print [aria-label^='Clear all'] {
+        display: none !important;
+    }
+
+    /* Hover-only affordances have no meaning on paper and would print as
+       stray icons over the cards they belong to. */
+    .editor-print .group-hover\:opacity-100,
+    .editor-print [data-hover-only] {
+        display: none !important;
+    }
+
+    /*
+     * Zoom is ignored in favour of a fixed print size (brief item 21).
+     *
+     * The list view applies zoom with CSS `zoom` and the chart with
+     * `transform: scale()` (D9), so both are reset — a page printed at
+     * someone's 140% reading zoom wastes a third of the paper, and at 60%
+     * it is unreadable.
+     */
+    .editor-print [role='tree'],
+    .editor-print .chart-canvas {
+        zoom: 1 !important;
+        transform: none !important;
+        font-size: 9pt !important;
+    }
+
+    /* The canvas scrolls on screen; on paper it must lay out to the page. */
+    .editor-print .overflow-auto {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    /*
+     * A risk and everything under it stays on one page where it fits. The
+     * indentation is plain nested `<ul>` padding, so it survives untouched —
+     * nothing here changes the structure, only where the paper tears.
+     */
+    .editor-print [role='tree'] > li > ul > li,
+    .editor-print [role='treeitem'][aria-level='2'] {
+        break-inside: avoid;
+    }
+
+    /* The chart's connectors are SVG and scale with the page; the cards are
+       absolutely positioned, so the container has to keep its own size or
+       they collapse on top of each other. */
+    .editor-print .chart-canvas svg {
+        overflow: visible !important;
+    }
+
+    /* Node cards never split down the middle. */
+    .editor-print [role='treeitem'] > div {
+        break-inside: avoid;
+    }
+}

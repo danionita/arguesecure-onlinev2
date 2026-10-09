@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "kind": "catalog",
+  "key": "iso42001-ai-act",
+  "entries": [
+    {
+      "ref": "risk-model-biased-output",
+      "kind": "risk",
+      "title": "Biased or discriminatory model outputs",
+      "description": "The AI system produces results that systematically disadvantage particular groups of people, whether through skewed training data, proxy variables correlated with protected characteristics, or an objective function that never accounted for fairness. Left unmanaged this exposes the organisation to discrimination complaints, reputational fallout and regulatory scrutiny.",
+      "defaults": {"impact_mode": "qualitative", "impact_level_code": "moderate"},
+      "children": [
+        {"ref": "attack-prompt-injection"},
+        {"ref": "attack-model-drift"}
+      ]
+    },
+    {
+      "ref": "risk-data-integrity-leakage",
+      "kind": "risk",
+      "title": "Compromise or leakage of AI training and inference data",
+      "description": "The data an AI system learns from, or the data it processes at inference time, is tampered with or exposed. This covers both a corrupted training set that quietly degrades or skews the model, and a model that can be coaxed into revealing personal or confidential information it was trained on.",
+      "defaults": {"impact_mode": "qualitative", "impact_level_code": "major"},
+      "children": [
+        {"ref": "attack-training-data-poisoning"},
+        {"ref": "attack-model-inversion"}
+      ]
+    },
+    {
+      "ref": "risk-deployment-unsafe-automation",
+      "kind": "risk",
+      "title": "Unsafe automated decisions and inadequate human oversight",
+      "description": "The AI system is allowed to make or heavily influence consequential decisions about people without an effective human checkpoint, and those affected are not told an automated system was involved. This combination removes the safety net that would normally catch a wrong or unfair outcome before it causes harm.",
+      "defaults": {"impact_mode": "qualitative", "impact_level_code": "severe"},
+      "children": [
+        {"ref": "attack-unreviewed-automated-decision"},
+        {"ref": "attack-lack-of-transparency"}
+      ]
+    },
+    {
+      "ref": "risk-governance-accountability-gap",
+      "kind": "risk",
+      "title": "Inability to demonstrate regulatory compliance and unclear accountability",
+      "description": "Nobody in the organisation can produce evidence, on demand, of how an AI system was risk-assessed, tested, approved and monitored, or who is responsible for its outcomes. Regulators, auditors and customers increasingly expect this evidence trail as a precondition of trust, and its absence turns an otherwise well-run system into an unmanaged liability.",
+      "defaults": {"impact_mode": "qualitative", "impact_level_code": "severe"},
+      "children": [
+        {"ref": "attack-missing-audit-evidence"},
+        {"ref": "attack-unclear-ownership"}
+      ]
+    },
+    {
+      "ref": "attack-prompt-injection",
+      "kind": "attack",
+      "title": "Adversarial prompt injection manipulating model behaviour",
+      "description": "A user crafts input specifically designed to override the system's intended instructions or safety constraints, causing it to produce biased, harmful or policy-violating output it would otherwise have refused or moderated.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "possible"},
+      "children": [
+        {"ref": "defence-accuracy-robustness-cybersecurity", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-ai-system-lifecycle-controls", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}}
+      ]
+    },
+    {
+      "ref": "attack-model-drift",
+      "kind": "attack",
+      "title": "Silent model performance drift going undetected in production",
+      "description": "The statistical properties of real-world inputs shift away from what the model was trained and validated on, so accuracy and fairness quietly deteriorate over time. Without active monitoring nobody notices until the degraded outputs have already caused harm.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "likely"},
+      "children": [
+        {"ref": "defence-monitoring-measurement-evaluation", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-record-keeping-logging", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}},
+        {"ref": "defence-operational-planning-control", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-training-data-poisoning",
+      "kind": "attack",
+      "title": "Training-data poisoning by a malicious contributor",
+      "description": "Someone with access to the data pipeline, whether an insider, a compromised vendor feed, or an open crowd-sourced dataset, deliberately introduces mislabelled or manipulated records so the trained model behaves incorrectly in a way that benefits the attacker.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "unlikely"},
+      "children": [
+        {"ref": "defence-data-governance", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-data-for-ai-systems", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-model-inversion",
+      "kind": "attack",
+      "title": "Model inversion and membership-inference extraction of training data",
+      "description": "An attacker repeatedly queries a deployed model and analyses the responses to reconstruct sensitive attributes of individual training records, or to determine whether a specific person's data was used to train the model at all.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "rare"},
+      "children": [
+        {"ref": "defence-ai-risk-assessment", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-accuracy-robustness-cybersecurity", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-unreviewed-automated-decision",
+      "kind": "attack",
+      "title": "Automated high-impact decisions issued without human review",
+      "description": "A consequential decision about a person, such as an eligibility, access or pricing outcome, is generated and acted on entirely by the AI system, with no qualified person able to intervene, question or override it before it takes effect.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "possible"},
+      "children": [
+        {"ref": "defence-human-oversight-measures", "defaults": {"reduction_target": "likelihood", "strength_level_code": "very_strong"}},
+        {"ref": "defence-deployer-obligations", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-operational-planning-control", "defaults": {"reduction_target": "impact", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-lack-of-transparency",
+      "kind": "attack",
+      "title": "Lack of transparency leaving affected users unaware of AI involvement",
+      "description": "People interacting with, or affected by, the AI system are not told that an automated system is involved, what it is used for, or how to seek a human explanation of a decision, leaving them unable to exercise any meaningful oversight of their own.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "likely"},
+      "children": [
+        {"ref": "defence-transparency-user-information", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-ai-policy", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}}
+      ]
+    },
+    {
+      "ref": "attack-missing-audit-evidence",
+      "kind": "attack",
+      "title": "Absence of audit evidence for regulatory compliance",
+      "description": "When a regulator, customer or internal auditor asks for evidence that an AI system was properly assessed, tested and approved, no consistent record exists, forcing the organisation to reconstruct history after the fact, often incompletely and under time pressure.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "possible"},
+      "children": [
+        {"ref": "defence-quality-management-system", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-nonconformity-corrective-action", "defaults": {"reduction_target": "impact", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-unclear-ownership",
+      "kind": "attack",
+      "title": "Unclear ownership and accountability for AI system outcomes",
+      "description": "No single role or committee is clearly accountable for a given AI system's behaviour, so when something goes wrong the response is slow, fragmented across departments, or simply does not happen because everyone assumes someone else is handling it.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "likely"},
+      "children": [
+        {"ref": "defence-management-review", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-risk-management-system", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}}
+      ]
+    },
+    {
+      "ref": "defence-risk-management-system",
+      "kind": "defence",
+      "title": "Ongoing AI risk management process (Article 9)",
+      "description": "A standing process that identifies, evaluates and treats risks arising from an AI system across its lifetime rather than as a one-off exercise at launch, so that new risks discovered after deployment get fed back into concrete mitigation actions.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-data-governance",
+      "kind": "defence",
+      "title": "Data governance and data quality management (Article 10)",
+      "description": "Formal controls over where training and validation data comes from, how it is vetted, cleaned and documented, and how its relevance and representativeness are checked before it is used to build or update a model. Reduces the chance that flawed or manipulated data quietly becomes embedded in system behaviour.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-transparency-user-information",
+      "kind": "defence",
+      "title": "Transparency and provision of information to users (Article 13)",
+      "description": "Clear, accessible disclosure to people who interact with or are affected by the system that they are dealing with an AI-driven process, along with enough information about its purpose and limitations for them to use it appropriately or seek recourse.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-human-oversight-measures",
+      "kind": "defence",
+      "title": "Human oversight measures (Article 14)",
+      "description": "Designing the system and the surrounding process so a competent person can monitor its operation, understand its output well enough to judge whether to rely on it, and intervene or override a decision before it takes effect on a real person.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-accuracy-robustness-cybersecurity",
+      "kind": "defence",
+      "title": "Accuracy, robustness and cybersecurity requirements (Article 15)",
+      "description": "Testing and hardening the system so it maintains an appropriate level of correctness under normal conditions and degrades gracefully, rather than dangerously, when faced with unexpected input, adversarial manipulation or technical faults.",
+      "defaults": {"is_transfer": false, "status": "todo", "capex_amount": 15000}
+    },
+    {
+      "ref": "defence-quality-management-system",
+      "kind": "defence",
+      "title": "Quality management system for AI development (Article 17)",
+      "description": "Documented procedures spanning design, development, testing, change control and post-market monitoring, so that AI systems are built and maintained consistently rather than through ad hoc, individually-remembered practice.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-record-keeping-logging",
+      "kind": "defence",
+      "title": "Automatic event logging and record-keeping (Article 12)",
+      "description": "Built-in logging that captures enough operational detail about how the system was used and what it produced to support later investigation, monitoring for drift, and reconstruction of events when something goes wrong.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-deployer-obligations",
+      "kind": "defence",
+      "title": "Deployer monitoring and oversight obligations (Article 26)",
+      "description": "Responsibilities placed on the organisation actually operating the system in production, including assigning trained staff to oversee its use, following the provider's instructions for use, and watching for and reporting signs of malfunction or unexpected behaviour.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-ai-risk-assessment",
+      "kind": "defence",
+      "title": "Structured AI risk assessment process (Clause 6.1.2)",
+      "description": "A repeatable method for identifying and rating risks specific to an AI system, such as data exposure or unreliable outputs, and prioritising which ones need treatment before the system is approved for use or further extended.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-operational-planning-control",
+      "kind": "defence",
+      "title": "Operational planning and control of AI processes (Clause 8.1)",
+      "description": "Planning and controlling the day-to-day processes needed to deliver an AI system reliably, including defining criteria for acceptable operation and keeping evidence that those criteria continue to be met as circumstances change.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-monitoring-measurement-evaluation",
+      "kind": "defence",
+      "title": "Monitoring, measurement, analysis and evaluation of AI performance (Clause 9.1)",
+      "description": "Ongoing measurement of how an AI system is actually performing once in production, compared against its expected behaviour, so that gradual degradation or unexpected patterns are caught early rather than discovered through downstream harm.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-management-review",
+      "kind": "defence",
+      "title": "Periodic management review of the AI management system (Clause 9.3)",
+      "description": "Regular review by senior management of how well the organisation's AI governance is working, forcing explicit decisions about resourcing, priorities and ownership rather than letting AI oversight drift by default.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-nonconformity-corrective-action",
+      "kind": "defence",
+      "title": "Nonconformity handling and corrective action (Clause 10.2)",
+      "description": "A defined process for recording when something has gone wrong with an AI system relative to its intended controls, working out the root cause, and tracking the fix through to completion so the same failure does not recur unnoticed.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-data-for-ai-systems",
+      "kind": "defence",
+      "title": "Controls over data used for AI systems (Annex A.4)",
+      "description": "Practical controls over the datasets feeding an AI system, such as provenance tracking, access restriction and documented handling procedures, that make it harder for unauthorised or unvetted data to enter a training or fine-tuning pipeline unnoticed.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 6000}
+    },
+    {
+      "ref": "defence-ai-system-lifecycle-controls",
+      "kind": "defence",
+      "title": "AI system life cycle controls (Annex A.6)",
+      "description": "Checkpoints applied across the stages a system passes through, from design and development through testing, deployment and eventual retirement, so that risk and quality considerations are addressed at each stage rather than assumed to have been handled earlier.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-ai-policy",
+      "kind": "defence",
+      "title": "Documented organisational policy on AI use (Annex A.2)",
+      "description": "A written statement of the organisation's intent and boundaries for developing and using AI, giving staff a clear reference point for what is and is not acceptable practice instead of relying on informal precedent.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+﻿name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+# Composer downloads dists from codeload.github.com, which rate-limits
+# anonymous requests per IP — and GitHub's hosted runners share addresses.
+# Unauthenticated, that is a coin flip: three of five jobs died on HTTP 429
+# mid-install the first time all five ran together, none of them for a
+# reason in this repository. GITHUB_TOKEN is ephemeral, scoped to this run,
+# and read-only here; it raises the limit enough that installs stop being a
+# lottery. Referenced, never written into a file.
+env:
+  COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+
+jobs:
+  php:
+    name: PHP â€” Pint, PHPStan, Pest
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: arguesecure_test
+          MARIADB_USER: arguesecure
+          MARIADB_PASSWORD: arguesecure
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.3"
+          extensions: pdo_mysql, redis, opcache, intl, bcmath, zip, pcntl
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - run: composer install --prefer-dist --no-interaction
+
+      - name: Prepare .env
+        # .env.example is a production template: it selects the reverb
+        # broadcaster but ships no credentials, and routes/channels.php
+        # resolves the broadcaster as routes load, so every artisan command
+        # aborts until these exist. docker/entrypoint.sh generates the same
+        # three values on a first boot; CI mirrors that rather than switching
+        # broadcasting off, so the real code path stays under test.
+        run: |
+          cp .env.example .env
+          {
+            echo "REVERB_APP_ID=$(shuf -i 100000-999999 -n 1)"
+            echo "REVERB_APP_KEY=$(openssl rand -hex 16)"
+            echo "REVERB_APP_SECRET=$(openssl rand -hex 16)"
+          } >> .env
+
+      - run: php artisan key:generate
+      - run: vendor/bin/pint --test
+      - run: vendor/bin/phpstan analyse
+      - name: Pest
+        run: php artisan test
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: arguesecure_test
+          DB_USERNAME: arguesecure
+          DB_PASSWORD: arguesecure
+          REDIS_HOST: 127.0.0.1
+
+  js:
+    name: JS â€” ESLint, vue-tsc, Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
+      - run: npm run test:unit
+
+  docker:
+    name: Docker â€” build and boot
+    runs-on: ubuntu-latest
+    needs: [php, js]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - run: cp .env.example .env
+
+      - name: Set test secrets
+        run: |
+          {
+            echo "DB_ROOT_PASSWORD=$(openssl rand -hex 16)"
+            echo "DB_PASSWORD=$(openssl rand -hex 16)"
+          } >> .env
+
+      - name: Build the image
+        # Retried, because composer runs *inside* the build where the
+        # workflow's COMPOSER_AUTH does not reach it, so this download is
+        # still anonymous and still subject to codeload's 429. Passing the
+        # token in would mean a build secret and a Dockerfile change, which
+        # is a lot of surface for a transient limit.
+        #
+        # The backoff doubles, and starts at a full minute, because the
+        # first version of this retried three times at 30s and burned every
+        # attempt inside 2.5 minutes — comfortably within one rate-limit
+        # window, so it was really one attempt wearing a costume. Retrying
+        # a rate limit means waiting longer than the limit, not sooner.
+        run: |
+          delay=60
+          for attempt in 1 2 3 4; do
+            if docker compose build; then exit 0; fi
+            echo "build attempt $attempt failed; retrying in ${delay}s" >&2
+            sleep $delay
+            delay=$(( delay * 2 ))
+          done
+          exit 1
+
+      - name: Boot the stack
+        run: docker compose up -d
+
+      - name: Wait for /up
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/up; then exit 0; fi
+            sleep 2
+          done
+          echo "app never became healthy" >&2
+          docker compose logs
+          exit 1
+
+      - name: Assert a fresh instance reaches its first-run setup screen
+        run: |
+          # A fresh stack has an empty users table, so W8's first-run setup
+          # takes over: /login redirects to /setup, which is the correct entry
+          # point for a brand-new deployment and the screen that creates the
+          # first admin. Asserting 200 on /login encoded a pre-W8 assumption.
+          login_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/login)
+          test "$login_status" = "302"
+
+          # The redirect must actually lead somewhere that renders, or a fresh
+          # deployment is unusable and no account can ever be created.
+          setup_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/setup)
+          test "$setup_status" = "200"
+
+          # And it must be a real page, not an error body served with a 200.
+          curl -sf http://localhost:8000/setup | grep -qi "setup"
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  e2e:
+    name: E2E — Playwright release scenarios
+    runs-on: ubuntu-latest
+    # Also after `docker`, not merely after the cheap checks: both jobs
+    # build the same image, and running them at once doubled the anonymous
+    # composer traffic that codeload was already 429ing. Serialising them
+    # costs wall time and buys a build that reliably completes — and there
+    # is no point running the scenarios against an image that just failed
+    # to build in the job whose whole purpose is proving it builds.
+    needs: [php, js, docker]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright's browser
+        # playwright.config.ts only declares a chromium project, so that is
+        # all this suite ever launches.
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare .env.e2e
+        # tests/e2e/README.md: a second, throwaway compose project on its own
+        # port and data directory, so scenario 1's first-run setup gets the
+        # empty users table it needs without touching a real instance. Every
+        # secret is generated fresh per run — this project never commits one
+        # (CLAUDE.md) — and .env.e2e itself is gitignored.
+        run: |
+          cp .env.example .env.e2e
+          {
+            echo "APP_PORT=8100"
+            echo "DATA_PATH=./data-e2e"
+            echo "APP_URL=http://localhost:8100"
+            echo "DB_PASSWORD=$(openssl rand -hex 16)"
+            echo "DB_ROOT_PASSWORD=$(openssl rand -hex 16)"
+            echo "REVERB_APP_ID=$(shuf -i 100000-999999 -n 1)"
+            echo "REVERB_APP_KEY=$(openssl rand -hex 16)"
+            echo "REVERB_APP_SECRET=$(openssl rand -hex 16)"
+          } >> .env.e2e
+
+          # Compose *appends* env_file lists when it merges an overlay, it
+          # does not replace them: docker-compose.e2e.yml adds .env.e2e on
+          # top of the .env each service already declares, so both files
+          # must exist or `up` aborts with "env file ... not found" before
+          # pulling a single image. This is invisible on a developer
+          # machine, which always has a .env — .env.e2e simply comes second
+          # and wins on every key. Making the two identical here means the
+          # merge order cannot matter either way.
+          cp .env.e2e .env
+
+      - name: Boot the e2e stack
+        # Same retry, same reason as the docker job's build step.
+        # docker-compose.e2e.yml points the app/queue/scheduler/reverb
+        # containers at .env.e2e — `--env-file` alone only feeds ${...}
+        # substitution in the compose files, it does not change the env_file:
+        # .env each service declares. docker-compose.override.yml is
+        # deliberately excluded: it publishes 3306/6379 and would collide
+        # with the php job's services if one were ever still running.
+        run: |
+          delay=60
+          for attempt in 1 2 3 4; do
+            if docker compose -p arguesecure-e2e --env-file .env.e2e \
+                 -f docker-compose.yml -f docker-compose.e2e.yml up -d --build; then
+              exit 0
+            fi
+            echo "boot attempt $attempt failed; retrying in ${delay}s" >&2
+            sleep $delay
+            delay=$(( delay * 2 ))
+          done
+          exit 1
+
+      - name: Wait for /up
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8100/up; then exit 0; fi
+            sleep 2
+          done
+          echo "e2e stack never became healthy" >&2
+          docker compose -p arguesecure-e2e --env-file .env.e2e \
+            -f docker-compose.yml -f docker-compose.e2e.yml logs
+          exit 1
+
+      - name: Run the release scenarios
+        # The suite is order-dependent by design (playwright.config.ts:
+        # fullyParallel false, one worker) — scenario 1 creates the admin
+        # every later scenario logs in as. No sharding, no parallelism.
+        run: |
+          export E2E_ADMIN_PASSWORD="$(openssl rand -base64 24)"
+          export E2E_COLLABORATOR_PASSWORD="$(openssl rand -base64 24)"
+          export E2E_OUTSIDER_PASSWORD="$(openssl rand -base64 24)"
+          npx playwright test
+        env:
+          E2E_BASE_URL: http://localhost:8100
+
+      - name: Container logs
+        if: failure()
+        # The scenarios failed once in a way the Playwright artifact could
+        # not explain — a WebSocket that upgraded but a presence channel
+        # that never subscribed, with no /broadcasting/auth request anywhere
+        # in 174 captured requests. The browser's side was fully recorded;
+        # the server's side was not recorded at all, because logs were only
+        # dumped when /up never came up. Anything that fails *after* boot
+        # needs these too.
+        run: |
+          docker compose -p arguesecure-e2e --env-file .env.e2e \
+            -f docker-compose.yml -f docker-compose.e2e.yml logs --no-color --tail=400
+
+          # The container logs give the queue worker's verdict per job but
+          # never its reason: a broadcast that cannot reach Reverb prints
+          # "FAIL" and the exception goes to Laravel's log instead. That is
+          # the whole diagnosis for the one scenario still failing here, and
+          # it has cost several CI rounds to not have. sudo because storage
+          # is a bind mount written as the container's uid.
+          echo "----- laravel.log -----"
+          sudo tail -n 200 ./data-e2e/storage/logs/laravel.log || echo "(no laravel.log)"
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose -p arguesecure-e2e --env-file .env.e2e \
+            -f docker-compose.yml -f docker-compose.e2e.yml down -v
+          # sudo, because DATA_PATH is a bind mount and the database wrote
+          # ${DATA_PATH}/mysql as its own container uid. `down -v` removes
+          # named volumes and never touches a bind mount, so a plain rm here
+          # fails on permissions — and being the last step, that would turn a
+          # green scenario run red.
+          sudo rm -rf ./data-e2e
+
+  security:
+    name: Security â€” audit and secret scan
+    runs-on: ubuntu-latest
+    # gitleaks-action lists a pull request's commits to scan them, which the
+    # workflow-wide `contents: read` does not cover: on a `pull_request`
+    # run it dies on a 403 before scanning anything. Read-only, this job only.
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.3"
+
+      # Audits read lockfiles; neither needs the packages on disk. Installing
+      # them was pure cost, and it was the expensive kind: this job was
+      # downloading every dependency twice over (once for composer, once for
+      # npm) purely to ask a question answerable from composer.lock and
+      # package-lock.json. That traffic is what codeload was 429ing, and it
+      # took this job down with it while the audits themselves had nothing
+      # to say. `--locked` and `--package-lock-only` audit exactly the
+      # versions the lockfiles pin, which is what the other jobs install.
+      - run: composer audit --locked --no-interaction
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - run: npm audit --package-lock-only --omit=dev
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

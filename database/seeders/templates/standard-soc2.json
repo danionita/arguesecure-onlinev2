@@ -1,0 +1,2073 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-soc2",
+  "root_uuid": "c4000000-0000-4000-8000-000000000001",
+  "title": "SOC 2 — Trust Services Criteria",
+  "description": "A SOC 2 readiness starting point against the AICPA 2017 Trust Services Criteria (2022 points of focus). All 61 criteria are defences set to todo: the common criteria CC1 to CC9, plus Availability, Confidentiality, Processing Integrity and Privacy. Shelve the categories outside your report's scope and mark what already operates as implemented. Descriptions are summaries, not the criteria text.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Security",
+      "color": "#DC2626"
+    },
+    {
+      "name": "Availability",
+      "color": "#0EA5E9"
+    },
+    {
+      "name": "Confidentiality",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "Processing integrity",
+      "color": "#10B981"
+    },
+    {
+      "name": "Privacy",
+      "color": "#8B5CF6"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-security",
+      "uuid": "c4000000-0000-4000-8000-000000000002",
+      "title": "Unauthorized access to the system or its data",
+      "description": "Someone gains logical or physical access to the system, or to the information it holds, that the service commitments and system requirements do not allow.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Security"
+      ],
+      "attack_refs": [
+        "attack-logical-access",
+        "attack-physical-access",
+        "attack-transmission",
+        "attack-malicious-software",
+        "attack-vulnerability",
+        "attack-incident",
+        "attack-change",
+        "attack-vendor",
+        "attack-risk-blind"
+      ]
+    },
+    {
+      "ref": "risk-availability",
+      "uuid": "c4000000-0000-4000-8000-000000000003",
+      "title": "System is not available for operation and use as committed",
+      "description": "The system is down or degraded beyond the availability commitments made to customers, because of capacity, environmental events, failed recovery or an attack.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Availability"
+      ],
+      "attack_refs": [
+        "attack-outage",
+        "attack-incident",
+        "attack-change",
+        "attack-vendor",
+        "attack-malicious-software"
+      ]
+    },
+    {
+      "ref": "risk-confidentiality",
+      "uuid": "c4000000-0000-4000-8000-000000000004",
+      "title": "Confidential information is disclosed",
+      "description": "Information designated as confidential — customer data, intellectual property, contractual terms — is exposed or retained beyond what commitments allow.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Confidentiality"
+      ],
+      "attack_refs": [
+        "attack-logical-access",
+        "attack-transmission",
+        "attack-confidential-handling",
+        "attack-vendor",
+        "attack-physical-access"
+      ]
+    },
+    {
+      "ref": "risk-processing-integrity",
+      "uuid": "c4000000-0000-4000-8000-000000000005",
+      "title": "Processing is incomplete, inaccurate, untimely or unauthorized",
+      "description": "Transactions and data the system processes are lost, duplicated, altered or delayed, so outputs customers rely on are wrong.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "moderate"
+      },
+      "tags": [
+        "Processing integrity"
+      ],
+      "attack_refs": [
+        "attack-processing-error",
+        "attack-change"
+      ]
+    },
+    {
+      "ref": "risk-privacy",
+      "uuid": "c4000000-0000-4000-8000-000000000006",
+      "title": "Personal information is handled contrary to commitments or law",
+      "description": "Personal information is collected, used, retained, disclosed or disposed of in ways the privacy notice, consent or law does not allow.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Privacy"
+      ],
+      "attack_refs": [
+        "attack-privacy",
+        "attack-logical-access",
+        "attack-vendor",
+        "attack-incident"
+      ]
+    },
+    {
+      "ref": "risk-attestation",
+      "uuid": "c4000000-0000-4000-8000-000000000007",
+      "title": "Qualified opinion or exceptions in the SOC 2 report",
+      "description": "Controls are not designed or do not operate effectively over the audit period, and the auditor's report says so — undermining the report customers asked for.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "moderate"
+      },
+      "tags": [
+        "Security"
+      ],
+      "attack_refs": [
+        "attack-control-environment",
+        "attack-risk-blind",
+        "attack-monitoring-gap"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-control-environment",
+      "uuid": "c4000000-0000-4000-8000-000000000008",
+      "title": "Weak control environment",
+      "description": "There is no tone at the top, board oversight, clear structure, competent staff or accountability for internal control, so controls exist on paper only.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc1-1",
+        "defence-cc1-2",
+        "defence-cc1-3",
+        "defence-cc1-4",
+        "defence-cc1-5",
+        "defence-cc2-2",
+        "defence-cc2-3",
+        "defence-cc5-3"
+      ]
+    },
+    {
+      "ref": "attack-risk-blind",
+      "uuid": "c4000000-0000-4000-8000-000000000009",
+      "title": "Risks, fraud and significant changes go unidentified",
+      "description": "Objectives are not specified clearly enough to assess risk against, and new threats, fraud opportunities, business changes or disruption scenarios are not analysed.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc3-1",
+        "defence-cc3-2",
+        "defence-cc3-3",
+        "defence-cc3-4",
+        "defence-cc9-1"
+      ]
+    },
+    {
+      "ref": "attack-monitoring-gap",
+      "uuid": "c4000000-0000-4000-8000-00000000000a",
+      "title": "Control failures go unnoticed and unremediated",
+      "description": "Controls are not evaluated during the period, deficiencies are not reported to those who can fix them, and technology controls are not selected deliberately.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc2-1",
+        "defence-cc4-1",
+        "defence-cc4-2",
+        "defence-cc5-1",
+        "defence-cc5-2",
+        "defence-cc5-3"
+      ]
+    },
+    {
+      "ref": "attack-logical-access",
+      "uuid": "c4000000-0000-4000-8000-00000000000b",
+      "title": "Unauthorized logical access",
+      "description": "Accounts are created without authorization, keep access they no longer need, or are taken over; boundary protections let outsiders reach internal components.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1078",
+          "title": "Valid Accounts"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc5-2",
+        "defence-cc6-1",
+        "defence-cc6-2",
+        "defence-cc6-3",
+        "defence-cc6-6"
+      ]
+    },
+    {
+      "ref": "attack-physical-access",
+      "uuid": "c4000000-0000-4000-8000-00000000000c",
+      "title": "Unauthorized physical access or unsanitised disposal",
+      "description": "Someone reaches facilities, backup media or equipment without authorization, or retired assets leave with data still on them.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc6-4",
+        "defence-cc6-5"
+      ]
+    },
+    {
+      "ref": "attack-transmission",
+      "uuid": "c4000000-0000-4000-8000-00000000000d",
+      "title": "Data intercepted or removed in transmission or on media",
+      "description": "Information moves over networks, to removable media or to other parties without the protection commitments require.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1557",
+          "title": "Adversary-in-the-Middle"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc6-7"
+      ]
+    },
+    {
+      "ref": "attack-malicious-software",
+      "uuid": "c4000000-0000-4000-8000-00000000000e",
+      "title": "Malicious or unauthorized software",
+      "description": "Malware or unapproved software is introduced to system components and runs undetected.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1204",
+          "title": "User Execution"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc6-8"
+      ]
+    },
+    {
+      "ref": "attack-vulnerability",
+      "uuid": "c4000000-0000-4000-8000-00000000000f",
+      "title": "Misconfiguration or vulnerability exploited undetected",
+      "description": "Configuration drift or a newly disclosed vulnerability is not detected, and anomalous activity exploiting it is not noticed.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1190",
+          "title": "Exploit Public-Facing Application"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc6-6",
+        "defence-cc7-1",
+        "defence-cc7-2"
+      ]
+    },
+    {
+      "ref": "attack-incident",
+      "uuid": "c4000000-0000-4000-8000-000000000010",
+      "title": "Security incident poorly evaluated, handled or recovered",
+      "description": "Security events are not triaged into incidents, response is improvised, and recovery restores service without restoring trust or learning.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc2-2",
+        "defence-cc2-3",
+        "defence-cc7-2",
+        "defence-cc7-3",
+        "defence-cc7-4",
+        "defence-cc7-5",
+        "defence-p6-3",
+        "defence-transfer-cyber-insurance"
+      ]
+    },
+    {
+      "ref": "attack-change",
+      "uuid": "c4000000-0000-4000-8000-000000000011",
+      "title": "Unauthorized or untested change",
+      "description": "Changes to infrastructure, data, software and procedures reach production without authorization, design, testing and approval.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc3-4",
+        "defence-cc8-1"
+      ]
+    },
+    {
+      "ref": "attack-vendor",
+      "uuid": "c4000000-0000-4000-8000-000000000012",
+      "title": "Vendor or business-partner failure",
+      "description": "A vendor or partner with access to the system or its data fails, is breached, or does not meet the commitments passed down to it.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1199",
+          "title": "Trusted Relationship"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1195",
+          "title": "Supply Chain Compromise"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc9-2",
+        "defence-p6-4",
+        "defence-p6-5"
+      ]
+    },
+    {
+      "ref": "attack-outage",
+      "uuid": "c4000000-0000-4000-8000-000000000013",
+      "title": "Capacity shortfall, environmental event or failed recovery",
+      "description": "Demand outgrows capacity, an environmental threat takes out infrastructure, or backups and recovery procedures fail when needed.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc7-5",
+        "defence-cc9-1",
+        "defence-a1-1",
+        "defence-a1-2",
+        "defence-a1-3",
+        "defence-transfer-cyber-insurance"
+      ]
+    },
+    {
+      "ref": "attack-confidential-handling",
+      "uuid": "c4000000-0000-4000-8000-000000000014",
+      "title": "Confidential information not identified, protected or disposed of",
+      "description": "Nobody knows which information is confidential, so it is not protected while retained or destroyed when the retention period ends.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-cc6-5",
+        "defence-c1-1",
+        "defence-c1-2"
+      ]
+    },
+    {
+      "ref": "attack-processing-error",
+      "uuid": "c4000000-0000-4000-8000-000000000015",
+      "title": "Inputs, processing or outputs are incomplete or inaccurate",
+      "description": "Processing specifications are unclear, inputs are not validated, processing errors are not detected, and outputs go to the wrong place or are wrong.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-pi1-1",
+        "defence-pi1-2",
+        "defence-pi1-3",
+        "defence-pi1-4",
+        "defence-pi1-5",
+        "defence-p7-1"
+      ]
+    },
+    {
+      "ref": "attack-privacy",
+      "uuid": "c4000000-0000-4000-8000-000000000016",
+      "title": "Personal information handled contrary to notice, consent or rights",
+      "description": "Data subjects are not told what happens to their data, are not given choices, cannot access or correct it, or it is shared, kept or disposed of contrary to commitments.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "title": "AICPA 2017 Trust Services Criteria (revised points of focus, 2022)"
+        }
+      ],
+      "defence_refs": [
+        "defence-p1-1",
+        "defence-p2-1",
+        "defence-p3-1",
+        "defence-p3-2",
+        "defence-p4-1",
+        "defence-p4-2",
+        "defence-p4-3",
+        "defence-p5-1",
+        "defence-p5-2",
+        "defence-p6-1",
+        "defence-p6-2",
+        "defence-p6-3",
+        "defence-p6-4",
+        "defence-p6-6",
+        "defence-p6-7",
+        "defence-p7-1",
+        "defence-p8-1"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-cc1-1",
+      "uuid": "c4000000-0000-4000-8000-000000000017",
+      "title": "CC1.1 Commitment to integrity and ethical values",
+      "description": "Standards of conduct are set, communicated, acknowledged and enforced, and deviations are dealt with in a timely way.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC1.1"
+        }
+      ],
+      "links": {
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc1-2",
+      "uuid": "c4000000-0000-4000-8000-000000000018",
+      "title": "CC1.2 Board independence and oversight of internal control",
+      "description": "The board of directors is independent of management and exercises oversight of the development and performance of internal control.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC1.2"
+        }
+      ],
+      "links": {
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc1-3",
+      "uuid": "c4000000-0000-4000-8000-000000000019",
+      "title": "CC1.3 Structures, reporting lines, authorities and responsibilities",
+      "description": "Management, with board oversight, establishes structures, reporting lines, and appropriate authorities and responsibilities in pursuit of objectives.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC1.3"
+        }
+      ],
+      "links": {
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc1-4",
+      "uuid": "c4000000-0000-4000-8000-00000000001a",
+      "title": "CC1.4 Commitment to competence",
+      "description": "The entity attracts, develops and retains competent individuals in alignment with its objectives — hiring, training, performance evaluation and succession planning.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC1.4"
+        }
+      ],
+      "links": {
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc1-5",
+      "uuid": "c4000000-0000-4000-8000-00000000001b",
+      "title": "CC1.5 Accountability for internal control responsibilities",
+      "description": "Individuals are held accountable for their internal control responsibilities, through performance measures, incentives and discipline.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC1.5"
+        }
+      ],
+      "links": {
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc2-1",
+      "uuid": "c4000000-0000-4000-8000-00000000001c",
+      "title": "CC2.1 Relevant, quality information to support internal control",
+      "description": "The entity obtains or generates and uses relevant, quality information — including system and data-flow descriptions — to support the functioning of internal control.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC2.1"
+        }
+      ],
+      "links": {
+        "attack-monitoring-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc2-2",
+      "uuid": "c4000000-0000-4000-8000-00000000001d",
+      "title": "CC2.2 Internal communication of objectives and responsibilities",
+      "description": "Information about objectives and responsibilities for internal control is communicated internally, including a channel for reporting concerns such as a whistle-blower line.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC2.2"
+        }
+      ],
+      "links": {
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc2-3",
+      "uuid": "c4000000-0000-4000-8000-00000000001e",
+      "title": "CC2.3 Communication with external parties",
+      "description": "The entity communicates with customers, vendors, regulators and other external parties about matters affecting internal control — commitments, system changes, incidents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC2.3"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc3-1",
+      "uuid": "c4000000-0000-4000-8000-00000000001f",
+      "title": "CC3.1 Objectives specified to enable risk identification",
+      "description": "Objectives — operational, reporting and compliance — are specified with enough clarity that risks to them can be identified and assessed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC3.1"
+        }
+      ],
+      "links": {
+        "attack-risk-blind": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc3-2",
+      "uuid": "c4000000-0000-4000-8000-000000000020",
+      "title": "CC3.2 Identification and analysis of risk",
+      "description": "Risks to objectives are identified across the entity — including from vendors and technology — and analysed to determine how they should be managed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC3.2"
+        }
+      ],
+      "links": {
+        "attack-risk-blind": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc3-3",
+      "uuid": "c4000000-0000-4000-8000-000000000021",
+      "title": "CC3.3 Consideration of fraud risk",
+      "description": "The potential for fraud — incentives, opportunities, rationalisations, management override — is considered when assessing risks.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC3.3"
+        }
+      ],
+      "links": {
+        "attack-risk-blind": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc3-4",
+      "uuid": "c4000000-0000-4000-8000-000000000022",
+      "title": "CC3.4 Identification and assessment of significant change",
+      "description": "Changes that could significantly affect internal control — in the business, the environment, leadership or technology — are identified and assessed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC3.4"
+        }
+      ],
+      "links": {
+        "attack-risk-blind": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc4-1",
+      "uuid": "c4000000-0000-4000-8000-000000000023",
+      "title": "CC4.1 Ongoing and separate evaluations of controls",
+      "description": "Ongoing and/or separate evaluations — continuous monitoring, internal audit, penetration testing — ascertain whether the components of internal control are present and functioning.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC4.1"
+        }
+      ],
+      "links": {
+        "attack-monitoring-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc4-2",
+      "uuid": "c4000000-0000-4000-8000-000000000024",
+      "title": "CC4.2 Evaluation and communication of deficiencies",
+      "description": "Internal control deficiencies are evaluated and communicated in a timely manner to those responsible for corrective action, including senior management and the board.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC4.2"
+        }
+      ],
+      "links": {
+        "attack-monitoring-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc5-1",
+      "uuid": "c4000000-0000-4000-8000-000000000025",
+      "title": "CC5.1 Selection and development of control activities",
+      "description": "Control activities are selected and developed to mitigate risks to acceptable levels, integrated with the risk assessment and with segregation of duties.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC5.1"
+        }
+      ],
+      "links": {
+        "attack-monitoring-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc5-2",
+      "uuid": "c4000000-0000-4000-8000-000000000026",
+      "title": "CC5.2 General control activities over technology",
+      "description": "General controls over technology — infrastructure, security management, acquisition, development and maintenance — are selected and developed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC5.2"
+        }
+      ],
+      "links": {
+        "attack-monitoring-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-logical-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc5-3",
+      "uuid": "c4000000-0000-4000-8000-000000000027",
+      "title": "CC5.3 Control activities deployed through policies and procedures",
+      "description": "Control activities are deployed through policies that establish what is expected and procedures that put policies into action, with owners and periodic reassessment.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC5.3"
+        }
+      ],
+      "links": {
+        "attack-control-environment": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-monitoring-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-1",
+      "uuid": "c4000000-0000-4000-8000-000000000028",
+      "title": "CC6.1 Logical access security software, infrastructure and architecture",
+      "description": "Logical access security measures — asset inventory, access control software, network segmentation, authentication, encryption keys — protect information assets from security events.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.1"
+        }
+      ],
+      "links": {
+        "attack-logical-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-2",
+      "uuid": "c4000000-0000-4000-8000-000000000029",
+      "title": "CC6.2 Registration and authorization of users",
+      "description": "New internal and external users are registered and authorized before credentials are issued, and credentials are removed when access is no longer authorized.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.2"
+        }
+      ],
+      "links": {
+        "attack-logical-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-3",
+      "uuid": "c4000000-0000-4000-8000-00000000002a",
+      "title": "CC6.3 Role-based access, least privilege and segregation of duties",
+      "description": "Access to data, software and other assets is authorized, modified or removed based on roles and responsibilities, least privilege and segregation of duties, and reviewed periodically.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.3"
+        }
+      ],
+      "links": {
+        "attack-logical-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-4",
+      "uuid": "c4000000-0000-4000-8000-00000000002b",
+      "title": "CC6.4 Restriction of physical access",
+      "description": "Physical access to facilities and protected assets — data centres, backup media, other sensitive locations — is restricted to authorized personnel.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.4"
+        }
+      ],
+      "links": {
+        "attack-physical-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-5",
+      "uuid": "c4000000-0000-4000-8000-00000000002c",
+      "title": "CC6.5 Discontinuation of protections over retired physical assets",
+      "description": "Logical and physical protections over physical assets are discontinued only after the ability to read or recover data from them has been removed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.5"
+        }
+      ],
+      "links": {
+        "attack-physical-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-confidential-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-6",
+      "uuid": "c4000000-0000-4000-8000-00000000002d",
+      "title": "CC6.6 Protection against threats from outside system boundaries",
+      "description": "Logical access security measures — firewalls, gateways, intrusion detection, strong authentication for remote access — protect against threats from sources outside the system boundaries.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.6"
+        }
+      ],
+      "links": {
+        "attack-logical-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-7",
+      "uuid": "c4000000-0000-4000-8000-00000000002e",
+      "title": "CC6.7 Restriction of transmission, movement and removal of information",
+      "description": "Transmission, movement and removal of information are restricted to authorized users and processes and protected during transmission — encryption in transit, removable-media controls, protection of mobile devices.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.7"
+        }
+      ],
+      "links": {
+        "attack-transmission": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc6-8",
+      "uuid": "c4000000-0000-4000-8000-00000000002f",
+      "title": "CC6.8 Prevention and detection of unauthorized or malicious software",
+      "description": "Controls prevent or detect and act upon the introduction of unauthorized or malicious software — restricted installation, change detection, anti-malware.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC6.8"
+        }
+      ],
+      "links": {
+        "attack-malicious-software": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc7-1",
+      "uuid": "c4000000-0000-4000-8000-000000000030",
+      "title": "CC7.1 Detection of configuration changes and new vulnerabilities",
+      "description": "Detection and monitoring procedures identify changes to configurations that introduce vulnerabilities, and susceptibilities to newly discovered vulnerabilities.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC7.1"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc7-2",
+      "uuid": "c4000000-0000-4000-8000-000000000031",
+      "title": "CC7.2 Monitoring for anomalies indicative of malicious acts or errors",
+      "description": "System components and their operation are monitored for anomalies indicative of malicious acts, natural disasters and errors, and anomalies are analysed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC7.2"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc7-3",
+      "uuid": "c4000000-0000-4000-8000-000000000032",
+      "title": "CC7.3 Evaluation of security events",
+      "description": "Security events are evaluated to determine whether they could or did result in a failure to meet objectives, and if so are treated as incidents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC7.3"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc7-4",
+      "uuid": "c4000000-0000-4000-8000-000000000033",
+      "title": "CC7.4 Incident response",
+      "description": "Security incidents are responded to by executing a defined incident response programme — roles, containment, mitigation, communication, analysis.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC7.4"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc7-5",
+      "uuid": "c4000000-0000-4000-8000-000000000034",
+      "title": "CC7.5 Recovery from security incidents",
+      "description": "Activities to recover from identified security incidents are identified, developed and implemented — restoring systems, communicating, and addressing root causes.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC7.5"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc8-1",
+      "uuid": "c4000000-0000-4000-8000-000000000035",
+      "title": "CC8.1 Change management",
+      "description": "Changes to infrastructure, data, software and procedures are authorized, designed, developed or acquired, configured, documented, tested, approved and implemented under a controlled process, including emergency changes.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC8.1"
+        }
+      ],
+      "links": {
+        "attack-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc9-1",
+      "uuid": "c4000000-0000-4000-8000-000000000036",
+      "title": "CC9.1 Mitigation of risks from business disruption",
+      "description": "Risk mitigation activities are identified, selected and developed for risks arising from potential business disruptions, including consideration of insurance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC9.1"
+        }
+      ],
+      "links": {
+        "attack-risk-blind": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-cc9-2",
+      "uuid": "c4000000-0000-4000-8000-000000000037",
+      "title": "CC9.2 Vendor and business-partner risk management",
+      "description": "Risks associated with vendors and business partners are assessed and managed: requirements in agreements, periodic assessment, and termination procedures.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC9.2"
+        }
+      ],
+      "links": {
+        "attack-vendor": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a1-1",
+      "uuid": "c4000000-0000-4000-8000-000000000038",
+      "title": "A1.1 Capacity management",
+      "description": "Current processing capacity and use of system components are maintained, monitored and evaluated, and capacity is planned to meet objectives.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:A1.1"
+        }
+      ],
+      "links": {
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a1-2",
+      "uuid": "c4000000-0000-4000-8000-000000000039",
+      "title": "A1.2 Environmental protections, backup and recovery infrastructure",
+      "description": "Environmental protections, software, data backup processes and recovery infrastructure are authorized, designed, implemented, operated, maintained and monitored.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:A1.2"
+        }
+      ],
+      "links": {
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a1-3",
+      "uuid": "c4000000-0000-4000-8000-00000000003a",
+      "title": "A1.3 Testing of recovery plan procedures",
+      "description": "Recovery plan procedures supporting system recovery are tested to meet objectives, and the results are used to improve them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:A1.3"
+        }
+      ],
+      "links": {
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-c1-1",
+      "uuid": "c4000000-0000-4000-8000-00000000003b",
+      "title": "C1.1 Identification and protection of confidential information",
+      "description": "Confidential information is identified, designated and protected from erosion of confidentiality while it is retained.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:C1.1"
+        }
+      ],
+      "links": {
+        "attack-confidential-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-c1-2",
+      "uuid": "c4000000-0000-4000-8000-00000000003c",
+      "title": "C1.2 Disposal of confidential information",
+      "description": "Confidential information is identified for destruction and disposed of when its retention period ends.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:C1.2"
+        }
+      ],
+      "links": {
+        "attack-confidential-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pi1-1",
+      "uuid": "c4000000-0000-4000-8000-00000000003d",
+      "title": "PI1.1 Processing specifications and definitions",
+      "description": "Relevant, quality information about processing objectives — definitions of data, product and service specifications — is obtained or generated, used and communicated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:PI1.1"
+        }
+      ],
+      "links": {
+        "attack-processing-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pi1-2",
+      "uuid": "c4000000-0000-4000-8000-00000000003e",
+      "title": "PI1.2 Complete and accurate system inputs",
+      "description": "Policies and procedures over system inputs result in products, services and reporting that meet objectives — input edits, error handling, completeness checks.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:PI1.2"
+        }
+      ],
+      "links": {
+        "attack-processing-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pi1-3",
+      "uuid": "c4000000-0000-4000-8000-00000000003f",
+      "title": "PI1.3 Complete, accurate and timely processing",
+      "description": "Policies and procedures over processing ensure it is complete, accurate and timely, with errors detected and corrected.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:PI1.3"
+        }
+      ],
+      "links": {
+        "attack-processing-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pi1-4",
+      "uuid": "c4000000-0000-4000-8000-000000000040",
+      "title": "PI1.4 Complete, accurate and timely outputs",
+      "description": "Policies and procedures make outputs available only to intended parties, completely, accurately and on time.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:PI1.4"
+        }
+      ],
+      "links": {
+        "attack-processing-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pi1-5",
+      "uuid": "c4000000-0000-4000-8000-000000000041",
+      "title": "PI1.5 Storage of inputs, items in processing and outputs",
+      "description": "Inputs, items in processing and outputs are stored completely, accurately and on time, protected from theft, destruction or corruption.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:PI1.5"
+        }
+      ],
+      "links": {
+        "attack-processing-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-p1-1",
+      "uuid": "c4000000-0000-4000-8000-000000000042",
+      "title": "P1.1 Notice",
+      "description": "Data subjects are given timely notice of the entity's privacy practices — purposes, choices, collection, use, retention, disclosure and access.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P1.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p2-1",
+      "uuid": "c4000000-0000-4000-8000-000000000043",
+      "title": "P2.1 Choice and consent",
+      "description": "Choices available for collection, use, retention, disclosure and disposal are communicated, and consent is obtained and recorded where required.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P2.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p3-1",
+      "uuid": "c4000000-0000-4000-8000-000000000044",
+      "title": "P3.1 Collection limited to identified purposes",
+      "description": "Personal information is collected consistent with the objectives related to privacy — no more than needed, by fair and lawful means.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P3.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p3-2",
+      "uuid": "c4000000-0000-4000-8000-000000000045",
+      "title": "P3.2 Explicit consent for collection",
+      "description": "For information requiring explicit consent, the need for consent and its consequences are communicated and explicit consent obtained before collection.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P3.2"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p4-1",
+      "uuid": "c4000000-0000-4000-8000-000000000046",
+      "title": "P4.1 Use limited to identified purposes",
+      "description": "Personal information is used only for the purposes identified in the notice and consistent with the objectives related to privacy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P4.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p4-2",
+      "uuid": "c4000000-0000-4000-8000-000000000047",
+      "title": "P4.2 Retention",
+      "description": "Personal information is retained for no longer than needed to meet objectives and legal requirements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P4.2"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p4-3",
+      "uuid": "c4000000-0000-4000-8000-000000000048",
+      "title": "P4.3 Secure disposal",
+      "description": "Personal information is securely disposed of when retention ends or at the data subject's legitimate request.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P4.3"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p5-1",
+      "uuid": "c4000000-0000-4000-8000-000000000049",
+      "title": "P5.1 Access by data subjects",
+      "description": "Data subjects can access their stored personal information for review, after their identity is authenticated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P5.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p5-2",
+      "uuid": "c4000000-0000-4000-8000-00000000004a",
+      "title": "P5.2 Correction and amendment",
+      "description": "Data subjects can have their personal information corrected or amended, and disagreements are recorded and communicated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P5.2"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p6-1",
+      "uuid": "c4000000-0000-4000-8000-00000000004b",
+      "title": "P6.1 Disclosure to third parties with consent",
+      "description": "Personal information is disclosed to third parties only for identified purposes and with the data subject's consent where required.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P6.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p6-2",
+      "uuid": "c4000000-0000-4000-8000-00000000004c",
+      "title": "P6.2 Record of authorized disclosures",
+      "description": "A complete, accurate and timely record of authorized disclosures of personal information is kept.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P6.2"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p6-3",
+      "uuid": "c4000000-0000-4000-8000-00000000004d",
+      "title": "P6.3 Record of unauthorized disclosures",
+      "description": "A complete, accurate and timely record of detected or reported unauthorized disclosures, including breaches, is kept.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P6.3"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-p6-4",
+      "uuid": "c4000000-0000-4000-8000-00000000004e",
+      "title": "P6.4 Privacy commitments from vendors and third parties",
+      "description": "Vendors and other third parties with access to personal information commit to privacy practices consistent with the entity's, and compliance is assessed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P6.4"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vendor": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p6-5",
+      "uuid": "c4000000-0000-4000-8000-00000000004f",
+      "title": "P6.5 Notification by vendors of unauthorized disclosures",
+      "description": "Vendors and third parties are required to notify the entity of actual or suspected unauthorized disclosures of personal information.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P6.5"
+        }
+      ],
+      "links": {
+        "attack-vendor": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-p6-6",
+      "uuid": "c4000000-0000-4000-8000-000000000050",
+      "title": "P6.6 Notification of breaches to data subjects",
+      "description": "Affected data subjects, regulators and others are notified of breaches and incidents as required by commitments and law.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P6.6"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-p6-7",
+      "uuid": "c4000000-0000-4000-8000-000000000051",
+      "title": "P6.7 Accounting of personal information and disclosures",
+      "description": "Data subjects can obtain an accounting of the personal information held about them and, on request, of its disclosures.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P6.7"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p7-1",
+      "uuid": "c4000000-0000-4000-8000-000000000052",
+      "title": "P7.1 Quality of personal information",
+      "description": "Personal information is collected and maintained accurately, completely and relevantly for its purposes.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P7.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-processing-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-p8-1",
+      "uuid": "c4000000-0000-4000-8000-000000000053",
+      "title": "P8.1 Inquiries, complaints and disputes",
+      "description": "A process receives, addresses, resolves and communicates the resolution of privacy inquiries, complaints and disputes, and monitors compliance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:P8.1"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-transfer-cyber-insurance",
+      "uuid": "c4000000-0000-4000-8000-000000000054",
+      "title": "Cyber insurance (risk transfer considered under CC9.1)",
+      "description": "An insurance policy covering incident response costs, business interruption and liability — CC9.1 expects insurance to be considered as part of mitigating business-disruption risk.",
+      "is_transfer": true,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "SOC2:CC9.1"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

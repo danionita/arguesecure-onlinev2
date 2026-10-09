@@ -1,0 +1,1105 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-nis2",
+  "root_uuid": "c6000000-0000-4000-8000-000000000001",
+  "title": "NIS2 — Directive (EU) 2022/2555",
+  "description": "The obligations NIS2 places on essential and important entities — registration, management accountability, the Article 21 risk-management measures, incident reporting deadlines and supervision — as defences set to todo. Check your Member State's transposing law, which can add to them, and for digital infrastructure providers Implementing Regulation (EU) 2024/2690. Descriptions are summaries, not legal text or legal advice.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Enforcement",
+      "color": "#DC2626"
+    },
+    {
+      "name": "Continuity",
+      "color": "#0EA5E9"
+    },
+    {
+      "name": "Compromise",
+      "color": "#F59E0B"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-enforcement",
+      "uuid": "c6000000-0000-4000-8000-000000000002",
+      "title": "Supervisory action and management liability",
+      "description": "The competent authority finds the entity's measures or reporting inadequate and orders corrections, audits or public statements, fines it — at least EUR 10 million or 2% of turnover for essential entities, EUR 7 million or 1.4% for important ones — and can hold members of the management body personally liable.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "severe"
+      },
+      "tags": [
+        "Enforcement"
+      ],
+      "attack_refs": [
+        "attack-governance",
+        "attack-measures-gap",
+        "attack-reporting",
+        "attack-scope"
+      ]
+    },
+    {
+      "ref": "risk-service-disruption",
+      "uuid": "c6000000-0000-4000-8000-000000000003",
+      "title": "Significant disruption of the services the entity provides",
+      "description": "An incident interrupts or degrades the essential or important service — energy, transport, health, digital infrastructure, managed services — for its recipients, with knock-on effects on society and the economy.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Continuity"
+      ],
+      "attack_refs": [
+        "attack-incident",
+        "attack-continuity",
+        "attack-supply-chain",
+        "attack-vulnerability",
+        "attack-access"
+      ]
+    },
+    {
+      "ref": "risk-system-compromise",
+      "uuid": "c6000000-0000-4000-8000-000000000004",
+      "title": "Compromise of network and information systems",
+      "description": "An attacker gains control of systems or data, stealing, altering or destroying them, whether or not the service itself stops.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Compromise"
+      ],
+      "attack_refs": [
+        "attack-access",
+        "attack-vulnerability",
+        "attack-supply-chain",
+        "attack-interception",
+        "attack-measures-gap"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-governance",
+      "uuid": "c6000000-0000-4000-8000-000000000005",
+      "title": "Management does not own cybersecurity",
+      "description": "The management body has not approved the risk-management measures, does not oversee their implementation, and has not been trained to judge cyber risk.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--201",
+        "defence-art--202",
+        "defence-art--32",
+        "defence-art--33"
+      ]
+    },
+    {
+      "ref": "attack-measures-gap",
+      "uuid": "c6000000-0000-4000-8000-000000000006",
+      "title": "Risk-management measures are missing or ineffective",
+      "description": "The all-hazards measures Article 21 expects are incomplete, not proportionate to the risk, or never tested for effectiveness.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--201",
+        "defence-art--211",
+        "defence-art--212a",
+        "defence-art--212f",
+        "defence-art--214",
+        "defence-art--32"
+      ]
+    },
+    {
+      "ref": "attack-incident",
+      "uuid": "c6000000-0000-4000-8000-000000000007",
+      "title": "A significant incident is handled badly",
+      "description": "An incident is detected late, contained slowly or managed without a plan, so it grows from an event into an outage.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--212b",
+        "defence-art--29",
+        "defence-art--30",
+        "defence-transfer-cyber-insurance"
+      ]
+    },
+    {
+      "ref": "attack-continuity",
+      "uuid": "c6000000-0000-4000-8000-000000000008",
+      "title": "Backups, recovery or crisis management fail",
+      "description": "There is no tested backup, disaster recovery or crisis management, so recovery takes far longer than the service can tolerate.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1486",
+          "title": "Data Encrypted for Impact"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--212c",
+        "defence-transfer-cyber-insurance"
+      ]
+    },
+    {
+      "ref": "attack-supply-chain",
+      "uuid": "c6000000-0000-4000-8000-000000000009",
+      "title": "Compromise through a direct supplier or service provider",
+      "description": "A supplier's product, service or access is compromised or insecure, and the entity inherits the compromise.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1195",
+          "title": "Supply Chain Compromise"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1199",
+          "title": "Trusted Relationship"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--212d",
+        "defence-art--213",
+        "defence-art--24"
+      ]
+    },
+    {
+      "ref": "attack-vulnerability",
+      "uuid": "c6000000-0000-4000-8000-00000000000a",
+      "title": "Exploitation of an unhandled vulnerability",
+      "description": "Systems are acquired, developed or maintained without security, and known vulnerabilities are not handled or disclosed in time.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1190",
+          "title": "Exploit Public-Facing Application"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--212e",
+        "defence-art--212g",
+        "defence-art--24",
+        "defence-art--29"
+      ]
+    },
+    {
+      "ref": "attack-access",
+      "uuid": "c6000000-0000-4000-8000-00000000000b",
+      "title": "Account compromise and unauthorized access",
+      "description": "Weak authentication, excessive access rights, unmanaged assets or poor people-security let an attacker or insider in.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1078",
+          "title": "Valid Accounts"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--212g",
+        "defence-art--212i",
+        "defence-art--212j"
+      ]
+    },
+    {
+      "ref": "attack-interception",
+      "uuid": "c6000000-0000-4000-8000-00000000000c",
+      "title": "Data or communications intercepted or exposed",
+      "description": "Data at rest or in transit, or voice, video and emergency communications, are exposed because cryptography is absent or badly managed.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1557",
+          "title": "Adversary-in-the-Middle"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--212h",
+        "defence-art--212j"
+      ]
+    },
+    {
+      "ref": "attack-reporting",
+      "uuid": "c6000000-0000-4000-8000-00000000000d",
+      "title": "A significant incident is reported late or not at all",
+      "description": "The 24-hour early warning, 72-hour notification or one-month final report is missed, or affected recipients are not told what they need to know.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--231",
+        "defence-art--232",
+        "defence-art--234a",
+        "defence-art--234b",
+        "defence-art--234c",
+        "defence-art--234d",
+        "defence-art--234e"
+      ]
+    },
+    {
+      "ref": "attack-scope",
+      "uuid": "c6000000-0000-4000-8000-00000000000e",
+      "title": "The entity does not recognise it is in scope",
+      "description": "Nobody has checked the sector and size criteria, so the entity is not registered with the authority and has none of the obligations in place.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "title": "Directive (EU) 2022/2555 (NIS2)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--34",
+        "defence-art--27",
+        "defence-art--28"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-art--34",
+      "uuid": "c6000000-0000-4000-8000-00000000000f",
+      "title": "Art. 3(4) Registration with the competent authority",
+      "description": "The entity checks whether it is essential or important under the sector and size criteria, and submits its name, address, contact details, sector and the Member States it serves to the authority, keeping them up to date.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.3(4)"
+        }
+      ],
+      "links": {
+        "attack-scope": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--201",
+      "uuid": "c6000000-0000-4000-8000-000000000010",
+      "title": "Art. 20(1) Management body approves and oversees the measures",
+      "description": "The management body approves the cybersecurity risk-management measures, oversees their implementation, and can be held liable for infringements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.20(1)"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-measures-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--202",
+      "uuid": "c6000000-0000-4000-8000-000000000011",
+      "title": "Art. 20(2) Cybersecurity training for the management body",
+      "description": "Members of the management body follow training to identify risks and assess risk-management practices; similar training is offered to employees regularly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.20(2)"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--211",
+      "uuid": "c6000000-0000-4000-8000-000000000012",
+      "title": "Art. 21(1) Appropriate and proportionate risk-management measures",
+      "description": "Technical, operational and organisational measures manage the risks to network and information systems under an all-hazards approach, proportionate to exposure, size and the likelihood and severity of incidents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(1)"
+        }
+      ],
+      "links": {
+        "attack-measures-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212a",
+      "uuid": "c6000000-0000-4000-8000-000000000013",
+      "title": "Art. 21(2)(a) Policies on risk analysis and information system security",
+      "description": "Documented policies for analysing risk and securing information systems, maintained and approved.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(A)"
+        }
+      ],
+      "links": {
+        "attack-measures-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212b",
+      "uuid": "c6000000-0000-4000-8000-000000000014",
+      "title": "Art. 21(2)(b) Incident handling",
+      "description": "Processes to prevent, detect, analyse, contain, respond to and recover from incidents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(B)"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212c",
+      "uuid": "c6000000-0000-4000-8000-000000000015",
+      "title": "Art. 21(2)(c) Business continuity, backup management, disaster recovery and crisis management",
+      "description": "Backups that are tested and protected, disaster recovery plans, and a crisis management capability that keeps the service running or restores it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(C)"
+        }
+      ],
+      "links": {
+        "attack-continuity": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212d",
+      "uuid": "c6000000-0000-4000-8000-000000000016",
+      "title": "Art. 21(2)(d) Supply chain security",
+      "description": "Security requirements and oversight for the relationships with each direct supplier and service provider.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(D)"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212e",
+      "uuid": "c6000000-0000-4000-8000-000000000017",
+      "title": "Art. 21(2)(e) Security in acquisition, development and maintenance, including vulnerability handling and disclosure",
+      "description": "Security built into acquiring, developing and maintaining systems, and a process for handling and coordinated disclosure of vulnerabilities.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(E)"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212f",
+      "uuid": "c6000000-0000-4000-8000-000000000018",
+      "title": "Art. 21(2)(f) Assessing the effectiveness of risk-management measures",
+      "description": "Policies and procedures — audits, tests, metrics — that check whether the measures actually work.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(F)"
+        }
+      ],
+      "links": {
+        "attack-measures-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212g",
+      "uuid": "c6000000-0000-4000-8000-000000000019",
+      "title": "Art. 21(2)(g) Basic cyber hygiene and cybersecurity training",
+      "description": "Cyber hygiene practices — patching, secure configuration, password policy, backups — and regular training for all staff.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(G)"
+        }
+      ],
+      "links": {
+        "attack-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212h",
+      "uuid": "c6000000-0000-4000-8000-00000000001a",
+      "title": "Art. 21(2)(h) Cryptography and encryption",
+      "description": "Policies and procedures on the use of cryptography and, where appropriate, encryption, including key management.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(H)"
+        }
+      ],
+      "links": {
+        "attack-interception": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212i",
+      "uuid": "c6000000-0000-4000-8000-00000000001b",
+      "title": "Art. 21(2)(i) Human resources security, access control and asset management",
+      "description": "Personnel security, access control policies and an asset inventory, so access matches roles and every asset is known.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(I)"
+        }
+      ],
+      "links": {
+        "attack-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--212j",
+      "uuid": "c6000000-0000-4000-8000-00000000001c",
+      "title": "Art. 21(2)(j) Multi-factor authentication and secured communications",
+      "description": "Multi-factor or continuous authentication, secured voice, video and text communications, and secured emergency communication systems, where appropriate.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(2)(J)"
+        }
+      ],
+      "links": {
+        "attack-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-interception": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--213",
+      "uuid": "c6000000-0000-4000-8000-00000000001d",
+      "title": "Art. 21(3) Supplier-specific vulnerabilities and practices considered",
+      "description": "Supply chain measures take into account each direct supplier's specific vulnerabilities, the quality of its products and cybersecurity practices, and the results of coordinated Union risk assessments.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(3)"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--214",
+      "uuid": "c6000000-0000-4000-8000-00000000001e",
+      "title": "Art. 21(4) Corrective measures without undue delay",
+      "description": "When the entity finds it does not comply with the measures, it takes all necessary, appropriate and proportionate corrective action without undue delay.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.21(4)"
+        }
+      ],
+      "links": {
+        "attack-measures-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--231",
+      "uuid": "c6000000-0000-4000-8000-00000000001f",
+      "title": "Art. 23(1) Notifying significant incidents to the CSIRT or authority and to recipients",
+      "description": "Significant incidents are notified to the CSIRT or competent authority without undue delay, and recipients of the service are told where the incident is likely to affect them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.23(1)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--232",
+      "uuid": "c6000000-0000-4000-8000-000000000020",
+      "title": "Art. 23(2) Informing recipients of significant cyber threats",
+      "description": "Recipients potentially affected by a significant cyber threat are told what measures they can take, and where appropriate about the threat itself.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.23(2)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--234a",
+      "uuid": "c6000000-0000-4000-8000-000000000021",
+      "title": "Art. 23(4)(a) Early warning within 24 hours",
+      "description": "An early warning within 24 hours of becoming aware of a significant incident, saying whether it is suspected to be malicious or could have a cross-border impact.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.23(4)(A)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--234b",
+      "uuid": "c6000000-0000-4000-8000-000000000022",
+      "title": "Art. 23(4)(b) Incident notification within 72 hours",
+      "description": "An incident notification within 72 hours — 24 hours for trust service providers — updating the early warning with an initial assessment of severity, impact and indicators of compromise.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.23(4)(B)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--234c",
+      "uuid": "c6000000-0000-4000-8000-000000000023",
+      "title": "Art. 23(4)(c) Intermediate report on request",
+      "description": "A status report whenever the CSIRT or authority asks for one.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.23(4)(C)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--234d",
+      "uuid": "c6000000-0000-4000-8000-000000000024",
+      "title": "Art. 23(4)(d) Final report within one month",
+      "description": "A final report no later than one month after the incident notification, describing the incident, its likely root cause, the mitigation applied and any cross-border impact.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.23(4)(D)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--234e",
+      "uuid": "c6000000-0000-4000-8000-000000000025",
+      "title": "Art. 23(4)(e) Progress report for ongoing incidents",
+      "description": "Where the incident is still ongoing when the final report is due, a progress report then, and a final report within one month of handling it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.23(4)(E)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--24",
+      "uuid": "c6000000-0000-4000-8000-000000000026",
+      "title": "Art. 24 Use of European cybersecurity certification schemes",
+      "description": "Where the Member State requires it, ICT products, services and processes are certified under European cybersecurity certification schemes.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.24"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--27",
+      "uuid": "c6000000-0000-4000-8000-000000000027",
+      "title": "Art. 27 Registry of digital infrastructure and digital service entities",
+      "description": "DNS providers, TLD registries, domain registration services, cloud, data centre, CDN, managed and managed security service providers, online marketplaces, search engines and social networks submit their details for the ENISA registry and notify changes within three months.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.27"
+        }
+      ],
+      "links": {
+        "attack-scope": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--28",
+      "uuid": "c6000000-0000-4000-8000-000000000028",
+      "title": "Art. 28 Database of domain name registration data",
+      "description": "TLD registries and domain registration services collect and maintain accurate and complete registration data, publish non-personal data, and give legitimate access seekers access to it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.28"
+        }
+      ],
+      "links": {
+        "attack-scope": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--29",
+      "uuid": "c6000000-0000-4000-8000-000000000029",
+      "title": "Art. 29 Cybersecurity information-sharing arrangements",
+      "description": "The entity may take part in information-sharing arrangements on threats, vulnerabilities and indicators of compromise, and notifies the authority when it joins or leaves one.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.29"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--30",
+      "uuid": "c6000000-0000-4000-8000-00000000002a",
+      "title": "Art. 30 Voluntary notification of relevant information",
+      "description": "Incidents, cyber threats and near misses that do not have to be reported can be notified voluntarily, without extra obligations arising from it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.30"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--32",
+      "uuid": "c6000000-0000-4000-8000-00000000002b",
+      "title": "Art. 32 Supervision of essential entities",
+      "description": "Essential entities are ready for ex ante supervision — on-site inspections, regular and targeted audits, security scans, requests for evidence — and cooperate with it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.32"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-measures-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--33",
+      "uuid": "c6000000-0000-4000-8000-00000000002c",
+      "title": "Art. 33 Supervision of important entities",
+      "description": "Important entities are ready for ex post supervision triggered by evidence or indications of non-compliance, and cooperate with it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "NIS2:ART.33"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-transfer-cyber-insurance",
+      "uuid": "c6000000-0000-4000-8000-00000000002d",
+      "title": "Cyber insurance (risk transfer)",
+      "description": "A cyber policy covering incident response, recovery and business interruption. It does not transfer the obligations or the fines, which stay with the entity and its management body.",
+      "is_transfer": true,
+      "status": "todo",
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-continuity": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

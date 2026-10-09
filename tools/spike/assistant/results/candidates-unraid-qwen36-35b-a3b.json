@@ -1,0 +1,370 @@
+{
+  "host": "unraid",
+  "config": "qwen36-35b-a3b",
+  "steps": {
+    "props": {
+      "buildInfo": "b11176-f805c57a2",
+      "modelPath": "/models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
+      "totalSlots": 1,
+      "slotContext": 12288,
+      "templateLength": 8057,
+      "templateMentionsThinking": true,
+      "modalities": {
+        "vision": false,
+        "video": false,
+        "audio": false
+      },
+      "slots": [
+        {
+          "id": 0,
+          "n_ctx": 12288,
+          "speculative": false
+        }
+      ],
+      "measuredAt": "2026-09-26T06:49:23.437Z"
+    },
+    "a-cold": {
+      "wallSeconds": 114.82,
+      "firstTokenSeconds": 106.72,
+      "finishReason": "stop",
+      "promptProcessed": 6502,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 60.93,
+      "outputTokens": 93,
+      "outputTokensPerSecond": 11.35,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6502,
+        "prompt_ms": 106705.374,
+        "prompt_per_token_ms": 16.411161796370347,
+        "prompt_per_second": 60.93413814378271,
+        "predicted_n": 93,
+        "predicted_ms": 8105.241,
+        "predicted_per_token_ms": 88.10044565217392,
+        "predicted_per_second": 11.350680380756106
+      },
+      "usage": {
+        "completion_tokens": 93,
+        "prompt_tokens": 6502,
+        "total_tokens": 6595,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A defence is a component or architectural decision that reduces a risk, whereas a transfer is a specific type of defence that shifts the loss to someone else, such as through an insurance policy or contract clause. Both count exactly the same in the assessment's calculations.\n\nThe only difference is visual: a transfer is distinguished by its icon and label. In the node's Details tab, you can toggle the transfer switch to change a defence into a transfer or vice versa.",
+      "measuredAt": "2026-09-26T06:51:18.262Z"
+    },
+    "a-warm": {
+      "wallSeconds": 17.52,
+      "firstTokenSeconds": 9.75,
+      "finishReason": "stop",
+      "promptProcessed": 518,
+      "promptFromCache": 5986,
+      "promptTokensPerSecond": 53.2,
+      "outputTokens": 89,
+      "outputTokensPerSecond": 11.33,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 5986,
+        "prompt_n": 518,
+        "prompt_ms": 9737.455,
+        "prompt_per_token_ms": 18.798175675675676,
+        "prompt_per_second": 53.196651486451024,
+        "predicted_n": 89,
+        "predicted_ms": 7769.42,
+        "predicted_per_token_ms": 88.28886363636364,
+        "predicted_per_second": 11.32645680115118
+      },
+      "usage": {
+        "completion_tokens": 89,
+        "prompt_tokens": 6504,
+        "total_tokens": 6593,
+        "prompt_tokens_details": {
+          "cached_tokens": 5986
+        }
+      },
+      "text": "This is correct behavior. The reduction target only changes how the tool displays the residual likelihood on the attack and the retained impact on the risk, not the assessment's total.\n\nBecause likelihood, impact, and every defence's reduction multiply together, the final number is identical regardless of whether a defence reduces likelihood, impact, or the combined loss. If the total on screen does not move after changing a reduction target, it is not a bug.",
+      "measuredAt": "2026-09-26T06:51:35.780Z"
+    },
+    "save": {
+      "status": 200,
+      "wallSeconds": 0.11,
+      "response": {
+        "id_slot": 0,
+        "filename": "qwen36-35b-a3b-help.bin",
+        "n_saved": 6592,
+        "n_written": 201053440,
+        "timings": {
+          "save_ms": 105.071
+        }
+      },
+      "measuredAt": "2026-09-26T06:51:35.887Z"
+    },
+    "restore": {
+      "status": 200,
+      "wallSeconds": 0.06,
+      "response": {
+        "id_slot": 0,
+        "filename": "qwen36-35b-a3b-help.bin",
+        "n_restored": 6592,
+        "n_read": 201053440,
+        "timings": {
+          "restore_ms": 31.147
+        }
+      },
+      "measuredAt": "2026-09-26T06:51:46.356Z"
+    },
+    "a-restored": {
+      "wallSeconds": 119.17,
+      "firstTokenSeconds": 106.3,
+      "finishReason": "stop",
+      "promptProcessed": 6500,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 61.15,
+      "outputTokens": 151,
+      "outputTokensPerSecond": 11.65,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6500,
+        "prompt_ms": 106288.036,
+        "prompt_per_token_ms": 16.352005538461537,
+        "prompt_per_second": 61.15457811262973,
+        "predicted_n": 151,
+        "predicted_ms": 12871.208,
+        "predicted_per_token_ms": 85.80805333333333,
+        "predicted_per_second": 11.653917798546958
+      },
+      "usage": {
+        "completion_tokens": 151,
+        "prompt_tokens": 6500,
+        "total_tokens": 6651,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "If you leave a likelihood blank, the tool excludes that specific (risk, attack) pair from all computed totals, including the inherent, current, and target annual loss figures. It is never treated as zero; instead, the total is displayed as a lower bound (e.g., `≥ €53,500`) alongside a count of how many paths were actually valued, ensuring the assessment does not silently understate risk.\n\nThis behavior is part of a deliberate design to avoid understating risk, as explained in [The quantification model](/help/quantification). While missing impact or likelihood hides the pair from the total, missing defence strength is treated as zero reduction, which overstates residual risk to remain on the safe side.",
+      "measuredAt": "2026-09-26T06:53:45.527Z"
+    },
+    "b-outage": {
+      "wallSeconds": 25.74,
+      "firstTokenSeconds": 6.54,
+      "finishReason": "stop",
+      "promptProcessed": 434,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 67.4,
+      "outputTokens": 278,
+      "outputTokensPerSecond": 14.42,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 434,
+        "prompt_ms": 6438.834,
+        "prompt_per_token_ms": 14.836023041474654,
+        "prompt_per_second": 67.40350815069934,
+        "predicted_n": 278,
+        "predicted_ms": 19209.089,
+        "predicted_per_token_ms": 69.3468916967509,
+        "predicted_per_second": 14.420256993967804
+      },
+      "usage": {
+        "completion_tokens": 278,
+        "prompt_tokens": 434,
+        "total_tokens": 712,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "[\n  {\n    \"title\": \"Application Layer Exhaustion via Search\",\n    \"description\": \"An attacker floods the storefront's product search API with complex, resource-intensive queries to exhaust server CPU and memory, causing the site to become unresponsive.\"\n  },\n  {\n    \"title\": \"Checkout Session Hijacking and Lockout\",\n    \"description\": \"An attacker uses stolen session tokens to open thousands of checkout sessions without completing payment, exhausting the database connection pool and preventing legitimate customers from checking out.\"\n  },\n  {\n    \"title\": \"Database Query Manipulation\",\n    \"description\": \"An attacker submits crafted SQL injection payloads in product filter parameters to trigger complex, time-consuming database operations that lock tables and degrade overall site performance.\"\n  },\n  {\n    \"title\": \"Image Processing Resource Starvation\",\n    \"description\": \"An attacker uploads numerous malformed or large image files to the product catalog via admin endpoints, causing the image processing service to hang and consume all available worker threads.\"\n  },\n  {\n    \"title\": \"Inventory Cache Poisoning\",\n    \"description\": \"An attacker sends a high volume of requests for out-of-stock items to force frequent cache misses and database hits, overwhelming the backend database and slowing down page loads for all users.\"\n  }\n]",
+      "quality": {
+        "parsed": true,
+        "fenced": false,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Application Layer Exhaustion via Search",
+          "Checkout Session Hijacking and Lockout",
+          "Database Query Manipulation",
+          "Image Processing Resource Starvation",
+          "Inventory Cache Poisoning"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:54:11.274Z"
+    },
+    "b-payment": {
+      "wallSeconds": 29.34,
+      "firstTokenSeconds": 7.21,
+      "finishReason": "stop",
+      "promptProcessed": 467,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 65.21,
+      "outputTokens": 320,
+      "outputTokensPerSecond": 14.41,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 467,
+        "prompt_ms": 7161.518,
+        "prompt_per_token_ms": 15.335156316916489,
+        "prompt_per_second": 65.20963851518631,
+        "predicted_n": 320,
+        "predicted_ms": 22136.181,
+        "predicted_per_token_ms": 69.39241692789969,
+        "predicted_per_second": 14.410796514538799
+      },
+      "usage": {
+        "completion_tokens": 320,
+        "prompt_tokens": 467,
+        "total_tokens": 787,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "[\n  {\n    \"title\": \"Session hijacking via unencrypted checkout\",\n    \"description\": \"An attacker intercepts the session cookie of a customer during the checkout process on an unencrypted connection. They then use this stolen session to access the user's account and view stored payment details.\"\n  },\n  {\n    \"title\": \"Insider theft of customer support logs\",\n    \"description\": \"A malicious support agent accesses internal logs containing unmasked card tokens or sensitive customer data shared during troubleshooting. The agent exports this data to an external drive for sale on dark web markets.\"\n  },\n  {\n    \"title\": \"Cross-site scripting on product reviews\",\n    \"description\": \"An attacker injects malicious JavaScript into a product review field that executes when an admin views the review. The script exfiltrates the admin's session cookie, allowing the attacker to access the admin console and view customer payment data.\"\n  },\n  {\n    \"title\": \"Backup file exposure via misconfigured storage\",\n    \"description\": \"An attacker discovers a publicly accessible directory containing uncompressed database backups. These backups include plaintext or weakly encrypted copies of the customer database containing payment tokens and personal information.\"\n  },\n  {\n    \"title\": \"API endpoint enumeration for data leakage\",\n    \"description\": \"An attacker identifies an undocumented API endpoint used for internal order status checks. By manipulating parameters, they retrieve full order details including customer names, addresses, and associated payment tokens for multiple users.\"\n  }\n]",
+      "quality": {
+        "parsed": true,
+        "fenced": false,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Session hijacking via unencrypted checkout",
+          "Insider theft of customer support logs",
+          "Cross-site scripting on product reviews",
+          "Backup file exposure via misconfigured storage",
+          "API endpoint enumeration for data leakage"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:54:40.619Z"
+    },
+    "c": {
+      "nodes": 73,
+      "wallSeconds": 153.92,
+      "firstTokenSeconds": 110.24,
+      "finishReason": "stop",
+      "promptProcessed": 6641,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 60.27,
+      "outputTokens": 501,
+      "outputTokensPerSecond": 11.45,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6641,
+        "prompt_ms": 110190.629,
+        "prompt_per_token_ms": 16.592475380213823,
+        "prompt_per_second": 60.26828288637866,
+        "predicted_n": 501,
+        "predicted_ms": 43671.335,
+        "predicted_per_token_ms": 87.34267,
+        "predicted_per_second": 11.449157668296607
+      },
+      "usage": {
+        "completion_tokens": 501,
+        "prompt_tokens": 6641,
+        "total_tokens": 7142,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "The most significant financial exposure stems from a ransomware event within the corporate network, which could cost EUR 750,000 per occurrence, followed by the compromise of the production cloud account at EUR 550,000 and malicious firmware causing unsafe device behavior at EUR 1,200,000. Other high-impact risks include cross-tenant data leaks in the SaaS platform costing EUR 400,000, and the exposure of personal data from public forms at EUR 180,000. These scenarios represent the primary threats to revenue, reputation, and regulatory standing, requiring immediate attention to the controls that are currently incomplete or missing.\n\nExisting defenses provide a solid baseline for many of these threats. Multi-factor authentication on domain and VPN logins, endpoint detection agents on all managed devices, and full-disk encryption on laptops effectively mitigate the risk of internal credential theft and data exposure from lost hardware. In the cloud environment, least-privilege IAM roles and a centralized secrets manager with short-lived credentials significantly reduce the likelihood of account compromise and cross-tenant leaks. For the public web application, a managed web application firewall and server-side input validation offer protection against common injection attacks, while cryptographically signed firmware and unique per-device credentials secure the IoT product against mass unauthorized control and botnet recruitment.\n\nHowever, critical gaps remain that leave the organization vulnerable to the highest-cost scenarios. The internal network lacks segmentation into isolated zones, allowing ransomware to spread freely from a single compromised workstation to domain controllers and file servers. Similarly, the SaaS platform is missing automated public-access scanning for storage buckets, risking accidental data leaks, and the IoT product lacks TLS with certificate pinning and secure boot implementation, leaving devices susceptible to malicious firmware updates and physical extraction. These missing controls are essential to preventing the catastrophic financial and operational impacts identified in the assessment.\n\nThe proposed security plan addresses these gaps by implementing network segmentation, enabling automated storage scanning, and enforcing strict TLS pinning and secure boot mechanisms. By closing these specific holes, the organization significantly reduces the probability of the EUR 1,200,000 firmware incident and the EUR 750,000 ransomware event. Combined with the existing cyber insurance policies that cover breach response and business interruption, this plan ensures that the organization is not only better positioned to prevent attacks but also financially protected against the residual risks that cannot be entirely eliminated.",
+      "measuredAt": "2026-09-26T06:57:14.539Z"
+    }
+  },
+  "recorded": {
+    "host": {
+      "cpu": "Intel(R) Core(TM) i9-14900K",
+      "logicalCpus": 32,
+      "physicalCores": 24,
+      "flags": [
+        "fma",
+        "f16c",
+        "avx2",
+        "avx_vnni"
+      ],
+      "memTotalBytes": 134811652096,
+      "memAvailableBytes": 112974159872,
+      "kernel": "6.18.38-Unraid",
+      "docker": "29.5.3",
+      "cores": 4,
+      "cpuset": null
+    },
+    "preflight": {
+      "needBytes": 25581681632,
+      "memAvailableBytes": 112989806592,
+      "slotDiskFreeBytes": 59507945472
+    },
+    "image": "ghcr.io/ggml-org/llama.cpp:server-b11176",
+    "imageDigest": "ghcr.io/ggml-org/llama.cpp@sha256:6257697a7f5d034b8fb499ddb07af3e250506352f94102054252a23f3b85e0af",
+    "args": [
+      "-m",
+      "/models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
+      "-c",
+      "12288",
+      "-t",
+      "4",
+      "-np",
+      "1",
+      "--cache-reuse",
+      "256",
+      "--slot-save-path",
+      "/slots",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8080",
+      "--jinja",
+      "--chat-template-kwargs",
+      "{\"enable_thinking\":false}"
+    ],
+    "cores": 4,
+    "loadSeconds": 12.3,
+    "memoryAfterLoad": {
+      "dockerStats": "23.47GiB / 125.6GiB",
+      "cgroupPeakBytes": 34656591872
+    },
+    "memoryAfterA": {
+      "dockerStats": "24.11GiB / 125.6GiB",
+      "cgroupPeakBytes": 35360514048
+    },
+    "restartSeconds": 8.4,
+    "memoryAfterC": {
+      "dockerStats": "12.27GiB / 125.6GiB",
+      "cgroupPeakBytes": 13182140416
+    }
+  }
+}

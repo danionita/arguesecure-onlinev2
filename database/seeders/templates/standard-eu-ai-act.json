@@ -1,0 +1,1204 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-eu-ai-act",
+  "root_uuid": "c3000000-0000-4000-8000-000000000001",
+  "title": "EU AI Act — Regulation (EU) 2024/1689",
+  "description": "The operator obligations of Regulation (EU) 2024/1689 — for providers, deployers, importers, distributors and general-purpose AI model providers — as defences set to todo. Articles binding Member States, notified bodies and the Commission are out of scope. Remove what your role does not carry and check each obligation's application date. Descriptions are summaries, not legal text or legal advice.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Prohibited",
+      "color": "#DC2626"
+    },
+    {
+      "name": "High-risk",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "Transparency",
+      "color": "#0EA5E9"
+    },
+    {
+      "name": "GPAI",
+      "color": "#8B5CF6"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-prohibited-practice",
+      "uuid": "c3000000-0000-4000-8000-000000000002",
+      "title": "A prohibited AI practice is placed on the market or used",
+      "description": "The organization provides or uses an AI system that Article 5 bans outright — manipulative or exploitative techniques, social scoring, untargeted facial-image scraping, emotion recognition at work or school, and the other listed practices. Fines reach EUR 35 million or 7% of worldwide annual turnover.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "severe"
+      },
+      "tags": [
+        "Prohibited"
+      ],
+      "attack_refs": [
+        "attack-prohibited-use",
+        "attack-literacy-gap"
+      ]
+    },
+    {
+      "ref": "risk-high-risk-noncompliance",
+      "uuid": "c3000000-0000-4000-8000-000000000003",
+      "title": "A high-risk AI system does not meet the Act's requirements",
+      "description": "A system that is high-risk under Article 6 and Annex I or III reaches the market or is used without the required risk management, documentation, conformity assessment or registration. Fines reach EUR 15 million or 3% of turnover, and the system can be withdrawn.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "severe"
+      },
+      "tags": [
+        "High-risk"
+      ],
+      "attack_refs": [
+        "attack-misclassification",
+        "attack-requirements-gap",
+        "attack-provider-obligations",
+        "attack-value-chain",
+        "attack-post-market"
+      ]
+    },
+    {
+      "ref": "risk-harm-fundamental-rights",
+      "uuid": "c3000000-0000-4000-8000-000000000004",
+      "title": "Harm to health, safety or fundamental rights",
+      "description": "An AI system the organization provides or deploys causes the harm the Act exists to prevent — discrimination, wrongful exclusion, unsafe behaviour — whether or not a specific obligation was breached.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "High-risk"
+      ],
+      "attack_refs": [
+        "attack-requirements-gap",
+        "attack-deployer-misuse",
+        "attack-post-market",
+        "attack-literacy-gap"
+      ]
+    },
+    {
+      "ref": "risk-transparency-failure",
+      "uuid": "c3000000-0000-4000-8000-000000000005",
+      "title": "People are not told they are dealing with AI",
+      "description": "Chatbots, emotion-recognition or biometric-categorisation systems, deepfakes and generated text on matters of public interest are used without the disclosures and machine-readable marking Article 50 requires.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Transparency"
+      ],
+      "attack_refs": [
+        "attack-undisclosed-ai",
+        "attack-deployer-misuse"
+      ]
+    },
+    {
+      "ref": "risk-gpai-noncompliance",
+      "uuid": "c3000000-0000-4000-8000-000000000006",
+      "title": "General-purpose AI model obligations are not met",
+      "description": "The organization provides a general-purpose AI model — or modifies one enough to become its provider — without the documentation, copyright policy, training-content summary or, for systemic-risk models, the evaluations and incident reporting the Act requires.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "GPAI"
+      ],
+      "attack_refs": [
+        "attack-gpai-gap",
+        "attack-value-chain"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-prohibited-use",
+      "uuid": "c3000000-0000-4000-8000-000000000007",
+      "title": "A use case drifts into a prohibited practice unnoticed",
+      "description": "A product feature or internal use — scoring customers' behaviour, inferring employees' emotions, scraping face images — is launched without anyone checking it against Article 5.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Article 5"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--5"
+      ]
+    },
+    {
+      "ref": "attack-misclassification",
+      "uuid": "c3000000-0000-4000-8000-000000000008",
+      "title": "A high-risk system is not recognised as high-risk",
+      "description": "Nobody maps the organization's AI systems against Annex I product legislation and the Annex III use areas, or the Article 6(3) exception is claimed without the documented assessment it needs.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Article 6 and Annex III"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--6",
+        "defence-art--49"
+      ]
+    },
+    {
+      "ref": "attack-requirements-gap",
+      "uuid": "c3000000-0000-4000-8000-000000000009",
+      "title": "High-risk requirements are not designed in",
+      "description": "Risk management, data governance, logging, instructions for use, human oversight and robustness (Articles 9 to 15) are treated as paperwork at the end rather than built into the system.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Articles 9 to 15"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--8",
+        "defence-art--9",
+        "defence-art--10",
+        "defence-art--11",
+        "defence-art--12",
+        "defence-art--13",
+        "defence-art--14",
+        "defence-art--15",
+        "defence-art--17"
+      ]
+    },
+    {
+      "ref": "attack-provider-obligations",
+      "uuid": "c3000000-0000-4000-8000-00000000000a",
+      "title": "Provider obligations are missed at placing on the market",
+      "description": "The quality management system, technical documentation, conformity assessment, declaration of conformity, CE marking or EU database registration is incomplete when the system ships.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Articles 16, 17, 43 and 49"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--11",
+        "defence-art--16",
+        "defence-art--17",
+        "defence-art--18",
+        "defence-art--21",
+        "defence-art--43",
+        "defence-art--47",
+        "defence-art--48",
+        "defence-art--49"
+      ]
+    },
+    {
+      "ref": "attack-value-chain",
+      "uuid": "c3000000-0000-4000-8000-00000000000b",
+      "title": "The organization's role in the AI value chain is misunderstood",
+      "description": "An importer, distributor, deployer or integrator re-brands, substantially modifies or repurposes a system and becomes its provider without realising it, or relies on an upstream party for obligations that are its own.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Article 25"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--22",
+        "defence-art--23",
+        "defence-art--24",
+        "defence-art--25",
+        "defence-art--54"
+      ]
+    },
+    {
+      "ref": "attack-deployer-misuse",
+      "uuid": "c3000000-0000-4000-8000-00000000000c",
+      "title": "A deployer uses a high-risk system without the required care",
+      "description": "The system is used contrary to its instructions, without assigned and competent human oversight, without informing affected people or workers, or without a fundamental rights impact assessment where one is required.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Articles 26 and 27"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--4",
+        "defence-art--13",
+        "defence-art--14",
+        "defence-art--26",
+        "defence-art--27",
+        "defence-art--86"
+      ]
+    },
+    {
+      "ref": "attack-post-market",
+      "uuid": "c3000000-0000-4000-8000-00000000000d",
+      "title": "Problems in use are not monitored, corrected or reported",
+      "description": "Performance and incidents after placing on the market are not collected and analysed, non-conformities are not corrected, and serious incidents are not reported to the market surveillance authority in time.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Articles 72 and 73"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--12",
+        "defence-art--19",
+        "defence-art--20",
+        "defence-art--21",
+        "defence-art--72",
+        "defence-art--73"
+      ]
+    },
+    {
+      "ref": "attack-undisclosed-ai",
+      "uuid": "c3000000-0000-4000-8000-00000000000e",
+      "title": "AI interaction or generated content is not disclosed",
+      "description": "A chatbot does not say it is a machine, synthetic media is not marked as generated, or a deepfake is published without disclosure.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Article 50"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--50"
+      ]
+    },
+    {
+      "ref": "attack-gpai-gap",
+      "uuid": "c3000000-0000-4000-8000-00000000000f",
+      "title": "General-purpose AI model documentation or duties are missing",
+      "description": "Technical documentation, information for downstream providers, the copyright compliance policy or the public training-content summary do not exist — or a model crosses the systemic-risk threshold without the additional duties being taken on.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Articles 53 and 55"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--53",
+        "defence-art--54",
+        "defence-art--55"
+      ]
+    },
+    {
+      "ref": "attack-literacy-gap",
+      "uuid": "c3000000-0000-4000-8000-000000000010",
+      "title": "Staff operating AI lack AI literacy",
+      "description": "People who build, buy or operate AI systems do not understand their capabilities, limits and risks well enough to use them as the Act assumes.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "title": "Regulation (EU) 2024/1689, Article 4"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--4"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-art--4",
+      "uuid": "c3000000-0000-4000-8000-000000000011",
+      "title": "Art. 4 AI literacy",
+      "description": "Providers and deployers take measures to ensure a sufficient level of AI literacy among staff and others operating AI systems on their behalf, taking into account their knowledge and the context of use.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.4"
+        }
+      ],
+      "links": {
+        "attack-literacy-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-deployer-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--5",
+      "uuid": "c3000000-0000-4000-8000-000000000012",
+      "title": "Art. 5 Prohibited AI practices",
+      "description": "Every AI use case is screened against the Article 5 prohibitions before development or procurement and again when its purpose changes, with the conclusion recorded.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.5"
+        }
+      ],
+      "links": {
+        "attack-prohibited-use": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--6",
+      "uuid": "c3000000-0000-4000-8000-000000000013",
+      "title": "Art. 6 Classification of high-risk AI systems",
+      "description": "An inventory of AI systems is classified against Annex I product legislation and the Annex III use areas; where the Article 6(3) exception is relied on, the assessment is documented before the system is placed on the market.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.6"
+        }
+      ],
+      "links": {
+        "attack-misclassification": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--8",
+      "uuid": "c3000000-0000-4000-8000-000000000014",
+      "title": "Art. 8 Compliance with the requirements",
+      "description": "High-risk systems comply with Articles 9 to 15, taking into account their intended purpose and the state of the art, and where a product is also covered by Annex I legislation the two sets of requirements are met together.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.8"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--9",
+      "uuid": "c3000000-0000-4000-8000-000000000015",
+      "title": "Art. 9 Risk management system",
+      "description": "A continuous, iterative risk management process runs across the whole life cycle of each high-risk system: identifying foreseeable risks, estimating them, adopting measures and testing against defined metrics.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.9"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--10",
+      "uuid": "c3000000-0000-4000-8000-000000000016",
+      "title": "Art. 10 Data and data governance",
+      "description": "Training, validation and test data sets meet quality criteria — relevance, representativeness, freedom from errors, completeness — and are examined for possible biases, under documented data governance practices.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.10"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--11",
+      "uuid": "c3000000-0000-4000-8000-000000000017",
+      "title": "Art. 11 Technical documentation",
+      "description": "Technical documentation following Annex IV is drawn up before the system is placed on the market and kept up to date.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.11"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--12",
+      "uuid": "c3000000-0000-4000-8000-000000000018",
+      "title": "Art. 12 Record-keeping",
+      "description": "The system technically allows automatic recording of events over its lifetime, sufficient to trace its functioning and support post-market monitoring.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.12"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-post-market": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--13",
+      "uuid": "c3000000-0000-4000-8000-000000000019",
+      "title": "Art. 13 Transparency and provision of information to deployers",
+      "description": "The system is transparent enough for deployers to interpret and use its output, and comes with instructions for use stating its purpose, accuracy, limits, oversight measures and maintenance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.13"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-deployer-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--14",
+      "uuid": "c3000000-0000-4000-8000-00000000001a",
+      "title": "Art. 14 Human oversight",
+      "description": "The system is designed so that natural persons can effectively oversee it — understand it, notice automation bias, interpret output, override it and stop it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.14"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-deployer-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--15",
+      "uuid": "c3000000-0000-4000-8000-00000000001b",
+      "title": "Art. 15 Accuracy, robustness and cybersecurity",
+      "description": "The system achieves declared levels of accuracy, is resilient to errors and faults, and is protected against attempts to alter its use or performance, including data poisoning and adversarial examples.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.15"
+        }
+      ],
+      "links": {
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--16",
+      "uuid": "c3000000-0000-4000-8000-00000000001c",
+      "title": "Art. 16 Obligations of providers of high-risk AI systems",
+      "description": "Providers ensure compliance, identify themselves on the system, keep documentation and logs, run conformity assessment, affix CE marking, register, take corrective action and demonstrate conformity on request.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.16"
+        }
+      ],
+      "links": {
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--17",
+      "uuid": "c3000000-0000-4000-8000-00000000001d",
+      "title": "Art. 17 Quality management system",
+      "description": "A documented quality management system covers regulatory strategy, design and development, testing, data management, risk management, post-market monitoring, incident reporting, communication and accountability.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.17"
+        }
+      ],
+      "links": {
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-requirements-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--18",
+      "uuid": "c3000000-0000-4000-8000-00000000001e",
+      "title": "Art. 18 Documentation keeping",
+      "description": "Technical documentation, quality management system documentation, notified-body decisions and the EU declaration of conformity are kept available to authorities for ten years after the system is placed on the market.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.18"
+        }
+      ],
+      "links": {
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--19",
+      "uuid": "c3000000-0000-4000-8000-00000000001f",
+      "title": "Art. 19 Automatically generated logs",
+      "description": "Providers keep the logs their high-risk systems generate, to the extent under their control, for a period appropriate to the intended purpose and at least six months.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.19"
+        }
+      ],
+      "links": {
+        "attack-post-market": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--20",
+      "uuid": "c3000000-0000-4000-8000-000000000020",
+      "title": "Art. 20 Corrective actions and duty of information",
+      "description": "A provider who considers a system non-conforming immediately corrects, withdraws, disables or recalls it, informs distributors, deployers and others, and informs authorities where the system presents a risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.20"
+        }
+      ],
+      "links": {
+        "attack-post-market": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--21",
+      "uuid": "c3000000-0000-4000-8000-000000000021",
+      "title": "Art. 21 Cooperation with competent authorities",
+      "description": "On reasoned request, providers give authorities the information and documentation needed to demonstrate conformity, and access to logs.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.21"
+        }
+      ],
+      "links": {
+        "attack-post-market": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--22",
+      "uuid": "c3000000-0000-4000-8000-000000000022",
+      "title": "Art. 22 Authorised representatives of providers of high-risk AI systems",
+      "description": "Providers established outside the Union appoint, by written mandate, an authorised representative established in the Union before making a system available.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.22"
+        }
+      ],
+      "links": {
+        "attack-value-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--23",
+      "uuid": "c3000000-0000-4000-8000-000000000023",
+      "title": "Art. 23 Obligations of importers",
+      "description": "Importers verify, before placing a system on the market, that conformity assessment was carried out, documentation exists, CE marking is affixed and an authorised representative is appointed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.23"
+        }
+      ],
+      "links": {
+        "attack-value-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--24",
+      "uuid": "c3000000-0000-4000-8000-000000000024",
+      "title": "Art. 24 Obligations of distributors",
+      "description": "Distributors verify CE marking, the declaration of conformity and instructions for use, and do not make available a system they believe is non-conforming.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.24"
+        }
+      ],
+      "links": {
+        "attack-value-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--25",
+      "uuid": "c3000000-0000-4000-8000-000000000025",
+      "title": "Art. 25 Responsibilities along the AI value chain",
+      "description": "The organization knows when putting its name on, substantially modifying or repurposing a system makes it the provider, and has written agreements with suppliers of components and models specifying the information and assistance they owe.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.25"
+        }
+      ],
+      "links": {
+        "attack-value-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--26",
+      "uuid": "c3000000-0000-4000-8000-000000000026",
+      "title": "Art. 26 Obligations of deployers of high-risk AI systems",
+      "description": "Deployers use systems according to the instructions, assign competent human oversight, ensure relevant input data, monitor operation, keep logs, inform workers and affected people, and report risks and incidents to the provider.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.26"
+        }
+      ],
+      "links": {
+        "attack-deployer-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--27",
+      "uuid": "c3000000-0000-4000-8000-000000000027",
+      "title": "Art. 27 Fundamental rights impact assessment",
+      "description": "Deployers that are public bodies or provide public services, and deployers of credit-scoring and life and health insurance pricing systems, assess the impact on fundamental rights before first use and notify the result.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.27"
+        }
+      ],
+      "links": {
+        "attack-deployer-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--43",
+      "uuid": "c3000000-0000-4000-8000-000000000028",
+      "title": "Art. 43 Conformity assessment",
+      "description": "The conformity assessment procedure required for the system — internal control, or assessment by a notified body — is carried out before placing on the market and repeated after a substantial modification.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.43"
+        }
+      ],
+      "links": {
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--47",
+      "uuid": "c3000000-0000-4000-8000-000000000029",
+      "title": "Art. 47 EU declaration of conformity",
+      "description": "A written, signed EU declaration of conformity is drawn up for each high-risk system, kept for ten years and kept up to date.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.47"
+        }
+      ],
+      "links": {
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--48",
+      "uuid": "c3000000-0000-4000-8000-00000000002a",
+      "title": "Art. 48 CE marking",
+      "description": "The CE marking is affixed visibly, legibly and indelibly to the system, its packaging or documentation, or digitally where the system is provided digitally.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.48"
+        }
+      ],
+      "links": {
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--49",
+      "uuid": "c3000000-0000-4000-8000-00000000002b",
+      "title": "Art. 49 Registration",
+      "description": "Providers — and public-authority deployers — register high-risk systems in the EU database before placing them on the market or using them, including systems for which the Article 6(3) exception was claimed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.49"
+        }
+      ],
+      "links": {
+        "attack-provider-obligations": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-misclassification": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--50",
+      "uuid": "c3000000-0000-4000-8000-00000000002c",
+      "title": "Art. 50 Transparency obligations for certain AI systems",
+      "description": "People are told when they interact with an AI system; synthetic audio, image, video and text is marked in a machine-readable format; deployers disclose deepfakes, emotion recognition and biometric categorisation, and AI-generated text published on matters of public interest.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.50"
+        }
+      ],
+      "links": {
+        "attack-undisclosed-ai": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--53",
+      "uuid": "c3000000-0000-4000-8000-00000000002d",
+      "title": "Art. 53 Obligations for providers of general-purpose AI models",
+      "description": "Providers of general-purpose AI models keep technical documentation, give downstream providers the information they need, put in place a policy to comply with Union copyright law, and publish a sufficiently detailed summary of training content.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.53"
+        }
+      ],
+      "links": {
+        "attack-gpai-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--54",
+      "uuid": "c3000000-0000-4000-8000-00000000002e",
+      "title": "Art. 54 Authorised representatives of providers of general-purpose AI models",
+      "description": "Providers of general-purpose AI models established outside the Union appoint an authorised representative in the Union before placing the model on the market.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.54"
+        }
+      ],
+      "links": {
+        "attack-gpai-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-value-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--55",
+      "uuid": "c3000000-0000-4000-8000-00000000002f",
+      "title": "Art. 55 Obligations for providers of general-purpose AI models with systemic risk",
+      "description": "Providers of systemic-risk models additionally perform model evaluations including adversarial testing, assess and mitigate systemic risks, track and report serious incidents, and ensure adequate cybersecurity.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.55"
+        }
+      ],
+      "links": {
+        "attack-gpai-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--72",
+      "uuid": "c3000000-0000-4000-8000-000000000030",
+      "title": "Art. 72 Post-market monitoring by providers",
+      "description": "A documented post-market monitoring system actively collects and analyses data on the performance of high-risk systems throughout their lifetime, under a post-market monitoring plan.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.72"
+        }
+      ],
+      "links": {
+        "attack-post-market": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--73",
+      "uuid": "c3000000-0000-4000-8000-000000000031",
+      "title": "Art. 73 Reporting of serious incidents",
+      "description": "Serious incidents are reported to the market surveillance authority immediately after a causal link is established and within the deadlines the Article sets, followed by investigation and corrective action.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.73"
+        }
+      ],
+      "links": {
+        "attack-post-market": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--86",
+      "uuid": "c3000000-0000-4000-8000-000000000032",
+      "title": "Art. 86 Right to explanation of individual decision-making",
+      "description": "People affected by a decision based on a high-risk system's output that has legal or similarly significant effects can obtain a clear and meaningful explanation of the system's role and the main elements of the decision.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "EUAIACT:ART.86"
+        }
+      ],
+      "links": {
+        "attack-deployer-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

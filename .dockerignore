@@ -1,0 +1,29 @@
+.git
+node_modules
+vendor
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+*.md
+
+# Laravel's package-discovery manifest, written by composer on the host where
+# dev dependencies ARE installed. Copying it into an image built with
+# --no-dev bakes in providers the image does not have (Laravel\Pail), and the
+# container then dies on boot with "Class ... not found" before writing a
+# single log line. A fresh git checkout has no such file, so CI never sees
+# this - only a build from a working tree does, which is how a real deploy is
+# made. The image regenerates these during the build.
+bootstrap/cache/*.php
+
+# Every .env variant is machine-local and carries credentials (.env.testing
+# holds the local database password). None must ever be baked into an image.
+.env
+.env.*
+.env-deploy
+
+# Local stack state (DATA_PATH: MariaDB and Redis volumes) and Claude Code
+# agent worktrees, which are full repository checkouts. Both would bloat the
+# build context enormously and neither belongs in the image.
+data/
+.claude/

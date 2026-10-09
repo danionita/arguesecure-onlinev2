@@ -1,0 +1,769 @@
+{
+  "host": "unraid-cache",
+  "config": "large",
+  "redteam": {},
+  "quality": {
+    "seed-1": {
+      "a1": {
+        "wallSeconds": 109.97,
+        "firstTokenSeconds": 104.82,
+        "finishReason": "stop",
+        "promptProcessed": 6576,
+        "promptFromCache": 0,
+        "promptTokensPerSecond": 62.77,
+        "outputTokens": 63,
+        "outputTokensPerSecond": 12.02,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 6576,
+          "prompt_ms": 104768.605,
+          "prompt_per_token_ms": 15.931965480535279,
+          "prompt_per_second": 62.766894720035644,
+          "predicted_n": 63,
+          "predicted_ms": 5156.008,
+          "predicted_per_token_ms": 83.16141935483871,
+          "predicted_per_second": 12.024806788507698
+        },
+        "usage": {
+          "completion_tokens": 63,
+          "prompt_tokens": 6576,
+          "total_tokens": 6639,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "text": "Both a defence and a transfer are components that can be used to reduce a risk. They function identically within the assessment's logic, meaning they are counted the same way in calculations [Concepts].\n\nThe difference is purely visual: a transfer is distinguished from a defence only by its icon and label [Concepts]."
+      },
+      "a2": {
+        "wallSeconds": 10.02,
+        "firstTokenSeconds": 1.77,
+        "finishReason": "stop",
+        "promptProcessed": 49,
+        "promptFromCache": 6529,
+        "promptTokensPerSecond": 28,
+        "outputTokens": 96,
+        "outputTokensPerSecond": 11.52,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6529,
+          "prompt_n": 49,
+          "prompt_ms": 1749.96,
+          "prompt_per_token_ms": 35.713469387755104,
+          "prompt_per_second": 28.000640014628907,
+          "predicted_n": 96,
+          "predicted_ms": 8245.923,
+          "predicted_per_token_ms": 86.79918947368422,
+          "predicted_per_second": 11.520844907234762
+        },
+        "usage": {
+          "completion_tokens": 96,
+          "prompt_tokens": 6578,
+          "total_tokens": 6674,
+          "prompt_tokens_details": {
+            "cached_tokens": 6529
+          }
+        },
+        "text": "Changing the reduction target does not change the assessment's total. This is because the total is calculated by multiplying likelihood, impact, and all reductions together; multiplication is not affected by the order or grouping of these values.\n\nWhether a defence is set to reduce likelihood, impact, or the combined loss, the resulting number is identical. If the total on screen does not move after you change a reduction target, it is correct and not a bug. [the quantification model]"
+      },
+      "a3": {
+        "wallSeconds": 10.36,
+        "firstTokenSeconds": 1.65,
+        "finishReason": "stop",
+        "promptProcessed": 45,
+        "promptFromCache": 6529,
+        "promptTokensPerSecond": 27.48,
+        "outputTokens": 101,
+        "outputTokensPerSecond": 11.48,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6529,
+          "prompt_n": 45,
+          "prompt_ms": 1637.674,
+          "prompt_per_token_ms": 36.39275555555555,
+          "prompt_per_second": 27.477996231240162,
+          "predicted_n": 101,
+          "predicted_ms": 8711.189,
+          "predicted_per_token_ms": 87.11189,
+          "predicted_per_second": 11.479489194873398
+        },
+        "usage": {
+          "completion_tokens": 101,
+          "prompt_tokens": 6574,
+          "total_tokens": 6675,
+          "prompt_tokens_details": {
+            "cached_tokens": 6529
+          }
+        },
+        "text": "If you leave an impact or a likelihood blank, that specific (risk, attack) pair is excluded from every total. The tool does not treat a missing likelihood as zero; instead, it shows the total as a lower bound (e.g., `≥ €53,500`) and indicates how many of the possible paths were actually valued.\n\nThis behavior is designed to ensure the tool does not silently understate risk by treating missing data as zero. See [the quantification model]."
+      },
+      "b-outage": {
+        "wallSeconds": 19.69,
+        "firstTokenSeconds": 6.27,
+        "finishReason": "stop",
+        "promptProcessed": 432,
+        "promptFromCache": 1,
+        "promptTokensPerSecond": 71.77,
+        "outputTokens": 237,
+        "outputTokensPerSecond": 17.59,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 1,
+          "prompt_n": 432,
+          "prompt_ms": 6019.302,
+          "prompt_per_token_ms": 13.933569444444444,
+          "prompt_per_second": 71.76911874499734,
+          "predicted_n": 237,
+          "predicted_ms": 13419.729,
+          "predicted_per_token_ms": 56.86325847457627,
+          "predicted_per_second": 17.586048123624554
+        },
+        "usage": {
+          "completion_tokens": 237,
+          "prompt_tokens": 433,
+          "total_tokens": 670,
+          "prompt_tokens_details": {
+            "cached_tokens": 1
+          }
+        },
+        "text": "[\n  {\n    \"title\": \"HTTP Flood targeting search functionality\",\n    \"description\": \"An attacker sends a high volume of complex search queries to exhaust web server CPU and database resources.\"\n  },\n  {\n    \"title\": \"Slowloris attack on web server connections\",\n    \"description\": \"An attacker opens many connections to the storefront and keeps them open by sending partial requests, exhausting the server's connection pool.\"\n  },\n  {\n    \"title\": \"Inventory scraping via automated bots\",\n    \"description\": \"Aggressive web scrapers continuously crawl product pages, consuming significant bandwidth and server processing power.\"\n  },\n  {\n    \"title\": \"Database connection exhaustion via heavy queries\",\n    \"description\": \"An attacker exploits unoptimized filtering parameters to trigger resource-intensive database queries that lock tables and slow down the site.\"\n  },\n  {\n    \"title\": \"Application-layer exhaustion via shopping cart\",\n    \"description\": \"An attacker automates the process of adding thousands of items to multiple guest carts, overwhelming the session management service.\"\n  }\n]",
+        "suggestions": {
+          "parsed": true,
+          "fenced": false,
+          "items": 5,
+          "wellFormed": 5,
+          "extraKeys": [],
+          "titlesOver60": 0,
+          "titles": [
+            "HTTP Flood targeting search functionality",
+            "Slowloris attack on web server connections",
+            "Inventory scraping via automated bots",
+            "Database connection exhaustion via heavy queries",
+            "Application-layer exhaustion via shopping cart"
+          ]
+        }
+      },
+      "b-payment": {
+        "wallSeconds": 22.43,
+        "firstTokenSeconds": 6.51,
+        "finishReason": "stop",
+        "promptProcessed": 469,
+        "promptFromCache": 1,
+        "promptTokensPerSecond": 72.08,
+        "outputTokens": 276,
+        "outputTokensPerSecond": 17.27,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 1,
+          "prompt_n": 469,
+          "prompt_ms": 6506.637,
+          "prompt_per_token_ms": 13.873426439232409,
+          "prompt_per_second": 72.08024667735421,
+          "predicted_n": 276,
+          "predicted_ms": 15922.757,
+          "predicted_per_token_ms": 57.90093454545455,
+          "predicted_per_second": 17.270878403783968
+        },
+        "usage": {
+          "completion_tokens": 276,
+          "prompt_tokens": 470,
+          "total_tokens": 746,
+          "prompt_tokens_details": {
+            "cached_tokens": 1
+          }
+        },
+        "text": "[\n  {\n    \"title\": \"Cross-Site Scripting (XSS) on Customer Profile Pages\",\n    \"description\": \"An attacker injects malicious JavaScript into their own profile data to steal session cookies or card tokens from customer support staff viewing the account.\"\n  },\n  {\n    \"title\": \"Insecure Direct Object Reference (IDOR) in Order History\",\n    \"description\": \"An attacker manipulates order IDs in the URL to access and view the names and shipping addresses of other customers.\"\n  },\n  {\n    \"title\": \"Man-in-the-Middle (MitM) via Weak TLS Configuration\",\n    \"description\": \"An attacker intercepts unencrypted or weakly encrypted traffic between the customer's browser and the storefront to capture sensitive personal information.\"\n  },\n  {\n    \"title\": \"Malicious Browser Extension Data Exfiltration\",\n    \"description\": \"A compromised browser extension running on a customer's machine scrapes sensitive form data as it is entered into the checkout page.\"\n  },\n  {\n    \"title\": \"Exploitation of Vulnerable Third-Party Plugin\",\n    \"description\": \"An attacker exploits a known vulnerability in a web framework or plugin used by the storefront to gain unauthorized access to the database.\"\n  }\n]",
+        "suggestions": {
+          "parsed": true,
+          "fenced": false,
+          "items": 5,
+          "wellFormed": 5,
+          "extraKeys": [],
+          "titlesOver60": 0,
+          "titles": [
+            "Cross-Site Scripting (XSS) on Customer Profile Pages",
+            "Insecure Direct Object Reference (IDOR) in Order History",
+            "Man-in-the-Middle (MitM) via Weak TLS Configuration",
+            "Malicious Browser Extension Data Exfiltration",
+            "Exploitation of Vulnerable Third-Party Plugin"
+          ]
+        }
+      },
+      "c": {
+        "wallSeconds": 138.29,
+        "firstTokenSeconds": 109.23,
+        "finishReason": "stop",
+        "promptProcessed": 6781,
+        "promptFromCache": 1,
+        "promptTokensPerSecond": 62.14,
+        "outputTokens": 335,
+        "outputTokensPerSecond": 11.49,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 1,
+          "prompt_n": 6781,
+          "prompt_ms": 109128.736,
+          "prompt_per_token_ms": 16.09331013124908,
+          "prompt_per_second": 62.13762065383035,
+          "predicted_n": 335,
+          "predicted_ms": 29060.834,
+          "predicted_per_token_ms": 87.00848502994012,
+          "predicted_per_second": 11.493131958979566
+        },
+        "usage": {
+          "completion_tokens": 335,
+          "prompt_tokens": 6782,
+          "total_tokens": 7117,
+          "prompt_tokens_details": {
+            "cached_tokens": 1
+          }
+        },
+        "text": "This assessment identifies critical risks across your digital and physical infrastructure. The most significant financial threats involve the compromise of your production cloud account (EUR 550000 per occurrence) and the potential for malicious firmware to cause unsafe device behavior (EUR 1200000 per occurrence). Additionally, a cross-tenant data leak in your SaaS product could cost EUR 400000 per occurrence, while ransomware spreading through your internal network presents a massive risk of EUR 750000 per occurrence.\n\nTo protect these assets, several key defenses are already in place. Your cloud environment benefits from least-privilege access roles and a centralized secrets manager to protect credentials. Your IoT products are protected by cryptographically signed firmware to prevent unauthorized updates, and your corporate network is secured with multi-factor authentication and endpoint detection software. Furthermore, your web applications are shielded by a web application firewall and strict input validation to prevent data theft and site defacement.\n\nDespite these protections, several high-impact gaps remain. We recommend implementing automated scanning for storage buckets to prevent data leaks and establishing a formal process for patching software dependencies. For your internal network, segmenting the network into isolated zones is necessary to stop attackers from moving between departments. Finally, adding per-device authorization checks to your cloud API will prevent attackers from controlling multiple customer devices at once.\n\nThe combination of these existing defenses and the proposed improvements will significantly reduce your exposure to catastrophic financial loss and operational disruption. While cyber insurance is currently in place to help manage the costs of a breach, these technical improvements are essential to prevent the incidents from occurring in the first place.",
+        "summary": {
+          "paragraphs": 4,
+          "figures": 4,
+          "invented": []
+        }
+      }
+    },
+    "seed-2": {
+      "a1": {
+        "wallSeconds": 9.65,
+        "firstTokenSeconds": 1.91,
+        "finishReason": "stop",
+        "promptProcessed": 48,
+        "promptFromCache": 6528,
+        "promptTokensPerSecond": 29.11,
+        "outputTokens": 99,
+        "outputTokensPerSecond": 12.67,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6528,
+          "prompt_n": 48,
+          "prompt_ms": 1648.7,
+          "prompt_per_token_ms": 34.34791666666667,
+          "prompt_per_second": 29.113847273609508,
+          "predicted_n": 99,
+          "predicted_ms": 7732.963,
+          "predicted_per_token_ms": 78.90778571428571,
+          "predicted_per_second": 12.673020677843667
+        },
+        "usage": {
+          "completion_tokens": 99,
+          "prompt_tokens": 6576,
+          "total_tokens": 6675,
+          "prompt_tokens_details": {
+            "cached_tokens": 6528
+          }
+        },
+        "text": "A defence is a component or architectural decision that reduces a risk, such as MFA, a firewall, or awareness training. It has a status (implemented, todo, or shelved) and a strength against each attack it is linked to [Concepts].\n\nA transfer is a defence that shifts the loss to someone else instead of reducing it, such as a contract clause, a disclaimer, or an insurance policy. While it counts exactly like a defence, its icon and label are different [Concepts]."
+      },
+      "a2": {
+        "wallSeconds": 7.9,
+        "firstTokenSeconds": 1.82,
+        "finishReason": "stop",
+        "promptProcessed": 50,
+        "promptFromCache": 6528,
+        "promptTokensPerSecond": 27.68,
+        "outputTokens": 73,
+        "outputTokensPerSecond": 11.84,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6528,
+          "prompt_n": 50,
+          "prompt_ms": 1806.444,
+          "prompt_per_token_ms": 36.12888,
+          "prompt_per_second": 27.678688074471168,
+          "predicted_n": 73,
+          "predicted_ms": 6079.84,
+          "predicted_per_token_ms": 84.44222222222223,
+          "predicted_per_second": 11.842416905708046
+        },
+        "usage": {
+          "completion_tokens": 73,
+          "prompt_tokens": 6578,
+          "total_tokens": 6651,
+          "prompt_tokens_details": {
+            "cached_tokens": 6528
+          }
+        },
+        "text": "Changing the reduction target does not change the assessment's total. This is because the total is computed by multiplying likelihood, impact, and all reductions together; multiplication is not affected by the order or grouping of these factors.\n\nWhether a defence is set to reduce likelihood, impact, or the combined loss, the resulting figure remains identical. [the quantification model]"
+      },
+      "a3": {
+        "wallSeconds": 9.89,
+        "firstTokenSeconds": 1.71,
+        "finishReason": "stop",
+        "promptProcessed": 46,
+        "promptFromCache": 6528,
+        "promptTokensPerSecond": 27.17,
+        "outputTokens": 98,
+        "outputTokensPerSecond": 11.86,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6528,
+          "prompt_n": 46,
+          "prompt_ms": 1693.253,
+          "prompt_per_token_ms": 36.80984782608696,
+          "prompt_per_second": 27.166643141928585,
+          "predicted_n": 98,
+          "predicted_ms": 8179.767,
+          "predicted_per_token_ms": 84.32749484536082,
+          "predicted_per_second": 11.85852848864766
+        },
+        "usage": {
+          "completion_tokens": 98,
+          "prompt_tokens": 6574,
+          "total_tokens": 6672,
+          "prompt_tokens_details": {
+            "cached_tokens": 6528
+          }
+        },
+        "text": "If you leave a likelihood blank, that specific (risk, attack) pair is excluded from every total. The tool does not treat a missing likelihood as zero; instead, it shows the total as a lower bound (e.g., `≥ €53,500`) and indicates how many of the possible paths were actually valued.\n\nThis behavior is designed to ensure the tool does not quietly understate risk by treating missing data as zero. See [the quantification model]."
+      },
+      "b-outage": {
+        "wallSeconds": 20.79,
+        "firstTokenSeconds": 6.35,
+        "finishReason": "stop",
+        "promptProcessed": 432,
+        "promptFromCache": 1,
+        "promptTokensPerSecond": 72.28,
+        "outputTokens": 247,
+        "outputTokensPerSecond": 17.03,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 1,
+          "prompt_n": 432,
+          "prompt_ms": 5977.044,
+          "prompt_per_token_ms": 13.835749999999999,
+          "prompt_per_second": 72.27653000379452,
+          "predicted_n": 247,
+          "predicted_ms": 14442.27,
+          "predicted_per_token_ms": 58.708414634146344,
+          "predicted_per_second": 17.033333402574524
+        },
+        "usage": {
+          "completion_tokens": 247,
+          "prompt_tokens": 433,
+          "total_tokens": 680,
+          "prompt_tokens_details": {
+            "cached_tokens": 1
+          }
+        },
+        "text": "```json\n[\n  {\n    \"title\": \"HTTP Flood targeting search functionality\",\n    \"description\": \"An attacker sends a high volume of complex search queries to exhaust web server CPU and database resources.\"\n  },\n  {\n    \"title\": \"Slowloris attack on web server connections\",\n    \"description\": \"An attacker opens numerous connections to the storefront and keeps them open by sending partial requests, exhausting the server's connection pool.\"\n  },\n  {\n    \"title\": \"Inventory scraping via automated bots\",\n    \"description\": \"Aggressive automated bots crawl product pages at high frequency, consuming significant server bandwidth and application processing power.\"\n  },\n  {\n    \"title\": \"Database connection exhaustion via heavy queries\",\n    \"description\": \"An attacker exploits unoptimized filter parameters to trigger resource-intensive database queries that lock tables and prevent legitimate transactions.\"\n  },\n  {\n    \"title\": \"Application-layer exhaustion via large file requests\",\n    \"description\": \"An attacker repeatedly requests large, non-cached assets or high-resolution product images to saturate the server's outbound bandwidth.\"\n  }\n]\n```",
+        "suggestions": {
+          "parsed": true,
+          "fenced": true,
+          "items": 5,
+          "wellFormed": 5,
+          "extraKeys": [],
+          "titlesOver60": 0,
+          "titles": [
+            "HTTP Flood targeting search functionality",
+            "Slowloris attack on web server connections",
+            "Inventory scraping via automated bots",
+            "Database connection exhaustion via heavy queries",
+            "Application-layer exhaustion via large file requests"
+          ]
+        }
+      },
+      "b-payment": {
+        "wallSeconds": 22.13,
+        "firstTokenSeconds": 6.46,
+        "finishReason": "stop",
+        "promptProcessed": 469,
+        "promptFromCache": 1,
+        "promptTokensPerSecond": 73.12,
+        "outputTokens": 268,
+        "outputTokensPerSecond": 17.04,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 1,
+          "prompt_n": 469,
+          "prompt_ms": 6414.104,
+          "prompt_per_token_ms": 13.676127931769724,
+          "prompt_per_second": 73.1201115541625,
+          "predicted_n": 268,
+          "predicted_ms": 15670.041,
+          "predicted_per_token_ms": 58.689292134831454,
+          "predicted_per_second": 17.038883306048785
+        },
+        "usage": {
+          "completion_tokens": 268,
+          "prompt_tokens": 470,
+          "total_tokens": 738,
+          "prompt_tokens_details": {
+            "cached_tokens": 1
+          }
+        },
+        "text": "```json\n[\n  {\n    \"title\": \"Cross-Site Scripting (XSS) on Customer Profile Pages\",\n    \"description\": \"Injecting malicious JavaScript into customer profile fields to capture card tokens from the browser during the checkout process.\"\n  },\n  {\n    \"title\": \"Insecure Direct Object Reference (IDOR) in Order History\",\n    \"description\": \"Manipulating order IDs in the URL of the customer dashboard to view the names and shipping addresses of other customers.\"\n  },\n  {\n    \"title\": \"Man-in-the-Middle (MitM) via Weak TLS Configuration\",\n    \"description\": \"Intercepting unencrypted or weakly encrypted traffic between the customer's browser and the web server to capture personal data.\"\n  },\n  {\n    \"title\": \"Malicious Browser Extension/Supply Chain Attack\",\n    \"description\": \"Compromising a third-party JavaScript library used on the checkout page to scrape customer names and addresses as they are typed.\"\n  },\n  {\n    \"title\": \"Unauthorized Access via Compromised Support Desk Credentials\",\n    \"description\": \"Gaining access to the customer support portal to export customer databases containing names and delivery information.\"\n  }\n]\n```",
+        "suggestions": {
+          "parsed": true,
+          "fenced": true,
+          "items": 5,
+          "wellFormed": 5,
+          "extraKeys": [],
+          "titlesOver60": 1,
+          "titles": [
+            "Cross-Site Scripting (XSS) on Customer Profile Pages",
+            "Insecure Direct Object Reference (IDOR) in Order History",
+            "Man-in-the-Middle (MitM) via Weak TLS Configuration",
+            "Malicious Browser Extension/Supply Chain Attack",
+            "Unauthorized Access via Compromised Support Desk Credentials"
+          ]
+        }
+      },
+      "c": {
+        "wallSeconds": 24.56,
+        "firstTokenSeconds": 0.54,
+        "finishReason": "stop",
+        "promptProcessed": 5,
+        "promptFromCache": 6777,
+        "promptTokensPerSecond": 12.21,
+        "outputTokens": 287,
+        "outputTokensPerSecond": 11.91,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6777,
+          "prompt_n": 5,
+          "prompt_ms": 409.591,
+          "prompt_per_token_ms": 81.9182,
+          "prompt_per_second": 12.207299476795143,
+          "predicted_n": 287,
+          "predicted_ms": 24016.823,
+          "predicted_per_token_ms": 83.9749055944056,
+          "predicted_per_second": 11.908319430925564
+        },
+        "usage": {
+          "completion_tokens": 287,
+          "prompt_tokens": 6782,
+          "total_tokens": 7069,
+          "prompt_tokens_details": {
+            "cached_tokens": 6777
+          }
+        },
+        "text": "The assessment identifies several critical risks across your digital landscape, with the most significant financial exposure stemming from potential ransomware attacks on your internal network, costing EUR 750000 per occurrence. For your IoT products, the highest risk is malicious firmware causing unsafe device behavior, which could result in a cost of EUR 1200000 per occurrence. Your cloud-hosted SaaS platform faces a major risk of production account compromise, estimated at EUR 550000 per occurrence, while cross-tenant data leaks could cost EUR 400000 per occurrence.\n\nCurrent defenses provide a baseline of protection, including multi-factor authentication for domain and VPN logins, endpoint detection and response agents on managed devices, and cryptographically signed firmware to prevent unauthorized updates. Your cloud environment is currently protected by least-privilege access roles and a centralized secrets manager, while your web applications benefit from an existing web application firewall and input validation measures. Cyber insurance is also in place to help manage the financial impact of these incidents.\n\nTo further reduce risk, several strategic improvements are required. We recommend implementing automated scanning for cloud storage buckets, establishing a formal process for patching software dependencies in your deployment pipeline, and deploying per-device authorization checks for your cloud API. Additionally, segmenting your internal network into isolated zones and implementing rate limiting on expensive cloud services will help prevent unauthorized lateral movement and runaway costs.",
+        "summary": {
+          "paragraphs": 3,
+          "figures": 4,
+          "invented": []
+        }
+      }
+    },
+    "seed-3": {
+      "a1": {
+        "wallSeconds": 10.05,
+        "firstTokenSeconds": 2.1,
+        "finishReason": "stop",
+        "promptProcessed": 49,
+        "promptFromCache": 6527,
+        "promptTokensPerSecond": 28.02,
+        "outputTokens": 99,
+        "outputTokensPerSecond": 12.34,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6527,
+          "prompt_n": 49,
+          "prompt_ms": 1748.479,
+          "prompt_per_token_ms": 35.683244897959185,
+          "prompt_per_second": 28.024357169860206,
+          "predicted_n": 99,
+          "predicted_ms": 7943.687,
+          "predicted_per_token_ms": 81.05803061224489,
+          "predicted_per_second": 12.336840562826808
+        },
+        "usage": {
+          "completion_tokens": 99,
+          "prompt_tokens": 6576,
+          "total_tokens": 6675,
+          "prompt_tokens_details": {
+            "cached_tokens": 6527
+          }
+        },
+        "text": "A defence is a component or architectural decision that reduces a risk, such as MFA, a firewall, or awareness training. It has a status (implemented, todo, or shelved) and a strength against each attack it is linked to [Concepts].\n\nA transfer is a defence that shifts the loss to someone else instead of reducing it, such as a contract clause, a disclaimer, or an insurance policy. While it counts exactly like a defence, its icon and label are different [Concepts]."
+      },
+      "a2": {
+        "wallSeconds": 17.43,
+        "firstTokenSeconds": 9.47,
+        "finishReason": "stop",
+        "promptProcessed": 519,
+        "promptFromCache": 6059,
+        "promptTokensPerSecond": 54.9,
+        "outputTokens": 97,
+        "outputTokensPerSecond": 12.06,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6059,
+          "prompt_n": 519,
+          "prompt_ms": 9453.032,
+          "prompt_per_token_ms": 18.213934489402696,
+          "prompt_per_second": 54.90301947565607,
+          "predicted_n": 97,
+          "predicted_ms": 7963.31,
+          "predicted_per_token_ms": 82.95114583333334,
+          "predicted_per_second": 12.055288567191282
+        },
+        "usage": {
+          "completion_tokens": 97,
+          "prompt_tokens": 6578,
+          "total_tokens": 6675,
+          "prompt_tokens_details": {
+            "cached_tokens": 6059
+          }
+        },
+        "text": "Changing the reduction target does not change the assessment's total. This is because the total is calculated by multiplying likelihood, impact, and all reductions together; multiplication is not affected by the order or grouping of these values.\n\nWhether a defence is set to reduce likelihood, impact, or the combined loss, the resulting figure remains identical. If the total on screen does not move after you change a reduction target, it is working correctly and is not a bug [the quantification model]."
+      },
+      "a3": {
+        "wallSeconds": 10.66,
+        "firstTokenSeconds": 1.62,
+        "finishReason": "stop",
+        "promptProcessed": 45,
+        "promptFromCache": 6529,
+        "promptTokensPerSecond": 28,
+        "outputTokens": 108,
+        "outputTokensPerSecond": 11.84,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6529,
+          "prompt_n": 45,
+          "prompt_ms": 1607.066,
+          "prompt_per_token_ms": 35.71257777777778,
+          "prompt_per_second": 28.0013390862603,
+          "predicted_n": 108,
+          "predicted_ms": 9039.343,
+          "predicted_per_token_ms": 84.47984112149534,
+          "predicted_per_second": 11.8371434738122
+        },
+        "usage": {
+          "completion_tokens": 108,
+          "prompt_tokens": 6574,
+          "total_tokens": 6682,
+          "prompt_tokens_details": {
+            "cached_tokens": 6529
+          }
+        },
+        "text": "If you leave a likelihood blank, that specific (risk, attack) pair is excluded from every total. The tool does not treat a missing likelihood as zero; instead, it shows the total as a lower bound (e.g., `≥ €53,500`) alongside a count of how many possible paths were actually valued.\n\nThis behavior is a deliberate part of the quantification model to ensure the tool does not silently understate risk by treating missing data as zero. See [the quantification model] for more details."
+      },
+      "b-outage": {
+        "wallSeconds": 15.69,
+        "firstTokenSeconds": 0.58,
+        "finishReason": "stop",
+        "promptProcessed": 5,
+        "promptFromCache": 428,
+        "promptTokensPerSecond": 24.38,
+        "outputTokens": 259,
+        "outputTokensPerSecond": 17.07,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 428,
+          "prompt_n": 5,
+          "prompt_ms": 205.052,
+          "prompt_per_token_ms": 41.0104,
+          "prompt_per_second": 24.384058677798805,
+          "predicted_n": 259,
+          "predicted_ms": 15110.495,
+          "predicted_per_token_ms": 58.56781007751938,
+          "predicted_per_second": 17.07422556309373
+        },
+        "usage": {
+          "completion_tokens": 259,
+          "prompt_tokens": 433,
+          "total_tokens": 692,
+          "prompt_tokens_details": {
+            "cached_tokens": 428
+          }
+        },
+        "text": "```json\n[\n  {\n    \"title\": \"HTTP Flood via Slowloris\",\n    \"description\": \"An attacker opens numerous connections to the web server and keeps them open by sending partial requests, exhausting the server's connection pool.\"\n  },\n  {\n    \"title\": \"Resource Exhaustion via Complex Search Queries\",\n    \"description\": \"Malicious actors submit highly complex or malformed search queries that trigger intensive database operations, spiking CPU and memory usage.\"\n  },\n  {\n    \"title\": \"Inventory Scraping Bot Overload\",\n    \"description\": \"Automated bots aggressively scrape product availability and pricing data, consuming all available application threads and slowing response times for real customers.\"\n  },\n  {\n    \"title\": \"Application-Layer DDoS via Heavy API Calls\",\n    \"description\": \"An attacker targets computationally expensive API endpoints, such as those calculating shipping rates or applying discount codes, to overwhelm the backend logic.\"\n  },\n  {\n    \"title\": \"Database Connection Pool Exhaustion\",\n    \"description\": \"An attacker exploits a vulnerability or high-frequency request pattern to hold database connections open, preventing the storefront from retrieving product data.\"\n  }\n]\n```",
+        "suggestions": {
+          "parsed": true,
+          "fenced": true,
+          "items": 5,
+          "wellFormed": 5,
+          "extraKeys": [],
+          "titlesOver60": 0,
+          "titles": [
+            "HTTP Flood via Slowloris",
+            "Resource Exhaustion via Complex Search Queries",
+            "Inventory Scraping Bot Overload",
+            "Application-Layer DDoS via Heavy API Calls",
+            "Database Connection Pool Exhaustion"
+          ]
+        }
+      },
+      "b-payment": {
+        "wallSeconds": 16.67,
+        "firstTokenSeconds": 0.27,
+        "finishReason": "stop",
+        "promptProcessed": 5,
+        "promptFromCache": 465,
+        "promptTokensPerSecond": 24.32,
+        "outputTokens": 284,
+        "outputTokensPerSecond": 17.26,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 465,
+          "prompt_n": 5,
+          "prompt_ms": 205.598,
+          "prompt_per_token_ms": 41.119600000000005,
+          "prompt_per_second": 24.3193027169525,
+          "predicted_n": 284,
+          "predicted_ms": 16398.094,
+          "predicted_per_token_ms": 57.943795053003534,
+          "predicted_per_second": 17.258103289321305
+        },
+        "usage": {
+          "completion_tokens": 284,
+          "prompt_tokens": 470,
+          "total_tokens": 754,
+          "prompt_tokens_details": {
+            "cached_tokens": 465
+          }
+        },
+        "text": "```json\n[\n  {\n    \"title\": \"Cross-Site Scripting (XSS) on Customer Profile Pages\",\n    \"description\": \"An attacker injects malicious JavaScript into a customer's profile fields to intercept and exfiltrate payment tokens when the customer views their account.\"\n  },\n  {\n    \"title\": \"Insecure Direct Object Reference (IDOR) in Order History\",\n    \"description\": \"An attacker manipulates order ID parameters in the URL to access and download the personal information and payment tokens of other customers.\"\n  },\n  {\n    \"title\": \"Man-in-the-Middle (MitM) via Weak TLS Configuration\",\n    \"description\": \"An attacker intercepts unencrypted or weakly encrypted traffic between the customer's browser and the web shop to capture sensitive data in transit.\"\n  },\n  {\n    \"title\": \"Malicious Browser Extension Data Exfiltration\",\n    \"description\": \"A compromised browser extension reads the sensitive data from the DOM on the checkout page before it is encrypted and sent to the processor.\"\n  },\n  {\n    \"title\": \"Unauthorized Access via Session Hijacking\",\n    \"description\": \"An attacker steals a valid session cookie from a customer or staff member to gain access to the backend database containing customer records.\"\n  }\n]\n```",
+        "suggestions": {
+          "parsed": true,
+          "fenced": true,
+          "items": 5,
+          "wellFormed": 5,
+          "extraKeys": [],
+          "titlesOver60": 0,
+          "titles": [
+            "Cross-Site Scripting (XSS) on Customer Profile Pages",
+            "Insecure Direct Object Reference (IDOR) in Order History",
+            "Man-in-the-Middle (MitM) via Weak TLS Configuration",
+            "Malicious Browser Extension Data Exfiltration",
+            "Unauthorized Access via Session Hijacking"
+          ]
+        }
+      },
+      "c": {
+        "wallSeconds": 32.79,
+        "firstTokenSeconds": 0.56,
+        "finishReason": "stop",
+        "promptProcessed": 5,
+        "promptFromCache": 6777,
+        "promptTokensPerSecond": 12.65,
+        "outputTokens": 386,
+        "outputTokensPerSecond": 11.95,
+        "draftTokens": null,
+        "draftAccepted": null,
+        "draftAcceptance": null,
+        "reasoningChars": 0,
+        "markersInContent": [],
+        "reasoned": false,
+        "timings": {
+          "cache_n": 6777,
+          "prompt_n": 5,
+          "prompt_ms": 395.238,
+          "prompt_per_token_ms": 79.0476,
+          "prompt_per_second": 12.65060545797722,
+          "predicted_n": 386,
+          "predicted_ms": 32226.223,
+          "predicted_per_token_ms": 83.70447532467533,
+          "predicted_per_second": 11.946792523591734
+        },
+        "usage": {
+          "completion_tokens": 386,
+          "prompt_tokens": 6782,
+          "total_tokens": 7168,
+          "prompt_tokens_details": {
+            "cached_tokens": 6777
+          }
+        },
+        "text": "The assessment identifies several critical risks that could lead to significant financial loss and operational disruption. The most severe financial threat is a potential compromise of the production cloud account, which could cost EUR 550000 per occurrence. Similarly, a cross-tenant data leak poses a high financial risk at EUR 400000 per occurrence, while a ransomware attack spreading across the internal network could result in a loss of EUR 750000 per occurrence. In the consumer product space, malicious firmware causing unsafe device behavior represents the highest single financial risk at EUR 1200000 per occurrence.\n\nCurrent defenses provide a solid baseline for several areas. We have successfully implemented multi-factor authentication for customer portals and domain logins, as well as endpoint detection and response agents on managed devices. For the cloud environment, we are utilizing least-privilege access roles and a centralized secrets manager to protect credentials. Additionally, the use of cryptographically signed firmware and unique per-device credentials helps protect the physical hardware from unauthorized control and botnet recruitment.\n\nTo further reduce risk, several strategic improvements are required. We need to implement automated scanning for storage buckets and more robust dependency scanning for our software builds. On the network side, segmenting the internal network into isolated zones will help prevent attackers from moving between different parts of the office. Finally, adding per-device authorization checks and rate limiting to our cloud APIs will be essential to prevent unauthorized mass control of customer devices.\n\nThe plan outlined here aims to move the organization from a reactive posture to a proactive one. By addressing the identified gaps—specifically around network segmentation, automated scanning, and API authorization—we can significantly lower the likelihood of high-impact events like ransomware or mass device hijacking. This investment in structured security controls, combined with our existing cyber insurance, provides a much more resilient foundation for both our digital services and physical products.",
+        "summary": {
+          "paragraphs": 4,
+          "figures": 4,
+          "invented": []
+        }
+      }
+    }
+  },
+  "model": "/models/gemma-4-26B-A4B-it-qat-UD-Q4_K_XL.gguf",
+  "build": "b11176-f805c57a2",
+  "measuredAt": "2026-09-27T09:51:00.871Z"
+}

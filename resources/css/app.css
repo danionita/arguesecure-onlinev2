@@ -1,0 +1,400 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../js/**/*.vue';
+
+/*
+ * Dark mode strategy (W10 design system)
+ * -----------------------------------------------------------------------
+ * docs/specs/ui.md §2 requires BOTH `prefers-color-scheme` support and an
+ * explicit, persisted user toggle. Tailwind's `dark:` variant can only key
+ * off one selector strategy at a time, so we make it class-based and let
+ * `<html>` carry either `.dark` or `.light`:
+ *
+ *   - no class on <html>  -> falls through to the `@media (prefers-color-
+ *     scheme: dark)` block below, i.e. the OS setting wins.
+ *   - `.dark` / `.light` on <html> -> explicit user choice, applied by the
+ *     `useTheme` helper in Components/UI/useTheme.ts, and wins regardless
+ *     of the OS setting.
+ *
+ * Every themed value is therefore defined as a plain custom property
+ * (`--as-*`) that is re-assigned per branch, and `@theme` only ever points
+ * Tailwind's generated utilities at `var(--as-*)`. That indirection is
+ * what lets the same `bg-surface-1` class resolve differently at runtime.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Self-hosted Figtree (CLAUDE.md: "Nothing loads from a CDN. Strict CSP
+ * with nonces; everything self-hosted." — the W24 CSP will block the
+ * webfont CDN request this used to make). Files vendored from the
+ * Google Fonts repository (github.com/google/fonts, ofl/figtree), latin
+ * subset only, weights 400/500/600 (the only weights referenced by
+ * --font-sans below and the UI component library). Licensed under the
+ * SIL Open Font License 1.1, which permits redistribution; the licence
+ * text is vendored alongside the font files at resources/fonts/OFL.txt.
+ */
+@font-face {
+    font-family: 'Figtree';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/figtree-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Figtree';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../fonts/figtree-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Figtree';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/figtree-latin-600-normal.woff2') format('woff2');
+}
+
+@theme {
+    --font-sans:
+        'Figtree', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* ---- Surfaces, borders, text -------------------------------------- */
+    --color-surface-0: var(--as-surface-0);
+    --color-surface-1: var(--as-surface-1);
+    --color-surface-2: var(--as-surface-2);
+    --color-surface-overlay: var(--as-surface-overlay);
+
+    --color-border-subtle: var(--as-border-subtle);
+    --color-border-default: var(--as-border-default);
+    --color-border-strong: var(--as-border-strong);
+
+    --color-text-primary: var(--as-text-primary);
+    --color-text-secondary: var(--as-text-secondary);
+    --color-text-muted: var(--as-text-muted);
+    --color-text-inverted: var(--as-text-inverted);
+    --color-text-link: var(--as-text-link);
+
+    --color-focus-ring: var(--as-focus-ring);
+
+    /* ---- Node type -----------------------------------------------------
+     * One family per type in the graph (docs/specs/ui.md §2). `transfer`
+     * is its own token set even though it is the same DB row as `defence`
+     * with is_transfer=1 (CLAUDE.md "Domain model") — the UI must still be
+     * able to tell them apart at a glance, which is the whole point of
+     * having a separate "transfer-vs-defence" token.
+     */
+    --color-node-root-bg: var(--as-node-root-bg);
+    --color-node-root-border: var(--as-node-root-border);
+    --color-node-root-text: var(--as-node-root-text);
+
+    --color-node-risk-bg: var(--as-node-risk-bg);
+    --color-node-risk-border: var(--as-node-risk-border);
+    --color-node-risk-text: var(--as-node-risk-text);
+
+    --color-node-attack-bg: var(--as-node-attack-bg);
+    --color-node-attack-border: var(--as-node-attack-border);
+    --color-node-attack-text: var(--as-node-attack-text);
+
+    --color-node-defence-bg: var(--as-node-defence-bg);
+    --color-node-defence-border: var(--as-node-defence-border);
+    --color-node-defence-text: var(--as-node-defence-text);
+
+    --color-node-transfer-bg: var(--as-node-transfer-bg);
+    --color-node-transfer-border: var(--as-node-transfer-border);
+    --color-node-transfer-text: var(--as-node-transfer-text);
+
+    /* ---- Defence/transfer status ---------------------------------------
+     * implemented/todo/shelved (schema.md). Colour is never the only
+     * channel carrying this — StatusPill also renders an icon.
+     */
+    --color-status-implemented-bg: var(--as-status-implemented-bg);
+    --color-status-implemented-border: var(--as-status-implemented-border);
+    --color-status-implemented-text: var(--as-status-implemented-text);
+
+    --color-status-todo-bg: var(--as-status-todo-bg);
+    --color-status-todo-border: var(--as-status-todo-border);
+    --color-status-todo-text: var(--as-status-todo-text);
+
+    --color-status-shelved-bg: var(--as-status-shelved-bg);
+    --color-status-shelved-border: var(--as-status-shelved-border);
+    --color-status-shelved-text: var(--as-status-shelved-text);
+
+    /* ---- Missing-value state --------------------------------------------
+     * A missing impact/likelihood/strength is a distinct visual state, not
+     * zero and not blank (CLAUDE.md "Four things that are easy to get
+     * wrong"). Deliberately drab/neutral so it never reads as "good".
+     */
+    --color-missing-bg: var(--as-missing-bg);
+    --color-missing-border: var(--as-missing-border);
+    --color-missing-text: var(--as-missing-text);
+
+    /* ---- Magnitude ramp --------------------------------------------------
+     * 5-step SEQUENTIAL ramp ("how much does this contribute") for
+     * contribution bars and chips. Not diverging: the quantity has no
+     * meaningful midpoint (docs/specs/ui.md §2).
+     */
+    --color-magnitude-1-bg: var(--as-magnitude-1-bg);
+    --color-magnitude-1-text: var(--as-magnitude-1-text);
+    --color-magnitude-2-bg: var(--as-magnitude-2-bg);
+    --color-magnitude-2-text: var(--as-magnitude-2-text);
+    --color-magnitude-3-bg: var(--as-magnitude-3-bg);
+    --color-magnitude-3-text: var(--as-magnitude-3-text);
+    --color-magnitude-4-bg: var(--as-magnitude-4-bg);
+    --color-magnitude-4-text: var(--as-magnitude-4-text);
+    --color-magnitude-5-bg: var(--as-magnitude-5-bg);
+    --color-magnitude-5-text: var(--as-magnitude-5-text);
+
+    /* ---- Density -----------------------------------------------------
+     * Semantic spacing for the compact node card (target 3-4x the nodes
+     * on screen vs. the legacy panel — docs/specs/ui.md §1).
+     */
+    --spacing-card-x: 0.625rem;
+    --spacing-card-y: 0.375rem;
+    --spacing-chip-x: 0.375rem;
+    --spacing-chip-y: 0.0625rem;
+
+    /* ---- Type scale for chips/badges/card titles ---------------------- */
+    --text-chip: 0.6875rem;
+    --text-chip--line-height: 1rem;
+    --text-card-title: 0.8125rem;
+    --text-card-title--line-height: 1.125rem;
+}
+
+/* ==== Light theme (default) ============================================ */
+:root {
+    --as-surface-0: #f8fafc;
+    --as-surface-1: #ffffff;
+    --as-surface-2: #f1f5f9;
+    --as-surface-overlay: rgb(15 23 42 / 55%);
+
+    --as-border-subtle: #e2e8f0;
+    --as-border-default: #cbd5e1;
+    --as-border-strong: #94a3b8;
+
+    --as-text-primary: #0f172a;
+    --as-text-secondary: #334155;
+    --as-text-muted: #64748b;
+    --as-text-inverted: #f8fafc;
+    --as-text-link: #4338ca;
+
+    --as-focus-ring: #4f46e5;
+
+    --as-node-root-bg: #eef2ff;
+    --as-node-root-border: #a5b4fc;
+    --as-node-root-text: #3730a3;
+
+    --as-node-risk-bg: #fffbeb;
+    --as-node-risk-border: #fcd34d;
+    --as-node-risk-text: #92400e;
+
+    --as-node-attack-bg: #fef2f2;
+    --as-node-attack-border: #fca5a5;
+    --as-node-attack-text: #b91c1c;
+
+    --as-node-defence-bg: #ecfdf5;
+    --as-node-defence-border: #6ee7b7;
+    --as-node-defence-text: #065f46;
+
+    --as-node-transfer-bg: #f0fdfa;
+    --as-node-transfer-border: #5eead4;
+    --as-node-transfer-text: #115e59;
+
+    --as-status-implemented-bg: #ecfdf5;
+    --as-status-implemented-border: #6ee7b7;
+    --as-status-implemented-text: #047857;
+
+    --as-status-todo-bg: #fffbeb;
+    --as-status-todo-border: #fcd34d;
+    --as-status-todo-text: #b45309;
+
+    --as-status-shelved-bg: #f1f5f9;
+    --as-status-shelved-border: #cbd5e1;
+    --as-status-shelved-text: #475569;
+
+    --as-missing-bg: #f8fafc;
+    --as-missing-border: #cbd5e1;
+    --as-missing-text: #64748b;
+
+    --as-magnitude-1-bg: #eef2ff;
+    --as-magnitude-1-text: #4338ca;
+    --as-magnitude-2-bg: #c7d2fe;
+    --as-magnitude-2-text: #312e81;
+    --as-magnitude-3-bg: #818cf8;
+    --as-magnitude-3-text: #1e1b4b;
+    --as-magnitude-4-bg: #4f46e5;
+    --as-magnitude-4-text: #eef2ff;
+    --as-magnitude-5-bg: #312e81;
+    --as-magnitude-5-text: #eef2ff;
+}
+
+/* System dark preference, only when the user has not made an explicit choice. */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light):not(.dark) {
+        color-scheme: dark;
+
+        --as-surface-0: #0b1220;
+        --as-surface-1: #111827;
+        --as-surface-2: #1e293b;
+        --as-surface-overlay: rgb(2 6 23 / 65%);
+
+        --as-border-subtle: #1e293b;
+        --as-border-default: #334155;
+        --as-border-strong: #475569;
+
+        --as-text-primary: #f1f5f9;
+        --as-text-secondary: #cbd5e1;
+        --as-text-muted: #94a3b8;
+        --as-text-inverted: #0f172a;
+        --as-text-link: #a5b4fc;
+
+        --as-focus-ring: #818cf8;
+
+        --as-node-root-bg: #1e1b4b;
+        --as-node-root-border: #4338ca;
+        --as-node-root-text: #c7d2fe;
+
+        --as-node-risk-bg: #451a03;
+        --as-node-risk-border: #b45309;
+        --as-node-risk-text: #fde68a;
+
+        --as-node-attack-bg: #450a0a;
+        --as-node-attack-border: #b91c1c;
+        --as-node-attack-text: #fecaca;
+
+        --as-node-defence-bg: #052e21;
+        --as-node-defence-border: #047857;
+        --as-node-defence-text: #a7f3d0;
+
+        --as-node-transfer-bg: #042f2c;
+        --as-node-transfer-border: #0f766e;
+        --as-node-transfer-text: #99f6e4;
+
+        --as-status-implemented-bg: #052e21;
+        --as-status-implemented-border: #047857;
+        --as-status-implemented-text: #6ee7b7;
+
+        --as-status-todo-bg: #451a03;
+        --as-status-todo-border: #b45309;
+        --as-status-todo-text: #fcd34d;
+
+        --as-status-shelved-bg: #1e293b;
+        --as-status-shelved-border: #475569;
+        --as-status-shelved-text: #cbd5e1;
+
+        --as-missing-bg: #1e293b;
+        --as-missing-border: #475569;
+        --as-missing-text: #94a3b8;
+
+        --as-magnitude-1-bg: #1e1b4b;
+        --as-magnitude-1-text: #c7d2fe;
+        --as-magnitude-2-bg: #3730a3;
+        --as-magnitude-2-text: #e0e7ff;
+        --as-magnitude-3-bg: #4f46e5;
+        --as-magnitude-3-text: #eef2ff;
+        --as-magnitude-4-bg: #818cf8;
+        --as-magnitude-4-text: #1e1b4b;
+        --as-magnitude-5-bg: #c7d2fe;
+        --as-magnitude-5-text: #1e1b4b;
+    }
+}
+
+/* ==== Explicit toggle (persisted on the profile, applied by useTheme) === */
+.dark {
+    color-scheme: dark;
+
+    --as-surface-0: #0b1220;
+    --as-surface-1: #111827;
+    --as-surface-2: #1e293b;
+    --as-surface-overlay: rgb(2 6 23 / 65%);
+
+    --as-border-subtle: #1e293b;
+    --as-border-default: #334155;
+    --as-border-strong: #475569;
+
+    --as-text-primary: #f1f5f9;
+    --as-text-secondary: #cbd5e1;
+    --as-text-muted: #94a3b8;
+    --as-text-inverted: #0f172a;
+    --as-text-link: #a5b4fc;
+
+    --as-focus-ring: #818cf8;
+
+    --as-node-root-bg: #1e1b4b;
+    --as-node-root-border: #4338ca;
+    --as-node-root-text: #c7d2fe;
+
+    --as-node-risk-bg: #451a03;
+    --as-node-risk-border: #b45309;
+    --as-node-risk-text: #fde68a;
+
+    --as-node-attack-bg: #450a0a;
+    --as-node-attack-border: #b91c1c;
+    --as-node-attack-text: #fecaca;
+
+    --as-node-defence-bg: #052e21;
+    --as-node-defence-border: #047857;
+    --as-node-defence-text: #a7f3d0;
+
+    --as-node-transfer-bg: #042f2c;
+    --as-node-transfer-border: #0f766e;
+    --as-node-transfer-text: #99f6e4;
+
+    --as-status-implemented-bg: #052e21;
+    --as-status-implemented-border: #047857;
+    --as-status-implemented-text: #6ee7b7;
+
+    --as-status-todo-bg: #451a03;
+    --as-status-todo-border: #b45309;
+    --as-status-todo-text: #fcd34d;
+
+    --as-status-shelved-bg: #1e293b;
+    --as-status-shelved-border: #475569;
+    --as-status-shelved-text: #cbd5e1;
+
+    --as-missing-bg: #1e293b;
+    --as-missing-border: #475569;
+    --as-missing-text: #94a3b8;
+
+    --as-magnitude-1-bg: #1e1b4b;
+    --as-magnitude-1-text: #c7d2fe;
+    --as-magnitude-2-bg: #3730a3;
+    --as-magnitude-2-text: #e0e7ff;
+    --as-magnitude-3-bg: #4f46e5;
+    --as-magnitude-3-text: #eef2ff;
+    --as-magnitude-4-bg: #818cf8;
+    --as-magnitude-4-text: #1e1b4b;
+    --as-magnitude-5-bg: #c7d2fe;
+    --as-magnitude-5-text: #1e1b4b;
+}
+
+/* Explicit light choice, forced even when the OS is in dark mode. */
+.light {
+    color-scheme: light;
+}
+
+@layer base {
+    body {
+        @apply bg-surface-0 text-text-primary;
+    }
+
+    /* Respect prefers-reduced-motion globally (docs/specs/ui.md §11); the
+       canvas/expand transitions in W12+ read this same media query. */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}

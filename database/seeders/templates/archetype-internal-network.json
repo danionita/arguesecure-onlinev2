@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "archetype-internal-network",
+  "root_uuid": "b3000000-0000-4000-8000-000000000001",
+  "title": "Corporate internal network — office LAN, AD and remote access",
+  "description": "A typical mid-size organisation's internal environment: a switched office LAN and Wi-Fi, an Active Directory domain providing identity and file-share services, a handful of internal line-of-business applications, staff laptops and desktops, and a VPN concentrator for remote workers. Seeded as a starting template so a new assessment for this kind of environment already has a plausible risk tree to edit rather than a blank page.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {"name": "Ransomware", "color": "#DC2626"},
+    {"name": "Credential-Theft", "color": "#F59E0B"},
+    {"name": "Endpoint", "color": "#3B82F6"},
+    {"name": "Insider", "color": "#8B5CF6"}
+  ],
+  "risks": [
+    {
+      "ref": "risk-ransomware-lateral-spread",
+      "uuid": "b3000000-0000-4000-8000-000000000002",
+      "title": "Ransomware encryption spreading across the internal network",
+      "description": "An attacker who gains an initial foothold on one workstation moves laterally across the flat internal network to file servers and domain controllers, then detonates ransomware broadly, taking down file shares and internal applications simultaneously.",
+      "impact": {"mode": "quantitative", "amount": 750000},
+      "tags": ["Ransomware", "Endpoint"],
+      "attack_refs": ["attack-phishing-initial-foothold", "attack-unpatched-server-exploit", "attack-rogue-wifi-device"]
+    },
+    {
+      "ref": "risk-credential-theft-domain",
+      "uuid": "b3000000-0000-4000-8000-000000000003",
+      "title": "Theft of domain credentials enabling broad account takeover",
+      "description": "An attacker obtains a valid domain username and password — through phishing or by intercepting remote-access authentication — and uses it to authenticate as a legitimate employee against internal systems, bypassing perimeter controls entirely.",
+      "impact": {"mode": "qualitative", "level_code": "severe"},
+      "tags": ["Credential-Theft"],
+      "attack_refs": ["attack-phishing-initial-foothold", "attack-vpn-credential-compromise"]
+    },
+    {
+      "ref": "risk-insider-file-share-misuse",
+      "uuid": "b3000000-0000-4000-8000-000000000004",
+      "title": "Misuse of file-share access by an authorised insider",
+      "description": "A staff member with legitimate access to a shared drive copies, leaks or sells sensitive internal documents — HR records, contracts, or product plans — beyond their authorised purpose.",
+      "impact": {"mode": "quantitative", "amount": 45000},
+      "tags": ["Insider"],
+      "attack_refs": ["attack-file-share-insider-abuse"]
+    },
+    {
+      "ref": "risk-lost-laptop-data-exposure",
+      "uuid": "b3000000-0000-4000-8000-000000000005",
+      "title": "Data exposure from a lost or stolen laptop",
+      "description": "An employee laptop is lost in transit or stolen from a vehicle or public space, exposing any locally cached email, documents and saved credentials to whoever recovers the device.",
+      "impact": {"mode": "qualitative", "level_code": "moderate"},
+      "tags": ["Endpoint"],
+      "attack_refs": ["attack-lost-unencrypted-laptop"]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-phishing-initial-foothold",
+      "uuid": "b3000000-0000-4000-8000-000000000006",
+      "title": "Phishing email delivering an initial foothold",
+      "description": "A staff member opens a malicious attachment or link in an email crafted to look like routine business correspondence, giving the attacker code execution or harvested credentials on that user's machine.",
+      "likelihood": {"mode": "quantitative", "amount": 1.2},
+      "references": [
+        {"kind": "attack_technique", "identifier": "T1566", "title": "Phishing"}
+      ],
+      "defence_refs": ["defence-mfa-domain-vpn", "defence-edr-endpoint-detection", "defence-cyber-insurance-mspa"]
+    },
+    {
+      "ref": "attack-unpatched-server-exploit",
+      "uuid": "b3000000-0000-4000-8000-000000000007",
+      "title": "Exploitation of an unpatched internal server from an already-compromised host",
+      "description": "Once inside the network, an attacker scans for internal servers running software with a known, unpatched vulnerability and uses it to escalate privileges or move to a higher-value host such as a file server or domain controller.",
+      "likelihood": {"mode": "quantitative", "amount": 0.3},
+      "references": [
+        {"kind": "attack_technique", "identifier": "T1210", "title": "Exploitation of Remote Services"}
+      ],
+      "defence_refs": ["defence-patch-management", "defence-network-segmentation", "defence-edr-endpoint-detection", "defence-cyber-insurance-mspa"]
+    },
+    {
+      "ref": "attack-vpn-credential-compromise",
+      "uuid": "b3000000-0000-4000-8000-000000000008",
+      "title": "Compromise of VPN credentials for remote access",
+      "description": "An attacker obtains a remote worker's VPN username and password, for example by reusing a password leaked in an unrelated breach, and authenticates directly to the corporate network as that user.",
+      "likelihood": {"mode": "qualitative", "level_code": "possible"},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-522", "title": "Insufficiently Protected Credentials"},
+        {"kind": "attack_technique", "identifier": "T1078", "title": "Valid Accounts"}
+      ],
+      "defence_refs": ["defence-mfa-domain-vpn"]
+    },
+    {
+      "ref": "attack-rogue-wifi-device",
+      "uuid": "b3000000-0000-4000-8000-000000000009",
+      "title": "Rogue device connected to office Wi-Fi",
+      "description": "An unauthorised device — a visitor's laptop, a planted access point, or a personal device with weak configuration — joins the office wireless network and is used as a foothold to probe and reach internal systems.",
+      "likelihood": {"mode": "qualitative", "level_code": "unlikely"},
+      "references": [
+        {"kind": "attack_technique", "identifier": "T1200", "title": "Hardware Additions"}
+      ],
+      "defence_refs": ["defence-network-segmentation", "defence-edr-endpoint-detection", "defence-nac-8021x"]
+    },
+    {
+      "ref": "attack-file-share-insider-abuse",
+      "uuid": "b3000000-0000-4000-8000-00000000000a",
+      "title": "Bulk copying of file-share contents by an authorised user",
+      "description": "A user with standard access to a shared drive uses that legitimate access to copy large volumes of sensitive files to removable media or a personal cloud account, outside any normal business need.",
+      "likelihood": {"mode": "quantitative", "amount": 0.5},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-284", "title": "Improper Access Control"}
+      ],
+      "defence_refs": ["defence-dlp-file-share-monitoring"]
+    },
+    {
+      "ref": "attack-lost-unencrypted-laptop",
+      "uuid": "b3000000-0000-4000-8000-00000000000b",
+      "title": "Loss or theft of a laptop with unencrypted local storage",
+      "description": "A laptop is left behind, lost, or stolen while its disk is unencrypted or its encryption key is trivially recoverable, allowing whoever finds it to read locally stored files and cached credentials directly.",
+      "likelihood": {"mode": "quantitative", "amount": 0.8},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-311", "title": "Missing Encryption of Sensitive Data"}
+      ],
+      "defence_refs": ["defence-disk-encryption-laptops"]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-mfa-domain-vpn",
+      "uuid": "b3000000-0000-4000-8000-00000000000c",
+      "title": "Multi-factor authentication on domain and VPN logins",
+      "description": "A second authentication factor is required for every VPN connection and, separately, for interactive domain logins from an unrecognised device.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 8000,
+      "opex_annual_amount": 12000,
+      "links": {
+        "attack-phishing-initial-foothold": {
+          "strength": {"mode": "quantitative", "fraction": 0.5},
+          "reduction_target": "likelihood",
+          "rationale": "Stops straightforward reuse of a phished password, but code execution from a malicious attachment does not require re-authenticating, so the reduction is only partial."
+        },
+        "attack-vpn-credential-compromise": {
+          "strength": {"mode": "quantitative", "fraction": 0.85},
+          "reduction_target": "likelihood",
+          "rationale": "A leaked or reused password alone is no longer sufficient to establish a VPN session, closing off the great majority of this attack path."
+        }
+      }
+    },
+    {
+      "ref": "defence-network-segmentation",
+      "uuid": "b3000000-0000-4000-8000-00000000000d",
+      "title": "Segmentation of the internal network into isolated zones",
+      "description": "Firewalled VLANs separating staff wireless, guest wireless, general office endpoints and the server/domain-controller zone, with only the specific ports each zone needs open between them.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 25000,
+      "opex_annual_amount": 4000,
+      "links": {
+        "attack-unpatched-server-exploit": {
+          "strength": {"mode": "qualitative", "level_code": "strong"},
+          "reduction_target": "likelihood",
+          "rationale": "A compromised ordinary endpoint would no longer have a network path to the server zone at all, removing this step for most starting positions."
+        },
+        "attack-rogue-wifi-device": {
+          "strength": {"mode": "qualitative", "level_code": "moderate"},
+          "reduction_target": "likelihood",
+          "rationale": "A rogue device on the wireless VLAN is confined to that zone's limited reachable services rather than the whole internal network."
+        }
+      }
+    },
+    {
+      "ref": "defence-patch-management",
+      "uuid": "b3000000-0000-4000-8000-00000000000e",
+      "title": "Scheduled patch management for internal servers",
+      "description": "A monthly patch cycle for internal server operating systems and line-of-business applications, with an expedited path for vulnerabilities rated critical.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 0,
+      "opex_annual_amount": 15000,
+      "links": {
+        "attack-unpatched-server-exploit": {
+          "strength": {"mode": "quantitative", "fraction": 0.65},
+          "reduction_target": "likelihood",
+          "rationale": "Closes the known-vulnerability window for most servers within the monthly cycle, though the excluded legacy applications remain exposed."
+        }
+      }
+    },
+    {
+      "ref": "defence-edr-endpoint-detection",
+      "uuid": "b3000000-0000-4000-8000-00000000000f",
+      "title": "Endpoint detection and response agent on all managed devices",
+      "description": "An EDR agent on every managed laptop, desktop and server that flags anomalous process behaviour, lateral-movement tooling and known malware signatures, with alerts routed to the on-call security contact.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 12000,
+      "opex_annual_amount": 18000,
+      "links": {
+        "attack-phishing-initial-foothold": {
+          "strength": {"mode": "quantitative", "fraction": 0.4},
+          "reduction_target": "likelihood",
+          "rationale": "Catches a meaningful share of the malicious payloads and macro behaviour seen after a phishing click, but a purely credential-harvesting page leaves no endpoint artefact to detect."
+        },
+        "attack-unpatched-server-exploit": {
+          "strength": {"mode": "quantitative", "fraction": 0.3},
+          "reduction_target": "likelihood",
+          "rationale": "Detects common post-exploitation and lateral-movement tooling, but does not prevent the initial exploit of the unpatched service itself."
+        },
+        "attack-rogue-wifi-device": {
+          "strength": {"mode": "qualitative", "level_code": "weak"},
+          "reduction_target": "likelihood",
+          "rationale": "The rogue device itself is typically unmanaged and outside EDR coverage; this only helps once it starts interacting with a managed endpoint."
+        }
+      }
+    },
+    {
+      "ref": "defence-disk-encryption-laptops",
+      "uuid": "b3000000-0000-4000-8000-000000000010",
+      "title": "Full-disk encryption on the laptop fleet",
+      "description": "Full-disk encryption enabled by default on every company laptop image, with recovery keys escrowed centrally rather than left with the end user.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 0,
+      "opex_annual_amount": 1500,
+      "links": {
+        "attack-lost-unencrypted-laptop": {
+          "strength": {"mode": "quantitative", "fraction": 0.95},
+          "reduction_target": "likelihood",
+          "rationale": "A lost or stolen laptop with full-disk encryption enabled exposes essentially nothing to whoever recovers it, absent a targeted attack on the recovery key escrow."
+        }
+      }
+    },
+    {
+      "ref": "defence-dlp-file-share-monitoring",
+      "uuid": "b3000000-0000-4000-8000-000000000011",
+      "title": "Data-loss-prevention monitoring on shared drives",
+      "description": "Monitoring rules on the file-share platform that flag unusually large downloads, transfers to removable media, or uploads to unapproved cloud destinations for review.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 6000,
+      "opex_annual_amount": 5000,
+      "links": {
+        "attack-file-share-insider-abuse": {
+          "strength": {"mode": "qualitative", "level_code": "moderate"},
+          "reduction_target": "likelihood",
+          "rationale": "Raises the chance that a bulk copy is noticed and interrupted, but a user who paces the copying to stay under the alert thresholds can still avoid detection."
+        }
+      }
+    },
+    {
+      "ref": "defence-nac-8021x",
+      "uuid": "b3000000-0000-4000-8000-000000000012",
+      "title": "802.1X network access control on wired and wireless ports",
+      "description": "Port-based access control requiring a valid device certificate before any switch port or wireless association is granted, intended to keep unmanaged devices off the internal network entirely.",
+      "is_transfer": false,
+      "status": "shelved",
+      "capex_amount": 20000,
+      "opex_annual_amount": 4000,
+      "links": {
+        "attack-rogue-wifi-device": {
+          "strength": {"mode": "quantitative", "fraction": 0.9},
+          "reduction_target": "likelihood",
+          "rationale": "An unauthorised device without a valid certificate would be refused network association outright, which is why the figure is high despite the control being shelved."
+        }
+      }
+    },
+    {
+      "ref": "defence-cyber-insurance-mspa",
+      "uuid": "b3000000-0000-4000-8000-000000000013",
+      "title": "Cyber insurance policy with managed-security-provider liability clause",
+      "description": "An annual cyber insurance policy covering incident-response, forensic and business-interruption costs, combined with a contractual liability clause in the managed-security-provider agreement that shifts a portion of loss back to the provider if a failure of their monitoring service contributed to the incident.",
+      "is_transfer": true,
+      "status": "implemented",
+      "capex_amount": null,
+      "opex_annual_amount": 22000,
+      "links": {
+        "attack-phishing-initial-foothold": {
+          "strength": {"mode": "quantitative", "fraction": 0.35},
+          "reduction_target": "impact",
+          "rationale": "Policy deductible and sub-limits mean roughly a third of the retained loss on an incident reached through this path is reimbursed on average."
+        },
+        "attack-unpatched-server-exploit": {
+          "strength": {"mode": "quantitative", "fraction": 0.25},
+          "reduction_target": "impact",
+          "rationale": "Lower coverage than the phishing path, since losses traced to a known, unpatched vulnerability that exceeded the patch policy's own SLA are more likely to fall under a policy exclusion."
+        }
+      }
+    }
+  ]
+}

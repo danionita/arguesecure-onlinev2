@@ -1,0 +1,4 @@
+# rsync, to copy the checkout into a Docker volume before the checks run.
+# See checks.sh for why the checks never run against a bind mount directly.
+FROM alpine:3.20
+RUN apk add --no-cache rsync

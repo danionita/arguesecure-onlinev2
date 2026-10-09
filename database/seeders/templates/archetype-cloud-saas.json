@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "archetype-cloud-saas",
+  "root_uuid": "b2000000-0000-4000-8000-000000000001",
+  "title": "Multi-tenant SaaS — cloud-hosted B2B product",
+  "description": "A multi-tenant B2B SaaS product running on a public cloud provider: managed Kubernetes hosting the application tiers, a managed relational database shared across tenants via row-level isolation, object storage for tenant file uploads and backups, IAM roles granting workload and human access, and a CI/CD pipeline that deploys straight to production. Seeded as a starting-point template for teams assessing this class of system.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {"name": "Multi-tenant", "color": "#8B5CF6"},
+    {"name": "Cloud-IAM", "color": "#DC2626"},
+    {"name": "Availability", "color": "#0EA5E9"}
+  ],
+  "risks": [
+    {
+      "ref": "risk-cross-tenant-leak",
+      "uuid": "b2000000-0000-4000-8000-000000000002",
+      "title": "Cross-tenant data leak",
+      "description": "A flaw in access control, storage configuration or query scoping allows one tenant's data — records, files or backups — to become visible to another tenant or to the public internet.",
+      "impact": {"mode": "quantitative", "amount": 400000},
+      "tags": ["Multi-tenant", "Cloud-IAM"],
+      "attack_refs": ["attack-leaked-cicd-key", "attack-overprivileged-iam", "attack-exposed-bucket"]
+    },
+    {
+      "ref": "risk-cloud-account-compromise",
+      "uuid": "b2000000-0000-4000-8000-000000000003",
+      "title": "Compromise of the production cloud account",
+      "description": "An attacker obtains credentials or a foothold with administrative reach over the cloud account itself, gaining the ability to read, modify or destroy any resource in the production environment.",
+      "impact": {"mode": "quantitative", "amount": 550000},
+      "tags": ["Cloud-IAM"],
+      "attack_refs": ["attack-leaked-cicd-key", "attack-supply-chain-cicd"]
+    },
+    {
+      "ref": "risk-service-disruption",
+      "uuid": "b2000000-0000-4000-8000-000000000004",
+      "title": "Service disruption through runaway cloud cost",
+      "description": "An attacker drives up managed-service usage — compute autoscaling, egress, API calls — to the point where the monthly bill becomes unsustainable, forcing an emergency capacity cut that degrades service for every tenant.",
+      "impact": {"mode": "qualitative", "level_code": "major"},
+      "tags": ["Availability"],
+      "attack_refs": ["attack-denial-of-wallet"]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-leaked-cicd-key",
+      "uuid": "b2000000-0000-4000-8000-000000000005",
+      "title": "Leaked cloud API key in the CI/CD pipeline",
+      "description": "A long-lived cloud credential committed to a repository, logged in build output, or left in a pipeline configuration is discovered and reused by an attacker to call the cloud provider's API directly.",
+      "likelihood": {"mode": "quantitative", "amount": 0.3},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-798", "title": "Use of Hard-coded Credentials"}
+      ],
+      "defence_refs": ["defence-least-privilege-iam", "defence-secrets-vault", "defence-cyber-insurance-cloud"]
+    },
+    {
+      "ref": "attack-overprivileged-iam",
+      "uuid": "b2000000-0000-4000-8000-000000000006",
+      "title": "Exploitation of an over-privileged service account",
+      "description": "A workload's IAM role was granted broader read or write access than the workload actually needs; an attacker who compromises that workload inherits the excess privilege and reaches resources belonging to other tenants.",
+      "likelihood": {"mode": "qualitative", "level_code": "possible"},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-269", "title": "Improper Privilege Management"}
+      ],
+      "defence_refs": ["defence-least-privilege-iam", "defence-tenant-isolation-tests"]
+    },
+    {
+      "ref": "attack-exposed-bucket",
+      "uuid": "b2000000-0000-4000-8000-000000000007",
+      "title": "Publicly exposed object-storage bucket",
+      "description": "A storage bucket holding tenant file uploads or database backups is misconfigured with public or overly broad read access, allowing anyone with the bucket name or a guessed object path to retrieve its contents.",
+      "likelihood": {"mode": "quantitative", "amount": 0.5},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-284", "title": "Improper Access Control"}
+      ],
+      "defence_refs": ["defence-bucket-policy-scanning", "defence-tenant-isolation-tests", "defence-legacy-shared-schema"]
+    },
+    {
+      "ref": "attack-supply-chain-cicd",
+      "uuid": "b2000000-0000-4000-8000-000000000008",
+      "title": "Supply-chain compromise of the CI/CD pipeline",
+      "description": "A malicious or compromised third-party dependency, base container image, or pipeline plugin executes attacker-controlled code during the build, with the same deployment privileges as the legitimate pipeline.",
+      "likelihood": {"mode": "qualitative", "level_code": "unlikely"},
+      "references": [
+        {"kind": "attack_technique", "identifier": "T1195", "title": "Supply Chain Compromise"}
+      ],
+      "defence_refs": ["defence-secrets-vault", "defence-sbom-scanning"]
+    },
+    {
+      "ref": "attack-denial-of-wallet",
+      "uuid": "b2000000-0000-4000-8000-000000000009",
+      "title": "Cost-based denial of wallet",
+      "description": "An attacker deliberately triggers expensive, auto-scaling operations — large file processing jobs, expensive API endpoints, or egress-heavy requests — repeatedly enough to inflate the cloud bill far beyond its normal range.",
+      "likelihood": {"mode": "quantitative", "amount": 1.2},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-770", "title": "Allocation of Resources Without Limits or Throttling"}
+      ],
+      "defence_refs": ["defence-cyber-insurance-cloud", "defence-billing-guardrails"]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-least-privilege-iam",
+      "uuid": "b2000000-0000-4000-8000-00000000000a",
+      "title": "Least-privilege IAM roles for workloads and pipelines",
+      "description": "Every workload and pipeline identity is scoped to a role granting only the specific resources and actions it needs, reviewed on a fixed schedule rather than left as originally provisioned.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 8000,
+      "opex_annual_amount": 12000,
+      "links": {
+        "attack-leaked-cicd-key": {
+          "strength": {"mode": "quantitative", "fraction": 0.6},
+          "reduction_target": "impact",
+          "rationale": "A leaked key tied to a narrowly-scoped role limits what an attacker can reach even after the credential itself is compromised."
+        },
+        "attack-overprivileged-iam": {
+          "strength": {"mode": "quantitative", "fraction": 0.75},
+          "reduction_target": "likelihood",
+          "rationale": "Directly removes the excess grants this attack depends on; residual risk comes from roles awaiting their next scheduled review."
+        }
+      }
+    },
+    {
+      "ref": "defence-secrets-vault",
+      "uuid": "b2000000-0000-4000-8000-00000000000b",
+      "title": "Centralised secrets manager with short-lived credentials",
+      "description": "Cloud API credentials used by the pipeline and workloads are issued as short-lived tokens from a secrets manager at run time, rather than stored as static keys in configuration or source control.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 6000,
+      "opex_annual_amount": 9000,
+      "links": {
+        "attack-leaked-cicd-key": {
+          "strength": {"mode": "quantitative", "fraction": 0.7},
+          "reduction_target": "likelihood",
+          "rationale": "Short-lived tokens sharply shrink the window in which a leaked credential is still valid, and static long-lived keys are removed from most of the pipeline entirely."
+        },
+        "attack-supply-chain-cicd": {
+          "strength": {"mode": "qualitative", "level_code": "moderate"},
+          "reduction_target": "impact",
+          "rationale": "Malicious code running mid-build still inherits the token's scope for that run, but no longer gains a durable, reusable credential to carry forward afterward."
+        }
+      }
+    },
+    {
+      "ref": "defence-bucket-policy-scanning",
+      "uuid": "b2000000-0000-4000-8000-00000000000c",
+      "title": "Automated public-access scanning for storage buckets",
+      "description": "A scheduled scan checks every storage bucket's access policy against an allow-list of expected configurations and alerts on any bucket found to be publicly readable or writable.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 3000,
+      "opex_annual_amount": 2500,
+      "links": {
+        "attack-exposed-bucket": {
+          "strength": {"mode": "quantitative", "fraction": 0.65},
+          "reduction_target": "likelihood",
+          "rationale": "Catches a misconfiguration within one scan cycle rather than leaving it exposed indefinitely; does not prevent the misconfiguration from happening in the first place."
+        }
+      }
+    },
+    {
+      "ref": "defence-sbom-scanning",
+      "uuid": "b2000000-0000-4000-8000-00000000000d",
+      "title": "Software bill of materials and dependency scanning",
+      "description": "Every build produces a software bill of materials, and dependencies and base images are checked against known-vulnerability and known-malicious-package feeds before a build is allowed to deploy.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 4000,
+      "opex_annual_amount": 5000,
+      "links": {
+        "attack-supply-chain-cicd": {
+          "strength": {"mode": "qualitative", "level_code": "moderate"},
+          "reduction_target": "likelihood",
+          "rationale": "Blocks dependencies already known to be malicious or vulnerable, but offers no protection against a novel, not-yet-flagged compromise."
+        }
+      }
+    },
+    {
+      "ref": "defence-tenant-isolation-tests",
+      "uuid": "b2000000-0000-4000-8000-00000000000e",
+      "title": "Automated tenant-isolation test suite",
+      "description": "A dedicated test suite runs against every deployment, attempting cross-tenant reads and writes using each tenant's own credentials, and blocks the release if any cross-tenant access succeeds.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 10000,
+      "opex_annual_amount": 6000,
+      "links": {
+        "attack-overprivileged-iam": {
+          "strength": {"mode": "quantitative", "fraction": 0.5},
+          "reduction_target": "likelihood",
+          "rationale": "Catches isolation failures that stem from an over-broad role being exercised through the application layer; does not catch direct, out-of-band API access with the same role."
+        },
+        "attack-exposed-bucket": {
+          "strength": {"mode": "qualitative", "level_code": "limited"},
+          "reduction_target": "likelihood",
+          "rationale": "Exercises the application's own access paths to storage, but a bucket made public at the infrastructure layer is reachable outside any path the test suite drives."
+        }
+      }
+    },
+    {
+      "ref": "defence-legacy-shared-schema",
+      "uuid": "b2000000-0000-4000-8000-00000000000f",
+      "title": "Legacy shared-schema isolation approach (superseded)",
+      "description": "An earlier isolation model that relied on application-level filtering of a single shared database schema and bucket prefix, rather than provider-enforced access boundaries. Superseded by per-tenant scoping but referenced here for historical context.",
+      "is_transfer": false,
+      "status": "shelved",
+      "capex_amount": 2000,
+      "opex_annual_amount": 500,
+      "links": {
+        "attack-exposed-bucket": {
+          "strength": {"mode": "quantitative", "fraction": 0.1},
+          "reduction_target": "likelihood",
+          "rationale": "Prefix-based filtering offered only superficial separation and did nothing to prevent the underlying bucket itself from being made public."
+        }
+      }
+    },
+    {
+      "ref": "defence-cyber-insurance-cloud",
+      "uuid": "b2000000-0000-4000-8000-000000000010",
+      "title": "Cyber insurance with cloud-incident coverage",
+      "description": "An annual policy covering breach-response costs, forensic investigation, business-interruption loss and a portion of unexpected cloud usage charges arising from a confirmed security incident.",
+      "is_transfer": true,
+      "status": "implemented",
+      "capex_amount": null,
+      "opex_annual_amount": 22000,
+      "links": {
+        "attack-leaked-cicd-key": {
+          "strength": {"mode": "quantitative", "fraction": 0.35},
+          "reduction_target": "impact",
+          "rationale": "Policy deductible and sub-limits mean roughly a third of the loss on an incident reached through this path is reimbursed on average."
+        },
+        "attack-denial-of-wallet": {
+          "strength": {"mode": "qualitative", "level_code": "limited"},
+          "reduction_target": "impact",
+          "rationale": "The policy's cloud-usage-spike rider covers only charges above a high threshold, so it offsets a modest share of a typical incident's cost."
+        }
+      }
+    },
+    {
+      "ref": "defence-billing-guardrails",
+      "uuid": "b2000000-0000-4000-8000-000000000011",
+      "title": "Budget alerts and per-tenant rate limiting",
+      "description": "Hard rate limits on expensive API endpoints per tenant, combined with budget alerts that page the on-call engineer when spend accelerates beyond the normal range for the time of day.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 3500,
+      "opex_annual_amount": 1500,
+      "links": {
+        "attack-denial-of-wallet": {
+          "strength": {"mode": "quantitative", "fraction": 0.55},
+          "reduction_target": "likelihood",
+          "rationale": "Per-tenant limits cap how much cost a single abusive actor can generate before being throttled, though a slow, low-and-steady abuse pattern can still stay under the alert threshold."
+        }
+      }
+    }
+  ]
+}

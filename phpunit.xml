@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
+        <env name="CACHE_STORE" value="array"/>
+        <!--
+            A Redis database the suite owns outright, so TestCase::setUp can
+            flush it between tests without touching the running dev app's
+            cache, locks or queue on the same server.
+
+            CACHE_STORE=array above does NOT cover this. CalculationCache and
+            the W16 field locks use the Redis facade directly rather than the
+            cache abstraction, so they land on the default connection's
+            database regardless of the cache store. Nothing rolled that back
+            between tests, and cache keys are built from assessments.id, which
+            restarts from 1 on every fresh migration — so a key one run wrote
+            became a live hit for an unrelated assessment in the next, and
+            tests asserting a cache miss failed based on what earlier runs had
+            left behind. CI never saw it: it gets a clean Redis container every
+            time, so the failure only ever appeared on a developer machine.
+        -->
+        <env name="REDIS_DB" value="15"/>
+        <!--
+            No DB_* here on purpose. The schema is MariaDB-specific (FULLTEXT,
+            a generated column, CHECK constraints), so the suite cannot run on
+            SQLite, and anything set here would win over .env.testing: PHPUnit
+            exports these as real environment variables, and Dotenv never
+            overrides a variable that already exists.
+
+            Connection details come from .env.testing locally and from real
+            environment variables in CI (.github/workflows/ci.yml), which keeps
+            credentials out of every tracked file.
+
+            Local setup: start the db and redis services with docker compose,
+            create a database for tests, then write .env.testing with
+            APP_ENV=testing, an APP_KEY (artisan key:generate accepts an env
+            option), DB_CONNECTION=mysql, DB_HOST=127.0.0.1, and that
+            database's name and credentials.
+
+            Note for future editors: an XML comment may not contain a double
+            hyphen, so command flags cannot be written literally here.
+
+            Note DB_HOST differs by side of the network: .env targets the
+            stack (DB_HOST=db) because the containers read it via env_file,
+            while .env.testing targets the host (127.0.0.1) because the suite
+            runs on host PHP against the port docker-compose.override.yml
+            publishes. Same arrangement CI uses.
+        -->
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="PULSE_ENABLED" value="false"/>
+        <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="NIGHTWATCH_ENABLED" value="false"/>
+    </php>
+</phpunit>

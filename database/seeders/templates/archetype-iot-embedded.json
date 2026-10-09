@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "archetype-iot-embedded",
+  "root_uuid": "b4000000-0000-4000-8000-000000000001",
+  "title": "Connected home device — firmware, companion app and cloud backend",
+  "description": "A consumer IoT product: an embedded device with field-updatable firmware, a companion mobile app used to provision and control it, and a cloud backend the device phones home to for telemetry and remote commands. Seeded as a starting template for the IoT / embedded system archetype, covering the device, the app, the backend and physical access to the unit itself.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {"name": "Safety-Critical", "color": "#DC2626"},
+    {"name": "PII", "color": "#3B82F6"},
+    {"name": "Firmware", "color": "#F59E0B"}
+  ],
+  "risks": [
+    {
+      "ref": "risk-firmware-tampering-safety",
+      "uuid": "b4000000-0000-4000-8000-000000000002",
+      "title": "Malicious firmware causes unsafe device behaviour",
+      "description": "Tampered firmware makes the device act outside its safe operating envelope (for example overriding a thermal cutoff or a physical lock state), leading to a safety incident and a mandatory field recall of the affected product line.",
+      "impact": {"mode": "quantitative", "amount": 1200000},
+      "tags": ["Safety-Critical", "Firmware"],
+      "attack_refs": ["attack-unauth-firmware-update", "attack-physical-debug-port"]
+    },
+    {
+      "ref": "risk-botnet-recruitment",
+      "uuid": "b4000000-0000-4000-8000-000000000003",
+      "title": "Devices recruited into a botnet",
+      "description": "A large fraction of the installed base is compromised and used for outbound DDoS or spam traffic, resulting in ISP-level blacklisting of the vendor's cloud ranges, a mandatory patch campaign, and penalty clauses in retail-partner contracts for shipping vulnerable units.",
+      "impact": {"mode": "quantitative", "amount": 350000},
+      "tags": ["Firmware"],
+      "attack_refs": ["attack-unauth-firmware-update", "attack-hardcoded-credentials"]
+    },
+    {
+      "ref": "risk-customer-pii-exposure",
+      "uuid": "b4000000-0000-4000-8000-000000000004",
+      "title": "Customer PII exposed via companion app or cloud backend",
+      "description": "An attacker obtains customer account details, device location history and usage patterns, either by extracting credentials from the companion app or by pulling records directly from the cloud backend, triggering breach-notification duties and regulator attention.",
+      "impact": {"mode": "qualitative", "level_code": "major"},
+      "tags": ["PII"],
+      "attack_refs": ["attack-companion-app-insecure-storage", "attack-insecure-cloud-api"]
+    },
+    {
+      "ref": "risk-mass-account-takeover",
+      "uuid": "b4000000-0000-4000-8000-000000000005",
+      "title": "Mass unauthorized control of customer devices via the cloud API",
+      "description": "An attacker exploits authorization flaws in the backend API to enumerate and take over many customer accounts at once, then issues commands to their devices at scale — unlocking, disabling, or otherwise overriding safety-relevant settings — for extortion or as a public demonstration of the product's insecurity.",
+      "impact": {"mode": "qualitative", "level_code": "severe"},
+      "tags": ["PII", "Safety-Critical"],
+      "attack_refs": ["attack-insecure-cloud-api", "attack-telemetry-command-spoofing"]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-unauth-firmware-update",
+      "uuid": "b4000000-0000-4000-8000-000000000006",
+      "title": "Malicious firmware pushed via an unauthenticated update channel",
+      "description": "The device fetches firmware images over an unencrypted connection with no signature verification, letting a network-position attacker or a spoofed update server deliver an attacker-controlled image that the device installs without question.",
+      "likelihood": {"mode": "quantitative", "amount": 0.3},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-494", "title": "Download of Code Without Integrity Check"},
+        {"kind": "capec", "identifier": "CAPEC-441", "title": "Malicious Firmware"}
+      ],
+      "defence_refs": ["defence-signed-firmware", "defence-tls-device-cloud", "defence-product-liability-insurance"]
+    },
+    {
+      "ref": "attack-hardcoded-credentials",
+      "uuid": "b4000000-0000-4000-8000-000000000007",
+      "title": "Login using hardcoded or default device credentials",
+      "description": "A factory-set username and password, identical across the entire product line and either baked into the firmware or documented in a public manual, gives an attacker shell or administrative access to any unit they can reach.",
+      "likelihood": {"mode": "qualitative", "level_code": "likely"},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-798", "title": "Use of Hard-coded Credentials"},
+        {"kind": "cwe", "identifier": "CWE-1188", "title": "Insecure Default Initialization of Resource"}
+      ],
+      "defence_refs": ["defence-unique-per-device-credentials", "defence-legacy-shared-secret-scheme"]
+    },
+    {
+      "ref": "attack-insecure-cloud-api",
+      "uuid": "b4000000-0000-4000-8000-000000000008",
+      "title": "Exploitation of the device cloud backend API",
+      "description": "Missing per-device authorization checks on the backend API let an authenticated attacker change a device identifier in a request and act on a unit they do not own, from reading its telemetry to issuing it commands.",
+      "likelihood": {"mode": "quantitative", "amount": 0.5},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-306", "title": "Missing Authentication for Critical Function"},
+        {"kind": "attack_technique", "identifier": "T1190", "title": "Exploit Public-Facing Application"}
+      ],
+      "defence_refs": ["defence-tls-device-cloud", "defence-cloud-api-rate-limit-authz", "defence-product-liability-insurance"]
+    },
+    {
+      "ref": "attack-companion-app-insecure-storage",
+      "uuid": "b4000000-0000-4000-8000-000000000009",
+      "title": "Extraction of credentials from the companion mobile app",
+      "description": "The companion app writes the account session token and the Wi-Fi credentials used to provision the device to plaintext local storage, recoverable by another app on the same phone, from a phone backup, or from a lost or resold handset.",
+      "likelihood": {"mode": "qualitative", "level_code": "possible"},
+      "references": [],
+      "defence_refs": ["defence-mobile-app-secure-storage"]
+    },
+    {
+      "ref": "attack-physical-debug-port",
+      "uuid": "b4000000-0000-4000-8000-00000000000a",
+      "title": "Firmware extraction via an exposed physical debug port",
+      "description": "An accessible UART or JTAG header on the production circuit board lets anyone with brief physical access to a purchased or stolen unit dump the running firmware image and any secrets embedded in it, or flash a modified image directly onto the board.",
+      "likelihood": {"mode": "qualitative", "level_code": "rare"},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-1191", "title": "Exposed Debug/Test Interface"}
+      ],
+      "defence_refs": ["defence-secure-boot-debug-lockdown"]
+    },
+    {
+      "ref": "attack-telemetry-command-spoofing",
+      "uuid": "b4000000-0000-4000-8000-00000000000b",
+      "title": "Replay and spoofing of device telemetry and commands",
+      "description": "Without a freshness or sequence check on messages, a captured telemetry report or command can be recorded and replayed later, or a forged command can be injected onto the channel as if it came from the legitimate app.",
+      "likelihood": {"mode": "quantitative", "amount": 0.2},
+      "references": [
+        {"kind": "capec", "identifier": "CAPEC-60", "title": "Reusing Session IDs (aka Session Replay)"}
+      ],
+      "defence_refs": ["defence-tls-device-cloud", "defence-cloud-api-rate-limit-authz"]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-signed-firmware",
+      "uuid": "b4000000-0000-4000-8000-00000000000c",
+      "title": "Cryptographically signed firmware with mandatory verification",
+      "description": "Every firmware image is signed by the manufacturer's build pipeline, and the bootloader refuses to flash or boot an image whose signature does not verify against the embedded manufacturer key.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 40000,
+      "opex_annual_amount": 6000,
+      "links": {
+        "attack-unauth-firmware-update": {
+          "strength": {"mode": "quantitative", "fraction": 0.85},
+          "reduction_target": "likelihood",
+          "rationale": "An unsigned or tampered image is rejected outright by the bootloader; only a compromise of the signing key itself, which is held offline, would defeat this."
+        }
+      }
+    },
+    {
+      "ref": "defence-tls-device-cloud",
+      "uuid": "b4000000-0000-4000-8000-00000000000d",
+      "title": "TLS with certificate pinning for all device-to-cloud traffic",
+      "description": "Firmware downloads, telemetry uploads and command delivery all move to TLS 1.2+, with the device pinning the backend's certificate and refusing to talk to any endpoint presenting an unpinned or self-signed certificate.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 25000,
+      "opex_annual_amount": 4000,
+      "links": {
+        "attack-unauth-firmware-update": {
+          "strength": {"mode": "qualitative", "level_code": "strong"},
+          "reduction_target": "likelihood",
+          "rationale": "Certificate pinning closes off the network-position and spoofed-update-server routes that this attack relies on, independent of the signature check itself."
+        },
+        "attack-insecure-cloud-api": {
+          "strength": {"mode": "quantitative", "fraction": 0.3},
+          "reduction_target": "likelihood",
+          "rationale": "Encrypting the channel stops a passive observer from harvesting session tokens in transit, but does nothing about the missing authorization check that this attack actually exploits, hence the modest rating."
+        },
+        "attack-telemetry-command-spoofing": {
+          "strength": {"mode": "quantitative", "fraction": 0.6},
+          "reduction_target": "likelihood",
+          "rationale": "TLS session framing makes a naively captured-and-replayed message harder to reuse verbatim, though it does not add an explicit freshness check on its own."
+        }
+      }
+    },
+    {
+      "ref": "defence-unique-per-device-credentials",
+      "uuid": "b4000000-0000-4000-8000-00000000000e",
+      "title": "Unique per-device credentials generated at provisioning",
+      "description": "Each unit is provisioned at the factory with a randomly generated, device-unique administrative password and API key, printed on a removable label, replacing the single credential shared across the whole product line.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 18000,
+      "opex_annual_amount": 1000,
+      "links": {
+        "attack-hardcoded-credentials": {
+          "strength": {"mode": "quantitative", "fraction": 0.9},
+          "reduction_target": "likelihood",
+          "rationale": "Compromising one unit's credential no longer yields access to any other unit; only reduces the impact of a factory-database leak rather than the per-device brute-force route, hence short of full coverage."
+        }
+      }
+    },
+    {
+      "ref": "defence-secure-boot-debug-lockdown",
+      "uuid": "b4000000-0000-4000-8000-00000000000f",
+      "title": "Secure boot and disabled debug ports on production units",
+      "description": "The JTAG and UART headers are electrically fused off after factory test, and a secure boot chain refuses to execute an unsigned image even if an attacker manages to reflash the chip directly through the remaining physical interfaces.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 30000,
+      "opex_annual_amount": 500,
+      "links": {
+        "attack-physical-debug-port": {
+          "strength": {"mode": "qualitative", "level_code": "strong"},
+          "reduction_target": "likelihood",
+          "rationale": "Removes the two most direct physical extraction paths at once; a sufficiently resourced attacker with chip-level lab equipment is still out of scope for this control."
+        }
+      }
+    },
+    {
+      "ref": "defence-mobile-app-secure-storage",
+      "uuid": "b4000000-0000-4000-8000-000000000010",
+      "title": "Platform keystore storage for companion app secrets",
+      "description": "The companion app moves the account session token and the Wi-Fi credentials used during provisioning out of plaintext local storage and into the operating system's keystore or keychain, encrypted at rest and scoped to the app.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 8000,
+      "opex_annual_amount": 500,
+      "links": {
+        "attack-companion-app-insecure-storage": {
+          "strength": {"mode": "quantitative", "fraction": 0.75},
+          "reduction_target": "likelihood",
+          "rationale": "Keystore-backed secrets are no longer readable by another app or a simple filesystem dump; a rooted or jailbroken phone in the attacker's possession can still extract them, hence short of full coverage."
+        }
+      }
+    },
+    {
+      "ref": "defence-cloud-api-rate-limit-authz",
+      "uuid": "b4000000-0000-4000-8000-000000000011",
+      "title": "Per-device authorization checks and rate limiting on the cloud API",
+      "description": "Every API call is checked against the caller's own recorded device ownership before it is allowed to touch a device record, and request rates are capped per account to slow down enumeration attempts that try to find valid device identifiers.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 20000,
+      "opex_annual_amount": 5000,
+      "links": {
+        "attack-insecure-cloud-api": {
+          "strength": {"mode": "quantitative", "fraction": 0.8},
+          "reduction_target": "likelihood",
+          "rationale": "Directly closes the missing-authorization gap this attack depends on; the remaining fraction accounts for an attacker who compromises a legitimately owned device's own credentials instead."
+        },
+        "attack-telemetry-command-spoofing": {
+          "strength": {"mode": "qualitative", "level_code": "moderate"},
+          "reduction_target": "likelihood",
+          "rationale": "Rate limiting makes a bulk replay campaign harder to run unnoticed, but does not add a per-message freshness check, so a low-volume targeted replay still gets through."
+        }
+      }
+    },
+    {
+      "ref": "defence-legacy-shared-secret-scheme",
+      "uuid": "b4000000-0000-4000-8000-000000000012",
+      "title": "Legacy shared factory secret authentication (deprecated)",
+      "description": "The original authentication scheme, in which every unit in a product line embedded the same factory secret, now superseded by the per-device credential rollout and kept only as a reference point for units still in the field.",
+      "is_transfer": false,
+      "status": "shelved",
+      "capex_amount": null,
+      "opex_annual_amount": 0,
+      "links": {
+        "attack-hardcoded-credentials": {
+          "strength": {"mode": "qualitative", "level_code": "weak"},
+          "reduction_target": "likelihood",
+          "rationale": "Offered no meaningful resistance once the shared secret leaked once, which is exactly what happened and is why the scheme was retired."
+        }
+      }
+    },
+    {
+      "ref": "defence-product-liability-insurance",
+      "uuid": "b4000000-0000-4000-8000-000000000013",
+      "title": "Product liability insurance and limitation-of-liability clause",
+      "description": "An annual liability policy covering recall and safety-incident response costs, combined with a limitation-of-liability clause in the end-user terms of use that caps claims for consequential damages arising from a security incident.",
+      "is_transfer": true,
+      "status": "implemented",
+      "capex_amount": null,
+      "opex_annual_amount": 22000,
+      "links": {
+        "attack-unauth-firmware-update": {
+          "strength": {"mode": "quantitative", "fraction": 0.35},
+          "reduction_target": "impact",
+          "rationale": "Policy sub-limits and the deductible mean roughly a third of the loss on an incident reached through this path is reimbursed or capped on average."
+        },
+        "attack-insecure-cloud-api": {
+          "strength": {"mode": "quantitative", "fraction": 0.25},
+          "reduction_target": "impact",
+          "rationale": "Lower coverage than the firmware path: the policy excludes losses traced to a known, unpatched authorization flaw once it has been formally reported internally, which this finding already has been."
+        }
+      }
+    }
+  ]
+}

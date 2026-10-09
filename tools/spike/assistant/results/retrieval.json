@@ -1,0 +1,188 @@
+{
+  "sections": 26,
+  "corpusChars": 19351,
+  "corpusApproxTokens": 4838,
+  "questions": 16,
+  "recallAt1": 0.6875,
+  "recallAt3": 0.8125,
+  "meanTop3Chars": 2460,
+  "meanTop3ApproxTokens": 615,
+  "rows": [
+    {
+      "question": "What is the difference between a defence and a transfer?",
+      "expected": "concepts#Concepts",
+      "got": [
+        "concepts#Concepts",
+        "reading-a-report#Producing a PDF",
+        "quantification#What a missing value does — and the deliberate asymmetry"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "Can the same attack show up under two risks?",
+      "expected": "concepts#Why this is a DAG, not a tree",
+      "got": [
+        "concepts#Why this is a DAG, not a tree",
+        "quantification#Stacking defences assumes independence",
+        "quantification#Reading the totals"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "Why did my total not move when I set a reduction target?",
+      "expected": "quantification#Reduction target does not change the total",
+      "got": [
+        "quantification#Reduction target does not change the total",
+        "reading-a-report#What's in it",
+        "quantification#What a missing value does — and the deliberate asymmetry"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "Is impact the yearly cost or the cost each time?",
+      "expected": "quantification#Two assumptions you must not get backwards",
+      "got": [
+        "reading-a-report#What's in it",
+        "quantification#Two assumptions you must not get backwards",
+        "reading-a-report#Reading the numbers honestly"
+      ],
+      "at1": false,
+      "at3": true
+    },
+    {
+      "question": "What happens if I leave a likelihood blank?",
+      "expected": "quantification#What a missing value does — and the deliberate asymmetry",
+      "got": [
+        "quantification#Reduction target does not change the total",
+        "concepts#Concepts",
+        "quantification#Stacking defences assumes independence"
+      ],
+      "at1": false,
+      "at3": false
+    },
+    {
+      "question": "Do two controls on the same attack really multiply?",
+      "expected": "quantification#Stacking defences assumes independence",
+      "got": [
+        "quantification#Stacking defences assumes independence",
+        "concepts#Why this is a DAG, not a tree",
+        "quantification#Reduction target does not change the total"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "What do inherent, current and target mean?",
+      "expected": "quantification#Reading the totals",
+      "got": [
+        "reading-a-report#What's in it",
+        "quantification#Reading the totals",
+        "quantification#The formula"
+      ],
+      "at1": false,
+      "at3": true
+    },
+    {
+      "question": "Someone else is editing the same field as me",
+      "expected": "collaboration#Field-level locking",
+      "got": [
+        "collaboration#Field-level locking",
+        "collaboration#Collaboration and locking",
+        "sharing#Roles"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "How do I know who else has the assessment open?",
+      "expected": "collaboration#Presence",
+      "got": [
+        "keyboard#Two things to know before you rely on them",
+        "collaboration#Collaboration and locking",
+        "sharing#Sharing and roles"
+      ],
+      "at1": false,
+      "at3": false
+    },
+    {
+      "question": "Do I have to press save?",
+      "expected": "collaboration#Autosave and conflicts",
+      "got": [
+        "collaboration#Autosave and conflicts",
+        "collaboration#Collaboration and locking",
+        "sharing#The read-only share link"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "Can I let a client look without giving them an account?",
+      "expected": "sharing#The read-only share link",
+      "got": [
+        "sharing#The public flag",
+        "quantification#Stacking defences assumes independence",
+        "keyboard#Two things to know before you rely on them"
+      ],
+      "at1": false,
+      "at3": false
+    },
+    {
+      "question": "If I make it public can strangers change it?",
+      "expected": "sharing#The public flag",
+      "got": [
+        "sharing#The public flag",
+        "quantification#Reduction target does not change the total",
+        "sharing#Roles"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "What can an editor do that a viewer cannot?",
+      "expected": "sharing#Roles",
+      "got": [
+        "sharing#Roles",
+        "reading-a-report#How to read a report",
+        "keyboard#Keyboard map"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "How do I get a PDF of the report?",
+      "expected": "reading-a-report#Producing a PDF",
+      "got": [
+        "reading-a-report#Producing a PDF",
+        "quantification#Two assumptions you must not get backwards",
+        "reading-a-report#How to read a report"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "What should I check before generating the report?",
+      "expected": "reading-a-report#Before you generate it",
+      "got": [
+        "reading-a-report#Before you generate it",
+        "reading-a-report#How to read a report",
+        "quantification#The quantification model"
+      ],
+      "at1": true,
+      "at3": true
+    },
+    {
+      "question": "Is there a shortcut for adding a child node?",
+      "expected": "keyboard#Keyboard map",
+      "got": [
+        "keyboard#Keyboard map",
+        "keyboard#Two things to know before you rely on them",
+        "concepts#Why this is a DAG, not a tree"
+      ],
+      "at1": true,
+      "at3": true
+    }
+  ]
+}

@@ -1,0 +1,387 @@
+{
+  "host": "unraid",
+  "config": "gemma3-qat-draft",
+  "steps": {
+    "props": {
+      "buildInfo": "b11176-f805c57a2",
+      "modelPath": "/models/gemma-3-4b-it-qat-Q4_0.gguf",
+      "totalSlots": 1,
+      "slotContext": 12288,
+      "templateLength": 1531,
+      "templateMentionsThinking": false,
+      "modalities": {
+        "vision": false,
+        "video": false,
+        "audio": false
+      },
+      "slots": [
+        {
+          "id": 0,
+          "n_ctx": 12288,
+          "speculative": true
+        }
+      ],
+      "measuredAt": "2026-09-26T06:19:21.732Z"
+    },
+    "a-cold": {
+      "wallSeconds": 94.13,
+      "firstTokenSeconds": 75.69,
+      "finishReason": "stop",
+      "promptProcessed": 6503,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 85.94,
+      "outputTokens": 87,
+      "outputTokensPerSecond": 4.66,
+      "draftTokens": 512,
+      "draftAccepted": 54,
+      "draftAcceptance": 0.105,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6503,
+        "prompt_ms": 75673.092,
+        "prompt_per_token_ms": 11.636643395355991,
+        "prompt_per_second": 85.93543395848025,
+        "predicted_n": 87,
+        "predicted_ms": 18442.48,
+        "predicted_per_token_ms": 214.44744186046512,
+        "predicted_per_second": 4.663147255683617,
+        "draft_n": 512,
+        "draft_n_accepted": 54
+      },
+      "usage": {
+        "completion_tokens": 87,
+        "prompt_tokens": 6503,
+        "total_tokens": 6590,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A **defence** is a component or architectural decision that reduces a risk—like MFA or a firewall. It’s counted exactly like a transfer. A **transfer** is a defence that shifts the loss to someone else instead of reducing it—like a contract clause or an insurance policy. They both appear in the same list, but their icon and label differ to show their different function. See [Concepts](/help/concepts).",
+      "measuredAt": "2026-09-26T06:20:55.868Z"
+    },
+    "a-warm": {
+      "wallSeconds": 26.36,
+      "firstTokenSeconds": 1.09,
+      "finishReason": "stop",
+      "promptProcessed": 45,
+      "promptFromCache": 6460,
+      "promptTokensPerSecond": 42.08,
+      "outputTokens": 105,
+      "outputTokensPerSecond": 4.11,
+      "draftTokens": 704,
+      "draftAccepted": 60,
+      "draftAcceptance": 0.085,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 6460,
+        "prompt_n": 45,
+        "prompt_ms": 1069.453,
+        "prompt_per_token_ms": 23.765622222222223,
+        "prompt_per_second": 42.07758545723842,
+        "predicted_n": 105,
+        "predicted_ms": 25275.54,
+        "predicted_per_token_ms": 243.03403846153847,
+        "predicted_per_second": 4.114649973848234,
+        "draft_n": 704,
+        "draft_n_accepted": 60
+      },
+      "usage": {
+        "completion_tokens": 105,
+        "prompt_tokens": 6505,
+        "total_tokens": 6610,
+        "prompt_tokens_details": {
+          "cached_tokens": 6460
+        }
+      },
+      "text": "The quantification model explains that a missing value excludes that (risk, attack) pair from every total. It states: “A missing impact or a missing likelihood excludes that (risk, attack) pair from every total.” [The quantification model](/help/quantification) This means that if you don’t provide an impact or likelihood for a risk and attack combination, it won't be included in the overall assessment total. The tool doesn’t silently overwrite or discard missing values; it simply leaves the total lower.",
+      "measuredAt": "2026-09-26T06:21:22.232Z"
+    },
+    "save": {
+      "status": 200,
+      "wallSeconds": 0.05,
+      "response": {
+        "id_slot": 0,
+        "filename": "gemma3-qat-draft-help.bin",
+        "n_saved": 6609,
+        "n_written": 257106044,
+        "timings": {
+          "save_ms": 49.178
+        }
+      },
+      "measuredAt": "2026-09-26T06:21:22.284Z"
+    },
+    "restore": {
+      "status": 200,
+      "wallSeconds": 0.07,
+      "response": {
+        "id_slot": 0,
+        "filename": "gemma3-qat-draft-help.bin",
+        "n_restored": 6609,
+        "n_read": 257106044,
+        "timings": {
+          "restore_ms": 39.189
+        }
+      },
+      "measuredAt": "2026-09-26T06:21:26.760Z"
+    },
+    "a-restored": {
+      "wallSeconds": 81.57,
+      "firstTokenSeconds": 75.98,
+      "finishReason": "stop",
+      "promptProcessed": 6501,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 85.58,
+      "outputTokens": 78,
+      "outputTokensPerSecond": 13.78,
+      "draftTokens": 160,
+      "draftAccepted": 67,
+      "draftAcceptance": 0.419,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6501,
+        "prompt_ms": 75967.206,
+        "prompt_per_token_ms": 11.68546469773881,
+        "prompt_per_second": 85.5763999007677,
+        "predicted_n": 78,
+        "predicted_ms": 5586.94,
+        "predicted_per_token_ms": 72.55766233766234,
+        "predicted_per_second": 13.782141923843822,
+        "draft_n": 160,
+        "draft_n_accepted": 67
+      },
+      "usage": {
+        "completion_tokens": 78,
+        "prompt_tokens": 6501,
+        "total_tokens": 6579,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A missing impact or a missing likelihood excludes that (risk, attack) pair from every total. It is never treated as zero. Coercing a missing impact to €0 would make the tool understate risk — and a security tool that quietly understates risk by default is worse than one that shows an honest, partial number. See [the quantification model](/help/quantification).",
+      "measuredAt": "2026-09-26T06:22:48.334Z"
+    },
+    "b-outage": {
+      "wallSeconds": 40.88,
+      "firstTokenSeconds": 4.71,
+      "finishReason": "stop",
+      "promptProcessed": 428,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 94.09,
+      "outputTokens": 249,
+      "outputTokensPerSecond": 6.86,
+      "draftTokens": 1408,
+      "draftAccepted": 171,
+      "draftAcceptance": 0.121,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 428,
+        "prompt_ms": 4548.91,
+        "prompt_per_token_ms": 10.628294392523363,
+        "prompt_per_second": 94.08847394210922,
+        "predicted_n": 249,
+        "predicted_ms": 36162.25,
+        "predicted_per_token_ms": 145.81552419354838,
+        "predicted_per_second": 6.857980352439353,
+        "draft_n": 1408,
+        "draft_n_accepted": 171
+      },
+      "usage": {
+        "completion_tokens": 249,
+        "prompt_tokens": 429,
+        "total_tokens": 678,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "```json\n[\n  {\"title\": \"SQL Injection via Product Search\", \"description\": \"A malicious user crafts a SQL injection query within the product search field, potentially gaining unauthorized access to the database and manipulating product information or customer data.\"},\n  {\"title\": \"Cross-Site Scripting (XSS) in Product Reviews\", \"description\": \"An attacker injects malicious JavaScript code into product reviews, which is then executed by other users’ browsers, potentially stealing session cookies or redirecting users to phishing sites.\"},\n  {\"title\": \"Log4Shell Vulnerability in Backend\", \"description\": \"A Log4Shell vulnerability exists in the backend server software, allowing an attacker to execute arbitrary code remotely, leading to full system compromise and downtime.\"},\n  {\"title\": \"Unvalidated Input in Cart Submission\", \"description\": \"The cart submission form lacks proper input validation, allowing an attacker to inject malicious code or data that causes errors or crashes the server.\"},\n  {\"title\": \"Compromised Admin Account - Mass Product Removal\", \"description\": \"An attacker gains access to the admin console and uses this access to remove all products from the storefront, effectively halting sales and damaging customer trust.\"}\n]\n```",
+      "quality": {
+        "parsed": true,
+        "fenced": true,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "SQL Injection via Product Search",
+          "Cross-Site Scripting (XSS) in Product Reviews",
+          "Log4Shell Vulnerability in Backend",
+          "Unvalidated Input in Cart Submission",
+          "Compromised Admin Account - Mass Product Removal"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:23:29.213Z"
+    },
+    "b-payment": {
+      "wallSeconds": 47.09,
+      "firstTokenSeconds": 4.99,
+      "finishReason": "stop",
+      "promptProcessed": 465,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 94.07,
+      "outputTokens": 269,
+      "outputTokensPerSecond": 6.37,
+      "draftTokens": 1520,
+      "draftAccepted": 184,
+      "draftAcceptance": 0.121,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 465,
+        "prompt_ms": 4943.169,
+        "prompt_per_token_ms": 10.630470967741935,
+        "prompt_per_second": 94.06920944843279,
+        "predicted_n": 269,
+        "predicted_ms": 42101.03,
+        "predicted_per_token_ms": 157.09339552238805,
+        "predicted_per_second": 6.365639985530045,
+        "draft_n": 1520,
+        "draft_n_accepted": 184
+      },
+      "usage": {
+        "completion_tokens": 269,
+        "prompt_tokens": 466,
+        "total_tokens": 735,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "```json\n[\n  {\"title\": \"Malicious File Upload\", \"description\": \"An attacker uploads a malicious script (e.g., PHP, JavaScript) to the admin console, potentially exploiting a lack of file validation or sanitization to gain unauthorized access and data exfiltration.\"},\n  {\"title\": \"Cross-Site Scripting (XSS)\", \"description\": \"An attacker injects malicious JavaScript code into a customer-facing page via a vulnerable form field or URL parameter, allowing them to steal session cookies or redirect users to a phishing site.\"},\n  {\"title\": \"Session Hijacking\", \"description\": \"An attacker intercepts and steals a valid customer session cookie, impersonating the user and gaining access to their account and potentially their payment information.\"},\n  {\"title\": \"Broken Access Control\", \"description\": \"An attacker exploits a flaw in the application's access control mechanisms, bypassing authorization checks and gaining access to data they are not permitted to view, including payment details.\"},\n  {\"title\": \"Supply Chain Attack - Vulnerable Library\", \"description\": \"The e-commerce platform relies on third-party libraries with known vulnerabilities. An attacker exploits a vulnerability in one of these libraries (e.g., a payment processing library) to compromise the system and access customer data.\"}\n]\n```",
+      "quality": {
+        "parsed": true,
+        "fenced": true,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Malicious File Upload",
+          "Cross-Site Scripting (XSS)",
+          "Session Hijacking",
+          "Broken Access Control",
+          "Supply Chain Attack - Vulnerable Library"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:24:16.310Z"
+    },
+    "c": {
+      "nodes": 73,
+      "wallSeconds": 150.16,
+      "firstTokenSeconds": 79.38,
+      "finishReason": "stop",
+      "promptProcessed": 6777,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 85.44,
+      "outputTokens": 268,
+      "outputTokensPerSecond": 3.77,
+      "draftTokens": 1952,
+      "draftAccepted": 148,
+      "draftAcceptance": 0.076,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 6777,
+        "prompt_ms": 79314.408,
+        "prompt_per_token_ms": 11.703468791500663,
+        "prompt_per_second": 85.44475298863732,
+        "predicted_n": 268,
+        "predicted_ms": 70773.513,
+        "predicted_per_token_ms": 265.0693370786517,
+        "predicted_per_second": 3.7725978078832965,
+        "draft_n": 1952,
+        "draft_n_accepted": 148
+      },
+      "usage": {
+        "completion_tokens": 268,
+        "prompt_tokens": 6778,
+        "total_tokens": 7046,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "This assessment identifies several significant risks associated with the public-facing web application and connected home device, alongside the multi-tenant SaaS platform. The largest potential impact stems from customer account takeover, estimated at EUR 45,000 per occurrence, primarily driven by credential stuffing attempts. While multi-factor authentication is in place, its strength remains unverified.  A moderate risk exists in public site defacement and malicious content injection, mitigated by a WAF and server-side input validation, though both require further strengthening. Exposure of personal data submitted through forms presents a substantial EUR 180,000 per occurrence risk, largely addressed by a cyber insurance policy and WAF filtering, but requiring ongoing vigilance.  Furthermore, the potential for ransomware spreading across the internal network, with a cost of EUR 750,000, highlights the need for robust endpoint detection and response.  Finally, the possibility of a significant breach involving cross-tenant data leaks in the multi-tenant SaaS, valued at EUR 400,000, underscores the importance of maintaining strong access controls and automated testing.  The overall security posture is bolstered by cyber insurance coverage, but the effectiveness of certain defenses – including multi-factor authentication, WAF strength, and patch management – requires further validation and improvement.",
+      "measuredAt": "2026-09-26T06:26:46.469Z"
+    }
+  },
+  "recorded": {
+    "host": {
+      "cpu": "Intel(R) Core(TM) i9-14900K",
+      "logicalCpus": 32,
+      "physicalCores": 24,
+      "flags": [
+        "fma",
+        "f16c",
+        "avx2",
+        "avx_vnni"
+      ],
+      "memTotalBytes": 134811652096,
+      "memAvailableBytes": 113124470784,
+      "kernel": "6.18.38-Unraid",
+      "docker": "29.5.3",
+      "cores": 4,
+      "cpuset": null
+    },
+    "preflight": {
+      "needBytes": 6038852064,
+      "memAvailableBytes": 113098268672,
+      "slotDiskFreeBytes": 59508940800
+    },
+    "image": "ghcr.io/ggml-org/llama.cpp:server-b11176",
+    "imageDigest": "ghcr.io/ggml-org/llama.cpp@sha256:6257697a7f5d034b8fb499ddb07af3e250506352f94102054252a23f3b85e0af",
+    "args": [
+      "-m",
+      "/models/gemma-3-4b-it-qat-Q4_0.gguf",
+      "-c",
+      "12288",
+      "-t",
+      "4",
+      "-np",
+      "1",
+      "--cache-reuse",
+      "256",
+      "--slot-save-path",
+      "/slots",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8080",
+      "--model-draft",
+      "/models/gemma-3-270m-it-Q8_0.gguf",
+      "--spec-type",
+      "draft-simple",
+      "--spec-draft-n-max",
+      "16",
+      "--spec-draft-n-min",
+      "1"
+    ],
+    "cores": 4,
+    "loadSeconds": 2.2,
+    "memoryAfterLoad": {
+      "dockerStats": "2.256GiB / 125.6GiB",
+      "cgroupPeakBytes": 2710499328
+    },
+    "memoryAfterA": {
+      "dockerStats": "2.761GiB / 125.6GiB",
+      "cgroupPeakBytes": 3519365120
+    },
+    "restartSeconds": 2.4,
+    "memoryAfterC": {
+      "dockerStats": "3.463GiB / 125.6GiB",
+      "cgroupPeakBytes": 3723530240
+    }
+  }
+}

@@ -1,0 +1,3639 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-iso27001-2022",
+  "root_uuid": "c1000000-0000-4000-8000-000000000001",
+  "title": "ISO/IEC 27001:2022 — information security management system",
+  "description": "A gap-analysis starting point for an ISMS under ISO/IEC 27001:2022. Every requirement in clauses 4 to 10 and all 93 Annex A controls (implementation guidance: ISO/IEC 27002:2022) are defences set to todo. Mark what you have as implemented, shelve any control your Statement of Applicability excludes, and set impacts and likelihoods to your own. Titles follow the standard; descriptions are summaries, not the normative text.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Confidentiality",
+      "color": "#DC2626"
+    },
+    {
+      "name": "Integrity",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "Availability",
+      "color": "#0EA5E9"
+    },
+    {
+      "name": "Compliance",
+      "color": "#8B5CF6"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-confidentiality",
+      "uuid": "c1000000-0000-4000-8000-000000000002",
+      "title": "Loss of confidentiality of information",
+      "description": "Information the organization must keep private — customer and employee data, intellectual property, credentials, commercial terms — is disclosed to someone not authorized to see it.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Confidentiality"
+      ],
+      "attack_refs": [
+        "attack-account-takeover",
+        "attack-insider-misuse",
+        "attack-malware",
+        "attack-vulnerability",
+        "attack-network-intrusion",
+        "attack-insecure-change",
+        "attack-supplier",
+        "attack-data-leakage",
+        "attack-physical",
+        "attack-human-error",
+        "attack-incident-handling"
+      ]
+    },
+    {
+      "ref": "risk-integrity",
+      "uuid": "c1000000-0000-4000-8000-000000000003",
+      "title": "Loss of integrity of information or systems",
+      "description": "Records, configuration, software or transactions are altered or destroyed without authorization or by mistake, so that decisions and services rely on wrong data.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Integrity"
+      ],
+      "attack_refs": [
+        "attack-account-takeover",
+        "attack-insider-misuse",
+        "attack-malware",
+        "attack-vulnerability",
+        "attack-insecure-change",
+        "attack-human-error"
+      ]
+    },
+    {
+      "ref": "risk-availability",
+      "uuid": "c1000000-0000-4000-8000-000000000004",
+      "title": "Loss of availability of services and information",
+      "description": "Systems, information or the services built on them become unavailable or too degraded to use for longer than the business can tolerate.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Availability"
+      ],
+      "attack_refs": [
+        "attack-malware",
+        "attack-vulnerability",
+        "attack-network-intrusion",
+        "attack-insecure-change",
+        "attack-supplier",
+        "attack-physical",
+        "attack-infrastructure-failure",
+        "attack-incident-handling"
+      ]
+    },
+    {
+      "ref": "risk-compliance",
+      "uuid": "c1000000-0000-4000-8000-000000000005",
+      "title": "Breach of legal, regulatory or contractual obligations",
+      "description": "The organization fails an obligation it is bound by — data protection law, sector regulation, contracts, licences — and faces fines, claims, loss of customers or enforcement action.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "moderate"
+      },
+      "tags": [
+        "Compliance"
+      ],
+      "attack_refs": [
+        "attack-privacy",
+        "attack-legal",
+        "attack-supplier",
+        "attack-incident-handling",
+        "attack-governance"
+      ]
+    },
+    {
+      "ref": "risk-isms",
+      "uuid": "c1000000-0000-4000-8000-000000000006",
+      "title": "Information security management system is ineffective",
+      "description": "Security is not managed as a system: risks are not assessed, controls are not selected on evidence, and nobody checks whether they work — so certification is lost or never achieved and every other risk here grows unnoticed.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "moderate"
+      },
+      "tags": [
+        "Compliance"
+      ],
+      "attack_refs": [
+        "attack-governance"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-account-takeover",
+      "uuid": "c1000000-0000-4000-8000-000000000007",
+      "title": "Account takeover with stolen, guessed or weak credentials",
+      "description": "An attacker obtains a valid identity — by phishing, password reuse, brute force or an unrevoked account — and uses it to act as a legitimate user.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1078",
+          "title": "Valid Accounts"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1110",
+          "title": "Brute Force"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-15",
+        "defence-a-5-16",
+        "defence-a-5-17",
+        "defence-a-5-18",
+        "defence-a-6-3",
+        "defence-a-6-7",
+        "defence-a-8-2",
+        "defence-a-8-5"
+      ]
+    },
+    {
+      "ref": "attack-insider-misuse",
+      "uuid": "c1000000-0000-4000-8000-000000000008",
+      "title": "Misuse of access by an insider or an over-privileged account",
+      "description": "An employee, contractor or compromised account with more access than the job needs reads, changes or removes information deliberately or carelessly.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "cwe",
+          "identifier": "CWE-269",
+          "title": "Improper Privilege Management"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-3",
+        "defence-a-5-10",
+        "defence-a-5-15",
+        "defence-a-5-18",
+        "defence-a-6-1",
+        "defence-a-6-2",
+        "defence-a-6-4",
+        "defence-a-6-5",
+        "defence-a-8-2",
+        "defence-a-8-3",
+        "defence-a-8-4",
+        "defence-a-8-15",
+        "defence-a-8-18"
+      ]
+    },
+    {
+      "ref": "attack-malware",
+      "uuid": "c1000000-0000-4000-8000-000000000009",
+      "title": "Malware or ransomware infection",
+      "description": "Malicious software reaches an endpoint or server through email, downloads, removable media or an exploited service, then encrypts, steals or destroys information.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1486",
+          "title": "Data Encrypted for Impact"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-7",
+        "defence-a-8-1",
+        "defence-a-8-7",
+        "defence-a-8-8",
+        "defence-a-8-13",
+        "defence-a-8-19",
+        "defence-a-8-22",
+        "defence-a-8-23",
+        "defence-transfer-cyber-insurance"
+      ]
+    },
+    {
+      "ref": "attack-vulnerability",
+      "uuid": "c1000000-0000-4000-8000-00000000000a",
+      "title": "Exploitation of an unpatched vulnerability or a misconfiguration",
+      "description": "A known weakness in software, firmware or configuration is left in place long enough for an attacker to find and exploit it.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1190",
+          "title": "Exploit Public-Facing Application"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-6",
+        "defence-a-5-7",
+        "defence-a-5-9",
+        "defence-a-8-8",
+        "defence-a-8-9"
+      ]
+    },
+    {
+      "ref": "attack-network-intrusion",
+      "uuid": "c1000000-0000-4000-8000-00000000000b",
+      "title": "Network intrusion and lateral movement",
+      "description": "An attacker gains a foothold on the network and moves between systems and zones that should have been separated, or intercepts traffic in transit.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1021",
+          "title": "Remote Services"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1557",
+          "title": "Adversary-in-the-Middle"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-7-12",
+        "defence-a-8-16",
+        "defence-a-8-20",
+        "defence-a-8-21",
+        "defence-a-8-22",
+        "defence-a-8-24",
+        "defence-a-8-27"
+      ]
+    },
+    {
+      "ref": "attack-insecure-change",
+      "uuid": "c1000000-0000-4000-8000-00000000000c",
+      "title": "Faulty or insecure change to software or systems",
+      "description": "A flaw is introduced by in-house or outsourced development, or a change reaches production without being specified, tested and approved.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-8",
+        "defence-a-8-4",
+        "defence-a-8-25",
+        "defence-a-8-26",
+        "defence-a-8-27",
+        "defence-a-8-28",
+        "defence-a-8-29",
+        "defence-a-8-30",
+        "defence-a-8-31",
+        "defence-a-8-32"
+      ]
+    },
+    {
+      "ref": "attack-supplier",
+      "uuid": "c1000000-0000-4000-8000-00000000000d",
+      "title": "Compromise or failure of a supplier, cloud or ICT service",
+      "description": "A provider the organization depends on is breached, fails, or handles the organization's information below the standard the organization itself would apply.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1195",
+          "title": "Supply Chain Compromise"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1199",
+          "title": "Trusted Relationship"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-19",
+        "defence-a-5-20",
+        "defence-a-5-21",
+        "defence-a-5-22",
+        "defence-a-5-23",
+        "defence-a-8-30"
+      ]
+    },
+    {
+      "ref": "attack-data-leakage",
+      "uuid": "c1000000-0000-4000-8000-00000000000e",
+      "title": "Information leaks through transfer, media, devices or disposal",
+      "description": "Information leaves its protected context — an email to the wrong recipient, a lost laptop, an unencrypted backup, a device sold without wiping — and is exposed.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1052",
+          "title": "Exfiltration Over Physical Medium"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-10",
+        "defence-a-5-11",
+        "defence-a-5-12",
+        "defence-a-5-13",
+        "defence-a-5-14",
+        "defence-a-6-5",
+        "defence-a-6-6",
+        "defence-a-6-7",
+        "defence-a-7-7",
+        "defence-a-7-9",
+        "defence-a-7-10",
+        "defence-a-7-14",
+        "defence-a-8-1",
+        "defence-a-8-10",
+        "defence-a-8-11",
+        "defence-a-8-12",
+        "defence-a-8-24",
+        "defence-a-8-33"
+      ]
+    },
+    {
+      "ref": "attack-physical",
+      "uuid": "c1000000-0000-4000-8000-00000000000f",
+      "title": "Physical intrusion, theft or environmental damage",
+      "description": "Someone enters a facility without authorization, or fire, flood, heat or vandalism damages equipment and the information it holds.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-7-1",
+        "defence-a-7-2",
+        "defence-a-7-3",
+        "defence-a-7-4",
+        "defence-a-7-5",
+        "defence-a-7-6",
+        "defence-a-7-7",
+        "defence-a-7-8"
+      ]
+    },
+    {
+      "ref": "attack-infrastructure-failure",
+      "uuid": "c1000000-0000-4000-8000-000000000010",
+      "title": "Infrastructure failure, capacity exhaustion or disaster",
+      "description": "Hardware, power, cooling, connectivity or capacity fails, or a disaster makes a site unusable, and services stop.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-29",
+        "defence-a-5-30",
+        "defence-a-5-37",
+        "defence-a-7-5",
+        "defence-a-7-8",
+        "defence-a-7-11",
+        "defence-a-7-12",
+        "defence-a-7-13",
+        "defence-a-8-6",
+        "defence-a-8-13",
+        "defence-a-8-14",
+        "defence-a-8-32",
+        "defence-a-8-34"
+      ]
+    },
+    {
+      "ref": "attack-human-error",
+      "uuid": "c1000000-0000-4000-8000-000000000011",
+      "title": "Human error or social engineering of unaware staff",
+      "description": "People who do not know the rules or how to recognise manipulation make mistakes — misconfigure, mis-send, disclose — that the controls around them do not catch.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1566",
+          "title": "Phishing"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-1",
+        "defence-a-5-4",
+        "defence-a-5-37",
+        "defence-a-6-3"
+      ]
+    },
+    {
+      "ref": "attack-incident-handling",
+      "uuid": "c1000000-0000-4000-8000-000000000012",
+      "title": "Security incident detected late or handled badly",
+      "description": "An attack or failure goes unnoticed, or is noticed but not assessed, contained, escalated and learned from, so a small event becomes a large one.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-5",
+        "defence-a-5-24",
+        "defence-a-5-25",
+        "defence-a-5-26",
+        "defence-a-5-27",
+        "defence-a-5-28",
+        "defence-a-6-8",
+        "defence-a-8-15",
+        "defence-a-8-16",
+        "defence-a-8-17",
+        "defence-transfer-cyber-insurance"
+      ]
+    },
+    {
+      "ref": "attack-privacy",
+      "uuid": "c1000000-0000-4000-8000-000000000013",
+      "title": "Unlawful processing or disclosure of personal data",
+      "description": "Personal data is collected, used, kept or shared in a way data-protection law does not allow, or is exposed in a breach that must be reported.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        },
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "General Data Protection Regulation (EU) 2016/679"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-34",
+        "defence-a-8-10",
+        "defence-a-8-11",
+        "defence-a-8-33"
+      ]
+    },
+    {
+      "ref": "attack-legal",
+      "uuid": "c1000000-0000-4000-8000-000000000014",
+      "title": "Breach of statutory, contractual or intellectual-property obligations",
+      "description": "The organization does not know or does not meet an obligation — a licence term, a record-retention duty, a contractual security clause, a regulator's requirement.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-5",
+        "defence-a-5-20",
+        "defence-a-5-28",
+        "defence-a-5-31",
+        "defence-a-5-32",
+        "defence-a-5-33",
+        "defence-a-5-36",
+        "defence-a-6-2",
+        "defence-a-6-6"
+      ]
+    },
+    {
+      "ref": "attack-governance",
+      "uuid": "c1000000-0000-4000-8000-000000000015",
+      "title": "Security managed ad hoc: controls undefined, unowned or unreviewed",
+      "description": "There is no agreed scope, risk method, ownership or review cycle, so controls are chosen by habit, decay without anyone noticing, and cannot be evidenced to an auditor.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/82875.html",
+          "title": "ISO/IEC 27001:2022"
+        }
+      ],
+      "defence_refs": [
+        "defence-clause-4-1",
+        "defence-clause-4-2",
+        "defence-clause-4-3",
+        "defence-clause-4-4",
+        "defence-clause-5-1",
+        "defence-clause-5-2",
+        "defence-clause-5-3",
+        "defence-clause-6-1-1",
+        "defence-clause-6-1-2",
+        "defence-clause-6-1-3",
+        "defence-clause-6-2",
+        "defence-clause-6-3",
+        "defence-clause-7-1",
+        "defence-clause-7-2",
+        "defence-clause-7-3",
+        "defence-clause-7-4",
+        "defence-clause-7-5",
+        "defence-clause-8-1",
+        "defence-clause-8-2",
+        "defence-clause-8-3",
+        "defence-clause-9-1",
+        "defence-clause-9-2",
+        "defence-clause-9-3",
+        "defence-clause-10-1",
+        "defence-clause-10-2",
+        "defence-a-5-1",
+        "defence-a-5-2",
+        "defence-a-5-4",
+        "defence-a-5-9",
+        "defence-a-5-35",
+        "defence-a-5-36"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-clause-4-1",
+      "uuid": "c1000000-0000-4000-8000-000000000016",
+      "title": "Clause 4.1 — Understanding the organization and its context",
+      "description": "Determine the internal and external issues — business, legal, technical, climate-related — that affect what the ISMS must achieve.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:4.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-4-2",
+      "uuid": "c1000000-0000-4000-8000-000000000017",
+      "title": "Clause 4.2 — Needs and expectations of interested parties",
+      "description": "Identify the parties with a stake in information security, what they require of it, and which of those requirements the ISMS will address.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:4.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-4-3",
+      "uuid": "c1000000-0000-4000-8000-000000000018",
+      "title": "Clause 4.3 — Scope of the ISMS",
+      "description": "Define and document the boundaries of the ISMS — organizational units, locations, systems and interfaces — taking 4.1 and 4.2 into account.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:4.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-4-4",
+      "uuid": "c1000000-0000-4000-8000-000000000019",
+      "title": "Clause 4.4 — Information security management system",
+      "description": "Establish, implement, maintain and continually improve the ISMS as a set of interacting processes rather than a collection of documents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:4.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-5-1",
+      "uuid": "c1000000-0000-4000-8000-00000000001a",
+      "title": "Clause 5.1 — Leadership and commitment",
+      "description": "Top management visibly owns the ISMS: sets direction, provides resources, integrates security into business processes and supports the people doing it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:5.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-5-2",
+      "uuid": "c1000000-0000-4000-8000-00000000001b",
+      "title": "Clause 5.2 — Information security policy",
+      "description": "A top-level policy, approved by management, sets objectives or a framework for them and commits to meeting requirements and to continual improvement.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:5.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-5-3",
+      "uuid": "c1000000-0000-4000-8000-00000000001c",
+      "title": "Clause 5.3 — Organizational roles, responsibilities and authorities",
+      "description": "Assign and communicate who is responsible for the ISMS conforming to the standard and for reporting on its performance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:5.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-1-1",
+      "uuid": "c1000000-0000-4000-8000-00000000001d",
+      "title": "Clause 6.1.1 — Actions to address risks and opportunities",
+      "description": "Plan how the ISMS will address the risks and opportunities to its own success, and how the effectiveness of those actions will be evaluated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:6.1.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-1-2",
+      "uuid": "c1000000-0000-4000-8000-00000000001e",
+      "title": "Clause 6.1.2 — Information security risk assessment process",
+      "description": "Define a repeatable risk assessment method with acceptance criteria, identify risk owners, and analyse and evaluate risks consistently.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:6.1.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-1-3",
+      "uuid": "c1000000-0000-4000-8000-00000000001f",
+      "title": "Clause 6.1.3 — Risk treatment and Statement of Applicability",
+      "description": "Select treatment options, determine the controls needed, compare them with Annex A, produce a Statement of Applicability, and get owners to accept residual risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:6.1.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-2",
+      "uuid": "c1000000-0000-4000-8000-000000000020",
+      "title": "Clause 6.2 — Information security objectives and planning",
+      "description": "Set measurable security objectives at relevant levels and plan what will be done, by whom, with what resources and by when.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:6.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-3",
+      "uuid": "c1000000-0000-4000-8000-000000000021",
+      "title": "Clause 6.3 — Planning of changes",
+      "description": "Make changes to the ISMS in a planned way, so that a reorganization or new system does not quietly break it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:6.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-1",
+      "uuid": "c1000000-0000-4000-8000-000000000022",
+      "title": "Clause 7.1 — Resources",
+      "description": "Provide the people, budget, tooling and time the ISMS needs to be established and kept running.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:7.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-2",
+      "uuid": "c1000000-0000-4000-8000-000000000023",
+      "title": "Clause 7.2 — Competence",
+      "description": "Determine the competence people doing security-relevant work need, ensure they have it, and keep evidence.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:7.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-3",
+      "uuid": "c1000000-0000-4000-8000-000000000024",
+      "title": "Clause 7.3 — Awareness",
+      "description": "Everyone working under the organization's control knows the policy, their contribution, and the consequences of not following it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:7.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-4",
+      "uuid": "c1000000-0000-4000-8000-000000000025",
+      "title": "Clause 7.4 — Communication",
+      "description": "Decide what is communicated about security, when, to whom and by whom — internally and externally.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:7.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-5",
+      "uuid": "c1000000-0000-4000-8000-000000000026",
+      "title": "Clause 7.5 — Documented information",
+      "description": "Create, control, protect and retain the documents and records the standard and the ISMS require.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:7.5"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-8-1",
+      "uuid": "c1000000-0000-4000-8000-000000000027",
+      "title": "Clause 8.1 — Operational planning and control",
+      "description": "Run the processes that deliver the ISMS as planned, control changes, and control externally provided processes and services.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:8.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-8-2",
+      "uuid": "c1000000-0000-4000-8000-000000000028",
+      "title": "Clause 8.2 — Performing information security risk assessments",
+      "description": "Carry out risk assessments at planned intervals and whenever significant changes occur, and keep the results.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:8.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-8-3",
+      "uuid": "c1000000-0000-4000-8000-000000000029",
+      "title": "Clause 8.3 — Implementing information security risk treatment",
+      "description": "Implement the risk treatment plan and keep evidence of the results.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:8.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-9-1",
+      "uuid": "c1000000-0000-4000-8000-00000000002a",
+      "title": "Clause 9.1 — Monitoring, measurement, analysis and evaluation",
+      "description": "Decide what to measure about security performance and ISMS effectiveness, how and when, and evaluate the results.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:9.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-9-2",
+      "uuid": "c1000000-0000-4000-8000-00000000002b",
+      "title": "Clause 9.2 — Internal audit",
+      "description": "Audit the ISMS at planned intervals against the standard and the organization's own requirements, with objective auditors, and report the results.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:9.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-9-3",
+      "uuid": "c1000000-0000-4000-8000-00000000002c",
+      "title": "Clause 9.3 — Management review",
+      "description": "Top management reviews the ISMS at planned intervals — changes, performance, audit results, risks, opportunities — and decides on improvements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:9.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-10-1",
+      "uuid": "c1000000-0000-4000-8000-00000000002d",
+      "title": "Clause 10.1 — Continual improvement",
+      "description": "Continually improve the suitability, adequacy and effectiveness of the ISMS.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:10.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-10-2",
+      "uuid": "c1000000-0000-4000-8000-00000000002e",
+      "title": "Clause 10.2 — Nonconformity and corrective action",
+      "description": "React to nonconformities, correct them, find and remove root causes so they do not recur, and keep evidence.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:10.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-1",
+      "uuid": "c1000000-0000-4000-8000-00000000002f",
+      "title": "A.5.1 Policies for information security",
+      "description": "A set of topic-specific security policies, approved by management, published, acknowledged by the people they apply to and reviewed at planned intervals.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-human-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-2",
+      "uuid": "c1000000-0000-4000-8000-000000000030",
+      "title": "A.5.2 Information security roles and responsibilities",
+      "description": "Security responsibilities are defined and allocated according to the organization's needs, so every control has an owner.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-3",
+      "uuid": "c1000000-0000-4000-8000-000000000031",
+      "title": "A.5.3 Segregation of duties",
+      "description": "Conflicting duties — requesting and approving, developing and deploying — are split between people so no one can misuse or hide an error alone.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.3"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-4",
+      "uuid": "c1000000-0000-4000-8000-000000000032",
+      "title": "A.5.4 Management responsibilities",
+      "description": "Managers require everyone they manage to apply security in line with the policies and procedures.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-human-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-5",
+      "uuid": "c1000000-0000-4000-8000-000000000033",
+      "title": "A.5.5 Contact with authorities",
+      "description": "Established contacts with regulators, law enforcement and supervisory authorities, so the organization knows whom to notify and how, before it needs to.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.5"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-6",
+      "uuid": "c1000000-0000-4000-8000-000000000034",
+      "title": "A.5.6 Contact with special interest groups",
+      "description": "Membership of security forums and professional associations to keep up with threats, practices and advisories.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.6"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-7",
+      "uuid": "c1000000-0000-4000-8000-000000000035",
+      "title": "A.5.7 Threat intelligence",
+      "description": "Information about threats relevant to the organization is collected, analysed and turned into action.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.7"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-8",
+      "uuid": "c1000000-0000-4000-8000-000000000036",
+      "title": "A.5.8 Information security in project management",
+      "description": "Security requirements and risks are considered in every project, whatever its type, from inception to closure.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.8"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-9",
+      "uuid": "c1000000-0000-4000-8000-000000000037",
+      "title": "A.5.9 Inventory of information and other associated assets",
+      "description": "An owned, current inventory of information, systems, devices and services, so that nothing important is unprotected because nobody knew it existed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.9"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-10",
+      "uuid": "c1000000-0000-4000-8000-000000000038",
+      "title": "A.5.10 Acceptable use of information and other associated assets",
+      "description": "Rules for acceptable use and handling of information and assets are documented and applied.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.10"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-11",
+      "uuid": "c1000000-0000-4000-8000-000000000039",
+      "title": "A.5.11 Return of assets",
+      "description": "People and external parties return the organization's assets when their employment, contract or agreement changes or ends.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.11"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-12",
+      "uuid": "c1000000-0000-4000-8000-00000000003a",
+      "title": "A.5.12 Classification of information",
+      "description": "Information is classified by its confidentiality, integrity, availability and legal requirements, so protection matches value.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.12"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-13",
+      "uuid": "c1000000-0000-4000-8000-00000000003b",
+      "title": "A.5.13 Labelling of information",
+      "description": "Information is labelled according to its classification so that handlers know how to treat it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.13"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-14",
+      "uuid": "c1000000-0000-4000-8000-00000000003c",
+      "title": "A.5.14 Information transfer",
+      "description": "Rules, procedures or agreements govern every kind of transfer — electronic, physical media, verbal — within the organization and with others.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.14"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-15",
+      "uuid": "c1000000-0000-4000-8000-00000000003d",
+      "title": "A.5.15 Access control",
+      "description": "Physical and logical access is granted on business and security requirements — need-to-know and least privilege — under a documented policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.15"
+        }
+      ],
+      "links": {
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-16",
+      "uuid": "c1000000-0000-4000-8000-00000000003e",
+      "title": "A.5.16 Identity management",
+      "description": "The full life cycle of identities is managed: each is unique, tied to a person or system, and removed when no longer needed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.16"
+        }
+      ],
+      "links": {
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-17",
+      "uuid": "c1000000-0000-4000-8000-00000000003f",
+      "title": "A.5.17 Authentication information",
+      "description": "Passwords, keys and other secrets are issued, handled and changed under a controlled process, and users are told how to protect them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.17"
+        }
+      ],
+      "links": {
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-18",
+      "uuid": "c1000000-0000-4000-8000-000000000040",
+      "title": "A.5.18 Access rights",
+      "description": "Access rights are provisioned, reviewed at intervals and removed according to the access control policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.18"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-19",
+      "uuid": "c1000000-0000-4000-8000-000000000041",
+      "title": "A.5.19 Information security in supplier relationships",
+      "description": "Processes to manage the security risks of using suppliers' products and services.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.19"
+        }
+      ],
+      "links": {
+        "attack-supplier": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-20",
+      "uuid": "c1000000-0000-4000-8000-000000000042",
+      "title": "A.5.20 Addressing information security within supplier agreements",
+      "description": "Security requirements are agreed with each supplier according to the type of relationship and written into the contract.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.20"
+        }
+      ],
+      "links": {
+        "attack-supplier": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-21",
+      "uuid": "c1000000-0000-4000-8000-000000000043",
+      "title": "A.5.21 Managing information security in the ICT supply chain",
+      "description": "Security risks in the supply chain of ICT products and services — components, sub-processors, software dependencies — are managed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.21"
+        }
+      ],
+      "links": {
+        "attack-supplier": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-22",
+      "uuid": "c1000000-0000-4000-8000-000000000044",
+      "title": "A.5.22 Monitoring, review and change management of supplier services",
+      "description": "Supplier security practice and service delivery are monitored, reviewed, evaluated and changes to them managed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.22"
+        }
+      ],
+      "links": {
+        "attack-supplier": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-23",
+      "uuid": "c1000000-0000-4000-8000-000000000045",
+      "title": "A.5.23 Information security for use of cloud services",
+      "description": "Acquiring, using, managing and exiting cloud services follows the organization's security requirements, including the shared-responsibility split.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.23"
+        }
+      ],
+      "links": {
+        "attack-supplier": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-24",
+      "uuid": "c1000000-0000-4000-8000-000000000046",
+      "title": "A.5.24 Information security incident management planning and preparation",
+      "description": "Incident management processes, roles and responsibilities are defined, communicated and ready before an incident happens.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.24"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-25",
+      "uuid": "c1000000-0000-4000-8000-000000000047",
+      "title": "A.5.25 Assessment and decision on information security events",
+      "description": "Security events are assessed and a decision is made on whether to treat them as incidents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.25"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-26",
+      "uuid": "c1000000-0000-4000-8000-000000000048",
+      "title": "A.5.26 Response to information security incidents",
+      "description": "Incidents are responded to according to the documented procedures: contained, eradicated, recovered from and communicated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.26"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-27",
+      "uuid": "c1000000-0000-4000-8000-000000000049",
+      "title": "A.5.27 Learning from information security incidents",
+      "description": "Knowledge gained from incidents is used to strengthen and improve controls.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.27"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-28",
+      "uuid": "c1000000-0000-4000-8000-00000000004a",
+      "title": "A.5.28 Collection of evidence",
+      "description": "Procedures to identify, collect, acquire and preserve evidence related to security events, so that it holds up in disciplinary or legal action.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.28"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-29",
+      "uuid": "c1000000-0000-4000-8000-00000000004b",
+      "title": "A.5.29 Information security during disruption",
+      "description": "Security is maintained at an appropriate level during a disruption, not suspended while the business recovers.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.29"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-30",
+      "uuid": "c1000000-0000-4000-8000-00000000004c",
+      "title": "A.5.30 ICT readiness for business continuity",
+      "description": "ICT readiness is planned, implemented, maintained and tested against business continuity objectives and requirements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.30"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-31",
+      "uuid": "c1000000-0000-4000-8000-00000000004d",
+      "title": "A.5.31 Legal, statutory, regulatory and contractual requirements",
+      "description": "Every legal, statutory, regulatory and contractual requirement relevant to security is identified, documented and kept up to date, along with how it is met.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.31"
+        }
+      ],
+      "links": {
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-32",
+      "uuid": "c1000000-0000-4000-8000-00000000004e",
+      "title": "A.5.32 Intellectual property rights",
+      "description": "Procedures protect intellectual property rights — the organization's own and those of the software and content it licenses.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.32"
+        }
+      ],
+      "links": {
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-33",
+      "uuid": "c1000000-0000-4000-8000-00000000004f",
+      "title": "A.5.33 Protection of records",
+      "description": "Records are protected from loss, destruction, falsification, unauthorized access and unauthorized release, for as long as they must be kept.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.33"
+        }
+      ],
+      "links": {
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-34",
+      "uuid": "c1000000-0000-4000-8000-000000000050",
+      "title": "A.5.34 Privacy and protection of personal identifiable information (PII)",
+      "description": "Requirements for preserving privacy and protecting PII under applicable law and contracts are identified and met.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.34"
+        }
+      ],
+      "links": {
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-35",
+      "uuid": "c1000000-0000-4000-8000-000000000051",
+      "title": "A.5.35 Independent review of information security",
+      "description": "The organization's approach to security and its implementation are reviewed independently at planned intervals or when significant changes occur.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.35"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-36",
+      "uuid": "c1000000-0000-4000-8000-000000000052",
+      "title": "A.5.36 Compliance with policies, rules and standards for information security",
+      "description": "Compliance with the security policy, topic-specific policies, rules and standards is reviewed regularly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.36"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-37",
+      "uuid": "c1000000-0000-4000-8000-000000000053",
+      "title": "A.5.37 Documented operating procedures",
+      "description": "Operating procedures for information processing facilities are documented and available to the people who need them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.5.37"
+        }
+      ],
+      "links": {
+        "attack-human-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-1",
+      "uuid": "c1000000-0000-4000-8000-000000000054",
+      "title": "A.6.1 Screening",
+      "description": "Background verification of candidates before joining, and at intervals afterwards, proportionate to the role, the information accessed and the law.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.1"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2",
+      "uuid": "c1000000-0000-4000-8000-000000000055",
+      "title": "A.6.2 Terms and conditions of employment",
+      "description": "Employment contracts state the employee's and the organization's responsibilities for information security.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.2"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-3",
+      "uuid": "c1000000-0000-4000-8000-000000000056",
+      "title": "A.6.3 Information security awareness, education and training",
+      "description": "Staff and relevant external parties receive awareness, education and training appropriate to their role, with regular updates.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.3"
+        }
+      ],
+      "links": {
+        "attack-human-error": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-4",
+      "uuid": "c1000000-0000-4000-8000-000000000057",
+      "title": "A.6.4 Disciplinary process",
+      "description": "A formal, communicated disciplinary process for people who violate the security policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.4"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-5",
+      "uuid": "c1000000-0000-4000-8000-000000000058",
+      "title": "A.6.5 Responsibilities after termination or change of employment",
+      "description": "Security responsibilities that remain valid after someone leaves or changes role are defined, communicated and enforced.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.5"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-6",
+      "uuid": "c1000000-0000-4000-8000-000000000059",
+      "title": "A.6.6 Confidentiality or non-disclosure agreements",
+      "description": "Confidentiality agreements reflecting the organization's needs are signed by staff and external parties and reviewed regularly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.6"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-legal": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-7",
+      "uuid": "c1000000-0000-4000-8000-00000000005a",
+      "title": "A.6.7 Remote working",
+      "description": "Security measures protect information accessed, processed or stored while people work away from the organization's premises.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.7"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-8",
+      "uuid": "c1000000-0000-4000-8000-00000000005b",
+      "title": "A.6.8 Information security event reporting",
+      "description": "A mechanism for people to report observed or suspected security events quickly, through the right channels.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.6.8"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-1",
+      "uuid": "c1000000-0000-4000-8000-00000000005c",
+      "title": "A.7.1 Physical security perimeters",
+      "description": "Security perimeters are defined and used to protect areas containing information and other associated assets.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.1"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-2",
+      "uuid": "c1000000-0000-4000-8000-00000000005d",
+      "title": "A.7.2 Physical entry",
+      "description": "Secure areas are protected by entry controls and access points so that only authorized people get in.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.2"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-3",
+      "uuid": "c1000000-0000-4000-8000-00000000005e",
+      "title": "A.7.3 Securing offices, rooms and facilities",
+      "description": "Physical security for offices, rooms and facilities is designed and implemented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.3"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-4",
+      "uuid": "c1000000-0000-4000-8000-00000000005f",
+      "title": "A.7.4 Physical security monitoring",
+      "description": "Premises are continuously monitored for unauthorized physical access.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.4"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-5",
+      "uuid": "c1000000-0000-4000-8000-000000000060",
+      "title": "A.7.5 Protecting against physical and environmental threats",
+      "description": "Protection against natural disasters, fire, flood, and other physical and environmental threats to infrastructure is designed and implemented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.5"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-6",
+      "uuid": "c1000000-0000-4000-8000-000000000061",
+      "title": "A.7.6 Working in secure areas",
+      "description": "Security measures for working in secure areas are designed and implemented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.6"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-7",
+      "uuid": "c1000000-0000-4000-8000-000000000062",
+      "title": "A.7.7 Clear desk and clear screen",
+      "description": "Clear-desk rules for papers and removable media and clear-screen rules for processing facilities are defined and enforced.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.7"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-8",
+      "uuid": "c1000000-0000-4000-8000-000000000063",
+      "title": "A.7.8 Equipment siting and protection",
+      "description": "Equipment is sited securely and protected.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.8"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-9",
+      "uuid": "c1000000-0000-4000-8000-000000000064",
+      "title": "A.7.9 Security of assets off-premises",
+      "description": "Assets taken off-site — laptops, phones, media — are protected.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.9"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-10",
+      "uuid": "c1000000-0000-4000-8000-000000000065",
+      "title": "A.7.10 Storage media",
+      "description": "Storage media are managed through their life cycle of acquisition, use, transport and disposal according to the classification scheme.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.10"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-11",
+      "uuid": "c1000000-0000-4000-8000-000000000066",
+      "title": "A.7.11 Supporting utilities",
+      "description": "Facilities are protected from power failures and other disruptions caused by failures in supporting utilities.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.11"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-12",
+      "uuid": "c1000000-0000-4000-8000-000000000067",
+      "title": "A.7.12 Cabling security",
+      "description": "Cables carrying power, data or supporting services are protected from interception, interference or damage.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.12"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-network-intrusion": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-13",
+      "uuid": "c1000000-0000-4000-8000-000000000068",
+      "title": "A.7.13 Equipment maintenance",
+      "description": "Equipment is maintained correctly to ensure its availability, integrity and confidentiality.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.13"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-14",
+      "uuid": "c1000000-0000-4000-8000-000000000069",
+      "title": "A.7.14 Secure disposal or re-use of equipment",
+      "description": "Equipment containing storage media is checked so that sensitive data and licensed software are removed or securely overwritten before disposal or re-use.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.7.14"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-1",
+      "uuid": "c1000000-0000-4000-8000-00000000006a",
+      "title": "A.8.1 User endpoint devices",
+      "description": "Information stored on, processed by or accessible through user endpoint devices is protected.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.1"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-2",
+      "uuid": "c1000000-0000-4000-8000-00000000006b",
+      "title": "A.8.2 Privileged access rights",
+      "description": "Allocation and use of privileged access rights are restricted and managed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.2"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-3",
+      "uuid": "c1000000-0000-4000-8000-00000000006c",
+      "title": "A.8.3 Information access restriction",
+      "description": "Access to information and other associated assets is restricted according to the access control policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.3"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-4",
+      "uuid": "c1000000-0000-4000-8000-00000000006d",
+      "title": "A.8.4 Access to source code",
+      "description": "Read and write access to source code, development tools and software libraries is managed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.4"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-5",
+      "uuid": "c1000000-0000-4000-8000-00000000006e",
+      "title": "A.8.5 Secure authentication",
+      "description": "Secure authentication technologies and procedures — multi-factor where the risk warrants it — based on access restrictions and the access control policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.5"
+        }
+      ],
+      "links": {
+        "attack-account-takeover": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-6",
+      "uuid": "c1000000-0000-4000-8000-00000000006f",
+      "title": "A.8.6 Capacity management",
+      "description": "Use of resources is monitored and adjusted against current and expected capacity requirements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.6"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-7",
+      "uuid": "c1000000-0000-4000-8000-000000000070",
+      "title": "A.8.7 Protection against malware",
+      "description": "Protection against malware is implemented and supported by appropriate user awareness.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.7"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-8",
+      "uuid": "c1000000-0000-4000-8000-000000000071",
+      "title": "A.8.8 Management of technical vulnerabilities",
+      "description": "Information about technical vulnerabilities is obtained, exposure evaluated and appropriate measures taken in time.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.8"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-9",
+      "uuid": "c1000000-0000-4000-8000-000000000072",
+      "title": "A.8.9 Configuration management",
+      "description": "Configurations, including security configurations, of hardware, software, services and networks are established, documented, implemented, monitored and reviewed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.9"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-10",
+      "uuid": "c1000000-0000-4000-8000-000000000073",
+      "title": "A.8.10 Information deletion",
+      "description": "Information in systems, devices and other storage media is deleted when no longer required.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.10"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-11",
+      "uuid": "c1000000-0000-4000-8000-000000000074",
+      "title": "A.8.11 Data masking",
+      "description": "Data is masked — pseudonymised, anonymised or redacted — in line with the access control policy, business requirements and the law.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.11"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-12",
+      "uuid": "c1000000-0000-4000-8000-000000000075",
+      "title": "A.8.12 Data leakage prevention",
+      "description": "Data leakage prevention measures are applied to systems, networks and devices that process, store or transmit sensitive information.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.12"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-13",
+      "uuid": "c1000000-0000-4000-8000-000000000076",
+      "title": "A.8.13 Information backup",
+      "description": "Backup copies of information, software and systems are maintained and regularly tested under an agreed backup policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.13"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-14",
+      "uuid": "c1000000-0000-4000-8000-000000000077",
+      "title": "A.8.14 Redundancy of information processing facilities",
+      "description": "Information processing facilities have enough redundancy to meet availability requirements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.14"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-15",
+      "uuid": "c1000000-0000-4000-8000-000000000078",
+      "title": "A.8.15 Logging",
+      "description": "Logs recording activities, exceptions, faults and other relevant events are produced, stored, protected and analysed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.15"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-16",
+      "uuid": "c1000000-0000-4000-8000-000000000079",
+      "title": "A.8.16 Monitoring activities",
+      "description": "Networks, systems and applications are monitored for anomalous behaviour and appropriate action taken to evaluate potential incidents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.16"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-network-intrusion": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-17",
+      "uuid": "c1000000-0000-4000-8000-00000000007a",
+      "title": "A.8.17 Clock synchronization",
+      "description": "Clocks of information processing systems are synchronized to approved time sources, so logs from different systems line up.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.17"
+        }
+      ],
+      "links": {
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-18",
+      "uuid": "c1000000-0000-4000-8000-00000000007b",
+      "title": "A.8.18 Use of privileged utility programs",
+      "description": "Use of utility programs that can override system and application controls is restricted and tightly controlled.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.18"
+        }
+      ],
+      "links": {
+        "attack-insider-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-19",
+      "uuid": "c1000000-0000-4000-8000-00000000007c",
+      "title": "A.8.19 Installation of software on operational systems",
+      "description": "Procedures and measures securely manage software installation on operational systems.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.19"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-20",
+      "uuid": "c1000000-0000-4000-8000-00000000007d",
+      "title": "A.8.20 Networks security",
+      "description": "Networks and network devices are secured, managed and controlled to protect information in systems and applications.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.20"
+        }
+      ],
+      "links": {
+        "attack-network-intrusion": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-21",
+      "uuid": "c1000000-0000-4000-8000-00000000007e",
+      "title": "A.8.21 Security of network services",
+      "description": "Security mechanisms, service levels and requirements of network services are identified, implemented and monitored.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.21"
+        }
+      ],
+      "links": {
+        "attack-network-intrusion": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-22",
+      "uuid": "c1000000-0000-4000-8000-00000000007f",
+      "title": "A.8.22 Segregation of networks",
+      "description": "Groups of information services, users and systems are segregated in the organization's networks.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.22"
+        }
+      ],
+      "links": {
+        "attack-network-intrusion": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-23",
+      "uuid": "c1000000-0000-4000-8000-000000000080",
+      "title": "A.8.23 Web filtering",
+      "description": "Access to external websites is managed to reduce exposure to malicious content.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.23"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-24",
+      "uuid": "c1000000-0000-4000-8000-000000000081",
+      "title": "A.8.24 Use of cryptography",
+      "description": "Rules for the effective use of cryptography, including key management, are defined and implemented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.24"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-network-intrusion": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-25",
+      "uuid": "c1000000-0000-4000-8000-000000000082",
+      "title": "A.8.25 Secure development life cycle",
+      "description": "Rules for the secure development of software and systems are established and applied.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.25"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-26",
+      "uuid": "c1000000-0000-4000-8000-000000000083",
+      "title": "A.8.26 Application security requirements",
+      "description": "Security requirements are identified, specified and approved when developing or acquiring applications.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.26"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-27",
+      "uuid": "c1000000-0000-4000-8000-000000000084",
+      "title": "A.8.27 Secure system architecture and engineering principles",
+      "description": "Principles for engineering secure systems are established, documented, maintained and applied to any system development.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.27"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-network-intrusion": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-28",
+      "uuid": "c1000000-0000-4000-8000-000000000085",
+      "title": "A.8.28 Secure coding",
+      "description": "Secure coding principles are applied to software development.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.28"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-29",
+      "uuid": "c1000000-0000-4000-8000-000000000086",
+      "title": "A.8.29 Security testing in development and acceptance",
+      "description": "Security testing processes are defined and implemented in the development life cycle.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.29"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-30",
+      "uuid": "c1000000-0000-4000-8000-000000000087",
+      "title": "A.8.30 Outsourced development",
+      "description": "The organization directs, monitors and reviews the activities related to outsourced system development.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.30"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-supplier": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-31",
+      "uuid": "c1000000-0000-4000-8000-000000000088",
+      "title": "A.8.31 Separation of development, test and production environments",
+      "description": "Development, testing and production environments are separated and secured.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.31"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-32",
+      "uuid": "c1000000-0000-4000-8000-000000000089",
+      "title": "A.8.32 Change management",
+      "description": "Changes to information processing facilities and systems are subject to change management procedures.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.32"
+        }
+      ],
+      "links": {
+        "attack-insecure-change": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-33",
+      "uuid": "c1000000-0000-4000-8000-00000000008a",
+      "title": "A.8.33 Test information",
+      "description": "Test information is appropriately selected, protected and managed — production personal data is not copied into test without protection.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.33"
+        }
+      ],
+      "links": {
+        "attack-data-leakage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-privacy": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-34",
+      "uuid": "c1000000-0000-4000-8000-00000000008b",
+      "title": "A.8.34 Protection of information systems during audit testing",
+      "description": "Audit tests and other assurance activities involving operational systems are planned and agreed between the tester and management.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:A.8.34"
+        }
+      ],
+      "links": {
+        "attack-infrastructure-failure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-transfer-cyber-insurance",
+      "uuid": "c1000000-0000-4000-8000-00000000008c",
+      "title": "Cyber insurance (risk sharing under clause 6.1.3)",
+      "description": "An insurance policy covering incident response, business interruption and liability, taken out as a deliberate risk-sharing decision for residual risk the controls do not bring within appetite.",
+      "is_transfer": true,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO27001-2022:6.1.3"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-incident-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

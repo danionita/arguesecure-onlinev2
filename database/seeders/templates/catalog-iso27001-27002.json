@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "kind": "catalog",
+  "key": "iso27001-27002",
+  "entries": [
+    {
+      "ref": "risk-unauthorized-access-info",
+      "kind": "risk",
+      "title": "Unauthorized access to information",
+      "description": "Someone who should not be able to view, extract or copy an organization's information manages to do so anyway, whether by guessing or stealing a credential, exploiting a misconfigured permission, or abusing an account they were legitimately given for a different purpose.",
+      "defaults": {"impact_mode": "quantitative", "impact_amount": 150000},
+      "children": [
+        {"ref": "attack-credential-compromise"},
+        {"ref": "attack-privilege-escalation"}
+      ]
+    },
+    {
+      "ref": "risk-data-integrity-loss",
+      "kind": "risk",
+      "title": "Loss of data integrity",
+      "description": "Records, configuration, or transaction data are altered, corrupted or deleted without authorization or by mistake, so downstream decisions and processes end up relying on data that is silently wrong.",
+      "defaults": {"impact_mode": "qualitative", "impact_level_code": "major"},
+      "children": [
+        {"ref": "attack-unauthorized-data-modification"}
+      ]
+    },
+    {
+      "ref": "risk-service-unavailability",
+      "kind": "risk",
+      "title": "Service unavailability",
+      "description": "A system, application or process that the organization or its customers depend on becomes unreachable or too degraded to use, interrupting operations for as long as the disruption lasts.",
+      "defaults": {"impact_mode": "qualitative", "impact_level_code": "moderate"},
+      "children": [
+        {"ref": "attack-denial-of-service"}
+      ]
+    },
+    {
+      "ref": "risk-noncompliance-regulatory",
+      "kind": "risk",
+      "title": "Non-compliance and regulatory exposure",
+      "description": "The organization fails to meet a legal, regulatory or contractual information-security obligation, resulting in fines, mandatory disclosure costs, or loss of the right to operate in a market or with a partner.",
+      "defaults": {"impact_mode": "quantitative", "impact_amount": 300000},
+      "children": [
+        {"ref": "attack-mishandled-personal-data"}
+      ]
+    },
+    {
+      "ref": "risk-supply-chain-compromise",
+      "kind": "risk",
+      "title": "Compromise through a third party or supplier",
+      "description": "A vendor, contractor or service provider with access to the organization's systems or data is itself compromised, or behaves negligently, and that failure propagates into the organization's own environment.",
+      "defaults": {"impact_mode": "qualitative", "impact_level_code": "major"},
+      "children": [
+        {"ref": "attack-third-party-compromise"}
+      ]
+    },
+    {
+      "ref": "attack-credential-compromise",
+      "kind": "attack",
+      "title": "Credential theft or guessing",
+      "description": "An attacker obtains a valid username and password through phishing, reuse of a password leaked elsewhere, or brute-force guessing, and uses it to log in as though they were the legitimate account holder.",
+      "defaults": {"likelihood_mode": "quantitative", "likelihood_aro": 0.5},
+      "children": [
+        {"ref": "defence-security-policy", "defaults": {"reduction_target": "likelihood", "strength_level_code": "weak"}},
+        {"ref": "defence-access-control-policy", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-security-awareness-training", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}},
+        {"ref": "defence-remote-working-security", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}},
+        {"ref": "defence-secure-authentication", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-cryptography-use", "defaults": {"reduction_target": "impact", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-privilege-escalation",
+      "kind": "attack",
+      "title": "Privilege escalation from a low-value account",
+      "description": "An attacker who has already obtained a minor foothold, or a legitimate low-privilege user, finds a way to extend their access beyond what was intended, reaching data or functions they were never meant to touch.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "possible"},
+      "children": [
+        {"ref": "defence-access-control-policy", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-access-rights-mgmt", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-vulnerability-management", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-security-monitoring-logging", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}}
+      ]
+    },
+    {
+      "ref": "attack-unauthorized-data-modification",
+      "kind": "attack",
+      "title": "Unauthorized modification of stored data",
+      "description": "Someone without proper authorization, or a process running with more trust than it should have, changes records or files directly, bypassing the normal application logic that would otherwise validate and log the change.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "unlikely"},
+      "children": [
+        {"ref": "defence-asset-inventory", "defaults": {"reduction_target": "likelihood", "strength_level_code": "weak"}},
+        {"ref": "defence-physical-entry-control", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}},
+        {"ref": "defence-physical-security-monitoring", "defaults": {"reduction_target": "likelihood", "strength_level_code": "weak"}},
+        {"ref": "defence-malware-protection", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-backup-management", "defaults": {"reduction_target": "impact", "strength_level_code": "very_strong"}},
+        {"ref": "defence-secure-coding-practices", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-denial-of-service",
+      "kind": "attack",
+      "title": "Denial of service against a critical system",
+      "description": "A flood of traffic or requests, or exhaustion of a shared resource, overwhelms a system's capacity to respond to legitimate users, whether the cause is a deliberate attack or an unmanaged spike in demand.",
+      "defaults": {"likelihood_mode": "quantitative", "likelihood_aro": 2.0},
+      "children": [
+        {"ref": "defence-ict-continuity", "defaults": {"reduction_target": "impact", "strength_level_code": "strong"}},
+        {"ref": "defence-malware-protection", "defaults": {"reduction_target": "likelihood", "strength_level_code": "weak"}},
+        {"ref": "defence-vulnerability-management", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}},
+        {"ref": "defence-backup-management", "defaults": {"reduction_target": "impact", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-mishandled-personal-data",
+      "kind": "attack",
+      "title": "Mishandling of regulated personal data",
+      "description": "Personal or otherwise regulated data is sent, stored, retained, or disposed of in a way that breaches an applicable data-protection obligation, whether through a deliberate leak, careless sharing, or a process that simply never accounted for the rule.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "possible"},
+      "children": [
+        {"ref": "defence-security-policy", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}},
+        {"ref": "defence-personnel-screening", "defaults": {"reduction_target": "likelihood", "strength_level_code": "weak"}},
+        {"ref": "defence-security-awareness-training", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-media-storage-handling", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-data-leakage-prevention", "defaults": {"reduction_target": "likelihood", "strength_level_code": "strong"}},
+        {"ref": "defence-cryptography-use", "defaults": {"reduction_target": "impact", "strength_level_code": "moderate"}}
+      ]
+    },
+    {
+      "ref": "attack-third-party-compromise",
+      "kind": "attack",
+      "title": "Compromise via a supplier's access or systems",
+      "description": "A contracted supplier, cloud provider, or their staff have standing access into the organization's environment, and that access is abused or ridden in on after the supplier's own defences fail.",
+      "defaults": {"likelihood_mode": "qualitative", "likelihood_level_code": "unlikely"},
+      "children": [
+        {"ref": "defence-asset-inventory", "defaults": {"reduction_target": "likelihood", "strength_level_code": "weak"}},
+        {"ref": "defence-cloud-service-security", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-supplier-security", "defaults": {"reduction_target": "likelihood", "strength_level_code": "moderate"}},
+        {"ref": "defence-offsite-asset-security", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}},
+        {"ref": "defence-security-monitoring-logging", "defaults": {"reduction_target": "likelihood", "strength_level_code": "limited"}}
+      ]
+    },
+    {
+      "ref": "defence-security-policy",
+      "kind": "defence",
+      "title": "Information security policy set (A.5.1)",
+      "description": "A short, maintained set of top-level statements on what the organization expects for information security, approved by management and made available to everyone it applies to, so staff have a single agreed reference rather than relying on informal habits.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-asset-inventory",
+      "kind": "defence",
+      "title": "Inventory of information and associated assets (A.5.9)",
+      "description": "A maintained record of what systems, data stores and services the organization actually has, who is accountable for each, and where they sit, so that later controls have something concrete to be applied to instead of guesswork.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-access-control-policy",
+      "kind": "defence",
+      "title": "Access control policy (A.5.15)",
+      "description": "A documented, consistently applied rule set for how access to systems and data is requested, approved and reviewed, so that who-can-reach-what is a deliberate decision rather than an accumulation of one-off exceptions.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-access-rights-mgmt",
+      "kind": "defence",
+      "title": "Provisioning and review of access rights (A.5.18)",
+      "description": "A defined process for granting, changing and removing a user's access as their role changes, including periodic checks that no one has accumulated permissions they no longer need.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-cloud-service-security",
+      "kind": "defence",
+      "title": "Security requirements for cloud service use (A.5.23)",
+      "description": "A defined set of expectations for how the organization selects, configures and monitors any cloud service it relies on, covering who is responsible for which layer of security and how that split is verified.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-ict-continuity",
+      "kind": "defence",
+      "title": "ICT readiness for business continuity (A.5.30)",
+      "description": "Prepared plans, redundant capacity and tested failover arrangements that let critical systems keep running, or be restored quickly, when a disruptive event takes out normal operating capacity.",
+      "defaults": {"is_transfer": false, "status": "todo", "capex_amount": 15000, "opex_annual_amount": 4000}
+    },
+    {
+      "ref": "defence-supplier-security",
+      "kind": "defence",
+      "title": "Information security in supplier relationships (A.5.19)",
+      "description": "Security expectations written into supplier contracts and checked before and during the relationship, so a vendor's access to the organization's systems or data comes with agreed obligations rather than blind trust.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-independent-review",
+      "kind": "defence",
+      "title": "Independent review of information security (A.5.35)",
+      "description": "A periodic assessment of the security programme by someone outside the team that runs it, whether internal audit or an external assessor, to surface gaps that the people closest to the system are least likely to notice themselves.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 6000}
+    },
+    {
+      "ref": "defence-personnel-screening",
+      "kind": "defence",
+      "title": "Background screening before hire (A.6.1)",
+      "description": "Proportionate background checks carried out on candidates before they join, particularly for roles with access to sensitive data or systems, so hiring decisions account for security risk alongside skills.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-security-awareness-training",
+      "kind": "defence",
+      "title": "Security awareness, education and training (A.6.3)",
+      "description": "Regular, role-relevant training that helps staff recognize common attack patterns such as phishing and social engineering, and that keeps them aware of their own responsibilities under the organization's policies.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 3000}
+    },
+    {
+      "ref": "defence-remote-working-security",
+      "kind": "defence",
+      "title": "Security measures for remote working (A.6.7)",
+      "description": "Baseline requirements for how staff connect and work from outside a managed office network, covering device configuration, network protections and acceptable-use expectations for remote and hybrid work.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-physical-entry-control",
+      "kind": "defence",
+      "title": "Physical entry controls for secure areas (A.7.2)",
+      "description": "Restrictions on who can physically enter areas that house sensitive equipment or records, using measures such as badge access, visitor logging or supervised entry appropriate to the sensitivity of the area.",
+      "defaults": {"is_transfer": false, "status": "todo", "capex_amount": 4000}
+    },
+    {
+      "ref": "defence-physical-security-monitoring",
+      "kind": "defence",
+      "title": "Physical security monitoring (A.7.4)",
+      "description": "Ongoing surveillance of premises and secure areas, such as camera coverage or alarm systems, so unauthorized physical access attempts are noticed and can be investigated rather than going unrecorded.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 2000}
+    },
+    {
+      "ref": "defence-offsite-asset-security",
+      "kind": "defence",
+      "title": "Security of assets away from organizational premises (A.7.9)",
+      "description": "Rules and safeguards for equipment that leaves the organization's own sites, such as staff laptops or supplier-managed hardware, so the loss of physical control over a device does not automatically mean loss of the data on it.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-media-storage-handling",
+      "kind": "defence",
+      "title": "Handling of storage media (A.7.10)",
+      "description": "Procedures for how removable and physical storage media are labelled, transported, retained and disposed of, ensuring sensitive data on a disk, drive or backup tape cannot leak simply because the media itself changed hands or was thrown away.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-secure-authentication",
+      "kind": "defence",
+      "title": "Secure authentication methods (A.8.5)",
+      "description": "Login mechanisms designed to resist common attacks, such as multi-factor authentication or strong session handling, so that a single stolen or guessed password is not enough on its own to gain access.",
+      "defaults": {"is_transfer": false, "status": "todo", "capex_amount": 2000, "opex_annual_amount": 500}
+    },
+    {
+      "ref": "defence-malware-protection",
+      "kind": "defence",
+      "title": "Protection against malware (A.8.7)",
+      "description": "Software and process controls, such as endpoint protection and safe-execution restrictions, that reduce the chance of malicious code running on organizational systems and limit what it can do if it does.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 1500}
+    },
+    {
+      "ref": "defence-vulnerability-management",
+      "kind": "defence",
+      "title": "Management of technical vulnerabilities (A.8.8)",
+      "description": "A recurring process for finding out about, prioritizing and closing known weaknesses in the organization's own software and infrastructure before they can be exploited.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 4000}
+    },
+    {
+      "ref": "defence-data-leakage-prevention",
+      "kind": "defence",
+      "title": "Data leakage prevention measures (A.8.12)",
+      "description": "Technical controls that watch for and restrict sensitive data leaving the organization's systems through channels such as email, file upload or removable media, catching accidental or careless disclosure as well as deliberate exfiltration.",
+      "defaults": {"is_transfer": false, "status": "todo", "capex_amount": 8000, "opex_annual_amount": 2500}
+    },
+    {
+      "ref": "defence-backup-management",
+      "kind": "defence",
+      "title": "Backup of information, software and systems (A.8.13)",
+      "description": "Regular, tested copies of data and system state kept separately from the live environment, so that a corruption, deletion or ransomware event can be recovered from rather than being permanent.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 3000}
+    },
+    {
+      "ref": "defence-security-monitoring-logging",
+      "kind": "defence",
+      "title": "Monitoring of systems for anomalous activity (A.8.16)",
+      "description": "Collection and review of logs and events from systems and networks, with alerting on patterns that suggest unauthorized or unusual activity, so that an intrusion or misuse in progress is noticed rather than discovered much later.",
+      "defaults": {"is_transfer": false, "status": "todo", "opex_annual_amount": 5000}
+    },
+    {
+      "ref": "defence-cryptography-use",
+      "kind": "defence",
+      "title": "Use of cryptography (A.8.24)",
+      "description": "Encryption of sensitive data at rest and in transit, backed by a defined approach to key management, so that data intercepted or copied without authorization is unusable without the key.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    },
+    {
+      "ref": "defence-secure-coding-practices",
+      "kind": "defence",
+      "title": "Secure coding practices (A.8.28)",
+      "description": "Coding standards, training and review steps built into the software development process so that common classes of exploitable defect are caught and corrected before code reaches production.",
+      "defaults": {"is_transfer": false, "status": "todo"}
+    }
+  ]
+}
