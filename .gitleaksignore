@@ -1,0 +1,6 @@
+# False positives from gitleaks' generic-api-key rule, reviewed 2026-10-09:
+# a keyboard-shortcut label ("keys: 'Shift+Ctrl/Cmd+Z'") and a test fixture's
+# node path ("pathKey: 'root/risk1/...'"). Fingerprints are for the public
+# repository's first commit, which carries the whole tree.
+affc89dd550f44760e8f7734ef78ddefd2b99f59:resources/js/Components/Shortcuts/ShortcutsOverlay.vue:generic-api-key:47
+affc89dd550f44760e8f7734ef78ddefd2b99f59:tests/js/chart/ChartCard.spec.ts:generic-api-key:279
