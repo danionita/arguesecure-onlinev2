@@ -72,8 +72,8 @@ the repository is private its images are too, so the host must first run
 **From source.** A checkout builds the same images itself:
 
 ```bash
-git clone https://github.com/danionita/arguesecure-online-v2.git
-cd arguesecure-online-v2
+git clone https://github.com/danionita/arguesecure-onlinev2.git
+cd arguesecure-onlinev2
 cp .env.example .env
 docker compose up --build -d
 ```
@@ -280,6 +280,22 @@ running it.
 | [`docs/specs/deployment.md`](docs/specs/deployment.md) | Docker, CI, environment and operations |
 | [`docs/ASSISTANT.md`](docs/ASSISTANT.md) | The optional AI assistant |
 | `/help`, in the running app | User help: concepts, quantification, keyboard map, collaboration, sharing, templates, history and reports |
+
+## Background and credits
+
+ArgueSecure was created by **Dan Ionita** at the University of Twente, from
+research into argumentation-based security risk assessment carried out in the
+EU FP7 project **TREsPASS** (*Technology-supported Risk Estimation by
+Predictive Assessment of Socio-technical Security*, grant agreement
+no. 318003). The method and the first versions of the tool are described in:
+
+> D. Ionita, R. Kegel, A. Baltuta and R. Wieringa, "ArgueSecure: Out-of-the-Box
+> Security Risk Assessment," *2016 IEEE 24th International Requirements
+> Engineering Conference Workshops (REW)*, Beijing, 2016, pp. 74–79.
+> doi:[10.1109/REW.2016.027](https://doi.org/10.1109/REW.2016.027)
+
+ArgueSecure 2 is a rewrite of that tool. If you use it in research, please
+cite the paper above; [`CITATION.cff`](CITATION.cff) has the details.
 
 ## License
 
