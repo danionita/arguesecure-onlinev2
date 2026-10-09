@@ -38,6 +38,11 @@ env:
 jobs:
   publish:
     name: Build, boot from the image alone, publish
+    # Only the private development repository publishes, to its private
+    # packages. The public repository carries this same file (CLAUDE.md, "Two
+    # repositories"), and a release tag pushed there must not build or write
+    # to the maintainer's images.
+    if: github.repository == 'danionita/arguesecure-online-v2'
     runs-on: ubuntu-latest
     # The only job in this repository that writes anything, and only here.
     permissions:
