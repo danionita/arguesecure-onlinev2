@@ -63,8 +63,7 @@ docker compose up --build -d
 
 The first build takes several minutes, because it installs the PHP and
 JavaScript dependencies and compiles the frontend. Later builds reuse most of
-that work. Prebuilt images are not published for public use yet, so building
-from source is the supported way to install.
+that work.
 
 On its first start the stack:
 
@@ -157,13 +156,13 @@ To add it:
    download or size check to get wrong:
 
    ```bash
-   docker compose run --rm assistant-install small   # or: large
+   docker compose run --rm --build assistant-install small   # or: large
    ```
 
 2. Set `ASSISTANT_ENABLED=true` in `.env`, then start the assistant:
 
    ```bash
-   docker compose --profile assistant up -d
+   docker compose --profile assistant up --build -d
    ```
 
    (If it was already running — for example while switching models — use
