@@ -16,8 +16,8 @@ Requirements: Docker and Docker Compose for the stack; PHP 8.3 (with
 Node 22 to run the checks.
 
 ```bash
-git clone https://github.com/danionita/arguesecure-online-v2.git
-cd arguesecure-online-v2
+git clone https://github.com/danionita/arguesecure-onlinev2.git
+cd arguesecure-onlinev2
 cp .env.example .env
 docker compose up --build -d
 composer install

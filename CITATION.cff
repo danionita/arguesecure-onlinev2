@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use ArgueSecure in research, please cite the paper below."
+title: ArgueSecure
+type: software
+license: MIT
+repository-code: "https://github.com/danionita/arguesecure-onlinev2"
+url: "https://arguesecure.com"
+authors:
+  - family-names: Ionita
+    given-names: Dan
+    affiliation: University of Twente
+preferred-citation:
+  type: conference-paper
+  title: "ArgueSecure: Out-of-the-Box Security Risk Assessment"
+  authors:
+    - family-names: Ionita
+      given-names: Dan
+    - family-names: Kegel
+      given-names: Roeland H. P.
+    - family-names: Baltuta
+      given-names: Andrei
+    - family-names: Wieringa
+      given-names: Roel
+  collection-title: "2016 IEEE 24th International Requirements Engineering Conference Workshops (REW)"
+  publisher:
+    name: IEEE
+  year: 2016
+  start: 74
+  end: 79
+  doi: 10.1109/REW.2016.027
