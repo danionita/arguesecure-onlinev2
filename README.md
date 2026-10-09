@@ -43,9 +43,9 @@ roadmap done.
 The in-app help (`/help`) explains the concepts, the quantification model,
 the keyboard map, collaboration, sharing and reports.
 
-ArgueSecure 2 is a rewrite on Laravel 12, PHP 8.3, Inertia and Vue 3. The
-1.x application (Laravel 5.2, jQuery) lives on only in this repository's git
-history, at the `v1-final` tag.
+ArgueSecure 2 is a rewrite on Laravel 12, PHP 8.3, Inertia and Vue 3, and
+replaces the 1.x application entirely. This repository starts at 2.6.2, its
+first public release. Read more at [arguesecure.com](https://arguesecure.com).
 
 ## Installing
 
@@ -63,11 +63,8 @@ docker compose pull
 docker compose up -d
 ```
 
-Set `ARGUESECURE_VERSION` in `.env` to the release you want (`2.7.0`, or
-`2.7` to take its patch releases); `latest` follows the newest release. While
-the repository is private its images are too, so the host must first run
-`docker login ghcr.io` once with a GitHub token that has only the
-`read:packages` scope.
+Set `ARGUESECURE_VERSION` in `.env` to the release you want (`2.6.2`, or
+`2.6` to take its patch releases); `latest` follows the newest release.
 
 **From source.** A checkout builds the same images itself:
 
@@ -132,16 +129,14 @@ addresses. Mark what you already have as *implemented* and shelve what is out
 of scope. Their descriptions summarise the controls; they are not the text of
 the standards, and not legal advice.
 
-To load templates added in a later release into an instance whose first
-administrator already exists, run the seeder below. It is idempotent and
-creates no users:
+When you upgrade to a release that adds templates, load them into your
+instance with the seeder below. It is idempotent and creates no users:
 
 ```bash
 docker compose exec app php artisan db:seed --class='Database\Seeders\SampleContentSeeder' --force
 ```
 
-Plain `php artisan db:seed` does nothing useful here. The default seeder
-used to create an administrator account, which this project never does.
+Plain `php artisan db:seed` does nothing useful here.
 
 ## AI assistant (optional)
 
@@ -194,12 +189,6 @@ To add it:
 **Switching preset later:** run the install command for the other preset,
 then restart the assistant as in step 2.
 
-**Upgrading a 2.5 deployment:** nothing changes on its own — it keeps
-running the model it ran before, however its `.env` named it.
-To move to a preset instead, remove `ASSISTANT_MODEL_FILE` and
-`ASSISTANT_MODEL` from `.env`, run the install command, and restart the
-assistant; you can then delete the old model file from the models directory.
-
 [`docs/ASSISTANT.md`](docs/ASSISTANT.md) explains each switch, what each
 feature costs, and what the assistant is never allowed to do.
 
@@ -214,7 +203,7 @@ docker compose logs -f app
 docker compose pull && docker compose up -d
 
 # ...or, from a source checkout (add --profile assistant to both commands
-# if you run the assistant, or its image keeps the old launcher)
+# if you run the assistant)
 git pull && docker compose build && docker compose up -d
 
 # Stop, keeping the data in DATA_PATH
@@ -280,6 +269,15 @@ running it.
 | [`docs/specs/deployment.md`](docs/specs/deployment.md) | Docker, CI, environment and operations |
 | [`docs/ASSISTANT.md`](docs/ASSISTANT.md) | The optional AI assistant |
 | `/help`, in the running app | User help: concepts, quantification, keyboard map, collaboration, sharing, templates, history and reports |
+
+## Feedback, bugs and security
+
+ArgueSecure is new in public, and feedback from real assessments is the most
+useful contribution there is. Report bugs and ideas as
+[issues](https://github.com/danionita/arguesecure-onlinev2/issues), and see
+[`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request. Please
+report security vulnerabilities privately, through **Report a vulnerability**
+on the repository's Security tab, never in a public issue.
 
 ## Background and credits
 
