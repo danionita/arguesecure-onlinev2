@@ -52,21 +52,7 @@ first public release. Read more at [arguesecure.com](https://arguesecure.com).
 You need Docker and Docker Compose, nothing else. PHP, Node, MariaDB and
 Redis all run in containers.
 
-**From the published image.** Every release is published to GitHub's
-container registry, so a deployment needs two files and no build. Put
-[`docker-compose.yml`](docker-compose.yml) and
-[`.env.example`](.env.example), renamed to `.env`, in one directory, fill in
-`.env`, and start it:
-
-```bash
-docker compose pull
-docker compose up -d
-```
-
-Set `ARGUESECURE_VERSION` in `.env` to the release you want (`2.6.2`, or
-`2.6` to take its patch releases); `latest` follows the newest release.
-
-**From source.** A checkout builds the same images itself:
+Clone the repository and build the stack from source:
 
 ```bash
 git clone https://github.com/danionita/arguesecure-onlinev2.git
@@ -74,6 +60,11 @@ cd arguesecure-onlinev2
 cp .env.example .env
 docker compose up --build -d
 ```
+
+The first build takes several minutes, because it installs the PHP and
+JavaScript dependencies and compiles the frontend. Later builds reuse most of
+that work. Prebuilt images are not published for public use yet, so building
+from source is the supported way to install.
 
 On its first start the stack:
 
@@ -199,11 +190,8 @@ feature costs, and what the assistant is never allowed to do.
 docker compose logs -f app
 
 # Upgrade (migrations run when the app container starts). Take a database
-# dump first (below), and set ARGUESECURE_VERSION if you pin one.
-docker compose pull && docker compose up -d
-
-# ...or, from a source checkout (add --profile assistant to both commands
-# if you run the assistant)
+# dump first (below). Add --profile assistant to both commands if you run
+# the assistant.
 git pull && docker compose build && docker compose up -d
 
 # Stop, keeping the data in DATA_PATH
