@@ -1,0 +1,20 @@
+# gitleaks' default rules, plus two reviewed false positives of its
+# generic-api-key rule (2026-10-09): a keyboard-shortcut label and a test
+# fixture's node path. Matched by their exact text, so they stay allowed in
+# any commit and a real key on those lines would still be caught.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Reviewed generic-api-key false positives"
+regexTarget = "line"
+regexes = [
+  '''keys: 'Shift\+Ctrl/Cmd\+Z', action: 'Redo' ''',
+  '''pathKey: 'root/risk1/attack1/defence1',''',
+]
+
+# The public repository's second commit briefly carried a .gitleaksignore
+# quoting the shortcut label above; it was replaced by this file.
+[[allowlists]]
+description = "Superseded ignore file"
+paths = ['''^\.gitleaksignore$''']
