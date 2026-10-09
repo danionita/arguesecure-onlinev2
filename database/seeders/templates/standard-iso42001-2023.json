@@ -1,0 +1,2146 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-iso42001-2023",
+  "root_uuid": "c2000000-0000-4000-8000-000000000001",
+  "title": "ISO/IEC 42001:2023 — AI management system",
+  "description": "A gap-analysis starting point for an AI management system under ISO/IEC 42001:2023. Every requirement in clauses 4 to 10 and all 38 Annex A controls (implementation guidance: Annex B) are defences set to todo. Pair it with the ISO/IEC 27001 template for the security of the AI systems and the EU AI Act template for the law. Titles follow the standard; descriptions are summaries, not the normative text.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Individuals",
+      "color": "#DC2626"
+    },
+    {
+      "name": "Data",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "Reliability",
+      "color": "#0EA5E9"
+    },
+    {
+      "name": "Accountability",
+      "color": "#8B5CF6"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-harm-to-people",
+      "uuid": "c2000000-0000-4000-8000-000000000002",
+      "title": "Harm to individuals or groups from AI system outcomes",
+      "description": "Outputs or decisions of an AI system treat people unfairly, unsafely or against their rights — discrimination, wrongful denial of a service, physical or psychological harm — and the organization is responsible for it.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Individuals"
+      ],
+      "attack_refs": [
+        "attack-biased-data",
+        "attack-misuse",
+        "attack-no-oversight",
+        "attack-opaque",
+        "attack-adversarial"
+      ]
+    },
+    {
+      "ref": "risk-ai-data",
+      "uuid": "c2000000-0000-4000-8000-000000000003",
+      "title": "Compromise or misuse of data used by AI systems",
+      "description": "Training, validation, input or output data is of unknown origin, unlawfully obtained, poisoned, or exposed through the model itself.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Data"
+      ],
+      "attack_refs": [
+        "attack-data-provenance",
+        "attack-data-exposure",
+        "attack-adversarial",
+        "attack-third-party"
+      ]
+    },
+    {
+      "ref": "risk-ai-reliability",
+      "uuid": "c2000000-0000-4000-8000-000000000004",
+      "title": "AI system does not perform as intended",
+      "description": "The system is less accurate, robust or available in production than it was when approved, and nobody notices until it has caused damage.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "moderate"
+      },
+      "tags": [
+        "Reliability"
+      ],
+      "attack_refs": [
+        "attack-drift",
+        "attack-adversarial",
+        "attack-misuse",
+        "attack-third-party",
+        "attack-incident"
+      ]
+    },
+    {
+      "ref": "risk-ai-accountability",
+      "uuid": "c2000000-0000-4000-8000-000000000005",
+      "title": "AI use cannot be governed or evidenced",
+      "description": "Nobody owns AI decisions, impacts are not assessed, and there is no record of how systems were built or why — so the organization cannot answer a regulator, a customer or its own board, and loses or never gains certification.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "moderate"
+      },
+      "tags": [
+        "Accountability"
+      ],
+      "attack_refs": [
+        "attack-governance",
+        "attack-opaque",
+        "attack-incident",
+        "attack-third-party"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-biased-data",
+      "uuid": "c2000000-0000-4000-8000-000000000006",
+      "title": "Unrepresentative data or design produces unfair outcomes",
+      "description": "Training data under-represents some groups or encodes historical bias, or the objective rewards the wrong thing, and the system reproduces it at scale.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-clause-6-1-4",
+        "defence-clause-8-4",
+        "defence-a-3-3",
+        "defence-a-5-2",
+        "defence-a-5-4",
+        "defence-a-5-5",
+        "defence-a-6-1-2",
+        "defence-a-6-1-3",
+        "defence-a-6-2-4",
+        "defence-a-7-4",
+        "defence-a-7-6"
+      ]
+    },
+    {
+      "ref": "attack-misuse",
+      "uuid": "c2000000-0000-4000-8000-000000000007",
+      "title": "AI system used outside its intended purpose",
+      "description": "The system is applied to people, contexts or decisions it was never designed or validated for, by the organization or by its customers.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-5-2",
+        "defence-a-5-5",
+        "defence-a-6-2-2",
+        "defence-a-6-2-5",
+        "defence-a-8-2",
+        "defence-a-9-2",
+        "defence-a-9-3",
+        "defence-a-9-4",
+        "defence-a-10-4"
+      ]
+    },
+    {
+      "ref": "attack-no-oversight",
+      "uuid": "c2000000-0000-4000-8000-000000000008",
+      "title": "Consequential decisions issued without meaningful human review",
+      "description": "Outputs are acted on automatically, or reviewed by people who lack the time, competence or authority to overrule them.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-clause-7-2",
+        "defence-a-4-6",
+        "defence-a-5-4",
+        "defence-a-9-2",
+        "defence-a-9-4"
+      ]
+    },
+    {
+      "ref": "attack-drift",
+      "uuid": "c2000000-0000-4000-8000-000000000009",
+      "title": "Performance degrades or drifts undetected in production",
+      "description": "The world changes, inputs shift, or dependencies are updated, and accuracy or behaviour moves away from what was validated without anyone monitoring it.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-4-5",
+        "defence-a-6-2-2",
+        "defence-a-6-2-4",
+        "defence-a-6-2-5",
+        "defence-a-6-2-6"
+      ]
+    },
+    {
+      "ref": "attack-adversarial",
+      "uuid": "c2000000-0000-4000-8000-00000000000a",
+      "title": "Adversarial manipulation of the model",
+      "description": "Prompt injection, evasion inputs or poisoned training data make the system behave as an attacker wants rather than as designed.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        },
+        {
+          "kind": "url",
+          "url": "https://atlas.mitre.org/techniques/AML.T0051",
+          "title": "MITRE ATLAS AML.T0051 — LLM Prompt Injection"
+        },
+        {
+          "kind": "url",
+          "url": "https://atlas.mitre.org/techniques/AML.T0020",
+          "title": "MITRE ATLAS AML.T0020 — Poison Training Data"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-6-1-3",
+        "defence-a-6-2-4",
+        "defence-a-7-5"
+      ]
+    },
+    {
+      "ref": "attack-data-provenance",
+      "uuid": "c2000000-0000-4000-8000-00000000000b",
+      "title": "Data of unknown origin, quality or lawfulness",
+      "description": "Data is acquired or scraped without knowing where it came from, what rights attach to it, or whether it is fit for the purpose.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-4-3",
+        "defence-a-7-2",
+        "defence-a-7-3",
+        "defence-a-7-4",
+        "defence-a-7-5"
+      ]
+    },
+    {
+      "ref": "attack-data-exposure",
+      "uuid": "c2000000-0000-4000-8000-00000000000c",
+      "title": "Personal or confidential data exposed through the AI system",
+      "description": "Model inversion, memorisation, verbose logging or careless data preparation reveals the personal or confidential data the system was built or run on.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        },
+        {
+          "kind": "url",
+          "url": "https://atlas.mitre.org/techniques/AML.T0024",
+          "title": "MITRE ATLAS AML.T0024 — Exfiltration via AI Inference API"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-6-1-3",
+        "defence-a-7-3",
+        "defence-a-7-6"
+      ]
+    },
+    {
+      "ref": "attack-opaque",
+      "uuid": "c2000000-0000-4000-8000-00000000000d",
+      "title": "People are not informed about the AI system or its limits",
+      "description": "Users and affected people do not know that AI is involved, what it is for, how reliable it is, or how to question an outcome.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-6-2-7",
+        "defence-a-8-2",
+        "defence-a-8-5",
+        "defence-a-10-4"
+      ]
+    },
+    {
+      "ref": "attack-third-party",
+      "uuid": "c2000000-0000-4000-8000-00000000000e",
+      "title": "Third-party model, data or tooling introduces unassessed risk",
+      "description": "A supplier's model, dataset, platform or service is adopted without the organization knowing its behaviour, limits or the responsibilities it has taken on.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-4-2",
+        "defence-a-4-4",
+        "defence-a-10-2",
+        "defence-a-10-3",
+        "defence-transfer-ai-liability"
+      ]
+    },
+    {
+      "ref": "attack-incident",
+      "uuid": "c2000000-0000-4000-8000-00000000000f",
+      "title": "AI incident not detected, communicated or corrected",
+      "description": "A harmful output or failure happens and is not logged, escalated, reported to the people who must know, or fixed at the root.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-a-3-3",
+        "defence-a-6-2-6",
+        "defence-a-6-2-8",
+        "defence-a-8-3",
+        "defence-a-8-4",
+        "defence-transfer-ai-liability"
+      ]
+    },
+    {
+      "ref": "attack-governance",
+      "uuid": "c2000000-0000-4000-8000-000000000010",
+      "title": "AI managed ad hoc: no policy, roles, assessment or review",
+      "description": "There is no AI policy, no clear ownership, no repeatable risk and impact assessment, and no review cycle, so decisions about AI depend on whoever happens to be involved.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.iso.org/standard/81230.html",
+          "title": "ISO/IEC 42001:2023"
+        }
+      ],
+      "defence_refs": [
+        "defence-clause-4-1",
+        "defence-clause-4-2",
+        "defence-clause-4-3",
+        "defence-clause-4-4",
+        "defence-clause-5-1",
+        "defence-clause-5-2",
+        "defence-clause-5-3",
+        "defence-clause-6-1-1",
+        "defence-clause-6-1-2",
+        "defence-clause-6-1-3",
+        "defence-clause-6-1-4",
+        "defence-clause-6-2",
+        "defence-clause-6-3",
+        "defence-clause-7-1",
+        "defence-clause-7-2",
+        "defence-clause-7-3",
+        "defence-clause-7-4",
+        "defence-clause-7-5",
+        "defence-clause-8-1",
+        "defence-clause-8-2",
+        "defence-clause-8-3",
+        "defence-clause-8-4",
+        "defence-clause-9-1",
+        "defence-clause-9-2",
+        "defence-clause-9-3",
+        "defence-clause-10-1",
+        "defence-clause-10-2",
+        "defence-a-2-2",
+        "defence-a-2-3",
+        "defence-a-2-4",
+        "defence-a-3-2",
+        "defence-a-4-2",
+        "defence-a-4-6",
+        "defence-a-5-3",
+        "defence-a-6-2-3",
+        "defence-a-6-2-7",
+        "defence-a-6-2-8",
+        "defence-a-10-2"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-clause-4-1",
+      "uuid": "c2000000-0000-4000-8000-000000000011",
+      "title": "Clause 4.1 — Understanding the organization and its context",
+      "description": "Determine the internal and external issues relevant to the AI management system, including the organization's roles as AI provider, producer, customer or user, and climate-related issues.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:4.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-4-2",
+      "uuid": "c2000000-0000-4000-8000-000000000012",
+      "title": "Clause 4.2 — Needs and expectations of interested parties",
+      "description": "Identify interested parties — including those affected by AI systems — and which of their requirements the AI management system will address.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:4.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-4-3",
+      "uuid": "c2000000-0000-4000-8000-000000000013",
+      "title": "Clause 4.3 — Scope of the AI management system",
+      "description": "Define and document the boundaries and applicability of the AI management system.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:4.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-4-4",
+      "uuid": "c2000000-0000-4000-8000-000000000014",
+      "title": "Clause 4.4 — AI management system",
+      "description": "Establish, implement, maintain and continually improve the AI management system and its processes.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:4.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-5-1",
+      "uuid": "c2000000-0000-4000-8000-000000000015",
+      "title": "Clause 5.1 — Leadership and commitment",
+      "description": "Top management owns the AI management system, integrates it into business processes, and provides the resources it needs.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:5.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-5-2",
+      "uuid": "c2000000-0000-4000-8000-000000000016",
+      "title": "Clause 5.2 — AI policy",
+      "description": "A top-level AI policy, appropriate to the organization's purpose, sets a framework for AI objectives and commits to meeting requirements and continual improvement.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:5.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-5-3",
+      "uuid": "c2000000-0000-4000-8000-000000000017",
+      "title": "Clause 5.3 — Roles, responsibilities and authorities",
+      "description": "Assign and communicate who is responsible for the AI management system conforming to the standard and for reporting on its performance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:5.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-1-1",
+      "uuid": "c2000000-0000-4000-8000-000000000018",
+      "title": "Clause 6.1.1 — Actions to address risks and opportunities",
+      "description": "Plan how to address the risks and opportunities to the AI management system, distinguishing acceptable from non-acceptable risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:6.1.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-1-2",
+      "uuid": "c2000000-0000-4000-8000-000000000019",
+      "title": "Clause 6.1.2 — AI risk assessment",
+      "description": "Define and apply an AI risk assessment process that identifies, analyses and evaluates risks against the organization's AI objectives and risk criteria.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:6.1.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-1-3",
+      "uuid": "c2000000-0000-4000-8000-00000000001a",
+      "title": "Clause 6.1.3 — AI risk treatment and Statement of Applicability",
+      "description": "Select treatment options, determine the controls needed, compare them with Annex A, produce a Statement of Applicability justifying inclusions and exclusions, and obtain approval of residual risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:6.1.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-1-4",
+      "uuid": "c2000000-0000-4000-8000-00000000001b",
+      "title": "Clause 6.1.4 — AI system impact assessment",
+      "description": "Define a process to assess the potential consequences of AI systems for individuals, groups and societies across their life cycle.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:6.1.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-2",
+      "uuid": "c2000000-0000-4000-8000-00000000001c",
+      "title": "Clause 6.2 — AI objectives and planning to achieve them",
+      "description": "Set measurable AI objectives and plan what will be done, with what resources, by whom and by when.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:6.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-6-3",
+      "uuid": "c2000000-0000-4000-8000-00000000001d",
+      "title": "Clause 6.3 — Planning of changes",
+      "description": "Carry out changes to the AI management system in a planned manner.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:6.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-1",
+      "uuid": "c2000000-0000-4000-8000-00000000001e",
+      "title": "Clause 7.1 — Resources",
+      "description": "Provide the resources needed to establish, run and improve the AI management system.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:7.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-2",
+      "uuid": "c2000000-0000-4000-8000-00000000001f",
+      "title": "Clause 7.2 — Competence",
+      "description": "Ensure people whose work affects AI performance are competent — including in the technical and ethical aspects of AI — and keep evidence.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:7.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-no-oversight": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-3",
+      "uuid": "c2000000-0000-4000-8000-000000000020",
+      "title": "Clause 7.3 — Awareness",
+      "description": "People working under the organization's control know the AI policy, their contribution, and the consequences of not conforming.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:7.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-4",
+      "uuid": "c2000000-0000-4000-8000-000000000021",
+      "title": "Clause 7.4 — Communication",
+      "description": "Decide what is communicated about the AI management system, when, to whom and how.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:7.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-7-5",
+      "uuid": "c2000000-0000-4000-8000-000000000022",
+      "title": "Clause 7.5 — Documented information",
+      "description": "Create, control and retain the documented information the standard and the AI management system require.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:7.5"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-8-1",
+      "uuid": "c2000000-0000-4000-8000-000000000023",
+      "title": "Clause 8.1 — Operational planning and control",
+      "description": "Plan, implement and control the processes that meet AI requirements, including externally provided processes, products and services.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:8.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-8-2",
+      "uuid": "c2000000-0000-4000-8000-000000000024",
+      "title": "Clause 8.2 — AI risk assessment",
+      "description": "Perform AI risk assessments at planned intervals and when significant changes are proposed or occur.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:8.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-8-3",
+      "uuid": "c2000000-0000-4000-8000-000000000025",
+      "title": "Clause 8.3 — AI risk treatment",
+      "description": "Implement the AI risk treatment plan and verify its effectiveness.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:8.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-8-4",
+      "uuid": "c2000000-0000-4000-8000-000000000026",
+      "title": "Clause 8.4 — AI system impact assessment",
+      "description": "Perform AI system impact assessments at planned intervals and when significant changes occur, and keep the results.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:8.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-9-1",
+      "uuid": "c2000000-0000-4000-8000-000000000027",
+      "title": "Clause 9.1 — Monitoring, measurement, analysis and evaluation",
+      "description": "Determine what to monitor and measure about the AI management system, how and when, and evaluate performance and effectiveness.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:9.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-9-2",
+      "uuid": "c2000000-0000-4000-8000-000000000028",
+      "title": "Clause 9.2 — Internal audit",
+      "description": "Audit the AI management system at planned intervals, objectively, and report the results.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:9.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-9-3",
+      "uuid": "c2000000-0000-4000-8000-000000000029",
+      "title": "Clause 9.3 — Management review",
+      "description": "Top management reviews the AI management system at planned intervals and decides on improvements and changes.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:9.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-10-1",
+      "uuid": "c2000000-0000-4000-8000-00000000002a",
+      "title": "Clause 10.1 — Continual improvement",
+      "description": "Continually improve the suitability, adequacy and effectiveness of the AI management system.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:10.1"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-clause-10-2",
+      "uuid": "c2000000-0000-4000-8000-00000000002b",
+      "title": "Clause 10.2 — Nonconformity and corrective action",
+      "description": "React to nonconformities, correct them, remove their causes and keep evidence of the actions taken.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:10.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-2-2",
+      "uuid": "c2000000-0000-4000-8000-00000000002c",
+      "title": "A.2.2 AI policy",
+      "description": "A documented policy for the development or use of AI systems, approved by management.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.2.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-2-3",
+      "uuid": "c2000000-0000-4000-8000-00000000002d",
+      "title": "A.2.3 Alignment with other organizational policies",
+      "description": "The organization determines where other policies — security, privacy, quality, procurement — affect or are affected by its AI objectives.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.2.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-2-4",
+      "uuid": "c2000000-0000-4000-8000-00000000002e",
+      "title": "A.2.4 Review of the AI policy",
+      "description": "The AI policy is reviewed at planned intervals, or when needed, to stay suitable, adequate and effective.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.2.4"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-3-2",
+      "uuid": "c2000000-0000-4000-8000-00000000002f",
+      "title": "A.3.2 AI roles and responsibilities",
+      "description": "Roles and responsibilities for AI are defined and allocated according to the organization's needs.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.3.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-3-3",
+      "uuid": "c2000000-0000-4000-8000-000000000030",
+      "title": "A.3.3 Reporting of concerns",
+      "description": "A process lets people in the organization report concerns about its role with respect to an AI system throughout that system's life cycle.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.3.3"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-4-2",
+      "uuid": "c2000000-0000-4000-8000-000000000031",
+      "title": "A.4.2 Resource documentation",
+      "description": "The resources each AI system needs — data, tools, compute, people — are identified and documented for every life-cycle stage.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.4.2"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-third-party": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-4-3",
+      "uuid": "c2000000-0000-4000-8000-000000000032",
+      "title": "A.4.3 Data resources",
+      "description": "Information about the data resources used for each AI system is documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.4.3"
+        }
+      ],
+      "links": {
+        "attack-data-provenance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-4-4",
+      "uuid": "c2000000-0000-4000-8000-000000000033",
+      "title": "A.4.4 Tooling resources",
+      "description": "Information about the tooling resources — frameworks, libraries, platforms, pre-trained models — used for each AI system is documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.4.4"
+        }
+      ],
+      "links": {
+        "attack-third-party": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-4-5",
+      "uuid": "c2000000-0000-4000-8000-000000000034",
+      "title": "A.4.5 System and computing resources",
+      "description": "Information about the system and computing resources used for each AI system is documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.4.5"
+        }
+      ],
+      "links": {
+        "attack-drift": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-4-6",
+      "uuid": "c2000000-0000-4000-8000-000000000035",
+      "title": "A.4.6 Human resources",
+      "description": "The human resources and competences needed for each AI system's development, deployment, operation, change management, maintenance, transfer and decommissioning are documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.4.6"
+        }
+      ],
+      "links": {
+        "attack-no-oversight": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-2",
+      "uuid": "c2000000-0000-4000-8000-000000000036",
+      "title": "A.5.2 AI system impact assessment process",
+      "description": "A process to assess the potential consequences of an AI system for individuals, groups and societies throughout its life cycle.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.5.2"
+        }
+      ],
+      "links": {
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-3",
+      "uuid": "c2000000-0000-4000-8000-000000000037",
+      "title": "A.5.3 Documentation of AI system impact assessments",
+      "description": "Results of impact assessments are documented and retained for a defined period.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.5.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-4",
+      "uuid": "c2000000-0000-4000-8000-000000000038",
+      "title": "A.5.4 Assessing AI system impact on individuals or groups of individuals",
+      "description": "The potential impacts on individuals or groups — fairness, safety, privacy, access to services — are assessed and documented throughout the life cycle.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.5.4"
+        }
+      ],
+      "links": {
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-no-oversight": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-5-5",
+      "uuid": "c2000000-0000-4000-8000-000000000039",
+      "title": "A.5.5 Assessing societal impacts of AI systems",
+      "description": "The potential societal impacts — environment, labour, democratic processes, public health — are assessed and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.5.5"
+        }
+      ],
+      "links": {
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-1-2",
+      "uuid": "c2000000-0000-4000-8000-00000000003a",
+      "title": "A.6.1.2 Objectives for responsible development of AI system",
+      "description": "Objectives that guide responsible development — fairness, transparency, robustness — are identified and documented, and measures to achieve them are built into development.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.1.2"
+        }
+      ],
+      "links": {
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-1-3",
+      "uuid": "c2000000-0000-4000-8000-00000000003b",
+      "title": "A.6.1.3 Processes for responsible AI system design and development",
+      "description": "Specific processes for responsible design and development of AI systems are defined and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.1.3"
+        }
+      ],
+      "links": {
+        "attack-adversarial": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2-2",
+      "uuid": "c2000000-0000-4000-8000-00000000003c",
+      "title": "A.6.2.2 AI system requirements and specification",
+      "description": "Requirements for new AI systems, or material enhancements to existing ones, are specified and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.2.2"
+        }
+      ],
+      "links": {
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-drift": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2-3",
+      "uuid": "c2000000-0000-4000-8000-00000000003d",
+      "title": "A.6.2.3 Documentation of AI system design and development",
+      "description": "Design and development are documented according to the organization's objectives, requirements and specification criteria.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.2.3"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2-4",
+      "uuid": "c2000000-0000-4000-8000-00000000003e",
+      "title": "A.6.2.4 AI system verification and validation",
+      "description": "Verification and validation measures, with criteria for their use, are defined and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.2.4"
+        }
+      ],
+      "links": {
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-adversarial": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-drift": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2-5",
+      "uuid": "c2000000-0000-4000-8000-00000000003f",
+      "title": "A.6.2.5 AI system deployment",
+      "description": "A deployment plan is documented, and requirements are met before deployment.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.2.5"
+        }
+      ],
+      "links": {
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-drift": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2-6",
+      "uuid": "c2000000-0000-4000-8000-000000000040",
+      "title": "A.6.2.6 AI system operation and monitoring",
+      "description": "The elements needed for ongoing operation — system and performance monitoring, repairs, updates and support — are defined and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.2.6"
+        }
+      ],
+      "links": {
+        "attack-drift": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2-7",
+      "uuid": "c2000000-0000-4000-8000-000000000041",
+      "title": "A.6.2.7 AI system technical documentation",
+      "description": "Technical documentation each category of interested party needs — users, partners, supervisory authorities — is determined and provided in an appropriate form.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.2.7"
+        }
+      ],
+      "links": {
+        "attack-opaque": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-6-2-8",
+      "uuid": "c2000000-0000-4000-8000-000000000042",
+      "title": "A.6.2.8 AI system recording of event logs",
+      "description": "The life-cycle phases in which event logging should be enabled are determined, at minimum while the system is in use.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.6.2.8"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-2",
+      "uuid": "c2000000-0000-4000-8000-000000000043",
+      "title": "A.7.2 Data for development and enhancement of AI system",
+      "description": "Data management processes related to developing and enhancing AI systems are defined, documented and implemented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.7.2"
+        }
+      ],
+      "links": {
+        "attack-data-provenance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-3",
+      "uuid": "c2000000-0000-4000-8000-000000000044",
+      "title": "A.7.3 Acquisition of data",
+      "description": "Details about how data used in AI systems is acquired and selected are determined and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.7.3"
+        }
+      ],
+      "links": {
+        "attack-data-provenance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-4",
+      "uuid": "c2000000-0000-4000-8000-000000000045",
+      "title": "A.7.4 Quality of data for AI systems",
+      "description": "Data quality requirements are defined and data used to develop and operate the AI system meets them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.7.4"
+        }
+      ],
+      "links": {
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-provenance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-5",
+      "uuid": "c2000000-0000-4000-8000-000000000046",
+      "title": "A.7.5 Data provenance",
+      "description": "A process records the provenance of data used in AI systems over the life cycles of the data and the system.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.7.5"
+        }
+      ],
+      "links": {
+        "attack-data-provenance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-adversarial": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-7-6",
+      "uuid": "c2000000-0000-4000-8000-000000000047",
+      "title": "A.7.6 Data preparation",
+      "description": "Criteria for selecting data preparations — cleaning, labelling, de-identification, transformation — and the methods used are defined and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.7.6"
+        }
+      ],
+      "links": {
+        "attack-biased-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-2",
+      "uuid": "c2000000-0000-4000-8000-000000000048",
+      "title": "A.8.2 System documentation and information for users",
+      "description": "The information users need about the AI system — purpose, capabilities, limits, how to use it well — is determined and provided.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.8.2"
+        }
+      ],
+      "links": {
+        "attack-opaque": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-3",
+      "uuid": "c2000000-0000-4000-8000-000000000049",
+      "title": "A.8.3 External reporting",
+      "description": "Interested parties have a way to report adverse impacts of the AI system.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.8.3"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-4",
+      "uuid": "c2000000-0000-4000-8000-00000000004a",
+      "title": "A.8.4 Communication of incidents",
+      "description": "A plan determines how and to whom incidents involving the AI system are communicated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.8.4"
+        }
+      ],
+      "links": {
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-8-5",
+      "uuid": "c2000000-0000-4000-8000-00000000004b",
+      "title": "A.8.5 Information for interested parties",
+      "description": "The organization determines and documents its obligations to report information about the AI system to interested parties, and meets them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.8.5"
+        }
+      ],
+      "links": {
+        "attack-opaque": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-9-2",
+      "uuid": "c2000000-0000-4000-8000-00000000004c",
+      "title": "A.9.2 Processes for responsible use of AI systems",
+      "description": "Processes for the responsible use of AI systems are defined and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.9.2"
+        }
+      ],
+      "links": {
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-no-oversight": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-9-3",
+      "uuid": "c2000000-0000-4000-8000-00000000004d",
+      "title": "A.9.3 Objectives for responsible use of AI system",
+      "description": "Objectives guiding the responsible use of AI systems are identified and documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.9.3"
+        }
+      ],
+      "links": {
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-9-4",
+      "uuid": "c2000000-0000-4000-8000-00000000004e",
+      "title": "A.9.4 Intended use of the AI system",
+      "description": "The AI system is used according to its intended uses and the accompanying documentation.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.9.4"
+        }
+      ],
+      "links": {
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-no-oversight": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-10-2",
+      "uuid": "c2000000-0000-4000-8000-00000000004f",
+      "title": "A.10.2 Allocating responsibilities",
+      "description": "Responsibilities across the AI system life cycle are allocated between the organization, its partners, suppliers, customers and third parties.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.10.2"
+        }
+      ],
+      "links": {
+        "attack-third-party": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-10-3",
+      "uuid": "c2000000-0000-4000-8000-000000000050",
+      "title": "A.10.3 Suppliers",
+      "description": "A process ensures that services, products or materials from suppliers align with the organization's approach to responsible AI.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.10.3"
+        }
+      ],
+      "links": {
+        "attack-third-party": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-a-10-4",
+      "uuid": "c2000000-0000-4000-8000-000000000051",
+      "title": "A.10.4 Customers",
+      "description": "The organization's approach to responsible development and use of AI considers its customers' expectations and needs.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:A.10.4"
+        }
+      ],
+      "links": {
+        "attack-misuse": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-opaque": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-transfer-ai-liability",
+      "uuid": "c2000000-0000-4000-8000-000000000052",
+      "title": "AI liability cover and supplier indemnity (risk sharing under clause 6.1.3)",
+      "description": "Insurance covering claims arising from AI system outputs, and contractual indemnities from model and data suppliers, as a deliberate decision to share residual risk the controls do not remove.",
+      "is_transfer": true,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "ISO42001-2023:6.1.3"
+        }
+      ],
+      "links": {
+        "attack-third-party": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-incident": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

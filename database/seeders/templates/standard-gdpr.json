@@ -1,0 +1,1437 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-gdpr",
+  "root_uuid": "c5000000-0000-4000-8000-000000000001",
+  "title": "GDPR — Regulation (EU) 2016/679",
+  "description": "The controller and processor obligations of the General Data Protection Regulation — principles, lawful bases, data subject rights, accountability, security, breach notification, DPIAs, the DPO and international transfers — as defences set to todo. Articles addressed to Member States, authorities and certification bodies are out of scope. Descriptions are summaries, not legal text or legal advice.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Enforcement",
+      "color": "#DC2626"
+    },
+    {
+      "name": "Data subjects",
+      "color": "#8B5CF6"
+    },
+    {
+      "name": "Breach",
+      "color": "#F59E0B"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-enforcement",
+      "uuid": "c5000000-0000-4000-8000-000000000002",
+      "title": "Supervisory authority enforcement",
+      "description": "A supervisory authority finds the processing unlawful and orders it to stop, imposes corrective measures, or fines the organization — up to EUR 20 million or 4% of worldwide annual turnover for the most serious infringements.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "severe"
+      },
+      "tags": [
+        "Enforcement"
+      ],
+      "attack_refs": [
+        "attack-no-lawful-basis",
+        "attack-transparency",
+        "attack-rights",
+        "attack-special-data",
+        "attack-processor",
+        "attack-transfer",
+        "attack-breach-handling",
+        "attack-no-dpia",
+        "attack-accountability",
+        "attack-automated",
+        "attack-retention"
+      ]
+    },
+    {
+      "ref": "risk-data-subject-harm",
+      "uuid": "c5000000-0000-4000-8000-000000000003",
+      "title": "Harm to data subjects and compensation claims",
+      "description": "People whose data is processed suffer material or non-material damage — discrimination, financial loss, distress, loss of control over their data — and claim compensation under Article 82, individually or through a representative action.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Data subjects"
+      ],
+      "attack_refs": [
+        "attack-no-lawful-basis",
+        "attack-rights",
+        "attack-special-data",
+        "attack-automated",
+        "attack-security",
+        "attack-retention",
+        "attack-transfer"
+      ]
+    },
+    {
+      "ref": "risk-personal-data-breach",
+      "uuid": "c5000000-0000-4000-8000-000000000004",
+      "title": "Personal data breach",
+      "description": "Personal data is destroyed, lost, altered, disclosed or accessed without authorization, whether by attack, error or a processor's failure.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Breach"
+      ],
+      "attack_refs": [
+        "attack-security",
+        "attack-processor",
+        "attack-breach-handling"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-no-lawful-basis",
+      "uuid": "c5000000-0000-4000-8000-000000000005",
+      "title": "Processing without a lawful basis or beyond its purpose",
+      "description": "Data is collected or reused without a valid basis — consent that was never freely given, a legitimate interest nobody balanced — or for a purpose incompatible with the one it was collected for.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--5",
+        "defence-art--6",
+        "defence-art--7",
+        "defence-art--21"
+      ]
+    },
+    {
+      "ref": "attack-transparency",
+      "uuid": "c5000000-0000-4000-8000-000000000006",
+      "title": "People are not told how their data is used",
+      "description": "Privacy notices are missing, incomplete, out of date or unreadable, so data subjects cannot know who processes their data, why, or what their rights are.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--12",
+        "defence-art--13",
+        "defence-art--14"
+      ]
+    },
+    {
+      "ref": "attack-rights",
+      "uuid": "c5000000-0000-4000-8000-000000000007",
+      "title": "A data subject request is mishandled",
+      "description": "A request for access, rectification, erasure, restriction, portability or objection is ignored, answered late or answered wrongly.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--11",
+        "defence-art--12",
+        "defence-art--15",
+        "defence-art--16",
+        "defence-art--17",
+        "defence-art--18",
+        "defence-art--19",
+        "defence-art--20",
+        "defence-art--21"
+      ]
+    },
+    {
+      "ref": "attack-special-data",
+      "uuid": "c5000000-0000-4000-8000-000000000008",
+      "title": "Sensitive data processed without its extra conditions",
+      "description": "Health, biometric, political, religious or other special-category data, criminal-offence data or children's data is processed without the additional condition or safeguard the Regulation requires.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--8",
+        "defence-art--9",
+        "defence-art--10"
+      ]
+    },
+    {
+      "ref": "attack-processor",
+      "uuid": "c5000000-0000-4000-8000-000000000009",
+      "title": "A processor or joint controller mishandles the data",
+      "description": "A service provider processes personal data outside the controller's documented instructions, engages a sub-processor without authorization, or protects it less well than the contract requires.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--26",
+        "defence-art--28",
+        "defence-art--29"
+      ]
+    },
+    {
+      "ref": "attack-transfer",
+      "uuid": "c5000000-0000-4000-8000-00000000000a",
+      "title": "Personal data transferred outside the EEA without a valid mechanism",
+      "description": "Data reaches a third country or international organization — often through a cloud service or support team — without an adequacy decision, appropriate safeguards or an applicable derogation.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--44",
+        "defence-art--45",
+        "defence-art--46",
+        "defence-art--47",
+        "defence-art--48",
+        "defence-art--49"
+      ]
+    },
+    {
+      "ref": "attack-security",
+      "uuid": "c5000000-0000-4000-8000-00000000000b",
+      "title": "Security of processing is inadequate",
+      "description": "Technical and organisational measures are not proportionate to the risk, so an attacker, an insider or a mistake compromises the confidentiality, integrity or availability of personal data.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        },
+        {
+          "kind": "url",
+          "url": "https://www.edpb.europa.eu/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en",
+          "title": "EDPB guidelines"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--25",
+        "defence-art--29",
+        "defence-art--32",
+        "defence-transfer-breach-insurance"
+      ]
+    },
+    {
+      "ref": "attack-breach-handling",
+      "uuid": "c5000000-0000-4000-8000-00000000000c",
+      "title": "A breach is not detected, notified or documented",
+      "description": "A personal data breach goes unnoticed, is not reported to the supervisory authority within 72 hours, is not communicated to affected people when it should be, or is not recorded.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--33",
+        "defence-art--34",
+        "defence-transfer-breach-insurance"
+      ]
+    },
+    {
+      "ref": "attack-no-dpia",
+      "uuid": "c5000000-0000-4000-8000-00000000000d",
+      "title": "High-risk processing launched without assessment or privacy by design",
+      "description": "A new system or use of data goes live without data protection by design and by default and, where the processing is likely high-risk, without a data protection impact assessment.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--25",
+        "defence-art--35",
+        "defence-art--36"
+      ]
+    },
+    {
+      "ref": "attack-accountability",
+      "uuid": "c5000000-0000-4000-8000-00000000000e",
+      "title": "Compliance cannot be demonstrated",
+      "description": "There are no records of processing, no data protection officer where one is required, no policies and no evidence — so even lawful processing cannot be shown to be lawful.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--5",
+        "defence-art--24",
+        "defence-art--27",
+        "defence-art--30",
+        "defence-art--31",
+        "defence-art--37",
+        "defence-art--38",
+        "defence-art--39",
+        "defence-art--40",
+        "defence-art--42"
+      ]
+    },
+    {
+      "ref": "attack-automated",
+      "uuid": "c5000000-0000-4000-8000-00000000000f",
+      "title": "Decisions made about people solely by automated means",
+      "description": "Profiling or automated decision-making with legal or similarly significant effects runs without a permitted basis, human intervention or a way to contest the result.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--22",
+        "defence-art--35"
+      ]
+    },
+    {
+      "ref": "attack-retention",
+      "uuid": "c5000000-0000-4000-8000-000000000010",
+      "title": "Data kept too long or allowed to become inaccurate",
+      "description": "Personal data is kept after its purpose is served, or is not kept accurate and up to date, contrary to the storage-limitation and accuracy principles.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "title": "Regulation (EU) 2016/679 (GDPR)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art--5",
+        "defence-art--16",
+        "defence-art--17"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-art--5",
+      "uuid": "c5000000-0000-4000-8000-000000000011",
+      "title": "Art. 5 Principles relating to processing of personal data",
+      "description": "Processing is lawful, fair and transparent; limited to specified purposes; adequate and limited to what is necessary; accurate; kept no longer than needed; secure — and the controller can demonstrate all of it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.5"
+        }
+      ],
+      "links": {
+        "attack-no-lawful-basis": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-retention": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--6",
+      "uuid": "c5000000-0000-4000-8000-000000000012",
+      "title": "Art. 6 Lawfulness of processing",
+      "description": "Every processing operation rests on one of the six lawful bases — consent, contract, legal obligation, vital interests, public task or legitimate interests — identified and documented before processing starts, with a balancing test where legitimate interests are relied on.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.6"
+        }
+      ],
+      "links": {
+        "attack-no-lawful-basis": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--7",
+      "uuid": "c5000000-0000-4000-8000-000000000013",
+      "title": "Art. 7 Conditions for consent",
+      "description": "Where consent is the basis, the controller can prove it was given, the request was distinct and in plain language, and it can be withdrawn as easily as it was given.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.7"
+        }
+      ],
+      "links": {
+        "attack-no-lawful-basis": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--8",
+      "uuid": "c5000000-0000-4000-8000-000000000014",
+      "title": "Art. 8 Conditions applicable to a child's consent",
+      "description": "For information society services offered directly to children below the applicable age, consent is given or authorised by the holder of parental responsibility, and reasonable efforts are made to verify it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.8"
+        }
+      ],
+      "links": {
+        "attack-special-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--9",
+      "uuid": "c5000000-0000-4000-8000-000000000015",
+      "title": "Art. 9 Processing of special categories of personal data",
+      "description": "Special-category data is processed only under one of the Article 9(2) conditions, such as explicit consent or employment law obligations, in addition to an Article 6 basis.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.9"
+        }
+      ],
+      "links": {
+        "attack-special-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--10",
+      "uuid": "c5000000-0000-4000-8000-000000000016",
+      "title": "Art. 10 Processing of personal data relating to criminal convictions and offences",
+      "description": "Criminal-offence data is processed only under official authority or where Union or Member State law authorises it with appropriate safeguards.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.10"
+        }
+      ],
+      "links": {
+        "attack-special-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--11",
+      "uuid": "c5000000-0000-4000-8000-000000000017",
+      "title": "Art. 11 Processing which does not require identification",
+      "description": "The controller does not keep or acquire extra information to identify people merely to comply with the Regulation, and tells data subjects when it cannot identify them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.11"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--12",
+      "uuid": "c5000000-0000-4000-8000-000000000018",
+      "title": "Art. 12 Transparent information, communication and modalities",
+      "description": "Information and communications to data subjects are concise, intelligible and free of charge, and requests are answered within one month, extendable by two months for complex cases.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.12"
+        }
+      ],
+      "links": {
+        "attack-transparency": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--13",
+      "uuid": "c5000000-0000-4000-8000-000000000019",
+      "title": "Art. 13 Information to be provided where data are collected from the data subject",
+      "description": "At the time of collection, people are told who the controller is, the purposes and basis, recipients, transfers, retention period, their rights and whether providing the data is required.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.13"
+        }
+      ],
+      "links": {
+        "attack-transparency": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--14",
+      "uuid": "c5000000-0000-4000-8000-00000000001a",
+      "title": "Art. 14 Information to be provided where data have not been obtained from the data subject",
+      "description": "Where data comes from elsewhere, the same information plus its source is provided within a reasonable period and at the latest within one month.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.14"
+        }
+      ],
+      "links": {
+        "attack-transparency": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--15",
+      "uuid": "c5000000-0000-4000-8000-00000000001b",
+      "title": "Art. 15 Right of access by the data subject",
+      "description": "Data subjects can obtain confirmation that their data is processed, a copy of it, and the information about how it is processed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.15"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--16",
+      "uuid": "c5000000-0000-4000-8000-00000000001c",
+      "title": "Art. 16 Right to rectification",
+      "description": "Inaccurate personal data is corrected, and incomplete data completed, without undue delay on request.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.16"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-retention": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--17",
+      "uuid": "c5000000-0000-4000-8000-00000000001d",
+      "title": "Art. 17 Right to erasure ('right to be forgotten')",
+      "description": "Data is erased without undue delay when one of the grounds applies, such as withdrawn consent or data no longer needed, and other controllers publishing it are informed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.17"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-retention": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--18",
+      "uuid": "c5000000-0000-4000-8000-00000000001e",
+      "title": "Art. 18 Right to restriction of processing",
+      "description": "Processing is restricted — stored but not otherwise used — while accuracy is contested, an objection is assessed, or in the other listed cases.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.18"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--19",
+      "uuid": "c5000000-0000-4000-8000-00000000001f",
+      "title": "Art. 19 Notification obligation regarding rectification, erasure or restriction",
+      "description": "Each recipient to whom the data was disclosed is told about a rectification, erasure or restriction unless that proves impossible or disproportionate.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.19"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--20",
+      "uuid": "c5000000-0000-4000-8000-000000000020",
+      "title": "Art. 20 Right to data portability",
+      "description": "Data provided by the data subject and processed by automated means on consent or contract is given back in a structured, commonly used, machine-readable format, or transmitted to another controller.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.20"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--21",
+      "uuid": "c5000000-0000-4000-8000-000000000021",
+      "title": "Art. 21 Right to object",
+      "description": "Objections to processing based on legitimate or public interest are honoured unless there are compelling legitimate grounds, and objections to direct marketing always are.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.21"
+        }
+      ],
+      "links": {
+        "attack-rights": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-no-lawful-basis": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--22",
+      "uuid": "c5000000-0000-4000-8000-000000000022",
+      "title": "Art. 22 Automated individual decision-making, including profiling",
+      "description": "Decisions based solely on automated processing with legal or similarly significant effects are taken only on a permitted basis, with the right to human intervention, to express a view and to contest the decision.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.22"
+        }
+      ],
+      "links": {
+        "attack-automated": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--24",
+      "uuid": "c5000000-0000-4000-8000-000000000023",
+      "title": "Art. 24 Responsibility of the controller",
+      "description": "The controller implements appropriate technical and organisational measures, including data protection policies, to ensure and demonstrate compliance, and reviews them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.24"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--25",
+      "uuid": "c5000000-0000-4000-8000-000000000024",
+      "title": "Art. 25 Data protection by design and by default",
+      "description": "Data protection principles are built into systems and processes from design, and by default only the personal data necessary for each purpose is processed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.25"
+        }
+      ],
+      "links": {
+        "attack-no-dpia": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-security": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--26",
+      "uuid": "c5000000-0000-4000-8000-000000000025",
+      "title": "Art. 26 Joint controllers",
+      "description": "Where two or more controllers jointly determine purposes and means, an arrangement sets out their respective responsibilities, and its essence is made available to data subjects.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.26"
+        }
+      ],
+      "links": {
+        "attack-processor": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--27",
+      "uuid": "c5000000-0000-4000-8000-000000000026",
+      "title": "Art. 27 Representatives of controllers or processors not established in the Union",
+      "description": "A controller or processor outside the Union that offers goods or services to, or monitors, people in the Union designates a representative in the Union in writing.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.27"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--28",
+      "uuid": "c5000000-0000-4000-8000-000000000027",
+      "title": "Art. 28 Processor",
+      "description": "Only processors giving sufficient guarantees are used, under a contract containing the mandatory terms — documented instructions, confidentiality, security, sub-processor approval, assistance, deletion and audits.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.28"
+        }
+      ],
+      "links": {
+        "attack-processor": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--29",
+      "uuid": "c5000000-0000-4000-8000-000000000028",
+      "title": "Art. 29 Processing under the authority of the controller or processor",
+      "description": "Anyone acting under the authority of the controller or processor who has access to personal data processes it only on the controller's instructions.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.29"
+        }
+      ],
+      "links": {
+        "attack-processor": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-security": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--30",
+      "uuid": "c5000000-0000-4000-8000-000000000029",
+      "title": "Art. 30 Records of processing activities",
+      "description": "A record of processing activities is maintained — purposes, categories of data and data subjects, recipients, transfers, retention and security measures — and made available to the supervisory authority on request.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.30"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--31",
+      "uuid": "c5000000-0000-4000-8000-00000000002a",
+      "title": "Art. 31 Cooperation with the supervisory authority",
+      "description": "The controller and processor cooperate with the supervisory authority in the performance of its tasks, on request.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.31"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--32",
+      "uuid": "c5000000-0000-4000-8000-00000000002b",
+      "title": "Art. 32 Security of processing",
+      "description": "Measures appropriate to the risk — pseudonymisation and encryption, ongoing confidentiality, integrity, availability and resilience, timely restoration after an incident, and regular testing of their effectiveness.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.32"
+        }
+      ],
+      "links": {
+        "attack-security": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--33",
+      "uuid": "c5000000-0000-4000-8000-00000000002c",
+      "title": "Art. 33 Notification of a personal data breach to the supervisory authority",
+      "description": "A breach likely to result in a risk to people is notified to the supervisory authority without undue delay and, where feasible, within 72 hours of becoming aware of it; every breach is documented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.33"
+        }
+      ],
+      "links": {
+        "attack-breach-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--34",
+      "uuid": "c5000000-0000-4000-8000-00000000002d",
+      "title": "Art. 34 Communication of a personal data breach to the data subject",
+      "description": "A breach likely to result in a high risk to people is communicated to them without undue delay, in clear and plain language, with what they can do about it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.34"
+        }
+      ],
+      "links": {
+        "attack-breach-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--35",
+      "uuid": "c5000000-0000-4000-8000-00000000002e",
+      "title": "Art. 35 Data protection impact assessment",
+      "description": "Before processing likely to result in a high risk — systematic profiling, large-scale special-category data, systematic monitoring of public areas — its necessity, proportionality and risks are assessed, with the DPO's advice.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.35"
+        }
+      ],
+      "links": {
+        "attack-no-dpia": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-automated": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--36",
+      "uuid": "c5000000-0000-4000-8000-00000000002f",
+      "title": "Art. 36 Prior consultation",
+      "description": "Where a DPIA shows a high residual risk the controller cannot mitigate, the supervisory authority is consulted before processing begins.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.36"
+        }
+      ],
+      "links": {
+        "attack-no-dpia": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--37",
+      "uuid": "c5000000-0000-4000-8000-000000000030",
+      "title": "Art. 37 Designation of the data protection officer",
+      "description": "A data protection officer is designated where required — public bodies, large-scale systematic monitoring, large-scale special-category data — and their contact details are published and communicated to the authority.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.37"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--38",
+      "uuid": "c5000000-0000-4000-8000-000000000031",
+      "title": "Art. 38 Position of the data protection officer",
+      "description": "The DPO is involved properly and in time, has the resources needed, receives no instructions on their tasks, is not dismissed for performing them, and reports to the highest management level.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.38"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--39",
+      "uuid": "c5000000-0000-4000-8000-000000000032",
+      "title": "Art. 39 Tasks of the data protection officer",
+      "description": "The DPO informs and advises, monitors compliance including training and audits, advises on DPIAs, and acts as contact point for the supervisory authority.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.39"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--40",
+      "uuid": "c5000000-0000-4000-8000-000000000033",
+      "title": "Art. 40 Codes of conduct",
+      "description": "Where an approved code of conduct exists for the sector, adhering to it is used as an element of demonstrating compliance, and as a transfer safeguard where applicable.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.40"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--42",
+      "uuid": "c5000000-0000-4000-8000-000000000034",
+      "title": "Art. 42 Certification",
+      "description": "Where an approved data protection certification exists, obtaining it is used as an element of demonstrating compliance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.42"
+        }
+      ],
+      "links": {
+        "attack-accountability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--44",
+      "uuid": "c5000000-0000-4000-8000-000000000035",
+      "title": "Art. 44 General principle for transfers",
+      "description": "Any transfer to a third country or international organization takes place only if the conditions of Chapter V are met, including onward transfers.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.44"
+        }
+      ],
+      "links": {
+        "attack-transfer": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--45",
+      "uuid": "c5000000-0000-4000-8000-000000000036",
+      "title": "Art. 45 Transfers on the basis of an adequacy decision",
+      "description": "Transfers relying on an adequacy decision are checked against the current list of adequate countries and frameworks, and re-checked when a decision changes or is invalidated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.45"
+        }
+      ],
+      "links": {
+        "attack-transfer": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--46",
+      "uuid": "c5000000-0000-4000-8000-000000000037",
+      "title": "Art. 46 Transfers subject to appropriate safeguards",
+      "description": "Without adequacy, transfers rely on appropriate safeguards — standard contractual clauses, binding corporate rules, codes or certification — with a transfer impact assessment and supplementary measures where needed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.46"
+        }
+      ],
+      "links": {
+        "attack-transfer": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--47",
+      "uuid": "c5000000-0000-4000-8000-000000000038",
+      "title": "Art. 47 Binding corporate rules",
+      "description": "Where a group relies on binding corporate rules for intra-group transfers, they are approved by the competent supervisory authority and applied throughout the group.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.47"
+        }
+      ],
+      "links": {
+        "attack-transfer": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--48",
+      "uuid": "c5000000-0000-4000-8000-000000000039",
+      "title": "Art. 48 Transfers or disclosures not authorised by Union law",
+      "description": "A foreign court or authority's demand for personal data is honoured only on the basis of an international agreement such as a mutual legal assistance treaty.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.48"
+        }
+      ],
+      "links": {
+        "attack-transfer": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art--49",
+      "uuid": "c5000000-0000-4000-8000-00000000003a",
+      "title": "Art. 49 Derogations for specific situations",
+      "description": "Derogations — explicit consent, contract performance, legal claims and the others listed — are used only for occasional, necessary transfers, never as the routine mechanism.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "GDPR:ART.49"
+        }
+      ],
+      "links": {
+        "attack-transfer": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-transfer-breach-insurance",
+      "uuid": "c5000000-0000-4000-8000-00000000003b",
+      "title": "Breach-response insurance (risk transfer)",
+      "description": "A cyber policy covering breach investigation, notification, credit monitoring and third-party claims. Administrative fines are often not insurable, so this transfers part of the harm-and-breach cost, not the enforcement risk.",
+      "is_transfer": true,
+      "status": "todo",
+      "links": {
+        "attack-security": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-breach-handling": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

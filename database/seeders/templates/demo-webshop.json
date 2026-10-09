@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "demo-webshop",
+  "root_uuid": "a1000000-0000-4000-8000-000000000001",
+  "title": "Northwind Outfitters — online store",
+  "description": "A small e-commerce web shop selling outdoor gear: a public storefront, a checkout that takes card payments through a hosted processor, an admin console for staff, and a customer-support desk. Seeded fully populated so a new user can see what a complete assessment looks like end to end.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {"name": "PII", "color": "#DC2626"},
+    {"name": "Payment", "color": "#F59E0B"},
+    {"name": "Customer-facing", "color": "#3B82F6"}
+  ],
+  "risks": [
+    {
+      "ref": "risk-payment-breach",
+      "uuid": "a1000000-0000-4000-8000-000000000002",
+      "title": "Customer payment data breach",
+      "description": "Attacker gains access to stored or in-transit customer names, addresses and card tokens, triggering breach notification, card-network fines and forensic costs.",
+      "impact": {"mode": "quantitative", "amount": 250000},
+      "tags": ["PII", "Payment"],
+      "attack_refs": ["attack-credential-stuffing", "attack-sqli-checkout"]
+    },
+    {
+      "ref": "risk-storefront-outage",
+      "uuid": "a1000000-0000-4000-8000-000000000003",
+      "title": "Storefront downtime during peak sales",
+      "description": "The public storefront becomes unavailable or too slow to use, directly losing sales for the duration and damaging return-customer trust.",
+      "impact": {"mode": "qualitative", "level_code": "moderate"},
+      "tags": ["Customer-facing"],
+      "attack_refs": ["attack-ddos-storefront"]
+    },
+    {
+      "ref": "risk-reputational-damage",
+      "uuid": "a1000000-0000-4000-8000-000000000004",
+      "title": "Reputational damage from a data-leak disclosure",
+      "description": "News of a breach or leak spreads publicly, driving customer churn and depressing new signups for months afterward, independent of the direct breach-handling cost captured under the payment-breach risk.",
+      "impact": {"mode": "quantitative", "amount": 80000},
+      "tags": ["PII"],
+      "attack_refs": ["attack-credential-stuffing", "attack-phishing-support"]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-credential-stuffing",
+      "uuid": "a1000000-0000-4000-8000-000000000005",
+      "title": "Credential stuffing against the admin console",
+      "description": "Automated login attempts using credentials leaked from unrelated breaches, targeting staff accounts on the store's admin console.",
+      "likelihood": {"mode": "quantitative", "amount": 0.4},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-287", "title": "Improper Authentication"}
+      ],
+      "defence_refs": ["defence-mfa", "defence-cyber-insurance"]
+    },
+    {
+      "ref": "attack-sqli-checkout",
+      "uuid": "a1000000-0000-4000-8000-000000000006",
+      "title": "SQL injection on the checkout endpoint",
+      "description": "Unsanitised input on the checkout order-lookup form allows an attacker to query the underlying database directly.",
+      "likelihood": {"mode": "qualitative", "level_code": "unlikely"},
+      "references": [
+        {"kind": "cwe", "identifier": "CWE-89", "title": "SQL Injection"}
+      ],
+      "defence_refs": ["defence-waf", "defence-cyber-insurance", "defence-legacy-waf"]
+    },
+    {
+      "ref": "attack-ddos-storefront",
+      "uuid": "a1000000-0000-4000-8000-000000000007",
+      "title": "Volumetric DDoS against the storefront",
+      "description": "A traffic flood aimed at the public storefront's origin servers, saturating bandwidth or connection capacity.",
+      "likelihood": {"mode": "quantitative", "amount": 3.0},
+      "references": [
+        {"kind": "capec", "identifier": "CAPEC-125", "title": "Flooding"}
+      ],
+      "defence_refs": ["defence-waf", "defence-ddos-scrubbing"]
+    },
+    {
+      "ref": "attack-phishing-support",
+      "uuid": "a1000000-0000-4000-8000-000000000008",
+      "title": "Phishing of customer-support staff",
+      "description": "Targeted email luring a support-desk agent into entering their credentials on a lookalike login page, or into disclosing a customer record directly.",
+      "likelihood": {"mode": "quantitative", "amount": 0.6},
+      "defence_refs": ["defence-mfa", "defence-awareness-training"]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-mfa",
+      "uuid": "a1000000-0000-4000-8000-000000000009",
+      "title": "Multi-factor authentication for admin and support accounts",
+      "description": "TOTP-based second factor required on every staff login to the admin console and support desk.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 1500,
+      "opex_annual_amount": 6000,
+      "links": {
+        "attack-credential-stuffing": {
+          "strength": {"mode": "qualitative", "level_code": "strong"},
+          "reduction_target": "likelihood",
+          "rationale": "A stuffed credential alone no longer completes a login; blocks the large majority of automated attempts even when the password itself is correct."
+        },
+        "attack-phishing-support": {
+          "strength": {"mode": "quantitative", "fraction": 0.55},
+          "reduction_target": "likelihood",
+          "rationale": "Stops session takeover from a phished password alone, but a real-time relay of the TOTP code (adversary-in-the-middle) still succeeds, hence a lower rating than against credential stuffing."
+        }
+      }
+    },
+    {
+      "ref": "defence-waf",
+      "uuid": "a1000000-0000-4000-8000-00000000000a",
+      "title": "Web application firewall in front of the storefront",
+      "description": "Managed WAF filtering known injection patterns and absorbing a portion of flood traffic before it reaches the origin.",
+      "is_transfer": false,
+      "status": "implemented",
+      "capex_amount": 15000,
+      "opex_annual_amount": 3000,
+      "links": {
+        "attack-sqli-checkout": {
+          "strength": {"mode": "quantitative", "fraction": 0.6},
+          "reduction_target": "likelihood",
+          "rationale": "Blocks most known SQL-injection payload shapes at the edge; a bespoke payload crafted for this specific endpoint can still get through."
+        },
+        "attack-ddos-storefront": {
+          "strength": {"mode": "quantitative", "fraction": 0.4},
+          "reduction_target": "likelihood",
+          "rationale": "Absorbs moderate floods but has no dedicated scrubbing capacity, so a large volumetric attack still degrades service."
+        }
+      }
+    },
+    {
+      "ref": "defence-cyber-insurance",
+      "uuid": "a1000000-0000-4000-8000-00000000000b",
+      "title": "Cyber insurance policy",
+      "description": "Annual policy covering breach-response costs, forensic investigation and a portion of regulatory fines.",
+      "is_transfer": true,
+      "status": "implemented",
+      "capex_amount": null,
+      "opex_annual_amount": 18000,
+      "links": {
+        "attack-credential-stuffing": {
+          "strength": {"mode": "quantitative", "fraction": 0.4},
+          "reduction_target": "impact",
+          "rationale": "Policy sub-limit and deductible mean roughly 40% of the loss on an incident reached through this path is reimbursed on average."
+        },
+        "attack-sqli-checkout": {
+          "strength": {"mode": "quantitative", "fraction": 0.3},
+          "reduction_target": "impact",
+          "rationale": "Lower coverage rate than the credential-stuffing path — the policy excludes losses traced to a known, unpatched vulnerability class, which a SQL-injection finding is more likely to be classified as."
+        }
+      }
+    },
+    {
+      "ref": "defence-ddos-scrubbing",
+      "uuid": "a1000000-0000-4000-8000-00000000000c",
+      "title": "Third-party DDoS scrubbing service",
+      "description": "Always-on traffic scrubbing in front of the storefront's origin, routing all inbound traffic through the provider's filtering network.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": 2000,
+      "opex_annual_amount": 8000,
+      "links": {
+        "attack-ddos-storefront": {
+          "strength": {"mode": "qualitative", "level_code": "moderate"},
+          "reduction_target": "likelihood",
+          "rationale": "Rated against the provider's published mitigation figures for attacks in the size range we have actually observed, not their largest advertised capacity."
+        }
+      }
+    },
+    {
+      "ref": "defence-awareness-training",
+      "uuid": "a1000000-0000-4000-8000-00000000000d",
+      "title": "Security awareness training for support staff",
+      "description": "Quarterly phishing-simulation exercises and a short mandatory training module for the support desk.",
+      "is_transfer": false,
+      "status": "todo",
+      "capex_amount": null,
+      "opex_annual_amount": 2000,
+      "links": {
+        "attack-phishing-support": {
+          "strength": {"mode": "qualitative", "level_code": "limited"},
+          "reduction_target": null,
+          "rationale": "Training measurably reduces click-through rates in the simulations run so far, but does not come close to eliminating the risk on its own."
+        }
+      }
+    },
+    {
+      "ref": "defence-legacy-waf",
+      "uuid": "a1000000-0000-4000-8000-00000000000e",
+      "title": "Legacy on-premises WAF appliance (decommission planned)",
+      "description": "The rule-based appliance the managed WAF is replacing. Left in place during the transition period, generating enough false positives on legitimate checkout traffic that it is being retired rather than tuned further.",
+      "is_transfer": false,
+      "status": "shelved",
+      "capex_amount": 5000,
+      "opex_annual_amount": 1000,
+      "links": {
+        "attack-sqli-checkout": {
+          "strength": {"mode": "quantitative", "fraction": 0.2},
+          "reduction_target": "likelihood",
+          "rationale": "Caught only the crudest injection attempts even before it started misfiring on legitimate traffic."
+        }
+      }
+    }
+  ]
+}

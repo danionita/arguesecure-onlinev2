@@ -1,0 +1,50 @@
+# End-to-end stack (W25).
+#
+# Runs the whole application in a second, throwaway instance so the twelve
+# release scenarios can start from an empty users table — scenario 1 is
+# first-run setup, which needs one — without touching a real local or
+# deployed instance's data.
+#
+# Use it as:
+#
+#   docker compose -p arguesecure-e2e --env-file .env.e2e \
+#     -f docker-compose.yml -f docker-compose.e2e.yml up -d --build
+#
+# Note what each flag actually does, because the difference bites:
+# `--env-file` only supplies variables for ${...} substitution inside the
+# compose files. It does NOT change the `env_file: .env` directive the
+# services declare, so without the override below the app containers would
+# read the ordinary .env while the database initialised from .env.e2e —
+# which fails as "Access denied for user", some way from its cause.
+#
+# docker-compose.override.yml is deliberately NOT part of that command:
+# its only job is publishing the database and cache ports to the host, and
+# doing that here would collide with an already-running local stack on
+# 3306. Nothing in the e2e run needs host access to either service.
+#
+# APP_PORT and DATA_PATH in .env.e2e keep this instance off the default
+# 8000 and out of /data, so both stacks can run at once.
+
+#
+# W101: the base file names every PHP service by the published image, so a
+# build here would otherwise retag the image a real stack on the same host
+# runs, and that stack's next `up` would recreate itself from this build and
+# migrate its database with it. Its own tag keeps the two apart.
+x-e2e-image: &e2e-image ${ARGUESECURE_IMAGE:-ghcr.io/danionita/arguesecure}:e2e
+
+services:
+  app:
+    image: *e2e-image
+    env_file: .env.e2e
+
+  queue:
+    image: *e2e-image
+    env_file: .env.e2e
+
+  scheduler:
+    image: *e2e-image
+    env_file: .env.e2e
+
+  reverb:
+    image: *e2e-image
+    env_file: .env.e2e

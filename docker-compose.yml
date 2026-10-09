@@ -1,0 +1,247 @@
+# W101 (D62): every PHP service runs one published image, so a deployment
+# needs only this file and a .env - no checkout, no build. `build:` stays
+# beside `image:`: Compose pulls the image when it is not already local and
+# builds it from source only when the pull fails, and `--build` always builds.
+# A source build is therefore tagged with the same name, and a later
+# `docker compose pull` replaces it with the published one.
+#
+# ARGUESECURE_VERSION pins a release (`2.7.0`, or `2.7` for its patches);
+# `latest` follows the newest release and `edge` the newest master build.
+x-arguesecure-image: &arguesecure-image ${ARGUESECURE_IMAGE:-ghcr.io/danionita/arguesecure}:${ARGUESECURE_VERSION:-latest}
+
+services:
+  app:
+    image: *arguesecure-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+      secrets:
+        - composer_auth
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"
+    env_file: .env
+    environment:
+      RUN_MIGRATIONS: "true"
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  reverb:
+    image: *arguesecure-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+      secrets:
+        - composer_auth
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    # The image's HEALTHCHECK probes nginx on port 80, which only the app
+    # service runs. Reverb serves websockets on 8080 instead, so check that
+    # the port accepts a connection - the same probe entrypoint.sh uses to
+    # wait for db and redis.
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 8080) ? 0 : 1);"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  queue:
+    image: *arguesecure-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+      secrets:
+        - composer_auth
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "artisan", "queue:work", "--tries=3", "--max-time=3600"]
+    # A queue worker serves no port, so the image's nginx HEALTHCHECK can never
+    # pass here and would report this container unhealthy forever. Liveness is
+    # already covered: if the worker exits, so does the container, and
+    # restart: unless-stopped brings it back.
+    healthcheck:
+      disable: true
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  scheduler:
+    image: *arguesecure-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+      secrets:
+        - composer_auth
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "artisan", "schedule:work"]
+    # Serves no port either; same reasoning as the queue service above.
+    healthcheck:
+      disable: true
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  # W50 — the inference runtime for the assistant (PLAN-2.3-ai.md D17).
+  #
+  # **Behind a profile, so `docker compose up -d` does not start it.** The
+  # assistant is optional and most deployments will not run it: it needs a
+  # model file and 6 GiB of RAM (small) or 28 GiB (large), against a project
+  # rule that ArgueSecure must run anywhere. Install a model, then start it
+  # deliberately (PLAN-2.6.md D53):
+  #
+  #   docker compose run --rm assistant-install small     # or: large
+  #   docker compose --profile assistant up -d
+  #
+  # llama.cpp rather than Ollama, and the decision is not about speed —
+  # throughput is equivalent, measured on identical weights. The Ollama image
+  # is 8.43 GB against this one's 1.2 GB, almost all of it CUDA and ROCm
+  # libraries a CPU-only deployment never loads.
+  #
+  # The model is **mounted, never downloaded at run time**. A runtime that
+  # fetches weights on demand is one that can fail at first use, in the field,
+  # with no network — and pinning a file makes "which model is this instance
+  # running" answerable by looking. Downloading is `assistant-install`'s job,
+  # below, and it checks size and sha256 before a file becomes usable: a
+  # truncated GGUF download once exited 0 and failed only when the container
+  # started.
+  #
+  # docker/assistant/assistant.sh is the entrypoint. It resolves which model
+  # to serve (a preset from docker/assistant/models.conf, or
+  # ASSISTANT_MODEL_FILE), refuses one that is missing or incomplete with the
+  # command that installs it, and starts llama-server with the flags the 2.6
+  # spike measured (D56). The context window, `-c`, is ASSISTANT_CONTEXT_TOKENS
+  # on both sides: the runtime *silently truncates* a longer prompt, dropping
+  # its front, so the app must know the same number to refuse one.
+  #
+  # The llama.cpp base is pinned by tag and digest in
+  # docker/assistant/Dockerfile: "which build is this instance running" should
+  # be answerable by looking, too, and `:server` moves daily. That Dockerfile
+  # only adds assistant.sh and models.conf, which were bind-mounted from the
+  # checkout until W101 (D63) - a mount is what tied a deployment to a clone.
+  # Editing either file locally now needs `--build` to take effect.
+  #
+  # Not published to the host, for the same reason Reverb is not (§2.1):
+  # nothing outside the compose network needs to reach it, and an inference
+  # endpoint with no authentication is not something to expose.
+  assistant:
+    image: &assistant-image ${ARGUESECURE_IMAGE:-ghcr.io/danionita/arguesecure}-assistant:${ARGUESECURE_VERSION:-latest}
+    build: docker/assistant
+    profiles: ["assistant"]
+    restart: unless-stopped
+    entrypoint: ["bash", "/opt/arguesecure/assistant.sh"]
+    command: ["serve"]
+    environment:
+      ASSISTANT_MODEL: "${ASSISTANT_MODEL:-}"
+      ASSISTANT_MODEL_FILE: "${ASSISTANT_MODEL_FILE:-}"
+      ASSISTANT_CONTEXT_TOKENS: "${ASSISTANT_CONTEXT_TOKENS:-12288}"
+      ASSISTANT_THREADS: "${ASSISTANT_THREADS:-4}"
+    # The same number as the runtime's threads (2.3-threads): `-t` above the
+    # quota is slower, not faster, and without a quota inference takes every
+    # core the host has — including the database's.
+    cpus: "${ASSISTANT_THREADS:-4}"
+    volumes:
+      - ${ASSISTANT_MODEL_PATH:-./models}:/models:ro
+    healthcheck:
+      # /health returns 503 while the model is still loading and 200 once it
+      # is ready, so this is a genuine readiness probe. start_period is
+      # generous because loading several gigabytes from disk is not fast.
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 180s
+      retries: 3
+    networks: [arguesecure]
+
+  # Downloads and verifies a model, then exits (D53). Its own profile, so no
+  # `up` ever starts it; `docker compose run` starts it by name:
+  #
+  #   docker compose run --rm assistant-install small     # or: large, list
+  #
+  # The same image as the runtime — it already has curl and sha256sum — with
+  # the models directory writable, which the runtime's mount deliberately is
+  # not.
+  assistant-install:
+    image: *assistant-image
+    build: docker/assistant
+    profiles: ["assistant-install"]
+    entrypoint: ["bash", "/opt/arguesecure/assistant.sh", "install"]
+    environment:
+      ASSISTANT_MODEL: "${ASSISTANT_MODEL:-}"
+      ASSISTANT_MODEL_FILE: "${ASSISTANT_MODEL_FILE:-}"
+    volumes:
+      - ${ASSISTANT_MODEL_PATH:-./models}:/models
+
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MARIADB_DATABASE: "${DB_DATABASE}"
+      MARIADB_USER: "${DB_USERNAME}"
+      MARIADB_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - ${DATA_PATH:-./data}/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [arguesecure]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - ${DATA_PATH:-./data}/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [arguesecure]
+
+networks:
+  arguesecure:
+    driver: bridge
+
+# Build-time only, and optional. Composer authenticates its codeload
+# downloads with this when it is present; see the Dockerfile's vendor stage
+# for why an unauthenticated build is unreliable on shared CI addresses.
+#
+# An unset COMPOSER_AUTH is not an error: compose resolves the secret to
+# empty and the Dockerfile's `-f` test then simply builds anonymously.
+# Verified both ways before this landed — `docker compose build` with the
+# variable unset, and a `--no-cache` vendor-stage build with it set, since
+# BuildKit deliberately keeps secrets out of the layer cache key and a
+# cached vendor layer would otherwise have proved nothing.
+secrets:
+  composer_auth:
+    environment: COMPOSER_AUTH

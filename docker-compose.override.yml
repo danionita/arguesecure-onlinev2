@@ -1,0 +1,23 @@
+# Local development only. Docker Compose loads this automatically on top of
+# docker-compose.yml, and it is NOT used in production — the deployment on
+# Unraid runs `docker compose -f docker-compose.yml` explicitly (see
+# docs/specs/deployment.md).
+#
+# Its only job is to publish the database and cache ports to the host. The
+# production compose file deliberately publishes neither: db and redis are
+# reachable only from inside the `arguesecure` bridge network, which is what
+# keeps them off the LAN. Locally we need them addressable from Windows so the
+# host PHP can run the test suite against a real MariaDB — the same shape CI
+# uses, where PHP runs on the runner and MariaDB is a service container on
+# 127.0.0.1.
+#
+# Bound to 127.0.0.1 rather than 0.0.0.0 so they are not exposed beyond this
+# machine even while the stack is up.
+services:
+  db:
+    ports:
+      - "127.0.0.1:${DB_PORT:-3306}:3306"
+
+  redis:
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"

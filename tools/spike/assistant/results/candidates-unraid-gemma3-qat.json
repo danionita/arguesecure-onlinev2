@@ -1,0 +1,367 @@
+{
+  "host": "unraid",
+  "config": "gemma3-qat",
+  "steps": {
+    "props": {
+      "buildInfo": "b11176-f805c57a2",
+      "modelPath": "/models/gemma-3-4b-it-qat-Q4_0.gguf",
+      "totalSlots": 1,
+      "slotContext": 12288,
+      "templateLength": 1531,
+      "templateMentionsThinking": false,
+      "modalities": {
+        "vision": false,
+        "video": false,
+        "audio": false
+      },
+      "slots": [
+        {
+          "id": 0,
+          "n_ctx": 12288,
+          "speculative": false
+        }
+      ],
+      "measuredAt": "2026-09-26T06:14:13.620Z"
+    },
+    "a-cold": {
+      "wallSeconds": 77.77,
+      "firstTokenSeconds": 70.97,
+      "finishReason": "stop",
+      "promptProcessed": 6503,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 91.65,
+      "outputTokens": 101,
+      "outputTokensPerSecond": 14.72,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6503,
+        "prompt_ms": 70956.639,
+        "prompt_per_token_ms": 10.911369983084729,
+        "prompt_per_second": 91.64752011436168,
+        "predicted_n": 101,
+        "predicted_ms": 6795.413,
+        "predicted_per_token_ms": 67.95412999999999,
+        "predicted_per_second": 14.71580903176893
+      },
+      "usage": {
+        "completion_tokens": 101,
+        "prompt_tokens": 6503,
+        "total_tokens": 6604,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A **defence** is a component or architectural decision that reduces a risk—like an MFA system or a firewall. It has a status (implemented, todo, or shelved) and a strength against each attack it’s linked to. A **transfer** is a defence that shifts the loss to someone else instead of reducing it—like a contract clause or an insurance policy. Both are treated the same way in the assessment, only their icon and label differ. See [Concepts](/help/concepts).",
+      "measuredAt": "2026-09-26T06:15:31.393Z"
+    },
+    "a-warm": {
+      "wallSeconds": 6.45,
+      "firstTokenSeconds": 0.99,
+      "finishReason": "stop",
+      "promptProcessed": 45,
+      "promptFromCache": 6460,
+      "promptTokensPerSecond": 46.21,
+      "outputTokens": 81,
+      "outputTokensPerSecond": 14.66,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 6460,
+        "prompt_n": 45,
+        "prompt_ms": 973.759,
+        "prompt_per_token_ms": 21.63908888888889,
+        "prompt_per_second": 46.212666583826184,
+        "predicted_n": 81,
+        "predicted_ms": 5455.872,
+        "predicted_per_token_ms": 68.1984,
+        "predicted_per_second": 14.6631006006006
+      },
+      "usage": {
+        "completion_tokens": 81,
+        "prompt_tokens": 6505,
+        "total_tokens": 6586,
+        "prompt_tokens_details": {
+          "cached_tokens": 6460
+        }
+      },
+      "text": "The documentation explains that a missing value on the loss side of the equation (impact or likelihood) excludes that (risk, attack) pair from every total. It also states that a missing defence strength is treated as zero reduction. This means that the total doesn't change because the tool isn’t factoring in the reduced risk or defence effectiveness. See [the quantification model](/help/quantification).",
+      "measuredAt": "2026-09-26T06:15:37.840Z"
+    },
+    "save": {
+      "status": 200,
+      "wallSeconds": 0.05,
+      "response": {
+        "id_slot": 0,
+        "filename": "gemma3-qat-help.bin",
+        "n_saved": 6585,
+        "n_written": 256614140,
+        "timings": {
+          "save_ms": 46.953
+        }
+      },
+      "measuredAt": "2026-09-26T06:15:37.890Z"
+    },
+    "restore": {
+      "status": 200,
+      "wallSeconds": 0.08,
+      "response": {
+        "id_slot": 0,
+        "filename": "gemma3-qat-help.bin",
+        "n_restored": 6585,
+        "n_read": 256614140,
+        "timings": {
+          "restore_ms": 38.467
+        }
+      },
+      "measuredAt": "2026-09-26T06:15:42.366Z"
+    },
+    "a-restored": {
+      "wallSeconds": 75.73,
+      "firstTokenSeconds": 70.54,
+      "finishReason": "stop",
+      "promptProcessed": 6501,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 92.18,
+      "outputTokens": 78,
+      "outputTokensPerSecond": 14.84,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6501,
+        "prompt_ms": 70527.53,
+        "prompt_per_token_ms": 10.848720196892785,
+        "prompt_per_second": 92.17677125513966,
+        "predicted_n": 78,
+        "predicted_ms": 5189.394,
+        "predicted_per_token_ms": 67.39472727272728,
+        "predicted_per_second": 14.837956031089565
+      },
+      "usage": {
+        "completion_tokens": 78,
+        "prompt_tokens": 6501,
+        "total_tokens": 6579,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A missing impact or a missing likelihood excludes that (risk, attack) pair from every total. It is never treated as zero. Coercing a missing impact to €0 would make the tool understate risk — and a security tool that quietly understates risk by default is worse than one that shows an honest, partial number. See [the quantification model](/help/quantification).",
+      "measuredAt": "2026-09-26T06:16:58.103Z"
+    },
+    "b-outage": {
+      "wallSeconds": 18.5,
+      "firstTokenSeconds": 4.42,
+      "finishReason": "stop",
+      "promptProcessed": 428,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 100.07,
+      "outputTokens": 256,
+      "outputTokensPerSecond": 18.11,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 428,
+        "prompt_ms": 4277.211,
+        "prompt_per_token_ms": 9.993483644859813,
+        "prompt_per_second": 100.06520604197455,
+        "predicted_n": 256,
+        "predicted_ms": 14078.213,
+        "predicted_per_token_ms": 55.20867843137255,
+        "predicted_per_second": 18.113094325252785
+      },
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 429,
+        "total_tokens": 685,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "```json\n[\n  {\"title\": \"SQL Injection via Product Search\", \"description\": \"An attacker injects malicious SQL code into a product search query, potentially allowing them to access or modify data, including customer information and product details.\"},\n  {\"title\": \"Cross-Site Scripting (XSS) in Product Reviews\", \"description\": \"An attacker injects malicious JavaScript code into a product review field, which is then executed by other users' browsers, potentially leading to account compromise or redirection to malicious sites.\"},\n  {\"title\": \"Directory Traversal in Admin Console\", \"description\": \"An attacker exploits a vulnerability in the admin console to access files and directories outside the intended web root, potentially exposing sensitive information or allowing code execution.\"},\n  {\"title\": \"Heartbleed-like Vulnerability in SSL/TLS Handshake\", \"description\": \"A vulnerability in the SSL/TLS implementation allows an attacker to extract sensitive information from the server's memory, such as private keys or cached credentials.\"},\n  {\"title\": \"Unvalidated Redirects in Checkout Flow\", \"description\": \"An attacker manipulates the checkout flow by injecting malicious redirects, leading users to a fake payment page designed to steal their credit card details.\"}\n]\n```",
+      "quality": {
+        "parsed": true,
+        "fenced": true,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "SQL Injection via Product Search",
+          "Cross-Site Scripting (XSS) in Product Reviews",
+          "Directory Traversal in Admin Console",
+          "Heartbleed-like Vulnerability in SSL/TLS Handshake",
+          "Unvalidated Redirects in Checkout Flow"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:17:16.604Z"
+    },
+    "b-payment": {
+      "wallSeconds": 22.67,
+      "firstTokenSeconds": 4.66,
+      "finishReason": "stop",
+      "promptProcessed": 465,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 100.65,
+      "outputTokens": 318,
+      "outputTokensPerSecond": 17.61,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 465,
+        "prompt_ms": 4619.818,
+        "prompt_per_token_ms": 9.93509247311828,
+        "prompt_per_second": 100.65331577997229,
+        "predicted_n": 318,
+        "predicted_ms": 18006.212,
+        "predicted_per_token_ms": 56.801930599369086,
+        "predicted_per_second": 17.605035417776932
+      },
+      "usage": {
+        "completion_tokens": 318,
+        "prompt_tokens": 466,
+        "total_tokens": 784,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "```json\n[\n  {\n    \"title\": \"Malicious File Upload\",\n    \"description\": \"An attacker uploads a malicious script (e.g., PHP, JavaScript) to the website's file storage, potentially exploiting a weak file upload mechanism to inject code into a customer-facing page or admin area.\"\n  },\n  {\n    \"title\": \"Cross-Site Scripting (XSS)\",\n    \"description\": \"An attacker injects malicious JavaScript code into a website form or URL parameter, which is then executed by other users' browsers when they visit the affected page, stealing session cookies or redirecting them to a phishing site.\"\n  },\n  {\n    \"title\": \"Session Hijacking\",\n    \"description\": \"An attacker intercepts and steals a valid user's session cookie, allowing them to impersonate that user and gain access to their account and order details without proper authentication.\"\n  },\n  {\n    \"title\": \"Man-in-the-Middle (MITM) Attack\",\n    \"description\": \"An attacker intercepts communication between the customer's browser and the payment processor's server, potentially capturing card details or manipulating the payment process to steal sensitive information.\"\n  },\n  {\n    \"title\": \"Broken Authentication\",\n    \"description\": \"A flaw in the website's authentication system allows an attacker to bypass login mechanisms, such as exploiting a session fixation vulnerability or using brute-force attacks to guess passwords.\"\n  }\n]\n```",
+      "quality": {
+        "parsed": true,
+        "fenced": true,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Malicious File Upload",
+          "Cross-Site Scripting (XSS)",
+          "Session Hijacking",
+          "Man-in-the-Middle (MITM) Attack",
+          "Broken Authentication"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:17:39.274Z"
+    },
+    "c": {
+      "nodes": 73,
+      "wallSeconds": 94.28,
+      "firstTokenSeconds": 73.37,
+      "finishReason": "stop",
+      "promptProcessed": 6777,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 92.45,
+      "outputTokens": 300,
+      "outputTokensPerSecond": 14.3,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 6777,
+        "prompt_ms": 73307.985,
+        "prompt_per_token_ms": 10.817173528109784,
+        "prompt_per_second": 92.44559102258778,
+        "predicted_n": 300,
+        "predicted_ms": 20909.29,
+        "predicted_per_token_ms": 69.93073578595317,
+        "predicted_per_second": 14.299863840426909
+      },
+      "usage": {
+        "completion_tokens": 300,
+        "prompt_tokens": 6778,
+        "total_tokens": 7078,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "This assessment identifies several significant risks associated with the public-facing web application and multi-tenant SaaS product. The most immediate concern is customer account takeover, potentially costing EUR 45,000 per incident, driven by credential stuffing attacks. While multi-factor authentication is implemented, its strength is currently undefined. Furthermore, the potential for public site defacement and malicious content injection, alongside exposure of personal data submitted through forms, represents a moderate impact. The existing web application firewall and server-side input validation offer some protection, but their strength is also unverified.  A key area for improvement is the management of CMS plugins and themes, with a scheduled patch management process currently “todo.”  The multi-tenant SaaS environment presents a higher risk of cross-tenant data leaks, potentially costing EUR 400,000 per incident, requiring robust access controls, automated testing, and secure credential management. Compromise of the production cloud account carries a substantial cost of EUR 550,000, demanding strong IAM practices and a secure CI/CD pipeline.  Finally, the risk of ransomware spreading across the internal network, coupled with potential for unauthorized insider misuse of file shares, necessitates continuous monitoring and robust endpoint detection and response.  Cyber insurance policies are in place, but their strength and coverage levels require further review.  The overall plan buys time and mitigates some risks, but significant investment is needed to bolster defenses and achieve a higher level of security posture.",
+      "measuredAt": "2026-09-26T06:19:13.559Z"
+    }
+  },
+  "recorded": {
+    "host": {
+      "cpu": "Intel(R) Core(TM) i9-14900K",
+      "logicalCpus": 32,
+      "physicalCores": 24,
+      "flags": [
+        "fma",
+        "f16c",
+        "avx2",
+        "avx_vnni"
+      ],
+      "memTotalBytes": 134811652096,
+      "memAvailableBytes": 113105088512,
+      "kernel": "6.18.38-Unraid",
+      "docker": "29.5.3",
+      "cores": 4,
+      "cpuset": null
+    },
+    "preflight": {
+      "needBytes": 5747306464,
+      "memAvailableBytes": 113075642368,
+      "slotDiskFreeBytes": 59510542336
+    },
+    "image": "ghcr.io/ggml-org/llama.cpp:server-b11176",
+    "imageDigest": "ghcr.io/ggml-org/llama.cpp@sha256:6257697a7f5d034b8fb499ddb07af3e250506352f94102054252a23f3b85e0af",
+    "args": [
+      "-m",
+      "/models/gemma-3-4b-it-qat-Q4_0.gguf",
+      "-c",
+      "12288",
+      "-t",
+      "4",
+      "-np",
+      "1",
+      "--cache-reuse",
+      "256",
+      "--slot-save-path",
+      "/slots",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8080"
+    ],
+    "cores": 4,
+    "loadSeconds": 2.9,
+    "memoryAfterLoad": {
+      "dockerStats": "2.193GiB / 125.6GiB",
+      "cgroupPeakBytes": 4838514688
+    },
+    "memoryAfterA": {
+      "dockerStats": "2.672GiB / 125.6GiB",
+      "cgroupPeakBytes": 5824221184
+    },
+    "restartSeconds": 2.4,
+    "memoryAfterC": {
+      "dockerStats": "3.23GiB / 125.6GiB",
+      "cgroupPeakBytes": 3472203776
+    }
+  }
+}

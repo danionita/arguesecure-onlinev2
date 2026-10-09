@@ -1,0 +1,370 @@
+{
+  "host": "unraid",
+  "config": "qwen35-4b",
+  "steps": {
+    "props": {
+      "buildInfo": "b11176-f805c57a2",
+      "modelPath": "/models/Qwen3.5-4B-Q4_K_M.gguf",
+      "totalSlots": 1,
+      "slotContext": 12288,
+      "templateLength": 7816,
+      "templateMentionsThinking": true,
+      "modalities": {
+        "vision": false,
+        "video": false,
+        "audio": false
+      },
+      "slots": [
+        {
+          "id": 0,
+          "n_ctx": 12288,
+          "speculative": false
+        }
+      ],
+      "measuredAt": "2026-09-26T06:33:13.011Z"
+    },
+    "a-cold": {
+      "wallSeconds": 136.23,
+      "firstTokenSeconds": 123.21,
+      "finishReason": "stop",
+      "promptProcessed": 6502,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 52.78,
+      "outputTokens": 150,
+      "outputTokensPerSecond": 11.45,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6502,
+        "prompt_ms": 123201.908,
+        "prompt_per_token_ms": 18.94830944324823,
+        "prompt_per_second": 52.77515669643688,
+        "predicted_n": 150,
+        "predicted_ms": 13012.705,
+        "predicted_per_token_ms": 87.33359060402684,
+        "predicted_per_second": 11.450347948408881
+      },
+      "usage": {
+        "completion_tokens": 150,
+        "prompt_tokens": 6502,
+        "total_tokens": 6652,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "In ArgueSecure, a **defence** is a control that directly reduces a risk, such as a firewall or MFA, whereas a **transfer** is a mechanism that shifts the loss to another party, such as an insurance policy or contract clause. Both count identically toward the quantification model and contribute to the total risk reduction, but they differ visually and semantically in their labels and icons.\n\nYou can distinguish them in the interface by their icons and labels within the node list or pop-up. While both appear as defences in the calculation logic, a transfer specifically represents a loss shift rather than a mitigation, and this distinction is preserved in the report's dedicated section for transfers. [Concepts](/help/concepts)",
+      "measuredAt": "2026-09-26T06:35:29.239Z"
+    },
+    "a-warm": {
+      "wallSeconds": 15.76,
+      "firstTokenSeconds": 10.62,
+      "finishReason": "stop",
+      "promptProcessed": 518,
+      "promptFromCache": 5986,
+      "promptTokensPerSecond": 48.81,
+      "outputTokens": 61,
+      "outputTokensPerSecond": 11.67,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 5986,
+        "prompt_n": 518,
+        "prompt_ms": 10612.808,
+        "prompt_per_token_ms": 20.488046332046334,
+        "prompt_per_second": 48.80894858363592,
+        "predicted_n": 61,
+        "predicted_ms": 5140.702,
+        "predicted_per_token_ms": 85.67836666666668,
+        "predicted_per_second": 11.6715576977619
+      },
+      "usage": {
+        "completion_tokens": 61,
+        "prompt_tokens": 6504,
+        "total_tokens": 6565,
+        "prompt_tokens_details": {
+          "cached_tokens": 5986
+        }
+      },
+      "text": "The total on your screen does not change because the quantification model calculates risk using multiplication, which is commutative regardless of the order you apply reductions. Whether a defence is set to reduce likelihood, impact, or the combined loss, the final number remains identical.\n\n[The quantification model]",
+      "measuredAt": "2026-09-26T06:35:45.004Z"
+    },
+    "save": {
+      "status": 200,
+      "wallSeconds": 0.12,
+      "response": {
+        "id_slot": 0,
+        "filename": "qwen35-4b-help.bin",
+        "n_saved": 6564,
+        "n_written": 267964720,
+        "timings": {
+          "save_ms": 120.801
+        }
+      },
+      "measuredAt": "2026-09-26T06:35:45.127Z"
+    },
+    "restore": {
+      "status": 200,
+      "wallSeconds": 0.07,
+      "response": {
+        "id_slot": 0,
+        "filename": "qwen35-4b-help.bin",
+        "n_restored": 6564,
+        "n_read": 267964720,
+        "timings": {
+          "restore_ms": 41.048
+        }
+      },
+      "measuredAt": "2026-09-26T06:35:49.635Z"
+    },
+    "a-restored": {
+      "wallSeconds": 130.76,
+      "firstTokenSeconds": 119.76,
+      "finishReason": "stop",
+      "promptProcessed": 6500,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 54.28,
+      "outputTokens": 127,
+      "outputTokensPerSecond": 11.45,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6500,
+        "prompt_ms": 119749.348,
+        "prompt_per_token_ms": 18.422976615384616,
+        "prompt_per_second": 54.28004501535992,
+        "predicted_n": 127,
+        "predicted_ms": 11003.764,
+        "predicted_per_token_ms": 87.33146031746031,
+        "predicted_per_second": 11.450627258090961
+      },
+      "usage": {
+        "completion_tokens": 127,
+        "prompt_tokens": 6500,
+        "total_tokens": 6627,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "If you leave a likelihood blank, that specific (risk, attack) pair is excluded from the total annual loss calculation. The tool treats missing values on the loss side differently than missing defences; a missing impact or likelihood means the pair contributes nothing to the sum, rather than being treated as zero.\n\nThe assessment will display the total as a lower bound (e.g., `≥ €53,500`) alongside a count of how many possible paths were actually valued. This ensures the risk is never understated by default, though the missing pair itself does not appear in the final figures. [quantification.md]",
+      "measuredAt": "2026-09-26T06:38:00.404Z"
+    },
+    "b-outage": {
+      "wallSeconds": 19.65,
+      "firstTokenSeconds": 7.66,
+      "finishReason": "stop",
+      "promptProcessed": 434,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 57.39,
+      "outputTokens": 180,
+      "outputTokensPerSecond": 14.93,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 434,
+        "prompt_ms": 7561.97,
+        "prompt_per_token_ms": 17.42389400921659,
+        "prompt_per_second": 57.39245196688164,
+        "predicted_n": 180,
+        "predicted_ms": 11988.598,
+        "predicted_per_token_ms": 66.97540782122906,
+        "predicted_per_second": 14.930853465934884
+      },
+      "usage": {
+        "completion_tokens": 180,
+        "prompt_tokens": 434,
+        "total_tokens": 614,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "[{\"title\": \"Application Layer DDoS on Web Server\", \"description\": \"A flood of slow, complex HTTP requests exhaustes server resources and application logic processing time.\"},{\"title\": \"Web Application Firewall Bypass\", \"description\": \"Exploiting misconfigurations or rule gaps to bypass WAF filters and deliver malicious traffic to the origin.\"},{\"title\": \"Cloud Provider Resource Exhaustion\", \"description\": \"Over-provisioning or abuse of cloud resources (like ephemeral IPs) to trigger auto-scaling loops that drain capacity.\"},{\"title\": \"Botnet-Generated Traffic Flood\", \"description\": \"Coordinating a distributed network of compromised devices to generate high-volume traffic targeting the storefront.\"},{\"title\": \"API Endpoint Abuse\", \"description\": \"Overwhelming the store's internal APIs with rapid, repetitive calls to trigger rate-limiting failures or database locks.\"}]",
+      "quality": {
+        "parsed": true,
+        "fenced": false,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Application Layer DDoS on Web Server",
+          "Web Application Firewall Bypass",
+          "Cloud Provider Resource Exhaustion",
+          "Botnet-Generated Traffic Flood",
+          "API Endpoint Abuse"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:38:20.051Z"
+    },
+    "b-payment": {
+      "wallSeconds": 22.87,
+      "firstTokenSeconds": 8.27,
+      "finishReason": "stop",
+      "promptProcessed": 467,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 56.46,
+      "outputTokens": 221,
+      "outputTokensPerSecond": 15.08,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 467,
+        "prompt_ms": 8271.181,
+        "prompt_per_token_ms": 17.71130835117773,
+        "prompt_per_second": 56.46110271314338,
+        "predicted_n": 221,
+        "predicted_ms": 14593.684,
+        "predicted_per_token_ms": 66.33492727272727,
+        "predicted_per_second": 15.075014643321044
+      },
+      "usage": {
+        "completion_tokens": 221,
+        "prompt_tokens": 467,
+        "total_tokens": 688,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "[{\"title\": \"Cross-Site Scripting on Checkout Forms\", \"description\": \"An attacker injects malicious scripts into the checkout input fields to steal session cookies or redirect users to a phishing site that captures card details.\"},{\"title\": \"Man-in-the-Middle on Unencrypted Connections\", \"description\": \"If the checkout page is served over HTTP instead of HTTPS, an attacker on the same local network can intercept and modify the payment data in transit.\"},{\"title\": \"Server-Side Request Forgery\", \"description\": \"An exploit in the checkout logic forces the server to make unauthorized requests to the card processor, potentially exposing internal API keys or card data.\"},{\"title\": \"API Key Theft via Admin Console XSS\", \"description\": \"A vulnerability in the admin console allows an attacker to steal an API key used by the hosted processor, enabling direct access to customer payment records.\"},{\"title\": \"Logic Flaw in Address Validation\", \"description\": \"An attacker manipulates the address validation logic to bypass security checks, allowing the submission of fraudulent payment methods that are not properly flagged.\"}]",
+      "quality": {
+        "parsed": true,
+        "fenced": false,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Cross-Site Scripting on Checkout Forms",
+          "Man-in-the-Middle on Unencrypted Connections",
+          "Server-Side Request Forgery",
+          "API Key Theft via Admin Console XSS",
+          "Logic Flaw in Address Validation"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:38:42.920Z"
+    },
+    "c": {
+      "nodes": 73,
+      "wallSeconds": 164.32,
+      "firstTokenSeconds": 125.83,
+      "finishReason": "stop",
+      "promptProcessed": 6641,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 52.8,
+      "outputTokens": 436,
+      "outputTokensPerSecond": 11.3,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6641,
+        "prompt_ms": 125784.988,
+        "prompt_per_token_ms": 18.940669778647795,
+        "prompt_per_second": 52.79644340388219,
+        "predicted_n": 436,
+        "predicted_ms": 38495.922,
+        "predicted_per_token_ms": 88.4963724137931,
+        "predicted_per_second": 11.299898207399735
+      },
+      "usage": {
+        "completion_tokens": 436,
+        "prompt_tokens": 6641,
+        "total_tokens": 7077,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "The assessment identifies four distinct environments, each facing specific threats with defined financial impacts. The public-facing web application carries the highest direct liability risk from customer account takeovers costing 45,000 euros per incident and data exfiltration from public forms costing 180,000 euros per incident, both mitigated by implemented multi-factor authentication, server-side validation, and cyber insurance policies. The multi-tenant SaaS platform faces severe consequences from cross-tenant data leaks at 400,000 euros per occurrence and a complete cloud account compromise at 550,000 euros, which are currently addressed through strict least-privilege access controls and centralized secret management, though some automated scanning for exposed storage buckets remains to be implemented.\n\nThe corporate internal network presents a critical threat of ransomware spreading across the organization at a cost of 750,000 euros, driven by initial footholds from phishing and lateral movement through unpatched servers. This risk is largely contained by mandatory multi-factor authentication for remote access, endpoint detection agents on all devices, and scheduled patch management, while the implementation of network segmentation to isolate zones is marked as pending. Additionally, the loss of a laptop with unencrypted storage poses a moderate risk, which is mitigated by full-disk encryption with centrally escrowed recovery keys, and insider misuse of file shares at 45,000 euros is monitored through pending data-loss-prevention rules.\n\nThe connected home device ecosystem faces the most severe potential impact, with malicious firmware causing unsafe behavior leading to mandatory recalls costing 1.2 million euros, and mass unauthorized control of customer devices costing 350,000 euros. These risks are currently managed by cryptographically signed firmware updates and unique per-device credentials, but the implementation of TLS certificate pinning for all device traffic and backend authorization checks remains pending. Across all environments, cyber insurance policies and product liability clauses are already in place to cover breach response, forensic costs, and a portion of regulatory fines or business interruption losses, ensuring that financial exposure is transferred to insurers rather than retained by the organization.",
+      "measuredAt": "2026-09-26T06:41:27.246Z"
+    }
+  },
+  "recorded": {
+    "host": {
+      "cpu": "Intel(R) Core(TM) i9-14900K",
+      "logicalCpus": 32,
+      "physicalCores": 24,
+      "flags": [
+        "fma",
+        "f16c",
+        "avx2",
+        "avx_vnni"
+      ],
+      "memTotalBytes": 134811652096,
+      "memAvailableBytes": 112888705024,
+      "kernel": "6.18.38-Unraid",
+      "docker": "29.5.3",
+      "cores": 4,
+      "cpuset": null
+    },
+    "preflight": {
+      "needBytes": 5962163360,
+      "memAvailableBytes": 112898560000,
+      "slotDiskFreeBytes": 59509600256
+    },
+    "image": "ghcr.io/ggml-org/llama.cpp:server-b11176",
+    "imageDigest": "ghcr.io/ggml-org/llama.cpp@sha256:6257697a7f5d034b8fb499ddb07af3e250506352f94102054252a23f3b85e0af",
+    "args": [
+      "-m",
+      "/models/Qwen3.5-4B-Q4_K_M.gguf",
+      "-c",
+      "12288",
+      "-t",
+      "4",
+      "-np",
+      "1",
+      "--cache-reuse",
+      "256",
+      "--slot-save-path",
+      "/slots",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8080",
+      "--jinja",
+      "--chat-template-kwargs",
+      "{\"enable_thinking\":false}"
+    ],
+    "cores": 4,
+    "loadSeconds": 2.2,
+    "memoryAfterLoad": {
+      "dockerStats": "1.846GiB / 125.6GiB",
+      "cgroupPeakBytes": 4714921984
+    },
+    "memoryAfterA": {
+      "dockerStats": "2.115GiB / 125.6GiB",
+      "cgroupPeakBytes": 5474062336
+    },
+    "restartSeconds": 2.4,
+    "memoryAfterC": {
+      "dockerStats": "2.468GiB / 125.6GiB",
+      "cgroupPeakBytes": 2654334976
+    }
+  }
+}

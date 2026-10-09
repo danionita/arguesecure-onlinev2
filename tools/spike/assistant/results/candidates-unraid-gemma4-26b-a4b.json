@@ -1,0 +1,370 @@
+{
+  "host": "unraid",
+  "config": "gemma4-26b-a4b",
+  "steps": {
+    "props": {
+      "buildInfo": "b11176-f805c57a2",
+      "modelPath": "/models/gemma-4-26B-A4B-it-qat-UD-Q4_K_XL.gguf",
+      "totalSlots": 1,
+      "slotContext": 12288,
+      "templateLength": 18921,
+      "templateMentionsThinking": true,
+      "modalities": {
+        "vision": false,
+        "video": false,
+        "audio": false
+      },
+      "slots": [
+        {
+          "id": 0,
+          "n_ctx": 12288,
+          "speculative": false
+        }
+      ],
+      "measuredAt": "2026-09-26T06:41:44.625Z"
+    },
+    "a-cold": {
+      "wallSeconds": 116.37,
+      "firstTokenSeconds": 107.73,
+      "finishReason": "stop",
+      "promptProcessed": 6507,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 60.41,
+      "outputTokens": 99,
+      "outputTokensPerSecond": 11.34,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6507,
+        "prompt_ms": 107715.054,
+        "prompt_per_token_ms": 16.553719686491473,
+        "prompt_per_second": 60.40938344606873,
+        "predicted_n": 99,
+        "predicted_ms": 8639.197,
+        "predicted_per_token_ms": 88.15507142857143,
+        "predicted_per_second": 11.343646869031925
+      },
+      "usage": {
+        "completion_tokens": 99,
+        "prompt_tokens": 6507,
+        "total_tokens": 6606,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A defence is a component or architectural decision that reduces a risk, such as MFA, a firewall, or awareness training. It has a status (implemented, todo, or shelved) and a strength against each attack it is linked to [Concepts].\n\nA transfer is a defence that shifts the loss to someone else instead of reducing it, such as a contract clause, a disclaimer, or an insurance policy. While it counts exactly like a defence, its icon and label are different [Concepts].",
+      "measuredAt": "2026-09-26T06:43:41.003Z"
+    },
+    "a-warm": {
+      "wallSeconds": 10.47,
+      "firstTokenSeconds": 1.89,
+      "finishReason": "stop",
+      "promptProcessed": 49,
+      "promptFromCache": 6460,
+      "promptTokensPerSecond": 26.16,
+      "outputTokens": 97,
+      "outputTokensPerSecond": 11.19,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 6460,
+        "prompt_n": 49,
+        "prompt_ms": 1873.058,
+        "prompt_per_token_ms": 38.22567346938776,
+        "prompt_per_second": 26.160428561208462,
+        "predicted_n": 97,
+        "predicted_ms": 8581.886,
+        "predicted_per_token_ms": 89.39464583333334,
+        "predicted_per_second": 11.186352277343232
+      },
+      "usage": {
+        "completion_tokens": 97,
+        "prompt_tokens": 6509,
+        "total_tokens": 6606,
+        "prompt_tokens_details": {
+          "cached_tokens": 6460
+        }
+      },
+      "text": "Changing the reduction target does not change the assessment's total. This is because the total is computed by multiplying likelihood, impact, and all defence reductions together; multiplication is not affected by the order or grouping of these values.\n\nWhether a defence is set to reduce likelihood, impact, or the combined loss, the final result remains identical. If you change a reduction target and the total on screen does not move, this is correct behavior and not a bug [the quantification model].",
+      "measuredAt": "2026-09-26T06:43:51.477Z"
+    },
+    "save": {
+      "status": 200,
+      "wallSeconds": 0.21,
+      "response": {
+        "id_slot": 0,
+        "filename": "gemma4-26b-a4b-help.bin",
+        "n_saved": 6605,
+        "n_written": 345104348,
+        "timings": {
+          "save_ms": 205.337
+        }
+      },
+      "measuredAt": "2026-09-26T06:43:51.685Z"
+    },
+    "restore": {
+      "status": 200,
+      "wallSeconds": 0.08,
+      "response": {
+        "id_slot": 0,
+        "filename": "gemma4-26b-a4b-help.bin",
+        "n_restored": 6605,
+        "n_read": 345104348,
+        "timings": {
+          "restore_ms": 53.169
+        }
+      },
+      "measuredAt": "2026-09-26T06:44:00.996Z"
+    },
+    "a-restored": {
+      "wallSeconds": 114.34,
+      "firstTokenSeconds": 105.53,
+      "finishReason": "stop",
+      "promptProcessed": 6505,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 61.65,
+      "outputTokens": 101,
+      "outputTokensPerSecond": 11.36,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6505,
+        "prompt_ms": 105517.313,
+        "prompt_per_token_ms": 16.220955111452728,
+        "prompt_per_second": 61.64865096593201,
+        "predicted_n": 101,
+        "predicted_ms": 8802.252,
+        "predicted_per_token_ms": 88.02252,
+        "predicted_per_second": 11.360729049793166
+      },
+      "usage": {
+        "completion_tokens": 101,
+        "prompt_tokens": 6505,
+        "total_tokens": 6606,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "If you leave a likelihood blank, that specific (risk, attack) pair is excluded from every total. The tool does not treat a missing likelihood as zero; instead, it shows the total as a lower bound (e.g., `≥ €53,500`) alongside a count of how many possible paths were actually valued.\n\nThis behavior is part of a deliberate asymmetry designed to ensure the tool does not quietly understate risk. For more details, see [the quantification model].",
+      "measuredAt": "2026-09-26T06:45:55.333Z"
+    },
+    "b-outage": {
+      "wallSeconds": 21.26,
+      "firstTokenSeconds": 6.2,
+      "finishReason": "stop",
+      "promptProcessed": 432,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 72.25,
+      "outputTokens": 250,
+      "outputTokensPerSecond": 16.53,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 432,
+        "prompt_ms": 5978.907,
+        "prompt_per_token_ms": 13.8400625,
+        "prompt_per_second": 72.25400896852886,
+        "predicted_n": 250,
+        "predicted_ms": 15061.321,
+        "predicted_per_token_ms": 60.48723293172691,
+        "predicted_per_second": 16.532414387821625
+      },
+      "usage": {
+        "completion_tokens": 250,
+        "prompt_tokens": 433,
+        "total_tokens": 683,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "[\n  {\n    \"title\": \"HTTP Flood via Application Layer Exhaustion\",\n    \"description\": \"An attacker sends a high volume of complex search queries or heavy database-intensive requests to overwhelm the web server's CPU and memory.\"\n  },\n  {\n    \"title\": \"Slowloris Connection Exhaustion\",\n    \"description\": \"An attacker opens numerous connections to the storefront and keeps them open by sending partial HTTP requests, exhausting the server's connection pool.\"\n  },\n  {\n    \"title\": \"Inventory Scraping Bot Attack\",\n    \"description\": \"Aggressive automated bots crawl product pages and stock levels at high frequency, consuming server resources and slowing response times for legitimate users.\"\n  },\n  {\n    \"title\": \"Large File Download Request Attack\",\n    \"description\": \"An attacker repeatedly requests large assets or high-resolution product images to saturate the storefront's outbound bandwidth.\"\n  },\n  {\n    \"title\": \"Database Query Injection for Resource Exhaustion\",\n    \"description\": \"An attacker exploits a vulnerable search field to execute computationally expensive SQL queries that lock database tables and prevent legitimate transactions.\"\n  }\n]",
+      "quality": {
+        "parsed": true,
+        "fenced": false,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "HTTP Flood via Application Layer Exhaustion",
+          "Slowloris Connection Exhaustion",
+          "Inventory Scraping Bot Attack",
+          "Large File Download Request Attack",
+          "Database Query Injection for Resource Exhaustion"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:46:16.598Z"
+    },
+    "b-payment": {
+      "wallSeconds": 23.12,
+      "firstTokenSeconds": 6.63,
+      "finishReason": "stop",
+      "promptProcessed": 469,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 71.55,
+      "outputTokens": 271,
+      "outputTokensPerSecond": 16.37,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 469,
+        "prompt_ms": 6554.421,
+        "prompt_per_token_ms": 13.97531130063966,
+        "prompt_per_second": 71.55475670543592,
+        "predicted_n": 271,
+        "predicted_ms": 16491.32,
+        "predicted_per_token_ms": 61.07896296296296,
+        "predicted_per_second": 16.372249158951497
+      },
+      "usage": {
+        "completion_tokens": 271,
+        "prompt_tokens": 470,
+        "total_tokens": 741,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "[\n  {\n    \"title\": \"Cross-Site Scripting on Customer Profile Pages\",\n    \"description\": \"An attacker injects malicious JavaScript into a customer's profile fields to intercept sensitive data when a staff member views the account in the admin console.\"\n  },\n  {\n    \"title\": \"Insecure Direct Object Reference in Order History\",\n    \"description\": \"An attacker manipulates order ID parameters in the URL to access and download the personal details and card tokens of other customers.\"\n  },\n  {\n    \"title\": \"Man-in-the-Middle via Weak TLS Configuration\",\n    \"description\": \"An attacker intercepts unencrypted or weakly encrypted network traffic between the customer's browser and the web shop to capture personal information.\"\n  },\n  {\n    \"title\": \"Session Hijacking via XSS on the Storefront\",\n    \"description\": \"An attacker steals active session cookies from authenticated customers to gain access to their stored shipping addresses and account details.\"\n  },\n  {\n    \"title\": \"Exploitation of Vulnerable Third-Party Plugin\",\n    \"description\": \"An attacker leverages a known vulnerability in a third-party shipping or tax calculation plugin to execute code and access the application database.\"\n  }\n]",
+      "quality": {
+        "parsed": true,
+        "fenced": false,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Cross-Site Scripting on Customer Profile Pages",
+          "Insecure Direct Object Reference in Order History",
+          "Man-in-the-Middle via Weak TLS Configuration",
+          "Session Hijacking via XSS on the Storefront",
+          "Exploitation of Vulnerable Third-Party Plugin"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:46:39.719Z"
+    },
+    "c": {
+      "nodes": 73,
+      "wallSeconds": 141.62,
+      "firstTokenSeconds": 109.84,
+      "finishReason": "stop",
+      "promptProcessed": 6781,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 61.79,
+      "outputTokens": 354,
+      "outputTokensPerSecond": 11.11,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 6781,
+        "prompt_ms": 109742.25,
+        "prompt_per_token_ms": 16.183785577348473,
+        "prompt_per_second": 61.79024031309728,
+        "predicted_n": 354,
+        "predicted_ms": 31779.563,
+        "predicted_per_token_ms": 90.02709065155807,
+        "predicted_per_second": 11.10776759265066
+      },
+      "usage": {
+        "completion_tokens": 354,
+        "prompt_tokens": 6782,
+        "total_tokens": 7136,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "The most significant financial risk identified is the potential for malicious firmware to cause unsafe device behavior, which could cost EUR 1200000 per occurrence. This is followed by the risk of ransomware spreading across the internal network, estimated at EUR 750000 per occurrence, and the risk of a compromise of the production cloud account, estimated at EUR 550000 per occurrence. Other high-impact events include the mass unauthorized control of customer devices and the risk of a cross-tenant data leak, which could cost EUR 400000 per occurrence.\n\nTo mitigate these threats, several defenses are already in place. We currently use cryptographically signed firmware to ensure only verified updates are installed, and we employ unique per-device credentials to prevent widespread access via default passwords. For our cloud and network environments, we use least-privilege access roles, short-lived credentials from a secrets manager, and multi-factor authentication for domain and VPN logins. We also utilize endpoint detection and response agents on all managed devices to flag suspicious activity.\n\nThere are critical gaps that require attention to complete our security posture. We need to implement automated scanning for public access to storage buckets and deploy per-device authorization checks and rate limiting on our cloud APIs to prevent unauthorized device control. Additionally, we must implement network segmentation to isolate different zones of our internal network and establish a formal process for patching CMS plugins and internal servers.\n\nBy addressing these remaining items, the organization will move from a reactive state to a proactive one. This plan buys us more robust protection against the most expensive risks, such as large-scale data exposure and safety incidents, while ensuring our cloud infrastructure and internal network are resilient against modern attack methods.",
+      "measuredAt": "2026-09-26T06:49:01.338Z"
+    }
+  },
+  "recorded": {
+    "host": {
+      "cpu": "Intel(R) Core(TM) i9-14900K",
+      "logicalCpus": 32,
+      "physicalCores": 24,
+      "flags": [
+        "fma",
+        "f16c",
+        "avx2",
+        "avx_vnni"
+      ],
+      "memTotalBytes": 134811652096,
+      "memAvailableBytes": 112842821632,
+      "kernel": "6.18.38-Unraid",
+      "docker": "29.5.3",
+      "cores": 4,
+      "cpuset": null
+    },
+    "preflight": {
+      "needBytes": 17470272576,
+      "memAvailableBytes": 112846098432,
+      "slotDiskFreeBytes": 59507306496
+    },
+    "image": "ghcr.io/ggml-org/llama.cpp:server-b11176",
+    "imageDigest": "ghcr.io/ggml-org/llama.cpp@sha256:6257697a7f5d034b8fb499ddb07af3e250506352f94102054252a23f3b85e0af",
+    "args": [
+      "-m",
+      "/models/gemma-4-26B-A4B-it-qat-UD-Q4_K_XL.gguf",
+      "-c",
+      "12288",
+      "-t",
+      "4",
+      "-np",
+      "1",
+      "--cache-reuse",
+      "256",
+      "--slot-save-path",
+      "/slots",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8080",
+      "--jinja",
+      "--chat-template-kwargs",
+      "{\"enable_thinking\":false}"
+    ],
+    "cores": 4,
+    "loadSeconds": 11.4,
+    "memoryAfterLoad": {
+      "dockerStats": "23.64GiB / 125.6GiB",
+      "cgroupPeakBytes": 29152354304
+    },
+    "memoryAfterA": {
+      "dockerStats": "24.36GiB / 125.6GiB",
+      "cgroupPeakBytes": 30467411968
+    },
+    "restartSeconds": 7.2,
+    "memoryAfterC": {
+      "dockerStats": "15.8GiB / 125.6GiB",
+      "cgroupPeakBytes": 16978190336
+    }
+  }
+}

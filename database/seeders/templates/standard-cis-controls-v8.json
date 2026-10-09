@@ -1,0 +1,4403 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-cis-controls-v8",
+  "root_uuid": "c7000000-0000-4000-8000-000000000001",
+  "title": "CIS Critical Security Controls v8.1",
+  "description": "All 18 CIS Controls and their 153 Safeguards as defences set to todo, under the attacks they defend against. The 56 Implementation Group 1 safeguards — the essential cyber hygiene every enterprise should have — say so in their description; start there. Safeguard titles follow the CIS publication; descriptions are summaries, not the CIS text.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Ransomware",
+      "color": "#DC2626"
+    },
+    {
+      "name": "Data breach",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "Disruption",
+      "color": "#0EA5E9"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-ransomware",
+      "uuid": "c7000000-0000-4000-8000-000000000002",
+      "title": "Ransomware or destructive attack on the enterprise",
+      "description": "An attacker encrypts or destroys systems and data across the enterprise, halting operations and forcing a choice between paying and rebuilding.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "severe"
+      },
+      "tags": [
+        "Ransomware"
+      ],
+      "attack_refs": [
+        "attack-unmanaged-assets",
+        "attack-phishing",
+        "attack-malware",
+        "attack-vulnerability",
+        "attack-credentials",
+        "attack-lateral",
+        "attack-undetected",
+        "attack-recovery"
+      ]
+    },
+    {
+      "ref": "risk-data-breach",
+      "uuid": "c7000000-0000-4000-8000-000000000003",
+      "title": "Theft or exposure of sensitive data",
+      "description": "Sensitive enterprise or customer data is copied out by an attacker, exposed through a misconfiguration, or leaked by an insider or service provider.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Data breach"
+      ],
+      "attack_refs": [
+        "attack-unmanaged-assets",
+        "attack-phishing",
+        "attack-credentials",
+        "attack-vulnerability",
+        "attack-web-application",
+        "attack-data-exposure",
+        "attack-service-provider",
+        "attack-insider",
+        "attack-undetected"
+      ]
+    },
+    {
+      "ref": "risk-disruption",
+      "uuid": "c7000000-0000-4000-8000-000000000004",
+      "title": "Disruption of enterprise operations",
+      "description": "Systems the enterprise runs on become unavailable through attack, failure or a compromised provider, and recovery takes longer than the business can tolerate.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Disruption"
+      ],
+      "attack_refs": [
+        "attack-malware",
+        "attack-vulnerability",
+        "attack-service-provider",
+        "attack-recovery",
+        "attack-lateral"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-unmanaged-assets",
+      "uuid": "c7000000-0000-4000-8000-000000000005",
+      "title": "Unmanaged or unknown assets and software exploited",
+      "description": "Devices and software nobody inventoried — shadow IT, forgotten servers, unsupported applications — are unpatched and unmonitored, and an attacker finds them first.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        }
+      ],
+      "defence_refs": [
+        "defence-1-1",
+        "defence-1-2",
+        "defence-1-3",
+        "defence-1-4",
+        "defence-1-5",
+        "defence-2-1",
+        "defence-2-2",
+        "defence-2-3",
+        "defence-2-4",
+        "defence-13-9"
+      ]
+    },
+    {
+      "ref": "attack-phishing",
+      "uuid": "c7000000-0000-4000-8000-000000000006",
+      "title": "Phishing and social engineering",
+      "description": "A convincing email, message or call leads someone to open a malicious file, visit a malicious site or hand over credentials.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "frequent"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1566",
+          "title": "Phishing"
+        }
+      ],
+      "defence_refs": [
+        "defence-4-9",
+        "defence-9-1",
+        "defence-9-2",
+        "defence-9-3",
+        "defence-9-5",
+        "defence-9-6",
+        "defence-9-7",
+        "defence-14-1",
+        "defence-14-2",
+        "defence-14-9"
+      ]
+    },
+    {
+      "ref": "attack-malware",
+      "uuid": "c7000000-0000-4000-8000-000000000007",
+      "title": "Malware and ransomware execution",
+      "description": "Malicious code runs on an endpoint or server, from an attachment, a download, removable media or an exploited service.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1486",
+          "title": "Data Encrypted for Impact"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1204",
+          "title": "User Execution"
+        }
+      ],
+      "defence_refs": [
+        "defence-2-3",
+        "defence-2-5",
+        "defence-2-6",
+        "defence-2-7",
+        "defence-4-9",
+        "defence-5-4",
+        "defence-7-3",
+        "defence-7-4",
+        "defence-9-1",
+        "defence-9-2",
+        "defence-9-4",
+        "defence-9-6",
+        "defence-9-7",
+        "defence-10-1",
+        "defence-10-2",
+        "defence-10-3",
+        "defence-10-4",
+        "defence-10-5",
+        "defence-10-6",
+        "defence-10-7",
+        "defence-13-5",
+        "defence-13-7",
+        "defence-13-10",
+        "defence-transfer-cyber-insurance"
+      ]
+    },
+    {
+      "ref": "attack-vulnerability",
+      "uuid": "c7000000-0000-4000-8000-000000000008",
+      "title": "Exploitation of vulnerabilities and insecure configuration",
+      "description": "Known vulnerabilities, default settings, unnecessary services or open ports on enterprise assets are exploited.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1190",
+          "title": "Exploit Public-Facing Application"
+        }
+      ],
+      "defence_refs": [
+        "defence-2-2",
+        "defence-4-1",
+        "defence-4-2",
+        "defence-4-4",
+        "defence-4-6",
+        "defence-4-8",
+        "defence-7-1",
+        "defence-7-2",
+        "defence-7-3",
+        "defence-7-4",
+        "defence-7-5",
+        "defence-7-6",
+        "defence-7-7",
+        "defence-10-5",
+        "defence-12-1",
+        "defence-14-7",
+        "defence-16-7",
+        "defence-18-1",
+        "defence-18-2",
+        "defence-18-3",
+        "defence-18-5"
+      ]
+    },
+    {
+      "ref": "attack-credentials",
+      "uuid": "c7000000-0000-4000-8000-000000000009",
+      "title": "Credential theft and account abuse",
+      "description": "Stolen, guessed, reused or default credentials — and dormant or over-privileged accounts — give an attacker legitimate-looking access.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1078",
+          "title": "Valid Accounts"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1110",
+          "title": "Brute Force"
+        }
+      ],
+      "defence_refs": [
+        "defence-4-7",
+        "defence-5-1",
+        "defence-5-2",
+        "defence-5-3",
+        "defence-5-4",
+        "defence-5-5",
+        "defence-5-6",
+        "defence-6-2",
+        "defence-6-3",
+        "defence-6-4",
+        "defence-6-5",
+        "defence-6-6",
+        "defence-6-7",
+        "defence-12-5",
+        "defence-12-7",
+        "defence-12-8",
+        "defence-13-5",
+        "defence-14-3"
+      ]
+    },
+    {
+      "ref": "attack-lateral",
+      "uuid": "c7000000-0000-4000-8000-00000000000a",
+      "title": "Network intrusion and lateral movement",
+      "description": "Once inside, an attacker moves across a flat or poorly monitored network towards high-value systems and administrative access.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1021",
+          "title": "Remote Services"
+        }
+      ],
+      "defence_refs": [
+        "defence-3-10",
+        "defence-3-12",
+        "defence-4-2",
+        "defence-4-4",
+        "defence-4-5",
+        "defence-12-1",
+        "defence-12-2",
+        "defence-12-3",
+        "defence-12-4",
+        "defence-12-5",
+        "defence-12-6",
+        "defence-12-7",
+        "defence-12-8",
+        "defence-13-3",
+        "defence-13-4",
+        "defence-13-8",
+        "defence-13-9",
+        "defence-18-5"
+      ]
+    },
+    {
+      "ref": "attack-data-exposure",
+      "uuid": "c7000000-0000-4000-8000-00000000000b",
+      "title": "Sensitive data exposed or exfiltrated",
+      "description": "Data that is not inventoried, classified, access-controlled and encrypted leaks through misconfigured shares, lost devices, removable media or exfiltration.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1567",
+          "title": "Exfiltration Over Web Service"
+        }
+      ],
+      "defence_refs": [
+        "defence-3-1",
+        "defence-3-2",
+        "defence-3-3",
+        "defence-3-4",
+        "defence-3-5",
+        "defence-3-6",
+        "defence-3-7",
+        "defence-3-8",
+        "defence-3-9",
+        "defence-3-10",
+        "defence-3-11",
+        "defence-3-12",
+        "defence-3-13",
+        "defence-4-10",
+        "defence-4-11",
+        "defence-4-12",
+        "defence-11-3",
+        "defence-14-4",
+        "defence-14-5",
+        "defence-14-8",
+        "defence-15-7"
+      ]
+    },
+    {
+      "ref": "attack-web-application",
+      "uuid": "c7000000-0000-4000-8000-00000000000c",
+      "title": "Attack on in-house or acquired application software",
+      "description": "Flaws in applications the enterprise develops, buys or integrates — injection, broken access control, vulnerable components — are exploited.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        }
+      ],
+      "defence_refs": [
+        "defence-13-10",
+        "defence-14-9",
+        "defence-16-1",
+        "defence-16-2",
+        "defence-16-3",
+        "defence-16-4",
+        "defence-16-5",
+        "defence-16-6",
+        "defence-16-7",
+        "defence-16-8",
+        "defence-16-9",
+        "defence-16-10",
+        "defence-16-11",
+        "defence-16-12",
+        "defence-16-13",
+        "defence-16-14",
+        "defence-18-2"
+      ]
+    },
+    {
+      "ref": "attack-service-provider",
+      "uuid": "c7000000-0000-4000-8000-00000000000d",
+      "title": "Compromise through a service provider",
+      "description": "A provider holding enterprise data or access to enterprise systems is breached, fails, or is not held to security requirements.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1199",
+          "title": "Trusted Relationship"
+        }
+      ],
+      "defence_refs": [
+        "defence-3-8",
+        "defence-8-12",
+        "defence-15-1",
+        "defence-15-2",
+        "defence-15-3",
+        "defence-15-4",
+        "defence-15-5",
+        "defence-15-6",
+        "defence-15-7",
+        "defence-16-4"
+      ]
+    },
+    {
+      "ref": "attack-insider",
+      "uuid": "c7000000-0000-4000-8000-00000000000e",
+      "title": "Insider misuse of access",
+      "description": "An employee or contractor uses access they hold — or should no longer hold — to take or damage data.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        }
+      ],
+      "defence_refs": [
+        "defence-3-3",
+        "defence-3-14",
+        "defence-4-3",
+        "defence-5-1",
+        "defence-5-3",
+        "defence-6-1",
+        "defence-6-2",
+        "defence-6-8"
+      ]
+    },
+    {
+      "ref": "attack-undetected",
+      "uuid": "c7000000-0000-4000-8000-00000000000f",
+      "title": "Attacker activity goes undetected",
+      "description": "Logs are not collected, reviewed or retained, alerts are not tuned and incidents have no process, so an intrusion runs for weeks before anyone notices.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        }
+      ],
+      "defence_refs": [
+        "defence-3-14",
+        "defence-8-1",
+        "defence-8-2",
+        "defence-8-3",
+        "defence-8-4",
+        "defence-8-5",
+        "defence-8-6",
+        "defence-8-7",
+        "defence-8-8",
+        "defence-8-9",
+        "defence-8-10",
+        "defence-8-11",
+        "defence-8-12",
+        "defence-10-7",
+        "defence-13-1",
+        "defence-13-2",
+        "defence-13-3",
+        "defence-13-6",
+        "defence-13-7",
+        "defence-13-11",
+        "defence-14-6",
+        "defence-17-1",
+        "defence-17-2",
+        "defence-17-3",
+        "defence-17-4",
+        "defence-17-5",
+        "defence-17-6",
+        "defence-17-7",
+        "defence-17-8",
+        "defence-17-9",
+        "defence-18-4"
+      ]
+    },
+    {
+      "ref": "attack-recovery",
+      "uuid": "c7000000-0000-4000-8000-000000000010",
+      "title": "Recovery fails when it is needed",
+      "description": "Backups are missing, incomplete, reachable by the attacker or never tested, so the enterprise cannot restore after an incident.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.cisecurity.org/controls/v8-1",
+          "title": "CIS Critical Security Controls v8.1"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1490",
+          "title": "Inhibit System Recovery"
+        }
+      ],
+      "defence_refs": [
+        "defence-11-1",
+        "defence-11-2",
+        "defence-11-3",
+        "defence-11-4",
+        "defence-11-5",
+        "defence-17-4",
+        "defence-17-7",
+        "defence-transfer-cyber-insurance"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-1-1",
+      "uuid": "c7000000-0000-4000-8000-000000000011",
+      "title": "1.1 Establish and Maintain Detailed Enterprise Asset Inventory",
+      "description": "IG1 — essential cyber hygiene. An accurate, detailed inventory of every enterprise asset that stores or processes data — end-user devices, servers, network and IoT devices, including remote and cloud — reviewed at least twice a year.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:1.1"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-1-2",
+      "uuid": "c7000000-0000-4000-8000-000000000012",
+      "title": "1.2 Address Unauthorized Assets",
+      "description": "IG1 — essential cyber hygiene. A process to deal with unauthorized assets weekly: remove, deny network access or quarantine them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:1.2"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-1-3",
+      "uuid": "c7000000-0000-4000-8000-000000000013",
+      "title": "1.3 Utilize an Active Discovery Tool",
+      "description": "An active discovery tool identifies assets connected to the network, run at least daily, feeding the inventory.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:1.3"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-1-4",
+      "uuid": "c7000000-0000-4000-8000-000000000014",
+      "title": "1.4 Use Dynamic Host Configuration Protocol (DHCP) Logging to Update Enterprise Asset Inventory",
+      "description": "DHCP logging on servers or IP address management tools is used to update the asset inventory at least weekly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:1.4"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-1-5",
+      "uuid": "c7000000-0000-4000-8000-000000000015",
+      "title": "1.5 Use a Passive Asset Discovery Tool",
+      "description": "A passive discovery tool identifies assets from network traffic, reviewed at least weekly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:1.5"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-2-1",
+      "uuid": "c7000000-0000-4000-8000-000000000016",
+      "title": "2.1 Establish and Maintain a Software Inventory",
+      "description": "IG1 — essential cyber hygiene. A detailed inventory of all licensed software installed on enterprise assets — title, publisher, version, purpose — reviewed twice a year.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:2.1"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-2-2",
+      "uuid": "c7000000-0000-4000-8000-000000000017",
+      "title": "2.2 Ensure Authorized Software is Currently Supported",
+      "description": "IG1 — essential cyber hygiene. Only software still supported by its vendor is authorized; unsupported software is documented as an exception with mitigating controls, or removed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:2.2"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-2-3",
+      "uuid": "c7000000-0000-4000-8000-000000000018",
+      "title": "2.3 Address Unauthorized Software",
+      "description": "IG1 — essential cyber hygiene. Unauthorized software is removed or documented as an exception, reviewed at least monthly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:2.3"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-2-4",
+      "uuid": "c7000000-0000-4000-8000-000000000019",
+      "title": "2.4 Utilize Automated Software Inventory Tools",
+      "description": "Software inventory tools automate the discovery and documentation of installed software.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:2.4"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-2-5",
+      "uuid": "c7000000-0000-4000-8000-00000000001a",
+      "title": "2.5 Allowlist Authorized Software",
+      "description": "Technical controls such as application allowlisting ensure only authorized software can execute or be accessed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:2.5"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-2-6",
+      "uuid": "c7000000-0000-4000-8000-00000000001b",
+      "title": "2.6 Allowlist Authorized Libraries",
+      "description": "Only authorized software libraries — specific .dll, .ocx, .so files — are allowed to load into a system process.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:2.6"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-2-7",
+      "uuid": "c7000000-0000-4000-8000-00000000001c",
+      "title": "2.7 Allowlist Authorized Scripts",
+      "description": "Only authorized, digitally signed scripts such as .ps1 and .py are allowed to execute.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:2.7"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-1",
+      "uuid": "c7000000-0000-4000-8000-00000000001d",
+      "title": "3.1 Establish and Maintain a Data Management Process",
+      "description": "IG1 — essential cyber hygiene. A documented data management process covering data sensitivity, ownership, handling, retention limits and disposal, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.1"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-2",
+      "uuid": "c7000000-0000-4000-8000-00000000001e",
+      "title": "3.2 Establish and Maintain a Data Inventory",
+      "description": "IG1 — essential cyber hygiene. An inventory of sensitive data, based on the data management process, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.2"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-3",
+      "uuid": "c7000000-0000-4000-8000-00000000001f",
+      "title": "3.3 Configure Data Access Control Lists",
+      "description": "IG1 — essential cyber hygiene. Access control lists restrict access to data on local and remote file systems, databases and applications according to need to know.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.3"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-4",
+      "uuid": "c7000000-0000-4000-8000-000000000020",
+      "title": "3.4 Enforce Data Retention",
+      "description": "IG1 — essential cyber hygiene. Data is retained for the minimum and no longer than the maximum timelines in the data management process.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.4"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-5",
+      "uuid": "c7000000-0000-4000-8000-000000000021",
+      "title": "3.5 Securely Dispose of Data",
+      "description": "IG1 — essential cyber hygiene. Data is disposed of securely, with methods matched to its sensitivity.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.5"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-6",
+      "uuid": "c7000000-0000-4000-8000-000000000022",
+      "title": "3.6 Encrypt Data on End-User Devices",
+      "description": "IG1 — essential cyber hygiene. Data on end-user devices holding sensitive data is encrypted — full-disk or equivalent.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.6"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-7",
+      "uuid": "c7000000-0000-4000-8000-000000000023",
+      "title": "3.7 Establish and Maintain a Data Classification Scheme",
+      "description": "A classification scheme — such as sensitive, confidential, public — is applied to data in the inventory and reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.7"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-8",
+      "uuid": "c7000000-0000-4000-8000-000000000024",
+      "title": "3.8 Document Data Flows",
+      "description": "Data flows, including those with service providers, are documented and reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.8"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-9",
+      "uuid": "c7000000-0000-4000-8000-000000000025",
+      "title": "3.9 Encrypt Data on Removable Media",
+      "description": "Data on removable media is encrypted.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.9"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-10",
+      "uuid": "c7000000-0000-4000-8000-000000000026",
+      "title": "3.10 Encrypt Sensitive Data in Transit",
+      "description": "Sensitive data is encrypted in transit, for example with TLS or OpenSSH.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.10"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-11",
+      "uuid": "c7000000-0000-4000-8000-000000000027",
+      "title": "3.11 Encrypt Sensitive Data at Rest",
+      "description": "Sensitive data is encrypted at rest on servers, applications and databases.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.11"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-12",
+      "uuid": "c7000000-0000-4000-8000-000000000028",
+      "title": "3.12 Segment Data Processing and Storage Based on Sensitivity",
+      "description": "Data processing and storage are segmented by sensitivity, so less sensitive systems do not hold or reach more sensitive data.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.12"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-13",
+      "uuid": "c7000000-0000-4000-8000-000000000029",
+      "title": "3.13 Deploy a Data Loss Prevention Solution",
+      "description": "An automated tool such as host-based data loss prevention identifies sensitive data and its movement.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.13"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-3-14",
+      "uuid": "c7000000-0000-4000-8000-00000000002a",
+      "title": "3.14 Log Sensitive Data Access",
+      "description": "Access to sensitive data — including modification and disposal — is logged.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:3.14"
+        }
+      ],
+      "links": {
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-1",
+      "uuid": "c7000000-0000-4000-8000-00000000002b",
+      "title": "4.1 Establish and Maintain a Secure Configuration Process",
+      "description": "IG1 — essential cyber hygiene. A documented secure configuration process for enterprise assets and software, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.1"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-2",
+      "uuid": "c7000000-0000-4000-8000-00000000002c",
+      "title": "4.2 Establish and Maintain a Secure Configuration Process for Network Infrastructure",
+      "description": "IG1 — essential cyber hygiene. A documented secure configuration process for network devices, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.2"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-3",
+      "uuid": "c7000000-0000-4000-8000-00000000002d",
+      "title": "4.3 Configure Automatic Session Locking on Enterprise Assets",
+      "description": "IG1 — essential cyber hygiene. Sessions lock automatically after a defined period of inactivity — at most 15 minutes on general-purpose systems and 2 minutes on mobile devices.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.3"
+        }
+      ],
+      "links": {
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-4",
+      "uuid": "c7000000-0000-4000-8000-00000000002e",
+      "title": "4.4 Implement and Manage a Firewall on Servers",
+      "description": "IG1 — essential cyber hygiene. Servers run a firewall, or one is provided in front of them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.4"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-5",
+      "uuid": "c7000000-0000-4000-8000-00000000002f",
+      "title": "4.5 Implement and Manage a Firewall on End-User Devices",
+      "description": "IG1 — essential cyber hygiene. End-user devices run a host-based firewall with a default-deny rule for everything not explicitly allowed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.5"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-6",
+      "uuid": "c7000000-0000-4000-8000-000000000030",
+      "title": "4.6 Securely Manage Enterprise Assets and Software",
+      "description": "IG1 — essential cyber hygiene. Assets and software are managed securely — version-controlled infrastructure-as-code, secure protocols such as SSH and HTTPS for administration.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.6"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-7",
+      "uuid": "c7000000-0000-4000-8000-000000000031",
+      "title": "4.7 Manage Default Accounts on Enterprise Assets and Software",
+      "description": "IG1 — essential cyber hygiene. Default accounts — root, administrator, pre-configured vendor accounts — are disabled or made unusable.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.7"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-8",
+      "uuid": "c7000000-0000-4000-8000-000000000032",
+      "title": "4.8 Uninstall or Disable Unnecessary Services on Enterprise Assets and Software",
+      "description": "Unnecessary services — unused file-sharing, web application modules, service functions — are uninstalled or disabled.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.8"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-9",
+      "uuid": "c7000000-0000-4000-8000-000000000033",
+      "title": "4.9 Configure Trusted DNS Servers on Enterprise Assets",
+      "description": "Assets use enterprise-controlled or reputable externally accessible DNS servers.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.9"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-10",
+      "uuid": "c7000000-0000-4000-8000-000000000034",
+      "title": "4.10 Enforce Automatic Device Lockout on Portable End-User Devices",
+      "description": "Portable devices lock out after a set number of failed local authentication attempts.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.10"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-11",
+      "uuid": "c7000000-0000-4000-8000-000000000035",
+      "title": "4.11 Enforce Remote Wipe Capability on Portable End-User Devices",
+      "description": "Portable devices can be wiped remotely when lost or stolen, or when someone leaves.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.11"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-4-12",
+      "uuid": "c7000000-0000-4000-8000-000000000036",
+      "title": "4.12 Separate Enterprise Workspaces on Mobile End-User Devices",
+      "description": "Mobile devices keep enterprise applications and data in a separate workspace.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:4.12"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-5-1",
+      "uuid": "c7000000-0000-4000-8000-000000000037",
+      "title": "5.1 Establish and Maintain an Inventory of Accounts",
+      "description": "IG1 — essential cyber hygiene. An inventory of all accounts — user and administrator — with name, username, start and stop dates and department, validated quarterly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:5.1"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-5-2",
+      "uuid": "c7000000-0000-4000-8000-000000000038",
+      "title": "5.2 Use Unique Passwords",
+      "description": "IG1 — essential cyber hygiene. Unique passwords for every asset — at least 8 characters with MFA, 14 without.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:5.2"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-5-3",
+      "uuid": "c7000000-0000-4000-8000-000000000039",
+      "title": "5.3 Disable Dormant Accounts",
+      "description": "IG1 — essential cyber hygiene. Accounts inactive for 45 days are deleted or disabled.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:5.3"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-5-4",
+      "uuid": "c7000000-0000-4000-8000-00000000003a",
+      "title": "5.4 Restrict Administrator Privileges to Dedicated Administrator Accounts",
+      "description": "IG1 — essential cyber hygiene. Administrator privileges sit on dedicated administrator accounts, and day-to-day work uses non-privileged accounts.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:5.4"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-5-5",
+      "uuid": "c7000000-0000-4000-8000-00000000003b",
+      "title": "5.5 Establish and Maintain an Inventory of Service Accounts",
+      "description": "An inventory of service accounts — department owner, review date, purpose — validated quarterly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:5.5"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-5-6",
+      "uuid": "c7000000-0000-4000-8000-00000000003c",
+      "title": "5.6 Centralize Account Management",
+      "description": "Accounts are managed centrally through a directory or identity service.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:5.6"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-1",
+      "uuid": "c7000000-0000-4000-8000-00000000003d",
+      "title": "6.1 Establish an Access Granting Process",
+      "description": "IG1 — essential cyber hygiene. A process, preferably automated, for granting access on new hire, rights grant or role change.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.1"
+        }
+      ],
+      "links": {
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-2",
+      "uuid": "c7000000-0000-4000-8000-00000000003e",
+      "title": "6.2 Establish an Access Revoking Process",
+      "description": "IG1 — essential cyber hygiene. A process, preferably automated, for revoking access on termination, revocation or role change — disabling accounts rather than deleting them, to keep audit trails.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.2"
+        }
+      ],
+      "links": {
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-3",
+      "uuid": "c7000000-0000-4000-8000-00000000003f",
+      "title": "6.3 Require MFA for Externally-Exposed Applications",
+      "description": "IG1 — essential cyber hygiene. Multi-factor authentication is required for all externally-exposed enterprise and third-party applications.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.3"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-4",
+      "uuid": "c7000000-0000-4000-8000-000000000040",
+      "title": "6.4 Require MFA for Remote Network Access",
+      "description": "IG1 — essential cyber hygiene. Multi-factor authentication is required for remote network access.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.4"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-5",
+      "uuid": "c7000000-0000-4000-8000-000000000041",
+      "title": "6.5 Require MFA for Administrative Access",
+      "description": "IG1 — essential cyber hygiene. Multi-factor authentication is required for all administrative access, on-site and through service providers.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.5"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-6",
+      "uuid": "c7000000-0000-4000-8000-000000000042",
+      "title": "6.6 Establish and Maintain an Inventory of Authentication and Authorization Systems",
+      "description": "An inventory of the enterprise's authentication and authorization systems, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.6"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-7",
+      "uuid": "c7000000-0000-4000-8000-000000000043",
+      "title": "6.7 Centralize Access Control",
+      "description": "Access control for all assets is centralized through a directory service or SSO provider.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.7"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-6-8",
+      "uuid": "c7000000-0000-4000-8000-000000000044",
+      "title": "6.8 Define and Maintain Role-Based Access Control",
+      "description": "Role-based access control: the rights each role needs are documented and access is reviewed at least annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:6.8"
+        }
+      ],
+      "links": {
+        "attack-insider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-7-1",
+      "uuid": "c7000000-0000-4000-8000-000000000045",
+      "title": "7.1 Establish and Maintain a Vulnerability Management Process",
+      "description": "IG1 — essential cyber hygiene. A documented vulnerability management process for enterprise assets, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:7.1"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-7-2",
+      "uuid": "c7000000-0000-4000-8000-000000000046",
+      "title": "7.2 Establish and Maintain a Remediation Process",
+      "description": "IG1 — essential cyber hygiene. A risk-based remediation strategy with monthly or more frequent reviews.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:7.2"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-7-3",
+      "uuid": "c7000000-0000-4000-8000-000000000047",
+      "title": "7.3 Perform Automated Operating System Patch Management",
+      "description": "IG1 — essential cyber hygiene. Operating system updates are applied automatically on a monthly or more frequent basis.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:7.3"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-7-4",
+      "uuid": "c7000000-0000-4000-8000-000000000048",
+      "title": "7.4 Perform Automated Application Patch Management",
+      "description": "IG1 — essential cyber hygiene. Application updates are applied automatically on a monthly or more frequent basis.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:7.4"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-7-5",
+      "uuid": "c7000000-0000-4000-8000-000000000049",
+      "title": "7.5 Perform Automated Vulnerability Scans of Internal Enterprise Assets",
+      "description": "Internal assets are scanned for vulnerabilities, authenticated and unauthenticated, quarterly or more often.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:7.5"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-7-6",
+      "uuid": "c7000000-0000-4000-8000-00000000004a",
+      "title": "7.6 Perform Automated Vulnerability Scans of Externally-Exposed Enterprise Assets",
+      "description": "Externally-exposed assets are scanned for vulnerabilities monthly or more often.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:7.6"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-7-7",
+      "uuid": "c7000000-0000-4000-8000-00000000004b",
+      "title": "7.7 Remediate Detected Vulnerabilities",
+      "description": "Detected vulnerabilities are remediated through tools and processes monthly or more often, based on the remediation process.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:7.7"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-1",
+      "uuid": "c7000000-0000-4000-8000-00000000004c",
+      "title": "8.1 Establish and Maintain an Audit Log Management Process",
+      "description": "IG1 — essential cyber hygiene. A documented process defining logging requirements — collection, review, retention — reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.1"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-2",
+      "uuid": "c7000000-0000-4000-8000-00000000004d",
+      "title": "8.2 Collect Audit Logs",
+      "description": "IG1 — essential cyber hygiene. Audit logging is enabled across enterprise assets as the log management process defines.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.2"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-3",
+      "uuid": "c7000000-0000-4000-8000-00000000004e",
+      "title": "8.3 Ensure Adequate Audit Log Storage",
+      "description": "IG1 — essential cyber hygiene. Logging destinations have enough storage to meet the log management process.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.3"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-4",
+      "uuid": "c7000000-0000-4000-8000-00000000004f",
+      "title": "8.4 Standardize Time Synchronization",
+      "description": "Time is synchronized across assets from at least two synchronized time sources.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.4"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-5",
+      "uuid": "c7000000-0000-4000-8000-000000000050",
+      "title": "8.5 Collect Detailed Audit Logs",
+      "description": "Detailed logs are collected for assets with sensitive data — event source, date, username, timestamp, source and destination addresses.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.5"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-6",
+      "uuid": "c7000000-0000-4000-8000-000000000051",
+      "title": "8.6 Collect DNS Query Audit Logs",
+      "description": "DNS query logs are collected where appropriate and supported.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.6"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-7",
+      "uuid": "c7000000-0000-4000-8000-000000000052",
+      "title": "8.7 Collect URL Request Audit Logs",
+      "description": "URL request logs are collected where appropriate and supported.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.7"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-8",
+      "uuid": "c7000000-0000-4000-8000-000000000053",
+      "title": "8.8 Collect Command-Line Audit Logs",
+      "description": "Command-line logs — PowerShell, BASH, remote administrative terminals — are collected.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.8"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-9",
+      "uuid": "c7000000-0000-4000-8000-000000000054",
+      "title": "8.9 Centralize Audit Logs",
+      "description": "Audit logs are centralized, to the extent possible, for collection and retention.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.9"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-10",
+      "uuid": "c7000000-0000-4000-8000-000000000055",
+      "title": "8.10 Retain Audit Logs",
+      "description": "Audit logs are retained for at least 90 days.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.10"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-11",
+      "uuid": "c7000000-0000-4000-8000-000000000056",
+      "title": "8.11 Conduct Audit Log Reviews",
+      "description": "Audit logs are reviewed weekly or more often to detect anomalies or abnormal events that could indicate a threat.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.11"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-8-12",
+      "uuid": "c7000000-0000-4000-8000-000000000057",
+      "title": "8.12 Collect Service Provider Logs",
+      "description": "Service provider logs are collected where supported — authentication, data modification and user management events.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:8.12"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-9-1",
+      "uuid": "c7000000-0000-4000-8000-000000000058",
+      "title": "9.1 Ensure Use of Only Fully Supported Browsers and Email Clients",
+      "description": "IG1 — essential cyber hygiene. Only fully supported browsers and email clients, at the latest vendor version, are allowed to run.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:9.1"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-9-2",
+      "uuid": "c7000000-0000-4000-8000-000000000059",
+      "title": "9.2 Use DNS Filtering Services",
+      "description": "IG1 — essential cyber hygiene. DNS filtering services block access to known malicious domains on all assets.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:9.2"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-9-3",
+      "uuid": "c7000000-0000-4000-8000-00000000005a",
+      "title": "9.3 Maintain and Enforce Network-Based URL Filters",
+      "description": "Network-based URL filters limit access to potentially malicious or unapproved websites.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:9.3"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-9-4",
+      "uuid": "c7000000-0000-4000-8000-00000000005b",
+      "title": "9.4 Restrict Unnecessary or Unauthorized Browser and Email Client Extensions",
+      "description": "Unauthorized or unnecessary browser and email client plugins, extensions and add-ons are restricted by uninstalling or disabling them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:9.4"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-9-5",
+      "uuid": "c7000000-0000-4000-8000-00000000005c",
+      "title": "9.5 Implement DMARC",
+      "description": "DMARC, with SPF and DKIM, lowers the chance of spoofed or modified emails from valid domains.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:9.5"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-9-6",
+      "uuid": "c7000000-0000-4000-8000-00000000005d",
+      "title": "9.6 Block Unnecessary File Types",
+      "description": "Unnecessary file types attempting to enter the email gateway are blocked.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:9.6"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-9-7",
+      "uuid": "c7000000-0000-4000-8000-00000000005e",
+      "title": "9.7 Deploy and Maintain Email Server Anti-Malware Protections",
+      "description": "Email server anti-malware protections — attachment scanning, sandboxing — are deployed and maintained.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:9.7"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-10-1",
+      "uuid": "c7000000-0000-4000-8000-00000000005f",
+      "title": "10.1 Deploy and Maintain Anti-Malware Software",
+      "description": "IG1 — essential cyber hygiene. Anti-malware software runs on all enterprise assets.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:10.1"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-10-2",
+      "uuid": "c7000000-0000-4000-8000-000000000060",
+      "title": "10.2 Configure Automatic Anti-Malware Signature Updates",
+      "description": "IG1 — essential cyber hygiene. Anti-malware signature files update automatically on all assets.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:10.2"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-10-3",
+      "uuid": "c7000000-0000-4000-8000-000000000061",
+      "title": "10.3 Disable Autorun and Autoplay for Removable Media",
+      "description": "IG1 — essential cyber hygiene. Autorun and autoplay are disabled for removable media.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:10.3"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-10-4",
+      "uuid": "c7000000-0000-4000-8000-000000000062",
+      "title": "10.4 Configure Automatic Anti-Malware Scanning of Removable Media",
+      "description": "Removable media is scanned for malware automatically.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:10.4"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-10-5",
+      "uuid": "c7000000-0000-4000-8000-000000000063",
+      "title": "10.5 Enable Anti-Exploitation Features",
+      "description": "Anti-exploitation features — data execution prevention, exploit protection, System Integrity Protection — are enabled where possible.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:10.5"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-10-6",
+      "uuid": "c7000000-0000-4000-8000-000000000064",
+      "title": "10.6 Centrally Manage Anti-Malware Software",
+      "description": "Anti-malware software is managed centrally.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:10.6"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-10-7",
+      "uuid": "c7000000-0000-4000-8000-000000000065",
+      "title": "10.7 Use Behavior-Based Anti-Malware Software",
+      "description": "Behaviour-based anti-malware software is used, to catch what signatures miss.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:10.7"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-11-1",
+      "uuid": "c7000000-0000-4000-8000-000000000066",
+      "title": "11.1 Establish and Maintain a Data Recovery Process",
+      "description": "IG1 — essential cyber hygiene. A documented data recovery process — scope, prioritisation, backup security — reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:11.1"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-11-2",
+      "uuid": "c7000000-0000-4000-8000-000000000067",
+      "title": "11.2 Perform Automated Backups",
+      "description": "IG1 — essential cyber hygiene. In-scope assets are backed up automatically, weekly or more often depending on data sensitivity.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:11.2"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-11-3",
+      "uuid": "c7000000-0000-4000-8000-000000000068",
+      "title": "11.3 Protect Recovery Data",
+      "description": "IG1 — essential cyber hygiene. Recovery data is protected with the same controls as the original data — encryption, separation.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:11.3"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-11-4",
+      "uuid": "c7000000-0000-4000-8000-000000000069",
+      "title": "11.4 Establish and Maintain an Isolated Instance of Recovery Data",
+      "description": "IG1 — essential cyber hygiene. An isolated instance of recovery data — offline, cloud or off-site, version-controlled — out of an attacker's reach.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:11.4"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-11-5",
+      "uuid": "c7000000-0000-4000-8000-00000000006a",
+      "title": "11.5 Test Data Recovery",
+      "description": "Backup recovery is tested quarterly or more often for a sample of in-scope assets.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:11.5"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-1",
+      "uuid": "c7000000-0000-4000-8000-00000000006b",
+      "title": "12.1 Ensure Network Infrastructure is Up-to-Date",
+      "description": "IG1 — essential cyber hygiene. Network infrastructure runs the latest stable release of software and supported network-as-a-service offerings, reviewed monthly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.1"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-2",
+      "uuid": "c7000000-0000-4000-8000-00000000006c",
+      "title": "12.2 Establish and Maintain a Secure Network Architecture",
+      "description": "A secure network architecture — segmentation, least privilege, availability — documented and reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.2"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-3",
+      "uuid": "c7000000-0000-4000-8000-00000000006d",
+      "title": "12.3 Securely Manage Network Infrastructure",
+      "description": "Network infrastructure is managed securely — version-controlled infrastructure-as-code, secure protocols.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.3"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-4",
+      "uuid": "c7000000-0000-4000-8000-00000000006e",
+      "title": "12.4 Establish and Maintain Architecture Diagram(s)",
+      "description": "Architecture diagrams and other network system documentation, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.4"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-5",
+      "uuid": "c7000000-0000-4000-8000-00000000006f",
+      "title": "12.5 Centralize Network Authentication, Authorization, and Auditing (AAA)",
+      "description": "Network authentication, authorization and auditing are centralized.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.5"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-6",
+      "uuid": "c7000000-0000-4000-8000-000000000070",
+      "title": "12.6 Use of Secure Network Management and Communication Protocols",
+      "description": "Secure network management and communication protocols such as 802.1X and WPA2 Enterprise or better are used.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.6"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-7",
+      "uuid": "c7000000-0000-4000-8000-000000000071",
+      "title": "12.7 Ensure Remote Devices Utilize a VPN and are Connecting to an Enterprise's AAA Infrastructure",
+      "description": "Remote users connect through a VPN and the enterprise's authentication infrastructure before accessing enterprise resources.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.7"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-12-8",
+      "uuid": "c7000000-0000-4000-8000-000000000072",
+      "title": "12.8 Establish and Maintain Dedicated Computing Resources for All Administrative Work",
+      "description": "Administrative work is done on dedicated, segmented computing resources with no internet access for general use.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:12.8"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-1",
+      "uuid": "c7000000-0000-4000-8000-000000000073",
+      "title": "13.1 Centralize Security Event Alerting",
+      "description": "Security event alerting is centralized — a SIEM or log analytics platform with correlation and alerting.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.1"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-2",
+      "uuid": "c7000000-0000-4000-8000-000000000074",
+      "title": "13.2 Deploy a Host-Based Intrusion Detection Solution",
+      "description": "Host-based intrusion detection runs on assets where appropriate and supported.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.2"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-3",
+      "uuid": "c7000000-0000-4000-8000-000000000075",
+      "title": "13.3 Deploy a Network Intrusion Detection Solution",
+      "description": "Network intrusion detection runs on enterprise assets where appropriate.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.3"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-4",
+      "uuid": "c7000000-0000-4000-8000-000000000076",
+      "title": "13.4 Perform Traffic Filtering Between Network Segments",
+      "description": "Traffic between network segments is filtered where appropriate.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.4"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-5",
+      "uuid": "c7000000-0000-4000-8000-000000000077",
+      "title": "13.5 Manage Access Control for Remote Assets",
+      "description": "Remote assets are checked before connecting — up-to-date anti-malware, configuration compliance, patched operating system and applications.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.5"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-6",
+      "uuid": "c7000000-0000-4000-8000-000000000078",
+      "title": "13.6 Collect Network Traffic Flow Logs",
+      "description": "Network traffic flow logs are collected and reviewed for alerts.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.6"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-7",
+      "uuid": "c7000000-0000-4000-8000-000000000079",
+      "title": "13.7 Deploy a Host-Based Intrusion Prevention Solution",
+      "description": "Host-based intrusion prevention — an EDR client or host-based IPS agent — runs where appropriate.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.7"
+        }
+      ],
+      "links": {
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-8",
+      "uuid": "c7000000-0000-4000-8000-00000000007a",
+      "title": "13.8 Deploy a Network Intrusion Prevention Solution",
+      "description": "Network intrusion prevention runs where appropriate.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.8"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-9",
+      "uuid": "c7000000-0000-4000-8000-00000000007b",
+      "title": "13.9 Deploy Port-Level Access Control",
+      "description": "Port-level access control — 802.1x or similar — with user and device authentication.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.9"
+        }
+      ],
+      "links": {
+        "attack-unmanaged-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-10",
+      "uuid": "c7000000-0000-4000-8000-00000000007c",
+      "title": "13.10 Perform Application Layer Filtering",
+      "description": "Application layer filtering through a filtering proxy, application firewall or gateway.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.10"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-13-11",
+      "uuid": "c7000000-0000-4000-8000-00000000007d",
+      "title": "13.11 Tune Security Event Alerting Thresholds",
+      "description": "Alerting thresholds are tuned monthly or more often, so real alerts are not lost in noise.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:13.11"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-1",
+      "uuid": "c7000000-0000-4000-8000-00000000007e",
+      "title": "14.1 Establish and Maintain a Security Awareness Program",
+      "description": "IG1 — essential cyber hygiene. A security awareness programme, run at hire and at least annually, reviewed and updated annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.1"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-2",
+      "uuid": "c7000000-0000-4000-8000-00000000007f",
+      "title": "14.2 Train Workforce Members to Recognize Social Engineering Attacks",
+      "description": "IG1 — essential cyber hygiene. The workforce is trained to recognise phishing, business email compromise, pretexting and tailgating.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.2"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-3",
+      "uuid": "c7000000-0000-4000-8000-000000000080",
+      "title": "14.3 Train Workforce Members on Authentication Best Practices",
+      "description": "IG1 — essential cyber hygiene. Training on authentication — MFA, password composition, credential management.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.3"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-4",
+      "uuid": "c7000000-0000-4000-8000-000000000081",
+      "title": "14.4 Train Workforce on Data Handling Best Practices",
+      "description": "IG1 — essential cyber hygiene. Training on identifying, storing, transferring, archiving and destroying sensitive data, including clear desk and clear screen.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.4"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-5",
+      "uuid": "c7000000-0000-4000-8000-000000000082",
+      "title": "14.5 Train Workforce Members on Causes of Unintentional Data Exposure",
+      "description": "IG1 — essential cyber hygiene. Training on how data is exposed by accident — mis-delivery, lost devices, publishing to unintended audiences.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.5"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-6",
+      "uuid": "c7000000-0000-4000-8000-000000000083",
+      "title": "14.6 Train Workforce Members on Recognizing and Reporting Security Incidents",
+      "description": "IG1 — essential cyber hygiene. The workforce can recognise a potential incident and knows how to report it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.6"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-7",
+      "uuid": "c7000000-0000-4000-8000-000000000084",
+      "title": "14.7 Train Workforce on How to Identify and Report if Their Enterprise Assets are Missing Security Updates",
+      "description": "IG1 — essential cyber hygiene. The workforce can tell when their devices are missing updates and knows how to report it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.7"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-8",
+      "uuid": "c7000000-0000-4000-8000-000000000085",
+      "title": "14.8 Train Workforce on the Dangers of Connecting to and Transmitting Enterprise Data Over Insecure Networks",
+      "description": "IG1 — essential cyber hygiene. Training on the dangers of insecure networks for enterprise work, including home network configuration for remote workers.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.8"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-14-9",
+      "uuid": "c7000000-0000-4000-8000-000000000086",
+      "title": "14.9 Conduct Role-Specific Security Awareness and Skills Training",
+      "description": "Role-specific training — secure configuration for IT staff, OWASP Top 10 for developers, advanced social engineering for high-profile roles.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:14.9"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-15-1",
+      "uuid": "c7000000-0000-4000-8000-000000000087",
+      "title": "15.1 Establish and Maintain an Inventory of Service Providers",
+      "description": "IG1 — essential cyber hygiene. An inventory of service providers with a classification and an enterprise contact for each, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:15.1"
+        }
+      ],
+      "links": {
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-15-2",
+      "uuid": "c7000000-0000-4000-8000-000000000088",
+      "title": "15.2 Establish and Maintain a Service Provider Management Policy",
+      "description": "A service provider management policy covering classification, inventory, assessment, monitoring and decommissioning, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:15.2"
+        }
+      ],
+      "links": {
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-15-3",
+      "uuid": "c7000000-0000-4000-8000-000000000089",
+      "title": "15.3 Classify Service Providers",
+      "description": "Service providers are classified by data sensitivity, volume, availability requirements, regulations and inherent risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:15.3"
+        }
+      ],
+      "links": {
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-15-4",
+      "uuid": "c7000000-0000-4000-8000-00000000008a",
+      "title": "15.4 Ensure Service Provider Contracts Include Security Requirements",
+      "description": "Contracts include security requirements — minimum programme requirements, incident notification, encryption, data disposal.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:15.4"
+        }
+      ],
+      "links": {
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-15-5",
+      "uuid": "c7000000-0000-4000-8000-00000000008b",
+      "title": "15.5 Assess Service Providers",
+      "description": "Service providers are assessed, according to the policy, before onboarding and at renewal — by questionnaire, SOC 2 or ISO 27001 report, or other evidence.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:15.5"
+        }
+      ],
+      "links": {
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-15-6",
+      "uuid": "c7000000-0000-4000-8000-00000000008c",
+      "title": "15.6 Monitor Service Providers",
+      "description": "Service providers are monitored — reassessment, release notes, dark web monitoring — according to the policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:15.6"
+        }
+      ],
+      "links": {
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-15-7",
+      "uuid": "c7000000-0000-4000-8000-00000000008d",
+      "title": "15.7 Securely Decommission Service Providers",
+      "description": "Service providers are decommissioned securely — user and service accounts deactivated, data flows stopped, enterprise data disposed of.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:15.7"
+        }
+      ],
+      "links": {
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-1",
+      "uuid": "c7000000-0000-4000-8000-00000000008e",
+      "title": "16.1 Establish and Maintain a Secure Application Development Process",
+      "description": "A documented secure application development process — secure design, coding, training, vulnerability management, third-party code — reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.1"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-2",
+      "uuid": "c7000000-0000-4000-8000-00000000008f",
+      "title": "16.2 Establish and Maintain a Process to Accept and Address Software Vulnerabilities",
+      "description": "A process to accept and address reports of software vulnerabilities, including a way for external parties to report them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.2"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-3",
+      "uuid": "c7000000-0000-4000-8000-000000000090",
+      "title": "16.3 Perform Root Cause Analysis on Security Vulnerabilities",
+      "description": "Root cause analysis on security vulnerabilities, so classes of flaw are fixed rather than individual instances.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.3"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-4",
+      "uuid": "c7000000-0000-4000-8000-000000000091",
+      "title": "16.4 Establish and Manage an Inventory of Third-Party Software Components",
+      "description": "An inventory of third-party components used in development — a bill of materials — evaluated monthly for risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.4"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-service-provider": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-5",
+      "uuid": "c7000000-0000-4000-8000-000000000092",
+      "title": "16.5 Use Up-to-Date and Trusted Third-Party Software Components",
+      "description": "Third-party components come from trusted sources, are evaluated before use, and are kept up to date.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.5"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-6",
+      "uuid": "c7000000-0000-4000-8000-000000000093",
+      "title": "16.6 Establish and Maintain a Severity Rating System and Process for Application Vulnerabilities",
+      "description": "A severity rating system and process for application vulnerabilities, so fixes are prioritised, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.6"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-7",
+      "uuid": "c7000000-0000-4000-8000-000000000094",
+      "title": "16.7 Use Standard Hardening Configuration Templates for Application Infrastructure",
+      "description": "Standard, industry-recommended hardening templates for application infrastructure — servers, databases, web servers, containers, PaaS and SaaS.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.7"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-8",
+      "uuid": "c7000000-0000-4000-8000-000000000095",
+      "title": "16.8 Separate Production and Non-Production Systems",
+      "description": "Production and non-production environments are kept separate.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.8"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-9",
+      "uuid": "c7000000-0000-4000-8000-000000000096",
+      "title": "16.9 Train Developers in Application Security Concepts and Secure Coding",
+      "description": "Developers are trained in application security and secure coding, at least annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.9"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-10",
+      "uuid": "c7000000-0000-4000-8000-000000000097",
+      "title": "16.10 Apply Secure Design Principles in Application Architectures",
+      "description": "Secure design principles — least privilege, validation of all inputs, secure defaults, minimal attack surface — applied in application architectures.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.10"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-11",
+      "uuid": "c7000000-0000-4000-8000-000000000098",
+      "title": "16.11 Leverage Vetted Modules or Services for Application Security Components",
+      "description": "Vetted modules or services are used for identity management, encryption, auditing and logging, instead of building them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.11"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-12",
+      "uuid": "c7000000-0000-4000-8000-000000000099",
+      "title": "16.12 Implement Code-Level Security Checks",
+      "description": "Static and dynamic analysis tools check code against secure coding practices during the life cycle.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.12"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-13",
+      "uuid": "c7000000-0000-4000-8000-00000000009a",
+      "title": "16.13 Conduct Application Penetration Testing",
+      "description": "Authenticated application penetration testing for critical applications, to find business logic flaws scanners miss.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.13"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-16-14",
+      "uuid": "c7000000-0000-4000-8000-00000000009b",
+      "title": "16.14 Conduct Threat Modeling",
+      "description": "Threat modelling identifies and addresses application design flaws before code is written.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:16.14"
+        }
+      ],
+      "links": {
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-1",
+      "uuid": "c7000000-0000-4000-8000-00000000009c",
+      "title": "17.1 Designate Personnel to Manage Incident Handling",
+      "description": "IG1 — essential cyber hygiene. One key person, and at least one backup, manage the incident handling process.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.1"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-2",
+      "uuid": "c7000000-0000-4000-8000-00000000009d",
+      "title": "17.2 Establish and Maintain Contact Information for Reporting Security Incidents",
+      "description": "IG1 — essential cyber hygiene. Contact information for parties who need to be told of incidents — internal staff, service providers, law enforcement, insurers, government — kept current.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.2"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-3",
+      "uuid": "c7000000-0000-4000-8000-00000000009e",
+      "title": "17.3 Establish and Maintain an Enterprise Process for Reporting Incidents",
+      "description": "IG1 — essential cyber hygiene. A documented process for the workforce to report security incidents — timeframe, recipients, mechanism, minimum information.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.3"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-4",
+      "uuid": "c7000000-0000-4000-8000-00000000009f",
+      "title": "17.4 Establish and Maintain an Incident Response Process",
+      "description": "A documented incident response process covering roles, compliance reporting and a communication plan, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.4"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-5",
+      "uuid": "c7000000-0000-4000-8000-0000000000a0",
+      "title": "17.5 Assign Key Roles and Responsibilities",
+      "description": "Key incident response roles — legal, IT, security, facilities, public relations, HR, incident responders, analysts — assigned.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.5"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-6",
+      "uuid": "c7000000-0000-4000-8000-0000000000a1",
+      "title": "17.6 Define Mechanisms for Communicating During Incident Response",
+      "description": "Primary and secondary communication mechanisms for incident response, so the team can still talk if normal channels are compromised.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.6"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-7",
+      "uuid": "c7000000-0000-4000-8000-0000000000a2",
+      "title": "17.7 Conduct Routine Incident Response Exercises",
+      "description": "Routine incident response exercises and scenarios, at least annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.7"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-8",
+      "uuid": "c7000000-0000-4000-8000-0000000000a3",
+      "title": "17.8 Conduct Post-Incident Reviews",
+      "description": "Post-incident reviews identify lessons learned and follow-up actions to prevent recurrence.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.8"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-17-9",
+      "uuid": "c7000000-0000-4000-8000-0000000000a4",
+      "title": "17.9 Establish and Maintain Security Incident Thresholds",
+      "description": "Thresholds that distinguish an incident from an event, reviewed annually.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:17.9"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-18-1",
+      "uuid": "c7000000-0000-4000-8000-0000000000a5",
+      "title": "18.1 Establish and Maintain a Penetration Testing Program",
+      "description": "A penetration testing programme appropriate to the enterprise — scope, frequency, limitations, remediation requirements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:18.1"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-18-2",
+      "uuid": "c7000000-0000-4000-8000-0000000000a6",
+      "title": "18.2 Perform Periodic External Penetration Tests",
+      "description": "External penetration tests at least annually, including enterprise and environmental reconnaissance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:18.2"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-web-application": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-18-3",
+      "uuid": "c7000000-0000-4000-8000-0000000000a7",
+      "title": "18.3 Remediate Penetration Test Findings",
+      "description": "Penetration test findings are remediated according to the remediation policy.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:18.3"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-18-4",
+      "uuid": "c7000000-0000-4000-8000-0000000000a8",
+      "title": "18.4 Validate Security Measures",
+      "description": "Security measures are validated after each penetration test, and rulesets and capabilities adjusted to detect the techniques used.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:18.4"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-18-5",
+      "uuid": "c7000000-0000-4000-8000-0000000000a9",
+      "title": "18.5 Perform Periodic Internal Penetration Tests",
+      "description": "Internal penetration tests at least annually, clear box or opaque box.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CIS8:18.5"
+        }
+      ],
+      "links": {
+        "attack-lateral": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-transfer-cyber-insurance",
+      "uuid": "c7000000-0000-4000-8000-0000000000aa",
+      "title": "Cyber insurance (risk transfer)",
+      "description": "A cyber policy covering incident response, restoration, business interruption and liability. Insurers increasingly require IG1-level safeguards — MFA, backups, patching — before they will cover ransomware.",
+      "is_transfer": true,
+      "status": "todo",
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-malware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

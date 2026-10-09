@@ -1,0 +1,175 @@
+name: Image
+
+# W101 (D62): publish the application and assistant images to GHCR, so a
+# deployment is docker-compose.yml plus a .env and never a checkout or a
+# build. A release tag publishes the version; a manual run publishes `edge`
+# from whatever ref it is started on. A pull request that touches the image
+# or the compose file runs everything except the push, so a change that
+# breaks the image-only deployment is caught before a release, not by it.
+#
+# CI proper (ci.yml) runs on branches, not tags. The release skill runs the
+# full checks before tagging, and this workflow proves the one thing CI
+# cannot: that the image boots with nothing beside it but the compose file.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - docker/**
+      - docker-compose.yml
+      - .env.example
+      - .github/workflows/image.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: image-${{ github.ref }}
+  cancel-in-progress: false
+
+# Same reason as ci.yml: composer inside the build fetches from codeload,
+# which rate-limits anonymous requests on shared runner addresses.
+env:
+  COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+
+jobs:
+  publish:
+    name: Build, boot from the image alone, publish
+    runs-on: ubuntu-latest
+    # The only job in this repository that writes anything, and only here.
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Every tag, so the step below can tell whether this release is the
+          # newest one before it moves `latest`.
+          fetch-depth: 0
+
+      - name: Work out the tags
+        id: tags
+        # v2.7.0 publishes 2.7.0, and 2.7 and latest only if it is the newest
+        # release in that series and overall: a later v2.6.1 must not move
+        # `latest` back under a database 2.7.0 has already migrated. A
+        # pre-release (v2.7.0-rc1) publishes only itself. A manual run
+        # publishes edge and sha-<commit>, never a version.
+        #
+        # Plain docker CLI rather than the docker/*-action family: every
+        # third-party action is one more thing to pin and trust with a
+        # packages:write token, and these are four commands.
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/arguesecure"
+          if [[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            minor="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+            releases=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V)
+            tags="$version"
+            [ "$(grep "^v${minor//./\\.}\." <<< "$releases" | tail -n1)" = "$GITHUB_REF_NAME" ] && tags="$tags $minor"
+            [ "$(tail -n1 <<< "$releases")" = "$GITHUB_REF_NAME" ] && tags="$tags latest"
+          elif [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            tags="$version"
+          else
+            version="sha-${GITHUB_SHA::7}"
+            tags="$version edge"
+          fi
+          {
+            echo "image=$image"
+            echo "version=$version"
+            echo "tags=$tags"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build both images
+        # linux/amd64 only (D62): the deployments this is for are x86 servers,
+        # and an arm64 build under QEMU would compile php extensions and run
+        # the Vite build emulated. Retried as in ci.yml, for codeload's 429.
+        env:
+          IMAGE: ${{ steps.tags.outputs.image }}
+          VERSION: ${{ steps.tags.outputs.version }}
+        run: |
+          labels=(
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}"
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}"
+            --label "org.opencontainers.image.version=${VERSION}"
+            --label "org.opencontainers.image.licenses=MIT"
+          )
+          delay=60
+          for attempt in 1 2 3 4; do
+            if docker buildx build --load --platform linux/amd64 \
+                 --secret id=composer_auth,env=COMPOSER_AUTH \
+                 "${labels[@]}" --label "org.opencontainers.image.title=ArgueSecure" \
+                 -t "$IMAGE:$VERSION" .; then
+              break
+            fi
+            [ "$attempt" -lt 4 ] || exit 1
+            echo "build attempt $attempt failed; retrying in ${delay}s" >&2
+            sleep $delay
+            delay=$(( delay * 2 ))
+          done
+          docker buildx build --load --platform linux/amd64 \
+            "${labels[@]}" --label "org.opencontainers.image.title=ArgueSecure assistant runtime" \
+            -t "$IMAGE-assistant:$VERSION" docker/assistant
+
+      - name: Boot from the image alone
+        # The acceptance test for the whole package: a directory holding only
+        # docker-compose.yml and a .env reaches the first-run setup screen.
+        # `--pull never` makes it use the images just built and nothing else;
+        # with no Dockerfile beside it, it cannot quietly build instead.
+        env:
+          IMAGE: ${{ steps.tags.outputs.image }}
+          VERSION: ${{ steps.tags.outputs.version }}
+        run: |
+          deploy="$RUNNER_TEMP/deploy"
+          mkdir -p "$deploy"
+          cp docker-compose.yml "$deploy/"
+          cp .env.example "$deploy/.env"
+          {
+            echo "ARGUESECURE_IMAGE=$IMAGE"
+            echo "ARGUESECURE_VERSION=$VERSION"
+            echo "DB_ROOT_PASSWORD=$(openssl rand -hex 16)"
+            echo "DB_PASSWORD=$(openssl rand -hex 16)"
+          } >> "$deploy/.env"
+          cd "$deploy" || exit 1
+
+          # db and redis are upstream images a fresh runner does not have.
+          docker compose pull db redis
+          docker compose up -d --pull never
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/up; then break; fi
+            [ "$i" -lt 60 ] || { docker compose logs; exit 1; }
+            sleep 2
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/setup)" = "200"
+
+          # The assistant image carries its own launcher now: `list` reads
+          # models.conf from inside the image, so it fails if either file is
+          # missing. It downloads nothing.
+          docker compose run --rm --pull never assistant-install list
+
+      - name: Tear down
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP/deploy" 2>/dev/null || exit 0
+          docker compose down -v || true
+          sudo rm -rf "$RUNNER_TEMP/deploy"
+
+      - name: Publish
+        if: github.event_name != 'pull_request'
+        env:
+          IMAGE: ${{ steps.tags.outputs.image }}
+          VERSION: ${{ steps.tags.outputs.version }}
+          TAGS: ${{ steps.tags.outputs.tags }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          for name in "$IMAGE" "$IMAGE-assistant"; do
+            for tag in $TAGS; do
+              [ "$tag" = "$VERSION" ] || docker tag "$name:$VERSION" "$name:$tag"
+              docker push "$name:$tag"
+            done
+          done
+          docker logout ghcr.io

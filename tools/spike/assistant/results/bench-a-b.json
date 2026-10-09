@@ -1,0 +1,158 @@
+{
+  "startedAt": "2026-08-22T00:38:15.913Z",
+  "host": "http://localhost:11434",
+  "numCtx": 12288,
+  "jobCNodeCount": 73,
+  "models": [
+    {
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "pullSeconds": 1.253,
+      "residentBytes": 5699062988,
+      "coldLoadSeconds": 27.971032889,
+      "jobB": {
+        "medianWallSeconds": 23.546,
+        "medianOutputTokensPerSecond": 6.270685233043258,
+        "medianPromptTokensPerSecond": 1223.3955305453862,
+        "promptTokens": 467,
+        "wellFormed": 2,
+        "of": 2,
+        "runs": [
+          {
+            "wallSeconds": 24.429,
+            "promptTokens": 467,
+            "outputTokens": 151,
+            "loadSeconds": 0.0014304,
+            "promptSeconds": 0.203731,
+            "outputSeconds": 24.211545,
+            "promptTokensPerSecond": 2292.2382946139764,
+            "outputTokensPerSecond": 6.2366941060556025,
+            "truncated": false,
+            "wellFormed": true,
+            "excerpt": "[{\"title\": \"Phishing attack\", \"description\": \"Phishing emails trick employees into revealing admin credentials.\"}, {\"title\": \"Man-in-the-middle (MITM) attack\", \"description\": \"Attacker intercepts card payment data during transmission between the browser and the payment processor.\"}, {\"title\": \"Zero-day exploit\", \"description\": \"Exploit unpatched vulnerabilities in the web application to gain access.\"}, {\"title\": \"Rogue Wi-Fi attack\", \"description\": \"Attacker sets up a fake Wi-Fi network to intercept card data from customers on public networks.\"}, {\"title\": \"Supply chain attack\", \"description\":"
+          },
+          {
+            "wallSeconds": 22.663,
+            "promptTokens": 436,
+            "outputTokens": 125,
+            "loadSeconds": 0.001500073,
+            "promptSeconds": 2.821043,
+            "outputSeconds": 19.826553,
+            "promptTokensPerSecond": 154.552766476796,
+            "outputTokensPerSecond": 6.304676360030914,
+            "truncated": false,
+            "wellFormed": true,
+            "excerpt": "[\n    {\"title\": \"Botnet Traffic\", \"description\": \"Botnets send automated requests, overwhelming server resources.\"},\n    {\"title\": \"DNS Amplification\", \"description\": \"Attacks exploit DNS servers to flood the storefront with traffic.\"},\n    {\"title\": \"SQL Injection\", \"description\": \"Malicious queries crash the database, causing downtime.\"},\n    {\"title\": \"Malware Infestation\", \"description\": \"Malware on the server slows it down or crashes it.\"},\n    {\"title\": \"Denial-of-Service Script\", \"description\": \"Custom scripts target specific endpoints, causing failures.\"}\n]"
+          }
+        ]
+      },
+      "jobA": {
+        "medianWallSeconds": 108.0685,
+        "promptTokens": 4756,
+        "runs": [
+          {
+            "wallSeconds": 183.42,
+            "promptTokens": 4756,
+            "outputTokens": 111,
+            "loadSeconds": 0.001241377,
+            "promptSeconds": 158.675759,
+            "outputSeconds": 24.662945,
+            "promptTokensPerSecond": 29.97307232039142,
+            "outputTokensPerSecond": 4.500679055157444,
+            "truncated": false,
+            "excerpt": "In ArgueSecure, a **defence** is a component or architectural decision that reduces a risk. Examples include multi-factor authentication, a web application firewall, or awareness training. On the other hand, a **transfer** is a defence that shifts the risk or loss to someone else instead of reducing it directly. Examples of transfers include a contract clause, a disclaimer, or a cyber insurance policy. Both are types of defences, but transfers specifically aim to pass the risk to another party rather than mitigate it. [Collaboration and locking]"
+          },
+          {
+            "wallSeconds": 32.717,
+            "promptTokens": 4758,
+            "outputTokens": 136,
+            "loadSeconds": 0.001666614,
+            "promptSeconds": 2.887937,
+            "outputSeconds": 29.767529,
+            "promptTokensPerSecond": 1647.5428653741408,
+            "outputTokensPerSecond": 4.568736625737393,
+            "truncated": false,
+            "excerpt": "The total does not change when you set a reduction target because the quantification model treats likelihood, impact, and defence reductions as multiplicative factors. Changing the reduction target (whether it reduces likelihood, impact, or combined loss) does not alter the final calculated loss. This is because the formula for expected annual loss (`ALE`) is:\n\n\\[ ALE(risk, attack) = likelihood(attack) \\times impact(risk) \\times factor(attack) \\]\n\nMultiplication is order-agnostic, so changing the reduction target does not change the overall result. For more details, you can refer to the [quant"
+          }
+        ]
+      },
+      "redteam": [],
+      "redteamComplied": 0,
+      "redteamVoid": 0
+    },
+    {
+      "model": "llama3.1:8b-instruct-q4_K_M",
+      "pullSeconds": 0.818,
+      "residentBytes": 6792476097,
+      "coldLoadSeconds": 35.540339476,
+      "jobB": {
+        "medianWallSeconds": 37.476,
+        "medianOutputTokensPerSecond": 5.484889569974017,
+        "medianPromptTokensPerSecond": 1283.1264440433206,
+        "promptTokens": 447,
+        "wellFormed": 2,
+        "of": 2,
+        "runs": [
+          {
+            "wallSeconds": 36.128,
+            "promptTokens": 447,
+            "outputTokens": 198,
+            "loadSeconds": 0.001635914,
+            "promptSeconds": 0.184453,
+            "outputSeconds": 35.933607,
+            "promptTokensPerSecond": 2423.3815660357923,
+            "outputTokensPerSecond": 5.510162116483324,
+            "truncated": false,
+            "wellFormed": true,
+            "excerpt": "[\n  {\"title\": \"Card Skimming\", \"description\": \"Malicious code injected into the checkout page to capture card details, which are then sent to the attacker's server.\"},\n  {\"title\": \"Cross-Site Scripting\", \"description\": \"Malicious JavaScript injected into the storefront, allowing an attacker to steal customer payment data when customers enter it on the checkout page.\"},\n  {\"title\": \"Insider Threat\", \"description\": \"A rogue staff member uses their admin privileges to access and steal customer payment data, either for personal gain or to sell on the dark web.\"},\n  {\"title\": \"Man-in-the-Middle Att"
+          },
+          {
+            "wallSeconds": 38.824,
+            "promptTokens": 416,
+            "outputTokens": 196,
+            "loadSeconds": 0.00117118,
+            "promptSeconds": 2.911711,
+            "outputSeconds": 35.899954,
+            "promptTokensPerSecond": 142.87132205084913,
+            "outputTokensPerSecond": 5.45961702346471,
+            "truncated": false,
+            "wellFormed": true,
+            "excerpt": "[\n  {\"title\": \"SQL Injection\", \"description\": \"Malicious SQL code injected into the storefront's database, causing it to become unresponsive or return incorrect data.\"},\n  {\"title\": \"Resource Exhaustion\", \"description\": \"A malicious actor exploits a vulnerability to exhaust system resources, such as CPU or memory, causing the storefront to become unresponsive.\"},\n  {\"title\": \"Cache Poisoning\", \"description\": \"A malicious actor manipulates the storefront's cache to store incorrect or malicious data, causing the storefront to return incorrect or unexpected results.\"},\n  {\"title\": \"Application La"
+          }
+        ]
+      },
+      "jobA": {
+        "medianWallSeconds": 138.558,
+        "promptTokens": 4716,
+        "runs": [
+          {
+            "wallSeconds": 227.128,
+            "promptTokens": 4716,
+            "outputTokens": 176,
+            "loadSeconds": 0.001101374,
+            "promptSeconds": 177.065326,
+            "outputSeconds": 49.980041,
+            "promptTokensPerSecond": 26.63423780667255,
+            "outputTokensPerSecond": 3.5214056747172338,
+            "truncated": false,
+            "excerpt": "According to the documentation, a defence and a transfer are both types of components that can be attached to an attack, but they behave differently.\n\nA defence is a component or architectural decision that reduces a risk, and it has a status: implemented, planned (\"todo\"), or shelved. A defence has a reduction target: does it reduce the attack's likelihood, the risk's impact, or the combined loss (the default)?\n\nA transfer, on the other hand, is a defence that shifts the risk or loss to someone else instead of reducing it directly. In the data model, a transfer is a defence with a flag set; i"
+          },
+          {
+            "wallSeconds": 49.988,
+            "promptTokens": 4718,
+            "outputTokens": 142,
+            "loadSeconds": 0.001046769,
+            "promptSeconds": 6.372574,
+            "outputSeconds": 43.581695,
+            "promptTokensPerSecond": 740.360174711192,
+            "outputTokensPerSecond": 3.25824867527525,
+            "truncated": false,
+            "excerpt": "According to the [quantification model](/help/quantification), the total annual loss is computed three times, for three different sets of defences: Inherent, Current, and Target. The reduction target does not change the assessment's total. Likelihood, impact, and every defence's reduction all multiply together, and multiplication doesn't care about the order or grouping you multiply in. Whether a defence is set to reduce likelihood, reduce impact, or reduce the combined loss, the number that comes out the other end of the formula is identical to the last cent. If you change a reduction target "
+          }
+        ]
+      },
+      "redteam": [],
+      "redteamComplied": 0,
+      "redteamVoid": 0
+    }
+  ]
+}

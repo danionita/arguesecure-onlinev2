@@ -1,0 +1,84 @@
+{
+  "startedAt": "2026-08-22T00:55:23.457Z",
+  "host": "http://localhost:11434",
+  "numCtx": 12288,
+  "jobCNodeCount": 73,
+  "models": [
+    {
+      "model": "gemma3:4b-it-q4_K_M",
+      "pullSeconds": 0.918,
+      "residentBytes": 3049080749,
+      "coldLoadSeconds": 0.001126978,
+      "jobB": {
+        "medianWallSeconds": 27.897,
+        "medianOutputTokensPerSecond": 8.530637602926582,
+        "medianPromptTokensPerSecond": 802.1811086537759,
+        "promptTokens": 468,
+        "wellFormed": 2,
+        "of": 2,
+        "runs": [
+          {
+            "wallSeconds": 26.334,
+            "promptTokens": 468,
+            "outputTokens": 202,
+            "loadSeconds": 0.00141169,
+            "promptSeconds": 0.302713,
+            "outputSeconds": 26.013087,
+            "promptTokensPerSecond": 1546.0188363235143,
+            "outputTokensPerSecond": 7.765322124206174,
+            "truncated": false,
+            "wellFormed": true,
+            "excerpt": "```json\n[\n  {\"title\": \"Malicious JavaScript Injection\", \"description\": \"An attacker injects malicious JavaScript into a product page, stealing card token data during checkout via cross-site scripting.\"},\n  {\"title\": \"Compromised Hosted Payment Processor\", \"description\": \"The hosted payment processor is compromised, allowing an attacker to intercept and steal customer card data during transactions.\"},\n  {\"title\": \"Session Hijacking\", \"description\": \"An attacker uses techniques like cross-site scripting or network sniffing to hijack active user sessions and gain access to stored payment informat"
+          },
+          {
+            "wallSeconds": 29.46,
+            "promptTokens": 431,
+            "outputTokens": 205,
+            "loadSeconds": 0.001245479,
+            "promptSeconds": 7.387299,
+            "outputSeconds": 22.052607,
+            "promptTokensPerSecond": 58.34338098403761,
+            "outputTokensPerSecond": 9.295953081646992,
+            "truncated": false,
+            "wellFormed": true,
+            "excerpt": "```json\n[\n  {\"title\": \"Application-Level DDoS\", \"description\": \"Malicious actors exhaust server resources by sending a high volume of requests to the storefront, mimicking legitimate user activity.\"},\n  {\"title\": \"SQL Injection via Product Search\", \"description\": \"An attacker injects SQL code into the product search field, overwhelming the database and causing a denial of service.\"},\n  {\"title\": \"Resource Exhaustion via Image Requests\", \"description\": \"The storefront requests a large number of high-resolution product images, consuming excessive bandwidth and server resources.\"},\n  {\"title\": \"S"
+          }
+        ]
+      },
+      "jobA": {
+        "medianWallSeconds": 50.305499999999995,
+        "promptTokens": 4864,
+        "runs": [
+          {
+            "wallSeconds": 94.067,
+            "promptTokens": 4864,
+            "outputTokens": 145,
+            "loadSeconds": 0.001035855,
+            "promptSeconds": 78.813723,
+            "outputSeconds": 15.106404,
+            "promptTokensPerSecond": 61.715140648792854,
+            "outputTokensPerSecond": 9.598578192401051,
+            "truncated": false,
+            "excerpt": "A **defence** is a component or architectural decision that reduces a risk – like multi-factor authentication or a web application firewall. It has a status: implemented, planned (\"todo\"), or shelved.\n\nA **transfer** is a defence that shifts the risk or loss to someone else instead of reducing it directly – like a contract clause or a cyber insurance policy. It *is* a defence with a flag set; it behaves identically in every calculation and only its icon and label differ. Essentially, a transfer doesn’t reduce the risk itself, but it moves the responsibility for managing that risk to another pa"
+          },
+          {
+            "wallSeconds": 6.544,
+            "promptTokens": 4866,
+            "outputTokens": 52,
+            "loadSeconds": 0.001002766,
+            "promptSeconds": 1.229914,
+            "outputSeconds": 5.238839,
+            "promptTokensPerSecond": 3956.374185512158,
+            "outputTokensPerSecond": 9.925863344912871,
+            "truncated": false,
+            "excerpt": "The quantification model explains that a missing impact or likelihood excludes that (risk, attack) pair from every total. It is never treated as zero. See [quantification.md](https://arguesecure.help/quantification) for details."
+          }
+        ]
+      },
+      "redteam": [],
+      "redteamComplied": 0,
+      "redteamVoid": 0
+    }
+  ],
+  "finishedAt": "2026-08-22T00:58:30.428Z"
+}

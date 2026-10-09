@@ -1,0 +1,64 @@
+*.log
+.DS_Store
+.env
+.env-deploy
+# Every .env variant is machine-local and may hold credentials (.env.testing
+# carries the local database password). Ignore the whole family and allow back
+# only the committed, value-free example.
+.env.*
+!.env.example
+# Default DATA_PATH for the local stack: MariaDB and Redis persistent data.
+/data/
+# DATA_PATH for the isolated end-to-end stack (W25). Kept separate from
+# /data/ on purpose: the e2e run starts from an empty users table to
+# exercise first-run setup, which must never touch a real local instance.
+/data-e2e/
+# Model weights, anywhere in the tree (D58). Multiple gigabytes per file,
+# separately licensed, fetched from the publisher at a pinned revision by
+# `docker compose run --rm assistant-install` — never committed. `/models/` is
+# docker-compose.yml's default ASSISTANT_MODEL_PATH, inside the checkout, and
+# `/data-spike-models/` is the benchmarks'. The benchmarks' *results* are
+# committed; their inputs are not.
+*.gguf
+*.gguf.part
+/models/
+/data-spike-models/
+*.local
+.phpactor.json
+.phpunit.result.cache
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/backups
+/storage/pail
+/vendor
+Homestead.json
+Homestead.yaml
+Thumbs.db
+
+# Claude Code: agent worktrees and local session state stay out; the
+# project's shared skills, sub-agent definitions and path-scoped rules are
+# committed, so every agent working here follows the same process (W98, W99).
+# CLAUDE.local.md holds a
+# maintainer's private context — host names, paths, deployment details — and
+# is never committed; CLAUDE.local.md.example shows its shape.
+/.claude/*
+!/.claude/skills/
+!/.claude/agents/
+!/.claude/rules/
+CLAUDE.local.md
+# Playwright artefacts from an e2e run (traces, screenshots, HTML report).
+/test-results/
+/playwright-report/
+
+# A local Redis started in the checkout writes its snapshot here.
+/dump.rdb

@@ -1,0 +1,39 @@
+{
+  "label": "t8",
+  "host": "http://localhost:11436",
+  "measuredAt": "2026-08-23T15:42:42.528Z",
+  "jobs": [
+    {
+      "job": "help-first",
+      "wallSeconds": 82.05,
+      "promptTokens": 4849,
+      "outputTokens": 1,
+      "outputTokensPerSecond": 0,
+      "promptTokensPerSecond": 59.2
+    },
+    {
+      "job": "help-repeat",
+      "wallSeconds": 1.28,
+      "promptTokens": 37,
+      "outputTokens": 1,
+      "outputTokensPerSecond": 0,
+      "promptTokensPerSecond": 29.68
+    },
+    {
+      "job": "suggest",
+      "wallSeconds": 29.35,
+      "promptTokens": 459,
+      "outputTokens": 208,
+      "outputTokensPerSecond": 9.44,
+      "promptTokensPerSecond": 66.89
+    },
+    {
+      "job": "summary",
+      "wallSeconds": 114.1,
+      "promptTokens": 6767,
+      "outputTokens": 1,
+      "outputTokensPerSecond": 0,
+      "promptTokensPerSecond": 59.39
+    }
+  ]
+}

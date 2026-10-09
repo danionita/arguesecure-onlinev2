@@ -1,0 +1,372 @@
+{
+  "host": "unraid",
+  "config": "baseline",
+  "steps": {
+    "props": {
+      "buildInfo": "b11176-f805c57a2",
+      "modelPath": "/models/gemma-3-4b-it-Q4_K_M.gguf",
+      "totalSlots": 4,
+      "slotContext": 12288,
+      "templateLength": 1531,
+      "templateMentionsThinking": false,
+      "modalities": {
+        "vision": false,
+        "video": false,
+        "audio": false
+      },
+      "slots": [
+        {
+          "id": 0,
+          "n_ctx": 12288,
+          "speculative": false
+        },
+        {
+          "id": 1,
+          "n_ctx": 12288,
+          "speculative": false
+        },
+        {
+          "id": 2,
+          "n_ctx": 12288,
+          "speculative": false
+        },
+        {
+          "id": 3,
+          "n_ctx": 12288,
+          "speculative": false
+        }
+      ],
+      "measuredAt": "2026-09-26T06:08:07.561Z"
+    },
+    "a-cold": {
+      "wallSeconds": 92.84,
+      "firstTokenSeconds": 84.69,
+      "finishReason": "stop",
+      "promptProcessed": 6503,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 76.8,
+      "outputTokens": 100,
+      "outputTokensPerSecond": 12.15,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6503,
+        "prompt_ms": 84676.674,
+        "prompt_per_token_ms": 13.021170844225741,
+        "prompt_per_second": 76.79800933135375,
+        "predicted_n": 100,
+        "predicted_ms": 8149.375,
+        "predicted_per_token_ms": 82.3169191919192,
+        "predicted_per_second": 12.148170871999387
+      },
+      "usage": {
+        "completion_tokens": 100,
+        "prompt_tokens": 6503,
+        "total_tokens": 6603,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A **defence** is a component or architectural decision that reduces a risk — for example, MFA or a firewall. It has a status (implemented, todo, shelved) and a strength against each attack it’s linked to.\n\nA **transfer** is a defence that shifts the loss to someone else instead of reducing it — for example, a contract clause or an insurance policy. It counts exactly like a defence; only its icon and label differ. See [Concepts](/help/concepts).",
+      "measuredAt": "2026-09-26T06:09:40.410Z"
+    },
+    "a-warm": {
+      "wallSeconds": 9.36,
+      "firstTokenSeconds": 1.02,
+      "finishReason": "stop",
+      "promptProcessed": 45,
+      "promptFromCache": 6460,
+      "promptTokensPerSecond": 45,
+      "outputTokens": 104,
+      "outputTokensPerSecond": 12.34,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 6460,
+        "prompt_n": 45,
+        "prompt_ms": 999.92,
+        "prompt_per_token_ms": 22.220444444444443,
+        "prompt_per_second": 45.00360028802304,
+        "predicted_n": 104,
+        "predicted_ms": 8346.115,
+        "predicted_per_token_ms": 81.0302427184466,
+        "predicted_per_second": 12.341071264893905
+      },
+      "usage": {
+        "completion_tokens": 104,
+        "prompt_tokens": 6505,
+        "total_tokens": 6609,
+        "prompt_tokens_details": {
+          "cached_tokens": 6460
+        }
+      },
+      "text": "The quantification model explains why your total doesn’t change when you set a reduction target. It states that “A missing value does not change the total… It is never treated as zero.” This means that if a risk or attack has a missing impact or likelihood, that (risk, attack) pair is excluded from every total, and the total is shown as a lower bound (`≥ €amount`) with how many (risk, attack) pairs were valued. See [the quantification model](/help/quantification).",
+      "measuredAt": "2026-09-26T06:09:49.775Z"
+    },
+    "save": {
+      "status": 501,
+      "wallSeconds": 0,
+      "response": {
+        "error": {
+          "code": 501,
+          "message": "This server does not support slots action. Start it with `--slot-save-path`",
+          "type": "not_supported_error"
+        }
+      },
+      "measuredAt": "2026-09-26T06:09:49.777Z"
+    },
+    "restore": {
+      "status": 501,
+      "wallSeconds": 0.03,
+      "response": {
+        "error": {
+          "code": 501,
+          "message": "This server does not support slots action. Start it with `--slot-save-path`",
+          "type": "not_supported_error"
+        }
+      },
+      "measuredAt": "2026-09-26T06:09:54.136Z"
+    },
+    "a-restored": {
+      "wallSeconds": 91.94,
+      "firstTokenSeconds": 85.71,
+      "finishReason": "stop",
+      "promptProcessed": 6501,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 75.87,
+      "outputTokens": 78,
+      "outputTokensPerSecond": 12.36,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6501,
+        "prompt_ms": 85689.636,
+        "prompt_per_token_ms": 13.180993077988001,
+        "prompt_per_second": 75.86681777945701,
+        "predicted_n": 78,
+        "predicted_ms": 6230.579,
+        "predicted_per_token_ms": 80.91661038961038,
+        "predicted_per_second": 12.358402004051309
+      },
+      "usage": {
+        "completion_tokens": 78,
+        "prompt_tokens": 6501,
+        "total_tokens": 6579,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "A missing impact or a missing likelihood excludes that (risk, attack) pair from every total. It is never treated as zero. Coercing a missing impact to €0 would make the tool understate risk — and a security tool that quietly understates risk by default is worse than one that shows an honest, partial number. See [the quantification model](/help/quantification).",
+      "measuredAt": "2026-09-26T06:11:26.076Z"
+    },
+    "b-outage": {
+      "wallSeconds": 18.3,
+      "firstTokenSeconds": 5.55,
+      "finishReason": "stop",
+      "promptProcessed": 429,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 79.42,
+      "outputTokens": 220,
+      "outputTokensPerSecond": 17.18,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 429,
+        "prompt_ms": 5401.388,
+        "prompt_per_token_ms": 12.590648018648018,
+        "prompt_per_second": 79.42402952722522,
+        "predicted_n": 220,
+        "predicted_ms": 12746.995,
+        "predicted_per_token_ms": 58.20545662100457,
+        "predicted_per_second": 17.18051980094132
+      },
+      "usage": {
+        "completion_tokens": 220,
+        "prompt_tokens": 429,
+        "total_tokens": 649,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "```json\n[\n  {\"title\": \"Slowlorder Attack\", \"description\": \"A Slowlorder attack attempts to exhaust server resources by establishing numerous long-lived connections to the storefront, preventing legitimate users from accessing the site.\"},\n  {\"title\": \"Application-Level Throttling\", \"description\": \"An attacker exploits a vulnerability in the storefront's code to trigger excessive resource consumption, leading to a denial of service.\"},\n  {\"title\": \"Resource Exhaustion via Script Injection\", \"description\": \"An attacker injects malicious JavaScript into a form field, causing the storefront server to consume excessive CPU resources while processing the request.\"},\n  {\"title\": \"Database Query Overload\", \"description\": \"The attacker crafts a database query that, when executed, consumes a disproportionate amount of database resources, causing slowdowns or downtime.\"},\n  {\"title\": \"HTTP Request Smuggling\", \"description\": \"An attacker inserts HTTP requests within HTTP responses, causing the storefront to process these requests as if they were valid, leading to resource exhaustion.\"}\n]\n```",
+      "quality": {
+        "parsed": true,
+        "fenced": true,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Slowlorder Attack",
+          "Application-Level Throttling",
+          "Resource Exhaustion via Script Injection",
+          "Database Query Overload",
+          "HTTP Request Smuggling"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:11:44.378Z"
+    },
+    "b-payment": {
+      "wallSeconds": 17.88,
+      "firstTokenSeconds": 5.78,
+      "finishReason": "stop",
+      "promptProcessed": 465,
+      "promptFromCache": 1,
+      "promptTokensPerSecond": 80.56,
+      "outputTokens": 204,
+      "outputTokensPerSecond": 16.78,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 465,
+        "prompt_ms": 5772.061,
+        "prompt_per_token_ms": 12.41303440860215,
+        "prompt_per_second": 80.56047917719512,
+        "predicted_n": 204,
+        "predicted_ms": 12099.997,
+        "predicted_per_token_ms": 59.605896551724136,
+        "predicted_per_second": 16.77686366368521
+      },
+      "usage": {
+        "completion_tokens": 204,
+        "prompt_tokens": 466,
+        "total_tokens": 670,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "text": "```json\n[\n  {\"title\": \"Malicious JavaScript Injection\", \"description\": \"An attacker injects malicious JavaScript into a product page, stealing card token data during checkout via cross-site scripting.\"},\n  {\"title\": \"Session Hijacking\", \"description\": \"An attacker intercepts and exploits a valid customer session cookie, gaining access to their stored payment information.\"},\n  {\"title\": \"Compromised Hosted Payment Processor\", \"description\": \"The hosted payment processor itself is compromised, allowing the attacker to directly access and exfiltrate customer payment data.\"},\n  {\"title\": \"Data Leak from Admin Console\", \"description\": \"An attacker gains access to the admin console and downloads a database backup containing all customer data, including payment information.\"},\n  {\"title\": \"Man-in-the-Middle Attack (HTTPS)\", \"description\": \"An attacker intercepts the HTTPS traffic between the customer's browser and the payment processor, stealing the card token data in transit.\"}\n]\n```",
+      "quality": {
+        "parsed": true,
+        "fenced": true,
+        "items": 5,
+        "wellFormed": 5,
+        "extraKeys": [],
+        "titlesOver60": 0,
+        "titles": [
+          "Malicious JavaScript Injection",
+          "Session Hijacking",
+          "Compromised Hosted Payment Processor",
+          "Data Leak from Admin Console",
+          "Man-in-the-Middle Attack (HTTPS)"
+        ]
+      },
+      "measuredAt": "2026-09-26T06:12:02.255Z"
+    },
+    "c": {
+      "nodes": 73,
+      "wallSeconds": 122.47,
+      "firstTokenSeconds": 89.41,
+      "finishReason": "stop",
+      "promptProcessed": 6778,
+      "promptFromCache": 0,
+      "promptTokensPerSecond": 75.86,
+      "outputTokens": 384,
+      "outputTokensPerSecond": 11.59,
+      "draftTokens": null,
+      "draftAccepted": null,
+      "draftAcceptance": null,
+      "reasoningChars": 0,
+      "markersInContent": [],
+      "reasoned": false,
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6778,
+        "prompt_ms": 89343.804,
+        "prompt_per_token_ms": 13.18144054293302,
+        "prompt_per_second": 75.86424235977236,
+        "predicted_n": 384,
+        "predicted_ms": 33059.244,
+        "predicted_per_token_ms": 86.3165639686684,
+        "predicted_per_second": 11.585261901330835
+      },
+      "usage": {
+        "completion_tokens": 384,
+        "prompt_tokens": 6778,
+        "total_tokens": 7162,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "text": "The primary risks to this connected home device and its associated ecosystem stem from vulnerabilities within the device’s firmware, the companion mobile application, and the cloud backend infrastructure. A significant threat is customer account takeover, potentially costing EUR 450000 per occurrence, driven by credential stuffing against the customer portal or, more critically, by compromised device credentials used to control the device. Existing defenses, including multi-factor authentication for the customer portal and a cyber insurance policy, offer some mitigation, but require further strengthening.\n\nA substantial risk lies in the potential for malicious firmware to compromise device functionality, with an estimated impact of EUR 1200000 per occurrence. This could manifest as ransomware attacks, enabling unauthorized control of devices and potentially triggering costly recalls. While cryptographic firmware signing and TLS with certificate pinning are implemented, ongoing vigilance is needed to ensure these defenses remain robust against evolving attack techniques.\n\nExposure of personal data, including location history and usage patterns, represents a critical concern, carrying a potential cost of EUR 1800000 per occurrence. This risk is partially addressed by centralized secrets management and short-lived credentials, but vulnerabilities in the cloud backend API remain a significant weakness.  Furthermore, the system is vulnerable to supply-chain attacks, with the risk of a compromised CI/CD pipeline potentially leading to widespread device compromise at a cost of EUR 550000 per occurrence. \n\nFinally, the system is susceptible to operational disruptions, such as volumetric DDoS attacks targeting the public site or, more seriously, runaway cloud costs triggered by malicious activity. While a managed WAF and cyber insurance policy provide some protection, proactive monitoring and rate limiting are needed to prevent catastrophic, unplanned expenses. Overall, the current security posture is partially established, but requires further investment in tenant-isolation testing, secure development practices, and continuous monitoring to effectively manage these identified risks.",
+      "measuredAt": "2026-09-26T06:14:04.726Z"
+    }
+  },
+  "recorded": {
+    "host": {
+      "cpu": "Intel(R) Core(TM) i9-14900K",
+      "logicalCpus": 32,
+      "physicalCores": 24,
+      "flags": [
+        "fma",
+        "f16c",
+        "avx2",
+        "avx_vnni"
+      ],
+      "memTotalBytes": 134811652096,
+      "memAvailableBytes": 113378447360,
+      "kernel": "6.18.38-Unraid",
+      "docker": "29.5.3",
+      "cores": 4,
+      "cpuset": null
+    },
+    "preflight": {
+      "needBytes": 5710983328,
+      "memAvailableBytes": 113374519296,
+      "slotDiskFreeBytes": 60407730176
+    },
+    "image": "ghcr.io/ggml-org/llama.cpp:server",
+    "imageDigest": "ghcr.io/ggml-org/llama.cpp@sha256:6257697a7f5d034b8fb499ddb07af3e250506352f94102054252a23f3b85e0af",
+    "args": [
+      "-m",
+      "/models/gemma-3-4b-it-Q4_K_M.gguf",
+      "-c",
+      "12288",
+      "-t",
+      "4",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8080"
+    ],
+    "cores": 4,
+    "loadSeconds": 27.9,
+    "memoryAfterLoad": {
+      "dockerStats": "2.344GiB / 125.6GiB",
+      "cgroupPeakBytes": 4901388288
+    },
+    "memoryAfterA": {
+      "dockerStats": "2.808GiB / 125.6GiB",
+      "cgroupPeakBytes": 5367943168
+    },
+    "restartSeconds": 2.4,
+    "memoryAfterC": {
+      "dockerStats": "3.177GiB / 125.6GiB",
+      "cgroupPeakBytes": 3415470080
+    }
+  }
+}

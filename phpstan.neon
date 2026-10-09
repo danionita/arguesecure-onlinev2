@@ -1,0 +1,23 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - database
+        - routes
+    level: 6
+    tmpDir: storage/framework/phpstan
+
+    # One narrowly-scoped exclusion, not a baseline. Single-table inheritance
+    # requires newFromBuilder() to hydrate a `risk` row into Risk even when the
+    # query ran through Node, which is precisely what the parent's `static`
+    # return contract forbids. Node is the honest common supertype; declaring
+    # `static` to silence this would be a lie that callers could rely on.
+    # See the comment on App\Models\Node::newFromBuilder().
+    ignoreErrors:
+        -
+            identifier: return.type
+            message: '#newFromBuilder\(\) should return static#'
+            path: app/Models/Node.php
+            count: 1

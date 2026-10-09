@@ -1,0 +1,761 @@
+{
+  "$comment": "Golden vectors for the ArgueSecure risk-calculation engine. See tests/fixtures/README.md for the format and provenance. Derived independently from docs/specs/calculation-engine.md — never from the PHP or TypeScript implementation.",
+  "schema_version": 1,
+  "tolerance": 1e-9,
+  "spec_ref": "docs/specs/calculation-engine.md",
+  "known_spec_discrepancies": [
+    {
+      "id": "moderate-impact-representative",
+      "section": "§14 vs §3.2",
+      "summary": "§14 resolves R2's qualitative impact 'moderate' (band 10k–100k) to 30,000. The system-default impact scale in schema.md §3.2 assigns that band representative = sqrt(10000*100000) = 31,622.7766... (rounds to the 31,623 printed in that same table). The worked example's own totals (187,000 / 65,500 / 36,700) are only reproducible using 30,000. Vector 'worked_example_section14' therefore defines a scale whose 'moderate' representative is 30,000, and is deliberately NOT flagged is_system, to avoid asserting it equals the documented system default. See the final report for full detail."
+    },
+    {
+      "id": "strong-strength-representative",
+      "section": "§14 vs §3.2",
+      "summary": "§14 resolves D3's qualitative strength on A2, labelled 'strong', to 0.65. The system-default strength scale in §3.2 assigns 0.65 to the 'moderate' band (0.5–0.8); 'strong' is the next band up (0.8–0.95, representative 0.875). Using 0.875 instead of 0.65 would change factor(A2) from 0.35 to 0.125 and break every total downstream. The worked example is only self-consistent using 0.65. Vector 'worked_example_section14' encodes 0.65 under the code 'strong' to match §14's arithmetic, and is NOT flagged is_system for the same reason as above."
+    },
+    {
+      "id": "empty-graph-coverage-convention",
+      "section": "§6.3",
+      "summary": "coverage = pairs_valued / pairs_total is undefined (0/0) when pairs_total = 0 (empty assessment, or a risk with no attacks and nothing else in the graph). The spec does not define this case. This fixture adopts the convention coverage = 1.0 when pairs_total = 0 (vacuously complete — there is nothing to be incomplete about), matching is_partial = false. Implementations should either match this convention or the fixture should be revisited together with the spec."
+    }
+  ],
+  "vectors": [
+    {
+      "name": "worked_example_section14",
+      "description": "The mandatory, exact worked example from §14: 2 risks, 3 attacks (one shared), 4 defences across all three statuses. Pins the core formula, all three baselines, risk/attack-view reconciliation, MC, MCadd, log-share attribution, and cost-benefit ranking in one shot. NOTE: the qualitative levels used here ('moderate' impact = 30,000; 'strong' strength = 0.65) deliberately reproduce §14's own figures rather than the system-default representatives documented in schema.md §3.2, which disagree — see known_spec_discrepancies above. The scales below are therefore marked is_system=false.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": {
+          "impact": {
+            "is_system": false,
+            "unit": "currency",
+            "levels": [
+              { "ordinal": 1, "code": "negligible", "label": "Negligible", "lower_bound": 0, "upper_bound": 1000, "representative": 250 },
+              { "ordinal": 2, "code": "minor", "label": "Minor", "lower_bound": 1000, "upper_bound": 10000, "representative": 3162 },
+              { "ordinal": 3, "code": "moderate", "label": "Moderate", "lower_bound": 10000, "upper_bound": 100000, "representative": 30000 },
+              { "ordinal": 4, "code": "major", "label": "Major", "lower_bound": 100000, "upper_bound": 1000000, "representative": 316228 },
+              { "ordinal": 5, "code": "severe", "label": "Severe", "lower_bound": 1000000, "upper_bound": null, "representative": 3000000 }
+            ]
+          },
+          "likelihood": {
+            "is_system": true,
+            "unit": "rate_per_year",
+            "levels": [
+              { "ordinal": 1, "code": "rare", "label": "Rare", "lower_bound": 0, "upper_bound": 0.02, "representative": 0.005 },
+              { "ordinal": 2, "code": "unlikely", "label": "Unlikely", "lower_bound": 0.02, "upper_bound": 0.2, "representative": 0.06 },
+              { "ordinal": 3, "code": "possible", "label": "Possible", "lower_bound": 0.2, "upper_bound": 1, "representative": 0.45 },
+              { "ordinal": 4, "code": "likely", "label": "Likely", "lower_bound": 1, "upper_bound": 10, "representative": 3.16 },
+              { "ordinal": 5, "code": "frequent", "label": "Frequent", "lower_bound": 10, "upper_bound": null, "representative": 30 }
+            ]
+          },
+          "strength": {
+            "is_system": false,
+            "unit": "fraction",
+            "levels": [
+              { "ordinal": 1, "code": "weak", "label": "Weak", "lower_bound": 0, "upper_bound": 0.2, "representative": 0.1 },
+              { "ordinal": 2, "code": "limited", "label": "Limited", "lower_bound": 0.2, "upper_bound": 0.5, "representative": 0.35 },
+              { "ordinal": 3, "code": "moderate", "label": "Moderate", "lower_bound": 0.5, "upper_bound": 0.8, "representative": 0.65 },
+              { "ordinal": 4, "code": "strong", "label": "Strong (as used by §14 — see known_spec_discrepancies)", "lower_bound": 0.5, "upper_bound": 0.8, "representative": 0.65 },
+              { "ordinal": 5, "code": "very_strong", "label": "Very strong", "lower_bound": 0.95, "upper_bound": 1, "representative": 0.975 }
+            ]
+          }
+        },
+        "risks": [
+          { "uuid": "R1", "name": "Customer data breach", "impact_mode": "quantitative", "impact_amount": 200000, "impact_level_code": null },
+          { "uuid": "R2", "name": "Service outage", "impact_mode": "qualitative", "impact_amount": null, "impact_level_code": "moderate" }
+        ],
+        "attacks": [
+          { "uuid": "A1", "name": "Phishing of admin credentials", "likelihood_mode": "quantitative", "likelihood_amount": 0.5, "likelihood_level_code": null },
+          { "uuid": "A2", "name": "SQL injection on portal", "likelihood_mode": "qualitative", "likelihood_amount": null, "likelihood_level_code": "unlikely" },
+          { "uuid": "A3", "name": "Volumetric DDoS", "likelihood_mode": "quantitative", "likelihood_amount": 2.0, "likelihood_level_code": null }
+        ],
+        "defences": [
+          { "uuid": "D1", "name": "MFA on admin accounts", "status": "implemented", "is_transfer": false, "opex_annual_amount": 4000, "capex_amount": null },
+          { "uuid": "D2", "name": "Cyber insurance", "status": "implemented", "is_transfer": true, "opex_annual_amount": 12000, "capex_amount": null },
+          { "uuid": "D3", "name": "Web application firewall", "status": "todo", "is_transfer": false, "opex_annual_amount": 10000, "capex_amount": null },
+          { "uuid": "D4", "name": "Legacy VPN hardening", "status": "shelved", "is_transfer": false, "opex_annual_amount": 2000, "capex_amount": null }
+        ],
+        "risk_attack": [
+          { "risk_uuid": "R1", "attack_uuid": "A1", "position": 1 },
+          { "risk_uuid": "R2", "attack_uuid": "A1", "position": 1 },
+          { "risk_uuid": "R1", "attack_uuid": "A2", "position": 2 },
+          { "risk_uuid": "R2", "attack_uuid": "A3", "position": 2 }
+        ],
+        "attack_defence": [
+          { "attack_uuid": "A1", "defence_uuid": "D1", "strength_mode": "quantitative", "strength_fraction": 0.80, "strength_level_code": null, "reduction_target": "likelihood", "position": 1 },
+          { "attack_uuid": "A1", "defence_uuid": "D2", "strength_mode": "quantitative", "strength_fraction": 0.50, "strength_level_code": null, "reduction_target": "impact", "position": 2 },
+          { "attack_uuid": "A3", "defence_uuid": "D2", "strength_mode": "quantitative", "strength_fraction": 0.30, "strength_level_code": null, "reduction_target": "impact", "position": 1 },
+          { "attack_uuid": "A2", "defence_uuid": "D3", "strength_mode": "qualitative", "strength_fraction": null, "strength_level_code": "strong", "reduction_target": "likelihood", "position": 1 },
+          { "attack_uuid": "A3", "defence_uuid": "D3", "strength_mode": "quantitative", "strength_fraction": 0.50, "strength_level_code": null, "reduction_target": "likelihood", "position": 2 },
+          { "attack_uuid": "A1", "defence_uuid": "D4", "strength_mode": "quantitative", "strength_fraction": 0.40, "strength_level_code": null, "reduction_target": null, "position": 3 }
+        ]
+      },
+      "expected": {
+        "baselines": {
+          "inherent": {
+            "total": 187000,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "aro_residual": 0.5, "impact_residual": 200000, "ale": 100000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A1", "aro_residual": 0.5, "impact_residual": 30000, "ale": 15000, "valued": true },
+              { "risk_uuid": "R1", "attack_uuid": "A2", "aro_residual": 0.06, "impact_residual": 200000, "ale": 12000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A3", "aro_residual": 2.0, "impact_residual": 30000, "ale": 60000, "valued": true }
+            ],
+            "risks": [
+              { "uuid": "R1", "ale": 112000, "annual_probability": 0.42879093615118513 },
+              { "uuid": "R2", "ale": 75000, "annual_probability": 0.9179150013761012 }
+            ],
+            "attacks": [
+              { "uuid": "A1", "ale": 115000, "factor": 1.0, "aro_base": 0.5, "aro_residual": 0.5, "risk_count": 2 },
+              { "uuid": "A2", "ale": 12000, "factor": 1.0, "aro_base": 0.06, "aro_residual": 0.06, "risk_count": 1 },
+              { "uuid": "A3", "ale": 60000, "factor": 1.0, "aro_base": 2.0, "aro_residual": 2.0, "risk_count": 1 }
+            ]
+          },
+          "current": {
+            "total": 65500,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "aro_residual": 0.1, "impact_residual": 100000, "ale": 10000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A1", "aro_residual": 0.1, "impact_residual": 15000, "ale": 1500, "valued": true },
+              { "risk_uuid": "R1", "attack_uuid": "A2", "aro_residual": 0.06, "impact_residual": 200000, "ale": 12000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A3", "aro_residual": 2.0, "impact_residual": 21000, "ale": 42000, "valued": true }
+            ],
+            "risks": [
+              { "uuid": "R1", "ale": 22000, "annual_probability": 0.14785621103378865 },
+              { "uuid": "R2", "ale": 43500, "annual_probability": 0.8775435717470181 }
+            ],
+            "attacks": [
+              { "uuid": "A1", "ale": 11500, "factor": 0.1, "aro_base": 0.5, "aro_residual": 0.1, "risk_count": 2 },
+              { "uuid": "A2", "ale": 12000, "factor": 1.0, "aro_base": 0.06, "aro_residual": 0.06, "risk_count": 1 },
+              { "uuid": "A3", "ale": 42000, "factor": 0.7, "aro_base": 2.0, "aro_residual": 2.0, "risk_count": 1 }
+            ],
+            "reconciliation": { "risk_view_sum": 65500, "attack_view_sum": 65500 },
+            "warnings": [
+              { "code": "shared_attack", "node_uuid": "A1", "message": "Contributes to 2 risks. Totals assume all those losses occur when this attack succeeds. If these risks describe the same loss, merge them." },
+              { "code": "independence_assumed", "node_uuid": "A1", "message": "Stacked defences on this attack are combined assuming independence." },
+              { "code": "uncalibrated_scales", "node_uuid": null, "message": "Scales have not been calibrated for this assessment." }
+            ]
+          },
+          "target": {
+            "total": 36700,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "aro_residual": 0.1, "impact_residual": 100000, "ale": 10000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A1", "aro_residual": 0.1, "impact_residual": 15000, "ale": 1500, "valued": true },
+              { "risk_uuid": "R1", "attack_uuid": "A2", "aro_residual": 0.021, "impact_residual": 200000, "ale": 4200, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A3", "aro_residual": 1.0, "impact_residual": 21000, "ale": 21000, "valued": true }
+            ],
+            "risks": [
+              { "uuid": "R1", "ale": 14200, "annual_probability": 0.11396604040712432 },
+              { "uuid": "R2", "ale": 22500, "annual_probability": 0.6671289163019205 }
+            ],
+            "attacks": [
+              { "uuid": "A1", "ale": 11500, "factor": 0.1, "aro_base": 0.5, "aro_residual": 0.1, "risk_count": 2 },
+              { "uuid": "A2", "ale": 4200, "factor": 0.35, "aro_base": 0.06, "aro_residual": 0.021, "risk_count": 1 },
+              { "uuid": "A3", "ale": 21000, "factor": 0.35, "aro_base": 2.0, "aro_residual": 1.0, "risk_count": 1 }
+            ],
+            "reconciliation": { "risk_view_sum": 36700, "attack_view_sum": 36700 },
+            "note": "D4 (shelved) is excluded even though it is the target baseline; only implemented+todo participate."
+          }
+        },
+        "defence_rankings": {
+          "importance_against_current": [
+            { "defence_uuid": "D1", "mc": 46000, "identity_check": { "ale_a1_current": 11500, "s_over_1_minus_s": 4.0, "product": 46000 } },
+            { "defence_uuid": "D2", "mc": 29500, "direct_check": { "total_without_d2": 95000, "total_current": 65500, "difference": 29500 } }
+          ],
+          "opportunity_against_current": [
+            { "defence_uuid": "D3", "mc_add": 28800, "note": "= total_current(65500) - total_target(36700), since target = current ∪ {D3}" }
+          ],
+          "shelved_on_demand": [
+            { "defence_uuid": "D4", "mc_add": 4600, "note": "current ∪ {D4}: A1 factor becomes 0.10 × 0.60 = 0.06; total 60,900; 65,500 - 60,900 = 4,600. Never included in any baseline total." }
+          ],
+          "non_additivity_demo": {
+            "sum_of_mc_d1_d2": 75500,
+            "joint_inherent_to_current_reduction": 121500,
+            "understatement": 46000,
+            "note": "Confirms §9.4: removal deltas are not a decomposition of the joint reduction."
+          }
+        },
+        "log_share_attribution": {
+          "baseline": "current",
+          "target_sum": 121500,
+          "attribution": {
+            "D1": 72343.39544877794,
+            "D2": 49156.604551222044,
+            "D3": null,
+            "D4": null
+          },
+          "note": "§14's prose rounds intermediate log-weight shares to 4 decimals before multiplying, giving illustrative figures €72,347 / €49,153. Recomputing with full double precision (no intermediate rounding, per §11.3 'never round intermediates') gives €72,343.395... / €49,156.605..., which is what this fixture asserts. Both sum exactly to 121,500. See known_spec_discrepancies / final report for detail; this is a rounding artefact in the spec's illustrative prose, not a formula disagreement. D3 (todo) and D4 (shelved) are not in S for the current baseline, so per §9.5 (amended) their attribution is null, never 0 — Attr(d) is defined only for d ∈ S."
+        },
+        "cost_benefit": {
+          "priced": [
+            { "defence_uuid": "D1", "status": "implemented", "mc_or_mc_add": 46000, "annual_cost": 4000, "cbr": 11.5, "rosi": 10.5, "net_benefit": 42000 },
+            { "defence_uuid": "D3", "status": "todo", "mc_or_mc_add": 28800, "annual_cost": 10000, "cbr": 2.88, "rosi": 1.88, "net_benefit": 18800 },
+            { "defence_uuid": "D2", "status": "implemented", "mc_or_mc_add": 29500, "annual_cost": 12000, "cbr": 2.4583333333333335, "rosi": 1.4583333333333335, "net_benefit": 17500 },
+            { "defence_uuid": "D4", "status": "shelved", "mc_or_mc_add": 4600, "annual_cost": 2000, "cbr": 2.3, "rosi": 1.3, "net_benefit": 2600, "note": "shelved; shown only because §14 evaluates it on demand — excluded from any priced/free/unpriced ranking that only considers implemented+todo defences." }
+          ],
+          "free": [],
+          "unpriced": []
+        },
+        "completeness": {
+          "total": 65500,
+          "is_partial": false,
+          "pairs_total": 4,
+          "pairs_valued": 4,
+          "coverage": 1.0,
+          "risks_missing_impact": [],
+          "attacks_missing_likelihood": [],
+          "links_missing_strength": [],
+          "risks_without_attacks": [],
+          "orphan_attacks": [],
+          "orphan_defences": [],
+          "shared_attacks": [ { "uuid": "A1", "risk_count": 2 } ],
+          "implausible_strength": []
+        }
+      }
+    },
+
+    {
+      "name": "worked_example_partial_missing_likelihood",
+      "description": "§14's 'partial-data variant': A2's likelihood is blanked (mode set to null). Pins that a single unvalued pair drops out of every baseline, that the drop is asymmetric (only the pairs touching A2 are affected), and the exact completeness figures the spec calls out: current total €53,500, 3 of 4 paths valued (75%).",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "$ref_note": "identical to worked_example_section14.input.scales" },
+        "risks": [
+          { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 200000, "impact_level_code": null },
+          { "uuid": "R2", "impact_mode": "qualitative", "impact_amount": null, "impact_level_code": "moderate" }
+        ],
+        "attacks": [
+          { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 0.5, "likelihood_level_code": null },
+          { "uuid": "A2", "likelihood_mode": null, "likelihood_amount": null, "likelihood_level_code": null, "note": "blanked — was 'unlikely' (0.06) in the base vector" },
+          { "uuid": "A3", "likelihood_mode": "quantitative", "likelihood_amount": 2.0, "likelihood_level_code": null }
+        ],
+        "defences": [
+          { "uuid": "D1", "status": "implemented", "opex_annual_amount": 4000, "capex_amount": null },
+          { "uuid": "D2", "status": "implemented", "opex_annual_amount": 12000, "capex_amount": null },
+          { "uuid": "D3", "status": "todo", "opex_annual_amount": 10000, "capex_amount": null },
+          { "uuid": "D4", "status": "shelved", "opex_annual_amount": 2000, "capex_amount": null }
+        ],
+        "risk_attack": [
+          { "risk_uuid": "R1", "attack_uuid": "A1" },
+          { "risk_uuid": "R2", "attack_uuid": "A1" },
+          { "risk_uuid": "R1", "attack_uuid": "A2" },
+          { "risk_uuid": "R2", "attack_uuid": "A3" }
+        ],
+        "attack_defence": [
+          { "attack_uuid": "A1", "defence_uuid": "D1", "strength_mode": "quantitative", "strength_fraction": 0.80, "strength_level_code": null, "reduction_target": "likelihood" },
+          { "attack_uuid": "A1", "defence_uuid": "D2", "strength_mode": "quantitative", "strength_fraction": 0.50, "strength_level_code": null, "reduction_target": "impact" },
+          { "attack_uuid": "A3", "defence_uuid": "D2", "strength_mode": "quantitative", "strength_fraction": 0.30, "strength_level_code": null, "reduction_target": "impact" },
+          { "attack_uuid": "A2", "defence_uuid": "D3", "strength_mode": "qualitative", "strength_fraction": null, "strength_level_code": "strong", "reduction_target": "likelihood" },
+          { "attack_uuid": "A3", "defence_uuid": "D3", "strength_mode": "quantitative", "strength_fraction": 0.50, "strength_level_code": null, "reduction_target": "likelihood" },
+          { "attack_uuid": "A1", "defence_uuid": "D4", "strength_mode": "quantitative", "strength_fraction": 0.40, "strength_level_code": null, "reduction_target": null }
+        ]
+      },
+      "expected": {
+        "baselines": {
+          "inherent": {
+            "total": 175000,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "ale": 100000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A1", "ale": 15000, "valued": true },
+              { "risk_uuid": "R1", "attack_uuid": "A2", "ale": null, "valued": false },
+              { "risk_uuid": "R2", "attack_uuid": "A3", "ale": 60000, "valued": true }
+            ]
+          },
+          "current": {
+            "total": 53500,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "ale": 10000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A1", "ale": 1500, "valued": true },
+              { "risk_uuid": "R1", "attack_uuid": "A2", "ale": null, "valued": false },
+              { "risk_uuid": "R2", "attack_uuid": "A3", "ale": 42000, "valued": true }
+            ]
+          },
+          "target": {
+            "total": 32500,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "ale": 10000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A1", "ale": 1500, "valued": true },
+              { "risk_uuid": "R1", "attack_uuid": "A2", "ale": null, "valued": false },
+              { "risk_uuid": "R2", "attack_uuid": "A3", "ale": 21000, "valued": true }
+            ]
+          }
+        },
+        "completeness": {
+          "pairs_total": 4,
+          "pairs_valued": 3,
+          "coverage": 0.75,
+          "is_partial": true,
+          "risks_missing_impact": [],
+          "attacks_missing_likelihood": ["A2"],
+          "links_missing_strength": [],
+          "risks_without_attacks": [],
+          "display_hint": "≥ €53,500 · 3 of 4 paths valued (75%)"
+        },
+        "warnings": [
+          { "code": "missing_values", "node_uuid": null, "message": "1 of 4 paths are missing values and are excluded from the total." }
+        ]
+      }
+    },
+
+    {
+      "name": "missing_values_asymmetry",
+      "description": "§6.2 rule 1: a pair missing impact and a pair missing likelihood are BOTH excluded from totals and BOTH counted, never coerced to zero. A third, fully-valued pair is included alongside them so coverage is a non-trivial fraction and a bug that zeroes instead of excludes is distinguishable from a bug that drops the wrong pair.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [
+          { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 50000, "impact_level_code": null },
+          { "uuid": "R2", "impact_mode": null, "impact_amount": null, "impact_level_code": null, "note": "missing impact entirely" },
+          { "uuid": "R3", "impact_mode": "quantitative", "impact_amount": 20000, "impact_level_code": null }
+        ],
+        "attacks": [
+          { "uuid": "A1", "likelihood_mode": null, "likelihood_amount": null, "likelihood_level_code": null, "note": "missing likelihood entirely" },
+          { "uuid": "A2", "likelihood_mode": "quantitative", "likelihood_amount": 1.0, "likelihood_level_code": null },
+          { "uuid": "A3", "likelihood_mode": "quantitative", "likelihood_amount": 0.4, "likelihood_level_code": null }
+        ],
+        "defences": [],
+        "risk_attack": [
+          { "risk_uuid": "R1", "attack_uuid": "A1" },
+          { "risk_uuid": "R2", "attack_uuid": "A2" },
+          { "risk_uuid": "R3", "attack_uuid": "A3" }
+        ],
+        "attack_defence": []
+      },
+      "expected": {
+        "baselines": {
+          "inherent": {
+            "total": 8000,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "ale": null, "valued": false },
+              { "risk_uuid": "R2", "attack_uuid": "A2", "ale": null, "valued": false },
+              { "risk_uuid": "R3", "attack_uuid": "A3", "ale": 8000, "valued": true }
+            ]
+          },
+          "current": { "total": 8000 },
+          "target": { "total": 8000 }
+        },
+        "completeness": {
+          "pairs_total": 3,
+          "pairs_valued": 1,
+          "coverage": 0.3333333333333333,
+          "is_partial": true,
+          "risks_missing_impact": ["R2"],
+          "attacks_missing_likelihood": ["A1"],
+          "links_missing_strength": []
+        }
+      }
+    },
+
+    {
+      "name": "zero_is_not_missing",
+      "description": "§6.2 rule 6: impact = 0 and likelihood = 0 are KNOWN values ('no loss' / 'cannot happen'), contribute exactly 0 to the total, and must NOT appear in the missing-value lists — distinct from a genuinely missing (null) impact, which is excluded and flagged. Three pairs: known-zero impact (valued), missing impact (excluded), known-zero likelihood (valued).",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [
+          { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 0, "impact_level_code": null, "note": "known zero impact" },
+          { "uuid": "R2", "impact_mode": null, "impact_amount": null, "impact_level_code": null, "note": "genuinely missing" },
+          { "uuid": "R3", "impact_mode": "quantitative", "impact_amount": 5000, "impact_level_code": null }
+        ],
+        "attacks": [
+          { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 0.3, "likelihood_level_code": null },
+          { "uuid": "A2", "likelihood_mode": "quantitative", "likelihood_amount": 0.3, "likelihood_level_code": null },
+          { "uuid": "A3", "likelihood_mode": "quantitative", "likelihood_amount": 0, "likelihood_level_code": null, "note": "known zero likelihood" }
+        ],
+        "defences": [],
+        "risk_attack": [
+          { "risk_uuid": "R1", "attack_uuid": "A1" },
+          { "risk_uuid": "R2", "attack_uuid": "A2" },
+          { "risk_uuid": "R3", "attack_uuid": "A3" }
+        ],
+        "attack_defence": []
+      },
+      "expected": {
+        "baselines": {
+          "inherent": {
+            "total": 0,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "ale": 0, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A2", "ale": null, "valued": false },
+              { "risk_uuid": "R3", "attack_uuid": "A3", "ale": 0, "valued": true }
+            ]
+          }
+        },
+        "completeness": {
+          "pairs_total": 3,
+          "pairs_valued": 2,
+          "coverage": 0.6666666666666666,
+          "risks_missing_impact": ["R2"],
+          "attacks_missing_likelihood": [],
+          "note": "A3's likelihood (0) and R1's impact (0) must NOT appear in any missing-value list."
+        }
+      }
+    },
+
+    {
+      "name": "shared_attack_double_count",
+      "description": "§4 / §4.1: one attack (A1) linked to two risks. The total intentionally double-counts — both pair losses are summed — and the engine must emit the shared_attack warning with the correct risk_count. No defences, so all three baselines are identical.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [
+          { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 40000, "impact_level_code": null },
+          { "uuid": "R2", "impact_mode": "quantitative", "impact_amount": 60000, "impact_level_code": null }
+        ],
+        "attacks": [
+          { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 0.5, "likelihood_level_code": null }
+        ],
+        "defences": [],
+        "risk_attack": [
+          { "risk_uuid": "R1", "attack_uuid": "A1" },
+          { "risk_uuid": "R2", "attack_uuid": "A1" }
+        ],
+        "attack_defence": []
+      },
+      "expected": {
+        "baselines": {
+          "inherent": {
+            "total": 50000,
+            "pairs": [
+              { "risk_uuid": "R1", "attack_uuid": "A1", "ale": 20000, "valued": true },
+              { "risk_uuid": "R2", "attack_uuid": "A1", "ale": 30000, "valued": true }
+            ],
+            "attacks": [ { "uuid": "A1", "ale": 50000, "risk_count": 2 } ]
+          },
+          "current": { "total": 50000 },
+          "target": { "total": 50000 }
+        },
+        "completeness": {
+          "shared_attacks": [ { "uuid": "A1", "risk_count": 2 } ]
+        },
+        "warnings": [
+          { "code": "shared_attack", "node_uuid": "A1", "message": "Contributes to 2 risks. Totals assume all those losses occur when this attack succeeds. If these risks describe the same loss, merge them." }
+        ]
+      }
+    },
+
+    {
+      "name": "reduction_target_invariance",
+      "description": "§5 / §5.1: same defence, same strength (0.6), applied via three different reduction_target values (likelihood, impact, and ∅/combined) in three otherwise-identical scenarios. Pins that ARO' and Imp' differ per scenario, but the total (and ALE) is bit-identical across all three — changing reduction_target must never change the total.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "common": {
+          "risks": [ { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 100000, "impact_level_code": null } ],
+          "attacks": [ { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 1.0, "likelihood_level_code": null } ],
+          "defences": [ { "uuid": "D1", "status": "implemented" } ],
+          "risk_attack": [ { "risk_uuid": "R1", "attack_uuid": "A1" } ]
+        },
+        "scenarios": [
+          {
+            "name": "target_likelihood",
+            "attack_defence": [ { "attack_uuid": "A1", "defence_uuid": "D1", "strength_mode": "quantitative", "strength_fraction": 0.6, "strength_level_code": null, "reduction_target": "likelihood" } ]
+          },
+          {
+            "name": "target_impact",
+            "attack_defence": [ { "attack_uuid": "A1", "defence_uuid": "D1", "strength_mode": "quantitative", "strength_fraction": 0.6, "strength_level_code": null, "reduction_target": "impact" } ]
+          },
+          {
+            "name": "target_combined",
+            "attack_defence": [ { "attack_uuid": "A1", "defence_uuid": "D1", "strength_mode": "quantitative", "strength_fraction": 0.6, "strength_level_code": null, "reduction_target": null } ]
+          }
+        ]
+      },
+      "expected": {
+        "invariant_total_current": 40000,
+        "scenarios": [
+          { "name": "target_likelihood", "aro_residual": 0.4, "impact_residual": 100000, "ale": 40000 },
+          { "name": "target_impact", "aro_residual": 1.0, "impact_residual": 40000, "ale": 40000 },
+          { "name": "target_combined", "aro_residual": 1.0, "impact_residual": 100000, "ale": 40000 }
+        ],
+        "note": "aro_residual and impact_residual (the displayed intermediates) differ per scenario; ale (and hence the total) does not, per §5.1."
+      }
+    },
+
+    {
+      "name": "strength_one_no_division",
+      "description": "§6.2 rule 5 / §9.2: a defence with strength exactly 1.0 (total mitigation) reduces the pair to zero. MC must be computed by the factor-exclusion method (never by dividing by 1-s, which is 0 here). Also pins the implausible_strength flag.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [ { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 80000, "impact_level_code": null } ],
+        "attacks": [ { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 0.25, "likelihood_level_code": null } ],
+        "defences": [ { "uuid": "D1", "status": "implemented" } ],
+        "risk_attack": [ { "risk_uuid": "R1", "attack_uuid": "A1" } ],
+        "attack_defence": [ { "attack_uuid": "A1", "defence_uuid": "D1", "strength_mode": "quantitative", "strength_fraction": 1.0, "strength_level_code": null, "reduction_target": "likelihood" } ]
+      },
+      "expected": {
+        "baselines": {
+          "inherent": { "total": 20000, "pairs": [ { "risk_uuid": "R1", "attack_uuid": "A1", "ale": 20000, "valued": true } ] },
+          "current": {
+            "total": 0,
+            "pairs": [ { "risk_uuid": "R1", "attack_uuid": "A1", "ale": 0, "valued": true, "aro_residual": 0, "impact_residual": 80000 } ],
+            "attacks": [ { "uuid": "A1", "factor": 0 } ]
+          }
+        },
+        "defence_rankings": {
+          "importance_against_current": [
+            { "defence_uuid": "D1", "mc": 20000, "note": "Computed as factorWithout(A1,current,D1)=1.0 (empty product) minus factor(A1,current)=0, times ARO*Imp. Never via s/(1-s), which would divide by zero." }
+          ]
+        },
+        "completeness": {
+          "implausible_strength": [ { "attack_uuid": "A1", "defence_uuid": "D1" } ]
+        },
+        "warnings": [
+          { "code": "implausible_strength", "node_uuid": "D1", "message": "A 100% effective control eliminates this path entirely. Confirm this is intended." }
+        ]
+      }
+    },
+
+    {
+      "name": "aro_above_one",
+      "description": "§1: ARO is a rate, not a probability, and may exceed 1 (several occurrences per year). Pins that ALE is computed by straight multiplication (no capping at 1) and that the display-only annual_probability = 1 - e^(-ARO) stays a valid probability in (0,1) even for a high rate. Also exercises uncalibrated_scales since this vector uses an unmodified system scale.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": {
+          "impact": { "is_system": true, "unit": "currency", "levels": [] },
+          "likelihood": { "is_system": true, "unit": "rate_per_year", "levels": [] },
+          "strength": { "is_system": true, "unit": "fraction", "levels": [] }
+        },
+        "risks": [ { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 10000, "impact_level_code": null } ],
+        "attacks": [ { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 3.5, "likelihood_level_code": null } ],
+        "defences": [],
+        "risk_attack": [ { "risk_uuid": "R1", "attack_uuid": "A1" } ],
+        "attack_defence": []
+      },
+      "expected": {
+        "baselines": {
+          "inherent": {
+            "total": 35000,
+            "pairs": [ { "risk_uuid": "R1", "attack_uuid": "A1", "aro_residual": 3.5, "impact_residual": 10000, "ale": 35000, "valued": true } ],
+            "risks": [ { "uuid": "R1", "ale": 35000, "annual_probability": 0.9698026165776815 } ]
+          }
+        },
+        "warnings": [
+          { "code": "uncalibrated_scales", "node_uuid": null, "message": "Scales have not been calibrated for this assessment." }
+        ]
+      }
+    },
+
+    {
+      "name": "qualitative_roundtrip_and_boundaries",
+      "description": "§8.1/§8.2/§8.4: pure ScaleMapper vectors, independent of any totals. toNumber(level)=representative for every level of the system-default likelihood scale; toLevel is the inverse band lookup with [lower, upper) semantics — a value exactly on a boundary lands in the HIGHER band. Also covers the fraction-scale top-band-inclusive exception (§3.2 invariant 4) using the system-default strength scale, and asserts toLevel throws on a unit mismatch.",
+      "input": {
+        "scales": {
+          "likelihood": {
+            "unit": "rate_per_year",
+            "is_system": true,
+            "levels": [
+              { "ordinal": 1, "code": "rare", "lower_bound": 0, "upper_bound": 0.02, "representative": 0.005 },
+              { "ordinal": 2, "code": "unlikely", "lower_bound": 0.02, "upper_bound": 0.2, "representative": 0.06 },
+              { "ordinal": 3, "code": "possible", "lower_bound": 0.2, "upper_bound": 1, "representative": 0.45 },
+              { "ordinal": 4, "code": "likely", "lower_bound": 1, "upper_bound": 10, "representative": 3.16 },
+              { "ordinal": 5, "code": "frequent", "lower_bound": 10, "upper_bound": null, "representative": 30 }
+            ]
+          },
+          "strength": {
+            "unit": "fraction",
+            "is_system": true,
+            "levels": [
+              { "ordinal": 1, "code": "weak", "lower_bound": 0, "upper_bound": 0.2, "representative": 0.1 },
+              { "ordinal": 2, "code": "limited", "lower_bound": 0.2, "upper_bound": 0.5, "representative": 0.35 },
+              { "ordinal": 3, "code": "moderate", "lower_bound": 0.5, "upper_bound": 0.8, "representative": 0.65 },
+              { "ordinal": 4, "code": "strong", "lower_bound": 0.8, "upper_bound": 0.95, "representative": 0.875 },
+              { "ordinal": 5, "code": "very_strong", "lower_bound": 0.95, "upper_bound": 1, "representative": 0.975 }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "to_number": [
+          { "scale": "likelihood", "level_code": "rare", "expected": 0.005 },
+          { "scale": "likelihood", "level_code": "unlikely", "expected": 0.06 },
+          { "scale": "likelihood", "level_code": "possible", "expected": 0.45 },
+          { "scale": "likelihood", "level_code": "likely", "expected": 3.16 },
+          { "scale": "likelihood", "level_code": "frequent", "expected": 30 },
+          { "scale": "strength", "level_code": "very_strong", "expected": 0.975 }
+        ],
+        "to_level": [
+          { "scale": "likelihood", "input": 0, "expected_level_code": "rare" },
+          { "scale": "likelihood", "input": 0.019999, "expected_level_code": "rare" },
+          { "scale": "likelihood", "input": 0.02, "expected_level_code": "unlikely", "note": "boundary: lands in the HIGHER band" },
+          { "scale": "likelihood", "input": 0.2, "expected_level_code": "possible", "note": "boundary" },
+          { "scale": "likelihood", "input": 1, "expected_level_code": "likely", "note": "boundary" },
+          { "scale": "likelihood", "input": 10, "expected_level_code": "frequent", "note": "boundary; top band is [10, ∞)" },
+          { "scale": "likelihood", "input": 1000, "expected_level_code": "frequent" },
+          { "scale": "strength", "input": 0.8, "expected_level_code": "strong", "note": "boundary" },
+          { "scale": "strength", "input": 0.95, "expected_level_code": "very_strong", "note": "boundary" },
+          { "scale": "strength", "input": 1.0, "expected_level_code": "very_strong", "note": "fraction-unit top band is closed on the right: [0.95, 1] inclusive, per schema.md §3.2 invariant 4" }
+        ],
+        "round_trip": [
+          { "scale": "likelihood", "level_code": "rare" },
+          { "scale": "likelihood", "level_code": "unlikely" },
+          { "scale": "likelihood", "level_code": "possible" },
+          { "scale": "likelihood", "level_code": "likely" },
+          { "scale": "likelihood", "level_code": "frequent" },
+          { "scale": "strength", "level_code": "weak" },
+          { "scale": "strength", "level_code": "limited" },
+          { "scale": "strength", "level_code": "moderate" },
+          { "scale": "strength", "level_code": "strong" },
+          { "scale": "strength", "level_code": "very_strong" }
+        ],
+        "round_trip_law": "toLevel(toNumber(level), scale, scale.unit) === level, for every level listed above",
+        "unit_mismatch_throws": [
+          { "scale": "likelihood", "input": 0.5, "wrong_unit": "fraction", "expect": "throws" }
+        ],
+        "missing_input": { "scale": "likelihood", "input": null, "expected_level_code": null, "note": "§8.2: x=⊥ → null, rendered as a grey '?' chip, never the lowest band" }
+      }
+    },
+
+    {
+      "name": "shelved_never_counts",
+      "description": "§2 / §9.3: a shelved defence with a strong strength on the assessment's only attack must not affect inherent, current, or target — all three are identical to the no-defence baseline. It is evaluable on demand via MCadd (what we gave up) but that number never enters a total.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [ { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 100000, "impact_level_code": null } ],
+        "attacks": [ { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 1.0, "likelihood_level_code": null } ],
+        "defences": [ { "uuid": "D1", "status": "shelved", "opex_annual_amount": 3000, "capex_amount": null } ],
+        "risk_attack": [ { "risk_uuid": "R1", "attack_uuid": "A1" } ],
+        "attack_defence": [ { "attack_uuid": "A1", "defence_uuid": "D1", "strength_mode": "quantitative", "strength_fraction": 0.9, "strength_level_code": null, "reduction_target": "likelihood" } ]
+      },
+      "expected": {
+        "baselines": {
+          "inherent": { "total": 100000 },
+          "current": { "total": 100000, "note": "shelved defence is not in {implemented} so does not participate" },
+          "target": { "total": 100000, "note": "shelved defence is not in {implemented, todo} so does not participate" }
+        },
+        "on_demand": {
+          "mc_add_d1_against_current": 90000,
+          "note": "current ∪ {D1}: factor = 1 - 0.9 = 0.1, ALE = 10000; 100000 - 10000 = 90000. Computed only when explicitly requested per §9.3; never part of a baseline total."
+        }
+      }
+    },
+
+    {
+      "name": "cost_benefit_three_buckets",
+      "description": "§10: three independent (risk, attack) pairs, each protected by exactly one implemented defence, so each defence's MC is isolated and easy to hand-check. One defence is priced, one is free (AC=0, both cost columns present and zero), one is unpriced (both cost columns NULL). Pins that the three buckets are kept separate, sorted differently, that CBR for the free bucket is never printed as infinity (represented here as null with cost_bucket='free', which the serializer renders as '—'), and that CBR for the unpriced bucket is null — not 0, not ∞ — and no cost is ever imputed.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [
+          { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 50000, "impact_level_code": null },
+          { "uuid": "R2", "impact_mode": "quantitative", "impact_amount": 40000, "impact_level_code": null },
+          { "uuid": "R3", "impact_mode": "quantitative", "impact_amount": 30000, "impact_level_code": null }
+        ],
+        "attacks": [
+          { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 1.0, "likelihood_level_code": null },
+          { "uuid": "A2", "likelihood_mode": "quantitative", "likelihood_amount": 1.0, "likelihood_level_code": null },
+          { "uuid": "A3", "likelihood_mode": "quantitative", "likelihood_amount": 1.0, "likelihood_level_code": null }
+        ],
+        "defences": [
+          { "uuid": "D_priced", "status": "implemented", "opex_annual_amount": 5000, "capex_amount": null },
+          { "uuid": "D_free", "status": "implemented", "opex_annual_amount": 0, "capex_amount": 0 },
+          { "uuid": "D_unpriced", "status": "implemented", "opex_annual_amount": null, "capex_amount": null }
+        ],
+        "risk_attack": [
+          { "risk_uuid": "R1", "attack_uuid": "A1" },
+          { "risk_uuid": "R2", "attack_uuid": "A2" },
+          { "risk_uuid": "R3", "attack_uuid": "A3" }
+        ],
+        "attack_defence": [
+          { "attack_uuid": "A1", "defence_uuid": "D_priced", "strength_mode": "quantitative", "strength_fraction": 0.5, "strength_level_code": null, "reduction_target": "likelihood" },
+          { "attack_uuid": "A2", "defence_uuid": "D_free", "strength_mode": "quantitative", "strength_fraction": 0.5, "strength_level_code": null, "reduction_target": "likelihood" },
+          { "attack_uuid": "A3", "defence_uuid": "D_unpriced", "strength_mode": "quantitative", "strength_fraction": 0.5, "strength_level_code": null, "reduction_target": "likelihood" }
+        ]
+      },
+      "expected": {
+        "baselines": {
+          "inherent": { "total": 120000 },
+          "current": { "total": 60000 }
+        },
+        "defence_rankings": {
+          "importance_against_current": [
+            { "defence_uuid": "D_priced", "mc": 25000 },
+            { "defence_uuid": "D_free", "mc": 20000 },
+            { "defence_uuid": "D_unpriced", "mc": 15000 }
+          ]
+        },
+        "cost_benefit": {
+          "priced": [
+            { "defence_uuid": "D_priced", "annual_cost": 5000, "cbr": 5.0, "rosi": 4.0, "net_benefit": 20000 }
+          ],
+          "free": [
+            { "defence_uuid": "D_free", "annual_cost": 0, "cbr": null, "cbr_display": "—", "net_benefit": 20000, "sort_key": "mc desc" }
+          ],
+          "unpriced": [
+            { "defence_uuid": "D_unpriced", "annual_cost": null, "cbr": null, "net_benefit": null, "sort_key": "mc desc" }
+          ]
+        }
+      }
+    },
+
+    {
+      "name": "empty_assessment",
+      "description": "Degenerate case: no risks, attacks, or defences at all. Every baseline totals 0, pairs_total is 0, and coverage adopts the vacuous-completeness convention documented in known_spec_discrepancies (coverage=1.0, is_partial=false) since the spec does not define 0/0.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [], "attacks": [], "defences": [], "risk_attack": [], "attack_defence": []
+      },
+      "expected": {
+        "baselines": { "inherent": { "total": 0 }, "current": { "total": 0 }, "target": { "total": 0 } },
+        "completeness": {
+          "pairs_total": 0, "pairs_valued": 0, "coverage": 1.0, "is_partial": false,
+          "risks_missing_impact": [], "attacks_missing_likelihood": [], "links_missing_strength": [],
+          "risks_without_attacks": [], "orphan_attacks": [], "orphan_defences": [], "shared_attacks": [], "implausible_strength": []
+        },
+        "warnings": []
+      }
+    },
+
+    {
+      "name": "risk_without_attacks",
+      "description": "§6.2 rule 4: a risk with zero attack links contributes 0 (correct — no identified path to the loss) but must be listed in risks_without_attacks and raise the risk_without_attacks warning. A second, fully-connected risk keeps the total non-trivial.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [
+          { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 75000, "impact_level_code": null, "note": "no attacks linked" },
+          { "uuid": "R2", "impact_mode": "quantitative", "impact_amount": 20000, "impact_level_code": null }
+        ],
+        "attacks": [ { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 0.5, "likelihood_level_code": null } ],
+        "defences": [],
+        "risk_attack": [ { "risk_uuid": "R2", "attack_uuid": "A1" } ],
+        "attack_defence": []
+      },
+      "expected": {
+        "baselines": {
+          "inherent": {
+            "total": 10000,
+            "risks": [ { "uuid": "R1", "ale": 0, "pairs_valued": 0, "pairs_total": 0 }, { "uuid": "R2", "ale": 10000, "pairs_valued": 1, "pairs_total": 1 } ]
+          }
+        },
+        "completeness": { "risks_without_attacks": ["R1"], "pairs_total": 1, "pairs_valued": 1, "coverage": 1.0 },
+        "warnings": [
+          { "code": "risk_without_attacks", "node_uuid": "R1", "message": "No attack paths identified — this risk contributes nothing to the total." }
+        ]
+      }
+    },
+
+    {
+      "name": "orphan_nodes",
+      "description": "§6.3: an attack with no risk link (orphan_attacks) and a defence with no attack link (orphan_defences, e.g. a catalogue/library item) are both informational, not errors, and contribute nothing to any total.",
+      "input": {
+        "assessment": { "currency": "EUR", "amortization_years": 3 },
+        "scales": { "impact": { "unit": "currency", "levels": [] }, "likelihood": { "unit": "rate_per_year", "levels": [] }, "strength": { "unit": "fraction", "levels": [] } },
+        "risks": [ { "uuid": "R1", "impact_mode": "quantitative", "impact_amount": 60000, "impact_level_code": null } ],
+        "attacks": [
+          { "uuid": "A1", "likelihood_mode": "quantitative", "likelihood_amount": 0.4, "likelihood_level_code": null },
+          { "uuid": "A2", "likelihood_mode": "quantitative", "likelihood_amount": 0.9, "likelihood_level_code": null, "note": "orphan: not linked to any risk" }
+        ],
+        "defences": [ { "uuid": "D1", "status": "implemented", "note": "orphan: not linked to any attack" } ],
+        "risk_attack": [ { "risk_uuid": "R1", "attack_uuid": "A1" } ],
+        "attack_defence": []
+      },
+      "expected": {
+        "baselines": { "inherent": { "total": 24000 }, "current": { "total": 24000 }, "target": { "total": 24000 } },
+        "completeness": { "orphan_attacks": ["A2"], "orphan_defences": ["D1"] }
+      }
+    }
+  ]
+}
