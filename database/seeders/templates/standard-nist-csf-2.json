@@ -1,0 +1,3224 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-nist-csf-2",
+  "root_uuid": "c8000000-0000-4000-8000-000000000001",
+  "title": "NIST Cybersecurity Framework (CSF) 2.0",
+  "description": "All six CSF 2.0 Functions (Govern, Identify, Protect, Detect, Respond, Recover) and their 106 Subcategories as defences set to todo, under the threats they address. The Risk Assessment Category, ID.RA, asks for what an assessment like this one records: threats, vulnerabilities, likelihoods and impacts, used to prioritise responses. Choose the outcomes you target with a CSF Profile and shelve the rest. Descriptions summarise NIST CSWP 29; they are not its text.",
+  "currency": "USD",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Governance",
+      "color": "#8B5CF6"
+    },
+    {
+      "name": "Data breach",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "Disruption",
+      "color": "#0EA5E9"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-unowned",
+      "uuid": "c8000000-0000-4000-8000-00000000006d",
+      "title": "Cybersecurity risk accepted without anyone deciding to",
+      "description": "Decisions about systems, suppliers and data are taken without knowing the cybersecurity risk they carry, so losses, contractual penalties and regulatory action follow from risks nobody chose to accept.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Governance"
+      ],
+      "attack_refs": [
+        "attack-governance",
+        "attack-unassessed",
+        "attack-supply-chain"
+      ]
+    },
+    {
+      "ref": "risk-data",
+      "uuid": "c8000000-0000-4000-8000-00000000006e",
+      "title": "Theft, exposure or corruption of data",
+      "description": "Confidential, personal or business-critical data is stolen, disclosed or altered, with notification, liability and reputational costs.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Data breach"
+      ],
+      "attack_refs": [
+        "attack-unknown-assets",
+        "attack-credentials",
+        "attack-phishing",
+        "attack-vulnerability",
+        "attack-data-exposure",
+        "attack-supply-chain",
+        "attack-physical",
+        "attack-undetected"
+      ]
+    },
+    {
+      "ref": "risk-disruption",
+      "uuid": "c8000000-0000-4000-8000-00000000006f",
+      "title": "Disruption of critical services and operations",
+      "description": "Systems the organization or its customers depend on stop or degrade, through attack or failure, for longer than the business can tolerate.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "severe"
+      },
+      "tags": [
+        "Disruption"
+      ],
+      "attack_refs": [
+        "attack-ransomware",
+        "attack-vulnerability",
+        "attack-supply-chain",
+        "attack-outage",
+        "attack-undetected",
+        "attack-response",
+        "attack-recovery"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-governance",
+      "uuid": "c8000000-0000-4000-8000-000000000070",
+      "title": "Nobody owns or steers cybersecurity risk",
+      "description": "Leadership has set no risk appetite, roles and policy are unclear, and nobody reviews whether the strategy works.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-oc-01",
+        "defence-gv-oc-02",
+        "defence-gv-oc-03",
+        "defence-gv-oc-04",
+        "defence-gv-rm-01",
+        "defence-gv-rm-02",
+        "defence-gv-rm-03",
+        "defence-gv-rm-04",
+        "defence-gv-rm-05",
+        "defence-gv-rm-07",
+        "defence-gv-rr-01",
+        "defence-gv-rr-02",
+        "defence-gv-rr-03",
+        "defence-gv-po-01",
+        "defence-gv-po-02",
+        "defence-gv-ov-01",
+        "defence-gv-ov-02",
+        "defence-gv-ov-03",
+        "defence-id-im-01",
+        "defence-id-im-03"
+      ]
+    },
+    {
+      "ref": "attack-unassessed",
+      "uuid": "c8000000-0000-4000-8000-000000000071",
+      "title": "Risks are not identified or assessed before they are taken",
+      "description": "Threats, vulnerabilities, likelihoods and impacts are not recorded, so responses are not prioritised and changes go ahead unassessed.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-rm-02",
+        "defence-gv-rm-04",
+        "defence-gv-rm-06",
+        "defence-gv-ov-02",
+        "defence-gv-sc-03",
+        "defence-id-am-05",
+        "defence-id-ra-02",
+        "defence-id-ra-03",
+        "defence-id-ra-04",
+        "defence-id-ra-05",
+        "defence-id-ra-06",
+        "defence-id-ra-07"
+      ]
+    },
+    {
+      "ref": "attack-unknown-assets",
+      "uuid": "c8000000-0000-4000-8000-000000000072",
+      "title": "Unknown or unmanaged assets are exploited",
+      "description": "Hardware, software, services or data the organization does not know it has go unpatched and unmonitored, and become the way in.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        }
+      ],
+      "defence_refs": [
+        "defence-id-am-01",
+        "defence-id-am-02",
+        "defence-id-am-03",
+        "defence-id-am-05",
+        "defence-id-am-07",
+        "defence-id-am-08"
+      ]
+    },
+    {
+      "ref": "attack-supply-chain",
+      "uuid": "c8000000-0000-4000-8000-000000000073",
+      "title": "Compromise or failure through a supplier",
+      "description": "A supplier, service provider or acquired product is compromised or fails, and the organization inherits the incident.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1195",
+          "title": "Supply Chain Compromise"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1199",
+          "title": "Trusted Relationship"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-oc-05",
+        "defence-gv-rm-05",
+        "defence-gv-sc-01",
+        "defence-gv-sc-02",
+        "defence-gv-sc-03",
+        "defence-gv-sc-04",
+        "defence-gv-sc-05",
+        "defence-gv-sc-06",
+        "defence-gv-sc-07",
+        "defence-gv-sc-08",
+        "defence-gv-sc-09",
+        "defence-gv-sc-10",
+        "defence-id-am-04",
+        "defence-id-ra-09",
+        "defence-id-ra-10",
+        "defence-de-cm-06"
+      ]
+    },
+    {
+      "ref": "attack-credentials",
+      "uuid": "c8000000-0000-4000-8000-000000000074",
+      "title": "Credential theft and unauthorized access",
+      "description": "Stolen, guessed or over-privileged accounts give an attacker access to systems and data.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1078",
+          "title": "Valid Accounts"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1110",
+          "title": "Brute Force"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-rr-04",
+        "defence-pr-aa-01",
+        "defence-pr-aa-02",
+        "defence-pr-aa-03",
+        "defence-pr-aa-04",
+        "defence-pr-aa-05",
+        "defence-pr-ir-01",
+        "defence-de-cm-03"
+      ]
+    },
+    {
+      "ref": "attack-phishing",
+      "uuid": "c8000000-0000-4000-8000-000000000075",
+      "title": "Phishing and social engineering of staff",
+      "description": "People are tricked into giving away credentials, running malware or making payments.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1566",
+          "title": "Phishing"
+        }
+      ],
+      "defence_refs": [
+        "defence-pr-aa-03",
+        "defence-pr-at-01",
+        "defence-pr-at-02",
+        "defence-pr-ps-05"
+      ]
+    },
+    {
+      "ref": "attack-vulnerability",
+      "uuid": "c8000000-0000-4000-8000-000000000076",
+      "title": "Exploitation of vulnerabilities and insecure configuration",
+      "description": "Unpatched software, insecure defaults or flaws in in-house code are exploited.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1190",
+          "title": "Exploit Public-Facing Application"
+        }
+      ],
+      "defence_refs": [
+        "defence-id-ra-01",
+        "defence-id-ra-07",
+        "defence-id-ra-08",
+        "defence-id-im-02",
+        "defence-pr-at-02",
+        "defence-pr-ps-01",
+        "defence-pr-ps-02",
+        "defence-pr-ps-03",
+        "defence-pr-ps-06"
+      ]
+    },
+    {
+      "ref": "attack-data-exposure",
+      "uuid": "c8000000-0000-4000-8000-000000000077",
+      "title": "Data exposed or exfiltrated",
+      "description": "Data at rest, in transit or in use is read or copied by someone who should not have it.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1567",
+          "title": "Exfiltration Over Web Service"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-sc-10",
+        "defence-id-am-03",
+        "defence-id-am-07",
+        "defence-pr-aa-05",
+        "defence-pr-ds-01",
+        "defence-pr-ds-02",
+        "defence-pr-ds-10"
+      ]
+    },
+    {
+      "ref": "attack-physical",
+      "uuid": "c8000000-0000-4000-8000-000000000078",
+      "title": "Physical access to facilities or equipment",
+      "description": "Someone gains physical access to premises, devices or media and tampers with or takes them.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-rr-04",
+        "defence-pr-aa-06",
+        "defence-pr-ds-01",
+        "defence-de-cm-02"
+      ]
+    },
+    {
+      "ref": "attack-ransomware",
+      "uuid": "c8000000-0000-4000-8000-000000000079",
+      "title": "Ransomware or destructive malware",
+      "description": "Malware encrypts or destroys systems and data and halts operations.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1486",
+          "title": "Data Encrypted for Impact"
+        }
+      ],
+      "defence_refs": [
+        "defence-pr-ds-11",
+        "defence-pr-ps-02",
+        "defence-pr-ps-05",
+        "defence-pr-ir-01",
+        "defence-pr-ir-03",
+        "defence-de-cm-09",
+        "defence-rs-mi-01",
+        "defence-rc-rp-03",
+        "defence-insurance"
+      ]
+    },
+    {
+      "ref": "attack-outage",
+      "uuid": "c8000000-0000-4000-8000-00000000007a",
+      "title": "Infrastructure failure, overload or environmental event",
+      "description": "Power, hardware, capacity or a fire or flood takes systems down without any attacker.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "unlikely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-oc-04",
+        "defence-pr-ps-03",
+        "defence-pr-ir-02",
+        "defence-pr-ir-03",
+        "defence-pr-ir-04"
+      ]
+    },
+    {
+      "ref": "attack-undetected",
+      "uuid": "c8000000-0000-4000-8000-00000000007b",
+      "title": "Attacker activity goes undetected",
+      "description": "Nothing is logged or watched closely enough to notice an intrusion until its damage is done.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        }
+      ],
+      "defence_refs": [
+        "defence-id-ra-02",
+        "defence-pr-ps-04",
+        "defence-de-cm-01",
+        "defence-de-cm-03",
+        "defence-de-cm-06",
+        "defence-de-cm-09",
+        "defence-de-ae-02",
+        "defence-de-ae-03",
+        "defence-de-ae-06",
+        "defence-de-ae-07"
+      ]
+    },
+    {
+      "ref": "attack-response",
+      "uuid": "c8000000-0000-4000-8000-00000000007c",
+      "title": "An incident is handled poorly and escalates",
+      "description": "An incident is not triaged, contained or communicated in time, so it spreads and its cost grows.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        }
+      ],
+      "defence_refs": [
+        "defence-gv-sc-08",
+        "defence-id-im-02",
+        "defence-id-im-04",
+        "defence-de-ae-04",
+        "defence-de-ae-08",
+        "defence-rs-ma-01",
+        "defence-rs-ma-02",
+        "defence-rs-ma-03",
+        "defence-rs-ma-04",
+        "defence-rs-an-03",
+        "defence-rs-an-06",
+        "defence-rs-an-07",
+        "defence-rs-an-08",
+        "defence-rs-co-02",
+        "defence-rs-co-03",
+        "defence-rs-mi-01",
+        "defence-rs-mi-02"
+      ]
+    },
+    {
+      "ref": "attack-recovery",
+      "uuid": "c8000000-0000-4000-8000-00000000007d",
+      "title": "Recovery fails or takes too long",
+      "description": "Backups are missing or tainted and there is no tested way back to normal operation.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://www.nist.gov/cyberframework",
+          "title": "NIST Cybersecurity Framework 2.0"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1490",
+          "title": "Inhibit System Recovery"
+        }
+      ],
+      "defence_refs": [
+        "defence-id-im-04",
+        "defence-pr-ds-11",
+        "defence-rs-ma-05",
+        "defence-rc-rp-01",
+        "defence-rc-rp-02",
+        "defence-rc-rp-03",
+        "defence-rc-rp-04",
+        "defence-rc-rp-05",
+        "defence-rc-rp-06",
+        "defence-rc-co-03",
+        "defence-rc-co-04",
+        "defence-insurance"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-gv-oc-01",
+      "uuid": "c8000000-0000-4000-8000-000000000002",
+      "title": "GV.OC-01 Mission informs cybersecurity risk management",
+      "description": "Risk decisions start from what the organization exists to do, so protection follows what matters to the mission.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OC-01"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-oc-02",
+      "uuid": "c8000000-0000-4000-8000-000000000003",
+      "title": "GV.OC-02 Stakeholder needs and expectations understood",
+      "description": "The cybersecurity expectations of customers, staff, owners, regulators and partners are known and taken into account.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OC-02"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-oc-03",
+      "uuid": "c8000000-0000-4000-8000-000000000004",
+      "title": "GV.OC-03 Legal, regulatory and contractual requirements managed",
+      "description": "Obligations on cybersecurity, privacy and civil liberties are identified, tracked and met.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OC-03"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-oc-04",
+      "uuid": "c8000000-0000-4000-8000-000000000005",
+      "title": "GV.OC-04 What others depend on from us is understood",
+      "description": "The objectives, capabilities and services customers and partners rely on are known and communicated, so their protection is prioritised.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OC-04"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-oc-05",
+      "uuid": "c8000000-0000-4000-8000-000000000006",
+      "title": "GV.OC-05 What we depend on is understood",
+      "description": "The outcomes, capabilities and services the organization itself depends on, including from suppliers, are known and communicated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OC-05"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rm-01",
+      "uuid": "c8000000-0000-4000-8000-000000000007",
+      "title": "GV.RM-01 Risk management objectives agreed",
+      "description": "Stakeholders agree what cybersecurity risk management is meant to achieve.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RM-01"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rm-02",
+      "uuid": "c8000000-0000-4000-8000-000000000008",
+      "title": "GV.RM-02 Risk appetite and tolerance stated",
+      "description": "How much cybersecurity risk the organization will accept is written down, communicated and kept current.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RM-02"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rm-03",
+      "uuid": "c8000000-0000-4000-8000-000000000009",
+      "title": "GV.RM-03 Cybersecurity part of enterprise risk management",
+      "description": "Cybersecurity risks and their outcomes are handled in the same enterprise risk process as other risks.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RM-03"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rm-04",
+      "uuid": "c8000000-0000-4000-8000-00000000000a",
+      "title": "GV.RM-04 Risk response options set out",
+      "description": "The strategy says which responses (mitigate, transfer, avoid, accept) are appropriate and when.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RM-04"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rm-05",
+      "uuid": "c8000000-0000-4000-8000-00000000000b",
+      "title": "GV.RM-05 Lines of communication for cybersecurity risk",
+      "description": "Risks, including those from suppliers and third parties, have clear routes to the people who decide on them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RM-05"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rm-06",
+      "uuid": "c8000000-0000-4000-8000-00000000000c",
+      "title": "GV.RM-06 Standard method for calculating and prioritising risk",
+      "description": "One documented method is used to calculate, document, categorise and prioritise cybersecurity risks, so results can be compared.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RM-06"
+        }
+      ],
+      "links": {
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rm-07",
+      "uuid": "c8000000-0000-4000-8000-00000000000d",
+      "title": "GV.RM-07 Strategic opportunities considered",
+      "description": "Positive risks, opportunities a cybersecurity capability opens up, are part of the risk discussion.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RM-07"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rr-01",
+      "uuid": "c8000000-0000-4000-8000-00000000000e",
+      "title": "GV.RR-01 Leadership accountable for cybersecurity risk",
+      "description": "Leaders own cybersecurity risk and build a culture that is risk-aware, ethical and keeps improving.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RR-01"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rr-02",
+      "uuid": "c8000000-0000-4000-8000-00000000000f",
+      "title": "GV.RR-02 Roles, responsibilities and authorities established",
+      "description": "Who does what in cybersecurity risk management is defined, communicated, understood and enforced.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RR-02"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rr-03",
+      "uuid": "c8000000-0000-4000-8000-000000000010",
+      "title": "GV.RR-03 Resources match the risk strategy",
+      "description": "Budget, people and tools are allocated in proportion to the strategy, roles and policies.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RR-03"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-rr-04",
+      "uuid": "c8000000-0000-4000-8000-000000000011",
+      "title": "GV.RR-04 Cybersecurity in human resources practices",
+      "description": "Screening, onboarding, role changes and offboarding include cybersecurity.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.RR-04"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-po-01",
+      "uuid": "c8000000-0000-4000-8000-000000000012",
+      "title": "GV.PO-01 Cybersecurity policy established and enforced",
+      "description": "A policy for managing cybersecurity risk, based on context, strategy and priorities, is communicated and enforced.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.PO-01"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-po-02",
+      "uuid": "c8000000-0000-4000-8000-000000000013",
+      "title": "GV.PO-02 Policy reviewed and kept current",
+      "description": "The policy is updated as requirements, threats, technology and the mission change.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.PO-02"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-ov-01",
+      "uuid": "c8000000-0000-4000-8000-000000000014",
+      "title": "GV.OV-01 Strategy outcomes reviewed",
+      "description": "The results of the risk management strategy are reviewed to adjust its direction.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OV-01"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-ov-02",
+      "uuid": "c8000000-0000-4000-8000-000000000015",
+      "title": "GV.OV-02 Strategy coverage reviewed",
+      "description": "The strategy is checked against the organization's requirements and risks and adjusted where it falls short.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OV-02"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-ov-03",
+      "uuid": "c8000000-0000-4000-8000-000000000016",
+      "title": "GV.OV-03 Risk management performance evaluated",
+      "description": "How well cybersecurity risk management performs is measured and reviewed for needed changes.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.OV-03"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-01",
+      "uuid": "c8000000-0000-4000-8000-000000000017",
+      "title": "GV.SC-01 Supply chain risk management programme",
+      "description": "A programme with strategy, objectives, policies and processes for cybersecurity supply chain risk is agreed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-01"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-02",
+      "uuid": "c8000000-0000-4000-8000-000000000018",
+      "title": "GV.SC-02 Supplier roles and responsibilities coordinated",
+      "description": "Cybersecurity roles for suppliers, customers and partners are set and coordinated inside and outside the organization.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-02"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-03",
+      "uuid": "c8000000-0000-4000-8000-000000000019",
+      "title": "GV.SC-03 Supply chain risk integrated into risk management",
+      "description": "Supply chain risk is part of cybersecurity and enterprise risk management, risk assessment and improvement.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-03"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-04",
+      "uuid": "c8000000-0000-4000-8000-00000000001a",
+      "title": "GV.SC-04 Suppliers known and prioritised by criticality",
+      "description": "Every supplier is known and ranked by how much the organization depends on it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-04"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-05",
+      "uuid": "c8000000-0000-4000-8000-00000000001b",
+      "title": "GV.SC-05 Cybersecurity requirements in supplier contracts",
+      "description": "Requirements addressing supply chain risk are prioritised and written into contracts and agreements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-05"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-06",
+      "uuid": "c8000000-0000-4000-8000-00000000001c",
+      "title": "GV.SC-06 Due diligence before engaging a supplier",
+      "description": "Planning and due diligence reduce risk before a supplier or third-party relationship begins.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-06"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-07",
+      "uuid": "c8000000-0000-4000-8000-00000000001d",
+      "title": "GV.SC-07 Supplier risk managed through the relationship",
+      "description": "Risks from a supplier and its products and services are recorded, assessed, responded to and monitored for as long as the relationship lasts.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-07"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-08",
+      "uuid": "c8000000-0000-4000-8000-00000000001e",
+      "title": "GV.SC-08 Suppliers included in incident planning",
+      "description": "Relevant suppliers take part in incident planning, response and recovery.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-08"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-09",
+      "uuid": "c8000000-0000-4000-8000-00000000001f",
+      "title": "GV.SC-09 Supply chain practices monitored across the life cycle",
+      "description": "Supply chain security practices are part of the risk programmes and their performance is tracked through the product and service life cycle.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-09"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-gv-sc-10",
+      "uuid": "c8000000-0000-4000-8000-000000000020",
+      "title": "GV.SC-10 Provisions for after a supplier relationship ends",
+      "description": "Plans cover what happens when a partnership or service ends: access removed, data returned or destroyed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:GV.SC-10"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-am-01",
+      "uuid": "c8000000-0000-4000-8000-000000000021",
+      "title": "ID.AM-01 Hardware inventory maintained",
+      "description": "An up-to-date inventory of the hardware the organization manages.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.AM-01"
+        }
+      ],
+      "links": {
+        "attack-unknown-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-am-02",
+      "uuid": "c8000000-0000-4000-8000-000000000022",
+      "title": "ID.AM-02 Software, services and systems inventory maintained",
+      "description": "An up-to-date inventory of the software, services and systems the organization manages.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.AM-02"
+        }
+      ],
+      "links": {
+        "attack-unknown-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-am-03",
+      "uuid": "c8000000-0000-4000-8000-000000000023",
+      "title": "ID.AM-03 Network communication and data flows documented",
+      "description": "Authorised network communication and internal and external data flows are mapped and kept current.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.AM-03"
+        }
+      ],
+      "links": {
+        "attack-unknown-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-am-04",
+      "uuid": "c8000000-0000-4000-8000-000000000024",
+      "title": "ID.AM-04 Inventory of supplier services maintained",
+      "description": "The services suppliers provide are inventoried.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.AM-04"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-am-05",
+      "uuid": "c8000000-0000-4000-8000-000000000025",
+      "title": "ID.AM-05 Assets prioritised by criticality and impact",
+      "description": "Assets are ranked by classification, criticality, resources and impact on the mission.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.AM-05"
+        }
+      ],
+      "links": {
+        "attack-unknown-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-am-07",
+      "uuid": "c8000000-0000-4000-8000-000000000026",
+      "title": "ID.AM-07 Data inventory maintained",
+      "description": "Designated types of data, and their metadata, are inventoried.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.AM-07"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-unknown-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-am-08",
+      "uuid": "c8000000-0000-4000-8000-000000000027",
+      "title": "ID.AM-08 Assets managed throughout their life cycle",
+      "description": "Systems, hardware, software, services and data are managed from acquisition to disposal.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.AM-08"
+        }
+      ],
+      "links": {
+        "attack-unknown-assets": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-01",
+      "uuid": "c8000000-0000-4000-8000-000000000028",
+      "title": "ID.RA-01 Vulnerabilities identified, validated and recorded",
+      "description": "Vulnerabilities in assets are found, confirmed and recorded, by scanning, testing and review.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-01"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-02",
+      "uuid": "c8000000-0000-4000-8000-000000000029",
+      "title": "ID.RA-02 Threat intelligence received",
+      "description": "Cyber threat intelligence comes in from information-sharing forums and sources.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-02"
+        }
+      ],
+      "links": {
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-03",
+      "uuid": "c8000000-0000-4000-8000-00000000002a",
+      "title": "ID.RA-03 Internal and external threats identified and recorded",
+      "description": "The threats facing the organization are identified and recorded. In an assessment like this one, the attacks are that record.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-03"
+        }
+      ],
+      "links": {
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-04",
+      "uuid": "c8000000-0000-4000-8000-00000000002b",
+      "title": "ID.RA-04 Impacts and likelihoods identified and recorded",
+      "description": "How likely each threat is to exploit a vulnerability, and what it would cost, are estimated and recorded: here, the values on risks and attacks.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-04"
+        }
+      ],
+      "links": {
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-05",
+      "uuid": "c8000000-0000-4000-8000-00000000002c",
+      "title": "ID.RA-05 Inherent risk understood and used to prioritise",
+      "description": "Threats, vulnerabilities, likelihoods and impacts are combined into inherent risk, which ranks the responses.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-05"
+        }
+      ],
+      "links": {
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-06",
+      "uuid": "c8000000-0000-4000-8000-00000000002d",
+      "title": "ID.RA-06 Risk responses chosen, planned and tracked",
+      "description": "Responses are chosen, prioritised, planned, tracked and communicated: here, defences with their status.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-06"
+        }
+      ],
+      "links": {
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-07",
+      "uuid": "c8000000-0000-4000-8000-00000000002e",
+      "title": "ID.RA-07 Changes and exceptions assessed and tracked",
+      "description": "Changes and exceptions are assessed for their risk impact, recorded and tracked.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-07"
+        }
+      ],
+      "links": {
+        "attack-unassessed": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-08",
+      "uuid": "c8000000-0000-4000-8000-00000000002f",
+      "title": "ID.RA-08 Vulnerability disclosure process",
+      "description": "There is a process to receive, analyse and respond to vulnerabilities reported by others.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-08"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-09",
+      "uuid": "c8000000-0000-4000-8000-000000000030",
+      "title": "ID.RA-09 Hardware and software checked before use",
+      "description": "The authenticity and integrity of hardware and software are assessed before they are acquired and used.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-09"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-ra-10",
+      "uuid": "c8000000-0000-4000-8000-000000000031",
+      "title": "ID.RA-10 Critical suppliers assessed before acquisition",
+      "description": "Critical suppliers are assessed before the organization commits to them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.RA-10"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-im-01",
+      "uuid": "c8000000-0000-4000-8000-000000000032",
+      "title": "ID.IM-01 Improvements identified from evaluations",
+      "description": "Audits, assessments and reviews lead to recorded improvements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.IM-01"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-im-02",
+      "uuid": "c8000000-0000-4000-8000-000000000033",
+      "title": "ID.IM-02 Improvements identified from tests and exercises",
+      "description": "Security tests and exercises, including with suppliers, lead to recorded improvements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.IM-02"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-im-03",
+      "uuid": "c8000000-0000-4000-8000-000000000034",
+      "title": "ID.IM-03 Improvements identified from operations",
+      "description": "Running processes and activities day to day surfaces improvements that are acted on.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.IM-03"
+        }
+      ],
+      "links": {
+        "attack-governance": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-id-im-04",
+      "uuid": "c8000000-0000-4000-8000-000000000035",
+      "title": "ID.IM-04 Incident response and other plans maintained",
+      "description": "Incident response plans and other plans that affect operations are established, communicated, maintained and improved.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:ID.IM-04"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-aa-01",
+      "uuid": "c8000000-0000-4000-8000-000000000036",
+      "title": "PR.AA-01 Identities and credentials managed",
+      "description": "Identities and credentials for users, services and hardware are issued, managed and revoked by the organization.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AA-01"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-aa-02",
+      "uuid": "c8000000-0000-4000-8000-000000000037",
+      "title": "PR.AA-02 Identities proofed and bound to credentials",
+      "description": "Identities are verified and bound to credentials to a degree that suits the interaction.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AA-02"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-aa-03",
+      "uuid": "c8000000-0000-4000-8000-000000000038",
+      "title": "PR.AA-03 Users, services and hardware authenticated",
+      "description": "Everything that connects is authenticated, with multi-factor authentication where the risk calls for it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AA-03"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-aa-04",
+      "uuid": "c8000000-0000-4000-8000-000000000039",
+      "title": "PR.AA-04 Identity assertions protected and verified",
+      "description": "Tokens and other identity assertions, as in single sign-on, are protected, conveyed and verified.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AA-04"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-aa-05",
+      "uuid": "c8000000-0000-4000-8000-00000000003a",
+      "title": "PR.AA-05 Least privilege and separation of duties",
+      "description": "Access permissions are defined in policy, enforced and reviewed, on the principles of least privilege and separation of duties.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AA-05"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-aa-06",
+      "uuid": "c8000000-0000-4000-8000-00000000003b",
+      "title": "PR.AA-06 Physical access managed and monitored",
+      "description": "Physical access to assets is managed, monitored and enforced in proportion to the risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AA-06"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-at-01",
+      "uuid": "c8000000-0000-4000-8000-00000000003c",
+      "title": "PR.AT-01 Awareness and training for all personnel",
+      "description": "Everyone gets the awareness and training to do their work with cybersecurity risk in mind.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AT-01"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-at-02",
+      "uuid": "c8000000-0000-4000-8000-00000000003d",
+      "title": "PR.AT-02 Training for specialised roles",
+      "description": "People in specialised roles, such as administrators, developers and executives, get training for the risks of their role.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.AT-02"
+        }
+      ],
+      "links": {
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ds-01",
+      "uuid": "c8000000-0000-4000-8000-00000000003e",
+      "title": "PR.DS-01 Data at rest protected",
+      "description": "Stored data is protected, for example by encryption and integrity checks.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.DS-01"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ds-02",
+      "uuid": "c8000000-0000-4000-8000-00000000003f",
+      "title": "PR.DS-02 Data in transit protected",
+      "description": "Data moving over networks is protected, for example by encryption.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.DS-02"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ds-10",
+      "uuid": "c8000000-0000-4000-8000-000000000040",
+      "title": "PR.DS-10 Data in use protected",
+      "description": "Data being processed is protected, for example by isolation and access control in memory.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.DS-10"
+        }
+      ],
+      "links": {
+        "attack-data-exposure": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ds-11",
+      "uuid": "c8000000-0000-4000-8000-000000000041",
+      "title": "PR.DS-11 Backups created, protected and tested",
+      "description": "Backups are made, kept safe from tampering and tested by restoring them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.DS-11"
+        }
+      ],
+      "links": {
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ps-01",
+      "uuid": "c8000000-0000-4000-8000-000000000042",
+      "title": "PR.PS-01 Configuration management",
+      "description": "Secure configuration baselines are set, applied and kept under change control.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.PS-01"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ps-02",
+      "uuid": "c8000000-0000-4000-8000-000000000043",
+      "title": "PR.PS-02 Software maintained, replaced and removed",
+      "description": "Software is patched, replaced and removed in proportion to the risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.PS-02"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ps-03",
+      "uuid": "c8000000-0000-4000-8000-000000000044",
+      "title": "PR.PS-03 Hardware maintained, replaced and removed",
+      "description": "Hardware is maintained, replaced and disposed of in proportion to the risk.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.PS-03"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ps-04",
+      "uuid": "c8000000-0000-4000-8000-000000000045",
+      "title": "PR.PS-04 Logs generated for continuous monitoring",
+      "description": "Systems produce log records and make them available for monitoring.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.PS-04"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ps-05",
+      "uuid": "c8000000-0000-4000-8000-000000000046",
+      "title": "PR.PS-05 Unauthorised software prevented",
+      "description": "Installing and running unauthorised software is prevented.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.PS-05"
+        }
+      ],
+      "links": {
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-phishing": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ps-06",
+      "uuid": "c8000000-0000-4000-8000-000000000047",
+      "title": "PR.PS-06 Secure software development",
+      "description": "Secure development practices are part of the software life cycle, and how well they work is monitored.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.PS-06"
+        }
+      ],
+      "links": {
+        "attack-vulnerability": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ir-01",
+      "uuid": "c8000000-0000-4000-8000-000000000048",
+      "title": "PR.IR-01 Networks protected from unauthorised access",
+      "description": "Networks and environments are segmented and protected from unauthorised logical access and use.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.IR-01"
+        }
+      ],
+      "links": {
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ir-02",
+      "uuid": "c8000000-0000-4000-8000-000000000049",
+      "title": "PR.IR-02 Assets protected from environmental threats",
+      "description": "Technology assets are protected from fire, flood, power loss and similar hazards.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.IR-02"
+        }
+      ],
+      "links": {
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ir-03",
+      "uuid": "c8000000-0000-4000-8000-00000000004a",
+      "title": "PR.IR-03 Resilience mechanisms in normal and adverse conditions",
+      "description": "Redundancy, failover and similar mechanisms meet the resilience requirements.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.IR-03"
+        }
+      ],
+      "links": {
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-pr-ir-04",
+      "uuid": "c8000000-0000-4000-8000-00000000004b",
+      "title": "PR.IR-04 Adequate capacity maintained",
+      "description": "Enough resource capacity is kept to ensure availability.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:PR.IR-04"
+        }
+      ],
+      "links": {
+        "attack-outage": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-cm-01",
+      "uuid": "c8000000-0000-4000-8000-00000000004c",
+      "title": "DE.CM-01 Networks monitored",
+      "description": "Networks and network services are monitored for potentially adverse events.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.CM-01"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-cm-02",
+      "uuid": "c8000000-0000-4000-8000-00000000004d",
+      "title": "DE.CM-02 Physical environment monitored",
+      "description": "The physical environment is monitored for potentially adverse events.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.CM-02"
+        }
+      ],
+      "links": {
+        "attack-physical": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-cm-03",
+      "uuid": "c8000000-0000-4000-8000-00000000004e",
+      "title": "DE.CM-03 Personnel activity and technology use monitored",
+      "description": "What people do and how technology is used are monitored for potentially adverse events.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.CM-03"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-credentials": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-cm-06",
+      "uuid": "c8000000-0000-4000-8000-00000000004f",
+      "title": "DE.CM-06 External service providers monitored",
+      "description": "The activities and services of external providers are monitored for potentially adverse events.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.CM-06"
+        }
+      ],
+      "links": {
+        "attack-supply-chain": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-cm-09",
+      "uuid": "c8000000-0000-4000-8000-000000000050",
+      "title": "DE.CM-09 Hardware, software and runtime monitored",
+      "description": "Computing hardware and software, runtime environments and their data are monitored for potentially adverse events.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.CM-09"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-ae-02",
+      "uuid": "c8000000-0000-4000-8000-000000000051",
+      "title": "DE.AE-02 Adverse events analysed",
+      "description": "Potentially adverse events are analysed to understand the activity behind them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.AE-02"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-ae-03",
+      "uuid": "c8000000-0000-4000-8000-000000000052",
+      "title": "DE.AE-03 Information correlated from multiple sources",
+      "description": "Events from different sources are correlated to reveal what no single source shows.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.AE-03"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-ae-04",
+      "uuid": "c8000000-0000-4000-8000-000000000053",
+      "title": "DE.AE-04 Impact and scope of adverse events understood",
+      "description": "The likely impact and scope of an adverse event are estimated.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.AE-04"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-ae-06",
+      "uuid": "c8000000-0000-4000-8000-000000000054",
+      "title": "DE.AE-06 Adverse event information shared with staff and tools",
+      "description": "Information on adverse events reaches the authorised people and tools that need it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.AE-06"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-ae-07",
+      "uuid": "c8000000-0000-4000-8000-000000000055",
+      "title": "DE.AE-07 Threat intelligence used in analysis",
+      "description": "Threat intelligence and other context are part of the analysis.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.AE-07"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-de-ae-08",
+      "uuid": "c8000000-0000-4000-8000-000000000056",
+      "title": "DE.AE-08 Incidents declared on defined criteria",
+      "description": "An incident is declared when adverse events meet criteria defined in advance.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:DE.AE-08"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-ma-01",
+      "uuid": "c8000000-0000-4000-8000-000000000057",
+      "title": "RS.MA-01 Incident response plan executed with third parties",
+      "description": "Once an incident is declared, the response plan is executed together with relevant third parties.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.MA-01"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-ma-02",
+      "uuid": "c8000000-0000-4000-8000-000000000058",
+      "title": "RS.MA-02 Incident reports triaged and validated",
+      "description": "Incident reports are triaged and confirmed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.MA-02"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-ma-03",
+      "uuid": "c8000000-0000-4000-8000-000000000059",
+      "title": "RS.MA-03 Incidents categorised and prioritised",
+      "description": "Incidents are categorised and prioritised so the worst are handled first.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.MA-03"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-ma-04",
+      "uuid": "c8000000-0000-4000-8000-00000000005a",
+      "title": "RS.MA-04 Incidents escalated as needed",
+      "description": "Incidents are escalated to the right level when they need to be.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.MA-04"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-ma-05",
+      "uuid": "c8000000-0000-4000-8000-00000000005b",
+      "title": "RS.MA-05 Criteria for starting recovery applied",
+      "description": "Recovery starts when the criteria for it are met, not by improvisation.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.MA-05"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-an-03",
+      "uuid": "c8000000-0000-4000-8000-00000000005c",
+      "title": "RS.AN-03 What happened and root cause established",
+      "description": "Analysis establishes what took place during the incident and its root cause.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.AN-03"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-an-06",
+      "uuid": "c8000000-0000-4000-8000-00000000005d",
+      "title": "RS.AN-06 Investigation actions recorded with integrity",
+      "description": "Actions taken during an investigation are recorded, and the records' integrity and provenance preserved.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.AN-06"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-an-07",
+      "uuid": "c8000000-0000-4000-8000-00000000005e",
+      "title": "RS.AN-07 Incident data collected with integrity",
+      "description": "Incident data and metadata are collected and their integrity and provenance preserved, for forensics.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.AN-07"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-an-08",
+      "uuid": "c8000000-0000-4000-8000-00000000005f",
+      "title": "RS.AN-08 Incident magnitude estimated and validated",
+      "description": "How large an incident is, is estimated and confirmed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.AN-08"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-co-02",
+      "uuid": "c8000000-0000-4000-8000-000000000060",
+      "title": "RS.CO-02 Stakeholders notified of incidents",
+      "description": "Internal and external stakeholders, including regulators where required, are notified of incidents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.CO-02"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-co-03",
+      "uuid": "c8000000-0000-4000-8000-000000000061",
+      "title": "RS.CO-03 Information shared with designated stakeholders",
+      "description": "Information about the incident is shared with the designated internal and external stakeholders.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.CO-03"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-mi-01",
+      "uuid": "c8000000-0000-4000-8000-000000000062",
+      "title": "RS.MI-01 Incidents contained",
+      "description": "Incidents are contained to stop them spreading.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.MI-01"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rs-mi-02",
+      "uuid": "c8000000-0000-4000-8000-000000000063",
+      "title": "RS.MI-02 Incidents eradicated",
+      "description": "The cause of the incident is removed from the environment.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RS.MI-02"
+        }
+      ],
+      "links": {
+        "attack-response": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-rp-01",
+      "uuid": "c8000000-0000-4000-8000-000000000064",
+      "title": "RC.RP-01 Recovery plan executed",
+      "description": "The recovery part of the incident response plan is executed once the response process starts it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.RP-01"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-rp-02",
+      "uuid": "c8000000-0000-4000-8000-000000000065",
+      "title": "RC.RP-02 Recovery actions selected and prioritised",
+      "description": "Recovery actions are selected, scoped, prioritised and carried out.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.RP-02"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-rp-03",
+      "uuid": "c8000000-0000-4000-8000-000000000066",
+      "title": "RC.RP-03 Backups verified before restoring",
+      "description": "The integrity of backups and other restoration assets is checked before they are used.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.RP-03"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-rp-04",
+      "uuid": "c8000000-0000-4000-8000-000000000067",
+      "title": "RC.RP-04 Post-incident operational norms set",
+      "description": "Critical mission functions and risk management shape what normal operation looks like after the incident.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.RP-04"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-rp-05",
+      "uuid": "c8000000-0000-4000-8000-000000000068",
+      "title": "RC.RP-05 Restored assets verified and services confirmed",
+      "description": "Restored assets are checked for integrity, services restored and normal operation confirmed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.RP-05"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-rp-06",
+      "uuid": "c8000000-0000-4000-8000-000000000069",
+      "title": "RC.RP-06 End of recovery declared and documented",
+      "description": "Recovery ends on defined criteria and its documentation is completed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.RP-06"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-co-03",
+      "uuid": "c8000000-0000-4000-8000-00000000006a",
+      "title": "RC.CO-03 Recovery progress communicated",
+      "description": "Progress in restoring operations is communicated to designated internal and external stakeholders.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.CO-03"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-rc-co-04",
+      "uuid": "c8000000-0000-4000-8000-00000000006b",
+      "title": "RC.CO-04 Public updates on recovery shared",
+      "description": "Public updates on recovery go out through approved methods and messaging.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CSF2:RC.CO-04"
+        }
+      ],
+      "links": {
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-insurance",
+      "uuid": "c8000000-0000-4000-8000-00000000006c",
+      "title": "Cyber insurance (risk transfer)",
+      "description": "A cyber policy covering incident response, restoration, business interruption and liability: one of the risk response options GV.RM-04 asks the strategy to set out. Insurers commonly ask for multi-factor authentication, tested backups and patching before they cover ransomware.",
+      "is_transfer": true,
+      "status": "todo",
+      "links": {
+        "attack-ransomware": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-recovery": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    }
+  ]
+}

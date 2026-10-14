@@ -30,6 +30,8 @@ function citingTemplates(): array
         'standard-nis2' => 'NIS2',
         'standard-soc2' => 'SOC2',
         'standard-cis-controls-v8' => 'CIS8',
+        'standard-nist-csf-2' => 'CSF2',
+        'standard-eu-cra' => 'CRA',
     ];
 }
 
@@ -52,6 +54,13 @@ function controlNamedBy(string $framework, string $title): ?string
         ],
         'CIS8' => [
             '/^(\d{1,2}\.\d{1,2}) /' => fn (array $m): string => $m[1],
+        ],
+        'CRA' => [
+            '/^Art\. (\d+)\((\d+)\) /' => fn (array $m): string => "ART.{$m[1]}({$m[2]})",
+            '/^Annex I Part (I|II)\((\d+)\)(?:\(([a-z])\))? /' => fn (array $m): string => "ANNEX.I.{$m[1]}({$m[2]})".(isset($m[3]) ? '('.strtoupper($m[3]).')' : ''),
+        ],
+        'CSF2' => [
+            '/^([A-Z]{2}\.[A-Z]{2}-\d{2}) /' => fn (array $m): string => $m[1],
         ],
     };
 
@@ -85,8 +94,8 @@ test('every standards-template defence cites exactly the control its title names
         $cited++;
     }
 
-    // Only the insurance transfers in CIS, GDPR and NIS2 name no control.
-    expect(count($fixture['defences']) - $cited)->toBe(in_array($key, ['standard-cis-controls-v8', 'standard-gdpr', 'standard-nis2'], true) ? 1 : 0);
+    // Only the insurance transfers in CIS, GDPR, NIS2 and CSF 2.0 name no control.
+    expect(count($fixture['defences']) - $cited)->toBe(in_array($key, ['standard-cis-controls-v8', 'standard-gdpr', 'standard-nis2', 'standard-nist-csf-2'], true) ? 1 : 0);
 })->with(fn (): array => array_map(null, array_keys(citingTemplates()), array_values(citingTemplates())));
 
 test('a seeded standards template carries its citations with the framework link', function () {

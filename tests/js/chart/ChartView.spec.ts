@@ -980,3 +980,23 @@ describe('W84: the chart baseline stays consistent across canvasStyle, scaledSiz
         expect(wrapper.find('.mx-auto').exists()).toBe(true);
     });
 });
+
+/**
+ * W105: the scroll container is the window's height, not the chart's. The
+ * template picker and the assistant's suggestions float below their card
+ * inside it and are clipped by it; with `max-h-` a chart one card tall left
+ * them a strip a few pixels high. jsdom has no layout, so this pins the
+ * class; e2e scenario 15 shows the picker fitting.
+ */
+describe('the scroll container (W105)', () => {
+    it('has a fixed viewport-bounded height, not a maximum', () => {
+        const { wrapper } = mountChart();
+        const classes = wrapper
+            .find('[role="tree"]')
+            .element.closest('.overflow-auto')!
+            .className.split(/\s+/);
+
+        expect(classes).toContain('h-[calc(100vh-13rem)]');
+        expect(classes.some((c) => c.startsWith('max-h-'))).toBe(false);
+    });
+});

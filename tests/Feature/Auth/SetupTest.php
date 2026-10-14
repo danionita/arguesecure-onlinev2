@@ -108,8 +108,8 @@ test('completing first-run setup leaves the instance with the bundled templates'
     expect(Assessment::query()->where('is_template', false)->exists())->toBeFalse();
     expect($templates->map(fn (Assessment $a) => $a->rootNode?->title)->filter()->count())
         ->toBe($templates->count());
-    // The demo, the four archetypes and the seven standards (2.5.1).
-    expect($templates)->toHaveCount(12);
+    // The demo, the four archetypes and the nine standards (2.5.1, W103).
+    expect($templates)->toHaveCount(14);
 
     // The ISO catalogue libraries are reference material too, and arrive
     // with the templates rather than with the demo.

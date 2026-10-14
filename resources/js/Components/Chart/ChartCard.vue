@@ -96,7 +96,7 @@ import {
     ASSESSMENT_STORE_KEY,
     type AttackDefenceLink,
 } from '@/stores/assessmentStore';
-import { computed, inject } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 
 const props = defineProps<{
     uuid: string;
@@ -244,6 +244,32 @@ const {
     store,
     computed(() => props.uuid),
     computed(() => node.value?.type),
+);
+
+/**
+ * W105: both panels float below the card inside the chart's scroll container,
+ * which clips them. Below the bottom tier of a chart taller than the window
+ * the panel would open out of sight, so it is scrolled into view when it
+ * appears and again when its content changes: the picker grows when its
+ * templates load and when one is chosen, the suggestions when the generation
+ * finishes. `nearest` moves nothing when the panel already fits.
+ */
+const assistantFloat = ref<HTMLElement | null>(null);
+const templateFloat = ref<HTMLElement | null>(null);
+
+function reveal(panel: HTMLElement | null) {
+    panel?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+}
+
+watch(
+    [assistantFloat, assistantAsking, assistantError, assistantItems],
+    () => reveal(assistantFloat.value),
+    { flush: 'post' },
+);
+watch(
+    [templateFloat, templateLoading, templateUuid, templateItems],
+    () => reveal(templateFloat.value),
+    { flush: 'post' },
 );
 
 const STATUS_ICONS: Record<
@@ -651,6 +677,7 @@ const tosBar = computed(() => {
              card — the hover panel above may already be hidden by then. -->
         <div
             v-if="assistantAsking || assistantError || assistantItems"
+            ref="assistantFloat"
             class="border-border-subtle bg-surface-1 absolute top-full left-0 z-20 mt-1 w-64 rounded border p-2 shadow-md"
         >
             <AssistantPanel
@@ -674,6 +701,7 @@ const tosBar = computed(() => {
              assistant panel, and is wider because a control's title is. -->
         <div
             v-if="templateOpen"
+            ref="templateFloat"
             class="absolute top-full left-0 z-20 mt-1 w-96 shadow-md"
             @click.stop
             @dblclick.stop

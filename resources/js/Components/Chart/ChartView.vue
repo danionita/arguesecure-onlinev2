@@ -166,10 +166,19 @@ defineExpose({ fitToWidth });
              in to read a dense branch, and refusing to scroll to the bottom
              tier makes zooming in useless. Both axes, with a viewport-bounded
              height so the scrolling happens here rather than dragging the
-             whole page down. -->
+             whole page down.
+
+             W105: that height is fixed, not a maximum. The template picker
+             and the assistant's suggestions float below the card that opened
+             them, inside this container, which clips them. With `max-h` the
+             container was only as tall as the chart, so below a card with
+             nothing under it — a new assessment's root, a collapsed branch —
+             the panel opened into a strip a few pixels high. A fixed height
+             gives it the rest of the window; below the bottom tier of a tall
+             chart the panel scrolls itself into view (ChartCard.vue). -->
         <div
             ref="container"
-            class="max-h-[calc(100vh-13rem)] overflow-auto pb-4"
+            class="h-[calc(100vh-13rem)] overflow-auto pb-4"
             @wheel="view?.canvas.handleWheel"
         >
             <!-- A transform does not resize the layout box, so the scroll

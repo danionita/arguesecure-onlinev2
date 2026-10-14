@@ -65,9 +65,10 @@ final readonly class ControlId
     }
 
     /**
-     * `ART.21(2)(D)` reads as `Art. 21(2)(d)` and `ANNEX.III` as
-     * `Annex III`, the way the regulations number themselves. Every other
-     * control part is shown as stored.
+     * `ART.21(2)(D)` reads as `Art. 21(2)(d)`, `ANNEX.III` as `Annex III`
+     * and the CRA's `ANNEX.I.I(2)(A)` as `Annex I Part I(2)(a)`, the way
+     * the regulations number themselves. Every other control part is shown
+     * as stored.
      */
     public function label(): string
     {
@@ -76,6 +77,9 @@ final readonly class ControlId
         }
         if (preg_match('/^ANNEX\.([IVX]+)$/', $this->control, $m) === 1) {
             return 'Annex '.$m[1];
+        }
+        if (preg_match('/^ANNEX\.([IVX]+)\.([IVX]+)(.*)$/', $this->control, $m) === 1) {
+            return 'Annex '.$m[1].' Part '.$m[2].strtolower($m[3]);
         }
 
         return $this->control;

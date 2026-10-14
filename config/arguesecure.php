@@ -115,6 +115,17 @@ return [
                 'pattern' => '/^\d{1,2}(\.\d{1,2})?$/',
                 'url' => 'https://www.cisecurity.org/controls/v8-1',
             ],
+            'CSF2' => [
+                'label' => 'NIST CSF 2.0',
+                'pattern' => '/^(GV|ID|PR|DE|RS|RC)\.[A-Z]{2}(-\d{2})?$/',
+                'url' => 'https://www.nist.gov/cyberframework',
+            ],
+            'CRA' => [
+                'label' => 'EU Cyber Resilience Act',
+                // Annex I has two Parts, so `ANNEX.I.II(5)` is Part II point (5).
+                'pattern' => '/^(ART\.\d{1,2}(\(\d{1,2}\))?(\([A-Z]\))?|ANNEX\.[IVX]{1,4}|ANNEX\.I\.(I|II)\(\d{1,2}\)(\([A-Z]\))?)$/',
+                'url' => 'https://eur-lex.europa.eu/eli/reg/2024/2847/oj',
+            ],
         ],
     ],
 

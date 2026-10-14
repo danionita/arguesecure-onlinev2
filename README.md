@@ -65,6 +65,29 @@ The first build takes several minutes, because it installs the PHP and
 JavaScript dependencies and compiles the frontend. Later builds reuse most of
 that work.
 
+### Or use the prebuilt images
+
+Each release publishes the application and the assistant runtime as images on
+the GitHub Container Registry, so a deployment needs only two files and no
+build. In an empty directory:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/danionita/arguesecure-onlinev2/HEAD/docker-compose.yml
+curl -fsSL https://raw.githubusercontent.com/danionita/arguesecure-onlinev2/HEAD/.env.example -o .env
+sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$(openssl rand -hex 16)|; s|^DB_ROOT_PASSWORD=.*|DB_ROOT_PASSWORD=$(openssl rand -hex 16)|" .env
+docker compose up -d
+```
+
+The `sed` line sets the two database passwords, which `.env.example` leaves
+empty; the database will not start without them. A source build needs them
+set in `.env` too.
+
+`docker compose up` pulls `ghcr.io/danionita/arguesecure:latest`. Set
+`ARGUESECURE_VERSION` in `.env` to pin a release (`2.6.3`) or to follow a
+minor line (`2.6`); then `docker compose pull && docker compose up -d`
+upgrades it. The images are public and need no login. Everything below, from
+the first start on, is the same either way.
+
 On its first start the stack:
 
 - generates an `APP_KEY` and the three `REVERB_*` secrets and logs them
@@ -112,8 +135,10 @@ template.
 | GDPR | The controller and processor obligations of Regulation (EU) 2016/679 |
 | NIS2 | The obligations Directive (EU) 2022/2555 places on essential and important entities, including the Article 21 measures and incident reporting deadlines |
 | CIS Controls v8.1 | All 18 Controls and 153 Safeguards, with the 56 Implementation Group 1 safeguards marked |
+| NIST CSF 2.0 | All 106 Subcategories of the six Functions, Govern to Recover |
+| EU Cyber Resilience Act | The essential requirements of Annex I and the manufacturer obligations of Articles 13 and 14 of Regulation (EU) 2024/2847 |
 
-The seven standards templates are gap-analysis starting points. Each control
+The nine standards templates are gap-analysis starting points. Each control
 or obligation is a defence set to *todo*, placed under the threats it
 addresses. Mark what you already have as *implemented* and shelve what is out
 of scope. Their descriptions summarise the controls; they are not the text of
@@ -192,6 +217,8 @@ docker compose logs -f app
 # dump first (below). Add --profile assistant to both commands if you run
 # the assistant.
 git pull && docker compose build && docker compose up -d
+# With the prebuilt images, pull instead of building:
+docker compose pull && docker compose up -d
 
 # Stop, keeping the data in DATA_PATH
 docker compose down
@@ -248,7 +275,7 @@ running it.
 | Document | Covers |
 |---|---|
 | [`docs/PLAN.md`](docs/PLAN.md) | The rewrite plan, its decisions and its work packages |
-| [`docs/RELEASE-2.6.2.md`](docs/RELEASE-2.6.2.md) | The latest release notes, and what is still open |
+| [`docs/RELEASE-2.6.3.md`](docs/RELEASE-2.6.3.md) | The latest release notes, and what is still open |
 | [`docs/specs/schema.md`](docs/specs/schema.md) | Database, models and authorization |
 | [`docs/specs/calculation-engine.md`](docs/specs/calculation-engine.md) | The quantification model (normative) |
 | [`docs/specs/ui.md`](docs/specs/ui.md) | The editor, the keyboard map and reports |

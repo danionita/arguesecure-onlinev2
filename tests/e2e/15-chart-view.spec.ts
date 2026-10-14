@@ -214,6 +214,54 @@ test.describe('the chart view', () => {
         ).toHaveAttribute('aria-expanded', 'false');
     });
 
+    /**
+     * W105. The template picker and the assistant's suggestions float below
+     * the card that opened them, inside the chart's scroll container. That
+     * container used to be only as tall as the chart, so on a card with
+     * nothing beneath it — a new assessment's root, or any collapsed one —
+     * the panel opened into a strip a few pixels high and was cut off.
+     * Collapsing the root reproduces that on the shared fixture without
+     * creating an assessment later scenarios would then see in their lists.
+     */
+    test('a panel opened below a card with nothing beneath it is not cut off', async ({
+        page,
+    }) => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await login(page, adminEmail, adminPassword());
+        await openChart(page);
+
+        const root = page
+            .locator('li[role="treeitem"][aria-level="1"]')
+            .locator('div.group\\/chartcard')
+            .first();
+        await root.hover();
+        await root.getByRole('button', { name: 'Collapse' }).click();
+        await expect(
+            page.locator('li[role="treeitem"][aria-level="1"]'),
+        ).toHaveAttribute('aria-expanded', 'false');
+
+        await root.hover();
+        await root.getByTestId('add-from-template').click();
+
+        const picker = page.getByTestId('template-picker');
+        await expect(picker).toBeVisible();
+
+        // Visible in the DOM is not visible on screen: the container clips
+        // it. What the reader sees is the part of the picker inside the
+        // scroll container's box, and all of it must be.
+        const scroller = page
+            .getByRole('tree')
+            .locator(
+                'xpath=ancestor::div[contains(@class,"overflow-auto")][1]',
+            );
+        const pickerBox = (await picker.boundingBox())!;
+        const scrollerBox = (await scroller.boundingBox())!;
+        expect(pickerBox.height).toBeGreaterThan(100);
+        expect(pickerBox.y + pickerBox.height).toBeLessThanOrEqual(
+            scrollerBox.y + scrollerBox.height,
+        );
+    });
+
     test('remembers the chosen view on the next visit', async ({ page }) => {
         await login(page, adminEmail, adminPassword());
         const uuid = await openChart(page);
