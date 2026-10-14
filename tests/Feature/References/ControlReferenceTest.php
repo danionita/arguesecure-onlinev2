@@ -52,20 +52,32 @@ test('each configured framework accepts its own numbering and rejects another fr
     ['CIS8:4.1', true],
     ['CIS8:16.14', true],
     ['CIS8:A.1', false],
+    ['CSF2:PR.AA-01', true],
+    ['CSF2:ID.RA', true],             // a Category
+    ['CSF2:PR.AA-1', false],          // Subcategories are two digits
+    ['CSF2:XX.AA-01', false],         // not one of the six Functions
+    ['CRA:ART.13(2)', true],
+    ['CRA:ANNEX.I.I(2)(A)', true],
+    ['CRA:ANNEX.I.II(5)', true],
+    ['CRA:ANNEX.I.III(1)', false],    // Annex I has two Parts
+    ['CRA:ANNEX.I.I(2)(a)', false],
     ['ISO27001:A.5.23', false],        // the edition is part of the code
     ['A.5.23', false],
     ['ISO27001-2022:', false],
     [':A.5.23', false],
 ]);
 
-test('the framework list is exactly the seven the standards templates cover', function () {
+test('the framework list is exactly the nine the standards templates cover', function () {
     expect(ControlId::frameworks())
-        ->toBe(['ISO27001-2022', 'ISO42001-2023', 'EUAIACT', 'GDPR', 'NIS2', 'SOC2', 'CIS8']);
+        ->toBe(['ISO27001-2022', 'ISO42001-2023', 'EUAIACT', 'GDPR', 'NIS2', 'SOC2', 'CIS8', 'CSF2', 'CRA']);
 });
 
 test('a regulation\'s article reads the way the regulation writes it', function () {
     expect(ControlId::parse('NIS2:ART.21(2)(D)')?->label())->toBe('Art. 21(2)(d)')
         ->and(ControlId::parse('EUAIACT:ANNEX.III')?->label())->toBe('Annex III')
+        ->and(ControlId::parse('CRA:ANNEX.I.I(2)(A)')?->label())->toBe('Annex I Part I(2)(a)')
+        ->and(ControlId::parse('CRA:ANNEX.I.II(5)')?->label())->toBe('Annex I Part II(5)')
+        ->and(ControlId::parse('CSF2:PR.AA-01')?->label())->toBe('PR.AA-01')
         ->and(ControlId::parse('ISO27001-2022:A.5.23')?->label())->toBe('A.5.23')
         ->and(ControlId::parse('SOC2:CC6.1')?->label())->toBe('CC6.1');
 });
@@ -135,7 +147,7 @@ test('an unknown framework or a control its framework does not have is refused, 
         ->postJson(route('assessments.node-references.store', [$assessment, $defence]), [
             'kind' => 'control',
             'identifier' => $identifier,
-        ])->assertStatus(422)->assertJsonValidationErrors(['identifier' => 'ISO27001-2022, ISO42001-2023, EUAIACT, GDPR, NIS2, SOC2, CIS8']);
+        ])->assertStatus(422)->assertJsonValidationErrors(['identifier' => 'ISO27001-2022, ISO42001-2023, EUAIACT, GDPR, NIS2, SOC2, CIS8, CSF2, CRA']);
 
     expect(NodeReference::query()->count())->toBe(0);
 })->with(['PCI:1.1', 'ISO27001-2022:A.9.1', 'A.5.23']);

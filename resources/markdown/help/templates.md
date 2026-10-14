@@ -13,8 +13,9 @@ offered to everyone on the instance.
 - **Northwind Outfitters** — a demo web shop, part-way through an assessment.
 - **Four system archetypes** — a public web application, a multi-tenant
   SaaS, a corporate internal network and a connected home device.
-- **Seven standards** — ISO/IEC 27001:2022, ISO/IEC 42001:2023, the EU AI
-  Act, SOC 2, GDPR, NIS2 and the CIS Controls v8.1.
+- **Nine standards** — ISO/IEC 27001:2022, ISO/IEC 42001:2023, the EU AI
+  Act, SOC 2, GDPR, NIS2, the CIS Controls v8.1, the NIST Cybersecurity
+  Framework 2.0 and the EU Cyber Resilience Act.
 
 The standards templates are gap-analysis starting points: every control or
 obligation is a defence set to *todo*, under the threats it addresses. Mark
@@ -26,7 +27,7 @@ Each of those defences cites its control on the **References** tab
 (`ISO27001-2022:A.5.23`), and the report's **Control coverage** groups by
 it. On a defence of your own, choose **Control** and type a framework code
 (`ISO27001-2022`, `ISO42001-2023`, `EUAIACT`, `GDPR`, `NIS2`, `SOC2`,
-`CIS8`), a colon and the control. **Add from template** copies titles, not
+`CIS8`, `CSF2`, `CRA`), a colon and the control. **Add from template** copies titles, not
 citations.
 
 ## Taking parts of a template

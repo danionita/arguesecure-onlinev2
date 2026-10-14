@@ -444,6 +444,8 @@ The assessment as an **org chart**: Target of Assessment on top, then risks, att
 
 **Zoomed in, it scrolls both ways (W34, PLAN-2.2.md D9).** Horizontal-only held while the chart fitted the viewport, and stopped holding the moment someone zoomed in to read a dense branch — at which point refusing to scroll made the bottom tier unreachable and zoom itself pointless. The chart view also occupies the **full window width**: it is a canvas, not a document, and the centred 1280px column letterboxed it on exactly the wide screens it exists to exploit.
 
+**The chart's scroll container is the window's height, not the chart's (W105, PLAN-2.7.md).** The template picker and the assistant's suggestions float below the card that opened them, inside that container, which clips them. A container only as tall as the chart cut them off below any card with nothing beneath it — a new assessment's root, or a collapsed one. Its height is fixed at the viewport-bounded value instead, and a panel opened below the bottom tier of a taller chart scrolls itself into view.
+
 This is the default view because it is what the product is _for_. The list is better for reading; the chart is better for thinking, and ArgueSecure's claim is that a room of people can build a threat model together in an afternoon.
 
 **Layout is a pure function** — `composables/useTreeLayout.ts`, occurrences in, coordinates out, no DOM and no store. Bottom-up width accumulation: a leaf occupies one card, a parent occupies its children plus gaps or its own card, whichever is greater, and centres over that span; a collapsed occurrence is a leaf. A layout bug that can only be reproduced from a screenshot is a layout bug nobody fixes.

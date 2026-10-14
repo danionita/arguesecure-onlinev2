@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
 /**
  * Loads `database/seeders/templates/*.json` fixtures of `"kind":
  * "assessment"` — the demo web shop, the four system-archetype templates
- * (PLAN.md Phase 9 item 1) and the four `standard-*` templates (2.5.1) —
+ * (PLAN.md Phase 9 item 1) and the `standard-*` templates (2.5.1, W103) —
  * into real Assessment/Node rows.
  *
  * # Fixture schema (frozen for W22)

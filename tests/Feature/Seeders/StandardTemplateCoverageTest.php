@@ -157,3 +157,47 @@ test('CIS Controls v8.1 covers all 153 Safeguards and marks the 56 in IG1', func
     );
     expect($ig1)->toHaveCount(56);
 });
+
+test('NIST CSF 2.0 covers all 106 Subcategories of its six Functions', function () {
+    // NIST CSWP 29, Appendix A. Numbering has gaps where CSF 1.1
+    // Subcategories were withdrawn or moved (ID.AM-06, PR.DS-03 to -09, ...);
+    // the gaps are the publication's, not omissions.
+    $perCategory = [
+        'GV.OC' => [1, 2, 3, 4, 5], 'GV.RM' => [1, 2, 3, 4, 5, 6, 7], 'GV.RR' => [1, 2, 3, 4],
+        'GV.PO' => [1, 2], 'GV.OV' => [1, 2, 3], 'GV.SC' => range(1, 10),
+        'ID.AM' => [1, 2, 3, 4, 5, 7, 8], 'ID.RA' => range(1, 10), 'ID.IM' => [1, 2, 3, 4],
+        'PR.AA' => [1, 2, 3, 4, 5, 6], 'PR.AT' => [1, 2], 'PR.DS' => [1, 2, 10, 11],
+        'PR.PS' => [1, 2, 3, 4, 5, 6], 'PR.IR' => [1, 2, 3, 4],
+        'DE.CM' => [1, 2, 3, 6, 9], 'DE.AE' => [2, 3, 4, 6, 7, 8],
+        'RS.MA' => [1, 2, 3, 4, 5], 'RS.AN' => [3, 6, 7, 8], 'RS.CO' => [2, 3], 'RS.MI' => [1, 2],
+        'RC.RP' => [1, 2, 3, 4, 5, 6], 'RC.CO' => [3, 4],
+    ];
+    $subcategories = [];
+    foreach ($perCategory as $category => $numbers) {
+        foreach ($numbers as $n) {
+            $subcategories[] = sprintf('%s-%02d', $category, $n);
+        }
+    }
+    expect($subcategories)->toHaveCount(106);
+
+    expectEveryIdOnce('standard-nist-csf-2', $subcategories);
+});
+
+test('the Cyber Resilience Act covers every essential requirement and manufacturer obligation', function () {
+    // Annex I: Part I point (1) and points (2)(a) to (m), Part II points (1)
+    // to (8). Article 13: the manufacturer's obligations, leaving out (1)
+    // (Annex I itself), (10) and (11) (options, not obligations) and (24)
+    // and (25) (powers of the Commission and ADCO). Article 14: notifying
+    // exploited vulnerabilities (1) and severe incidents (3), with (2) and
+    // (4) as their deadlines, and informing users (8).
+    $obligations = [
+        ...array_map(fn (int $p): string => "Art. 13({$p})", [2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]),
+        'Art. 14(1)', 'Art. 14(3)', 'Art. 14(8)',
+        'Annex I Part I(1)',
+        ...array_map(fn (string $l): string => "Annex I Part I(2)({$l})", range('a', 'm')),
+        ...array_map(fn (int $p): string => "Annex I Part II({$p})", range(1, 8)),
+    ];
+    expect($obligations)->toHaveCount(45);
+
+    expectEveryIdOnce('standard-eu-cra', $obligations);
+});

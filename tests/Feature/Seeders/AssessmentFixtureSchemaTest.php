@@ -137,7 +137,7 @@ test('every standards template starts with every control todo', function () {
         }
     }
 
-    expect($standards)->toBe(7);
+    expect($standards)->toBe(9);
 });
 
 test('a malformed assessment fixture fails loudly instead of silently', function () {

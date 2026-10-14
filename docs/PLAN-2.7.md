@@ -45,6 +45,9 @@ before D59.
 | D64 | **A defence cites a framework control as a `node_references` row of kind `control`**, identifier `FRAMEWORK:CONTROL` (`ISO27001-2022:A.5.23`, `NIS2:ART.21(2)(D)`), from a closed list of frameworks in `config/arguesecure.php`, each with its own pattern for the control part and one link, to the framework rather than the control. **Defences only.** | The validate-and-link mechanism, the `(kind, identifier)` index ("which assessments cite A.5.23?"), the cloner and the fixtures already carry references; a new table would duplicate all four. A closed list is what makes the identifier structured: free text is what `other` already is. The link is to the framework because the standards' text is not free to deep-link and EUR-Lex anchors are not a stable contract. Defences only, because a control is what reduces a risk (CLAUDE.md), and so no citation can sit where the coverage view does not look. |
 | D65 | **The coverage view lists what the assessment cites, not what a framework contains.** Per framework, each cited control with the defences citing it and their status; a control reads *implemented* when any citing defence is, *planned* when none is but one is todo, *shelved* otherwise; a citing defence linked to no attack is flagged. It never says "compliant", and it lists no uncited control. | Listing uncited controls means shipping and maintaining every framework's catalogue, which the standards templates already are: an assessment started from one cites every control. Status, not strength or ALE: whether a control is in place is what a framework asks; how much it reduces is the rankings' job. The wording is PRODUCT.md's "not a compliance certificate". |
 | D66 | **`include_shelved` binds the coverage view too.** Off, shelved citing defences are left out, a control cited only by shelved ones is not listed, and a framework left with none is not listed either, but the section says how many controls were left out. | The option exists so rejected controls do not reach a document sent to an auditor unasked (`ReportSectionBuilder`). Dropping them silently would make an exclusion read as an omission; the count keeps the gap visible without listing it. |
+| D67 | **Two more frameworks join D64's closed list**: `CSF2` (NIST Cybersecurity Framework 2.0), pattern `PR.AA-01` (a Category, `PR.AA`, also matches), and `CRA` (Regulation (EU) 2024/2847), pattern `ART.13(2)` or `ANNEX.I.I(2)(A)` (Annex I, Part I, point (2)(a)), which `ControlId::label()` prints as `Annex I Part I(2)(a)`. DORA and PCI DSS, ranked third and fourth by the research, are not added: the owner dropped them. | Each requires a risk assessment that an ArgueSecure graph can evidence (`docs/research/framework-templates.md`): CSF 2.0's ID.RA Category, CRA Art. 13's product risk assessment. D64 makes adding one a config entry; the codes, like the seven before them, are never renamed, which is why both patterns were written from the source text. |
+| D68 | **Each template cites at the level an assessor checks, and no finer**: CSF 2.0, every Subcategory (106), never the Implementation Examples; CRA, Annex I's essential requirements and the manufacturer's obligations in Art. 13–14. | That is the size the existing templates already have (CIS 153 Safeguards, ISO 27001 93 controls), and what a workshop can argue through. Below it, CSF's Implementation Examples are how-to guidance an auditor's workflow uses, a non-goal (PRODUCT.md). |
+| D69 | **A template is written from its source text and ships only when that text was read**: NIST CSWP 29 for CSF 2.0, EUR-Lex for CRA, every description a summary in our own words. | A coverage test enumerates each framework's identifiers (`StandardTemplateCoverageTest`); enumerating them from memory would make the test assert a guess. Standards text is copyrighted (the research skill); CSWP 29 is a US government work, but the summary rule keeps every template alike. |
 
 ---
 
@@ -57,7 +60,9 @@ before D59.
 | **W100** (built; one step left) | The checks in a Code Project thread | `tools/dev/checks/**`, `docs/CLAUDE-PROJECT.md`, CLAUDE.md's comment on `checks.sh` |
 | **W101** ✓ (2.6.1) | Prebuilt images (D62, D63) | `.github/workflows/image.yml`, `docker-compose.yml` (the `image:` lines and the assistant's build and mounts), `docker/assistant/Dockerfile`, `.env.example` (the Image section), `docker-compose.e2e.yml` (its image tag), CLAUDE.md's throwaway-project sentence, `tools/spike/assistant/verify.sh` (the line reading the pin), `tests/Unit/Deployment/**`, `README.md` (Installing, Running it day to day), `docs/specs/deployment.md` (§2.4, §8 Upgrades, §9.3), this plan's W101 entry |
 | **W102** ✓ (2.6.2) | Control citations and a coverage view (D64–D66) | a new `node_references` migration, `config/arguesecure.php` (`references`), `app/Domain/References/**`, `app/Http/Requests/Assessment/StoreNodeReferenceRequest.php`, `database/seeders/TemplateAssessmentSeeder.php` and `Support/AssessmentFixtureValidator.php` (references), `database/seeders/templates/standard-*.json` (defence `references` only), `app/Domain/Reporting/ReportAssembler.php` (`controlCoverage`), `app/Domain/Reporting/Export/ReportSectionBuilder.php` (its section), `resources/js/Components/NodeModal/NodeModal.vue` (the tab's node type), `resources/js/Components/NodeModal/tabs/{references.ts,ReferencesTab.vue}`, `resources/js/Components/Report/{ControlCoverageSection.vue,ReportDocument.vue,types.ts}`, `resources/markdown/help/{building,reading-a-report,templates}.md`, `docs/specs/schema.md` §3.12, `docs/specs/ui.md` §9, their tests |
-| W103+ | To be planned from `docs/PRODUCT.md` and research | — |
+| **W103** ✓ (2.6.3) | Two more standards templates: NIST CSF 2.0 and the EU CRA (D67–D69) | `config/arguesecure.php` (two `frameworks` entries), `app/Domain/References/ControlId.php` (`label()`, for the CRA's Annex Parts), `database/seeders/templates/standard-{nist-csf-2,eu-cra}.json` (new), `database/seeders/TemplateAssessmentSeeder.php` (its docblock's list), `tests/Feature/Seeders/{StandardTemplateCoverageTest,StandardTemplateControlCitationTest}.php`, `tests/Feature/References/ControlReferenceTest.php`, `resources/markdown/help/templates.md`, `README.md` (the standards table), `docs/specs/schema.md` §3.12 (the `control` paragraph) |
+| **W105** ✓ (2.6.3) | Chart panels below a childless card are not cut off (bug fix) | `resources/js/Components/Chart/ChartView.vue` (the scroll container's height), `resources/js/Components/Chart/ChartCard.vue` (revealing its two floating panels), `tests/e2e/15-chart-view.spec.ts`, `tests/js/chart/**`, `docs/specs/ui.md` §3.7, this plan's W105 entry |
+| W104, W106+ | To be planned from `docs/PRODUCT.md` and research | — |
 
 ### W98 — Working agreements
 
@@ -270,3 +275,61 @@ reference, checked against the title by a test; a report of an assessment
 started from a standards template lists every cited control under its
 framework with the status D65 specifies, and honours `include_shelved` as
 D66 does; all seven checks pass.
+
+### W103 — Two more standards templates
+
+The seven standards templates leave out the most widely used voluntary
+framework and the regulation every maker of connected products sold in the EU
+now faces. Both require a risk assessment that a graph can evidence
+(`docs/research/framework-templates.md`). W103 adds them in W102's shape:
+every outcome or obligation a *todo* defence under the threats it addresses,
+citing its control (D64), granular as D68 says, written from the source text
+(D69). The owner asked for DORA and PCI DSS too, then dropped them.
+
+- **NIST CSF 2.0** (`standard-nist-csf-2`): the 106 Subcategories of all six
+  Functions as defences under three risks (risk taken unknowingly, data
+  compromise, disruption) and fourteen threats, plus a cyber-insurance
+  transfer. Its description says the ID.RA Category asks for what the
+  assessment itself records.
+- **EU Cyber Resilience Act** (`standard-eu-cra`): risks of a compromised
+  product, of a vulnerability left unhandled, and of enforcement; Annex I's
+  essential requirements and Art. 13–14's obligations (45) as defences; the
+  application dates in its description.
+- **Help, README, schema.md**: the new templates and codes.
+
+**Acceptance:** each new template passes `AssessmentFixtureValidator`; a
+`control` reference to each new framework is accepted with a well-formed
+control part and answers 422 with a malformed one; `StandardTemplateCoverageTest`
+finds every identifier D68 names exactly once in its template, enumerated from
+the source text; every defence title in a new template that names a control
+cites it (`StandardTemplateControlCitationTest`); all seven checks pass and
+the image boots.
+
+### W105 — Chart panels below a childless card are not cut off
+
+Reported by the owner with a screenshot: in the chart view, *Add from
+template* and *Suggest* on a card with nothing beneath it opened a panel that
+was cut off a few pixels below the card. Both panels float below their card
+(`absolute top-full`) inside the chart's scroll container, which clips them,
+and that container had `max-h-[calc(100vh-13rem)]` — so it was only as tall
+as the chart. A new assessment's root, or a chart collapsed to its root, left
+the panel a strip the height of the container's bottom padding. The list view
+is unaffected: its panels are in the flow.
+
+The fix keeps the panels where they are and gives them room: the container's
+height becomes fixed at the same viewport-bounded value (`h-` for `max-h-`),
+so a short chart's panel has the rest of the window; and below the bottom
+tier of a chart taller than the window, the card scrolls its panel into view
+(`block: 'nearest'`) when it opens and when its content grows. Anchoring the
+panels outside the container, as the parent counter's popover does (D31),
+was not chosen: the picker is a workspace that stays open while several items
+are taken, and an anchored panel would have to follow the card through
+scrolling and zoom by measurement. No decision is reopened; no new one is
+needed.
+
+**Acceptance:** at 1280×800, with the chart collapsed to its root, the
+template picker opened from the root is more than 100px tall and its bottom
+edge is inside the scroll container's box (e2e scenario 15); a floating panel
+is scrolled into view with `block: 'nearest'` when it opens (Vitest); the page
+still does not scroll vertically (scenario 15's existing test).
+

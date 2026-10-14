@@ -1,0 +1,1590 @@
+{
+  "schema_version": 1,
+  "kind": "assessment",
+  "key": "standard-eu-cra",
+  "root_uuid": "c9000000-0000-4000-8000-000000000001",
+  "title": "EU Cyber Resilience Act — Regulation (EU) 2024/2847",
+  "description": "What the Cyber Resilience Act asks of a manufacturer: the essential requirements of Annex I (product properties, vulnerability handling) and the obligations of Articles 13 and 14, as defences set to todo. Article 13(2) requires the risk assessment this template helps you document. Article 14 reporting applies from 11 September 2026, the rest from 11 December 2027. Importers and distributors are not covered. Descriptions are summaries, not legal text or legal advice.",
+  "currency": "EUR",
+  "amortization_years": 3,
+  "is_template": true,
+  "is_public": false,
+  "tags": [
+    {
+      "name": "Enforcement",
+      "color": "#DC2626"
+    },
+    {
+      "name": "Compromise",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "Availability",
+      "color": "#0EA5E9"
+    }
+  ],
+  "risks": [
+    {
+      "ref": "risk-compromise",
+      "uuid": "c9000000-0000-4000-8000-00000000002f",
+      "title": "Users compromised through the product",
+      "description": "An attacker uses the product to reach its users' data, devices or networks, and the manufacturer carries the liability, the recall and the loss of trust.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "major"
+      },
+      "tags": [
+        "Compromise"
+      ],
+      "attack_refs": [
+        "attack-known-vuln",
+        "attack-insecure-config",
+        "attack-access",
+        "attack-data",
+        "attack-component",
+        "attack-no-updates",
+        "attack-undetected"
+      ]
+    },
+    {
+      "ref": "risk-outage",
+      "uuid": "c9000000-0000-4000-8000-000000000030",
+      "title": "The product's essential functions stop working",
+      "description": "The product, or the services it connects to, become unavailable to users after an attack or a failed update.",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "moderate"
+      },
+      "tags": [
+        "Availability"
+      ],
+      "attack_refs": [
+        "attack-dos",
+        "attack-known-vuln",
+        "attack-component",
+        "attack-no-updates"
+      ]
+    },
+    {
+      "ref": "risk-enforcement",
+      "uuid": "c9000000-0000-4000-8000-000000000031",
+      "title": "Market surveillance action and fines",
+      "description": "A market surveillance authority finds the product or the manufacturer's processes non-conforming and orders corrective action, withdrawal or recall; breaches of the essential requirements or of Articles 13 and 14 can be fined up to EUR 15 million or 2.5% of worldwide annual turnover, whichever is higher (Art. 64(2)).",
+      "impact": {
+        "mode": "qualitative",
+        "level_code": "severe"
+      },
+      "tags": [
+        "Enforcement"
+      ],
+      "attack_refs": [
+        "attack-assessment-gap",
+        "attack-documentation-gap",
+        "attack-reporting",
+        "attack-user-info",
+        "attack-known-vuln",
+        "attack-no-updates"
+      ]
+    }
+  ],
+  "attacks": [
+    {
+      "ref": "attack-known-vuln",
+      "uuid": "c9000000-0000-4000-8000-000000000032",
+      "title": "Known exploitable vulnerabilities in the product",
+      "description": "The product ships with, or keeps, vulnerabilities that are known and can be exploited.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1190",
+          "title": "Exploit Public-Facing Application"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-13-2",
+        "defence-art-13-14",
+        "defence-art-13-21",
+        "defence-annex-i-i-1",
+        "defence-annex-i-i-2-a",
+        "defence-annex-i-i-2-c",
+        "defence-annex-i-i-2-k",
+        "defence-annex-i-ii-1",
+        "defence-annex-i-ii-2",
+        "defence-annex-i-ii-3",
+        "defence-annex-i-ii-5",
+        "defence-annex-i-ii-6"
+      ]
+    },
+    {
+      "ref": "attack-insecure-config",
+      "uuid": "c9000000-0000-4000-8000-000000000033",
+      "title": "Insecure defaults and exposed interfaces",
+      "description": "Default passwords, open services or unneeded interfaces give an attacker an easy way in.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-13-18",
+        "defence-annex-i-i-2-b",
+        "defence-annex-i-i-2-j"
+      ]
+    },
+    {
+      "ref": "attack-access",
+      "uuid": "c9000000-0000-4000-8000-000000000034",
+      "title": "Unauthorised access to the product",
+      "description": "Weak or missing authentication and access control let someone use or administer the product without permission.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1078",
+          "title": "Valid Accounts"
+        }
+      ],
+      "defence_refs": [
+        "defence-annex-i-i-2-d",
+        "defence-annex-i-i-2-j"
+      ]
+    },
+    {
+      "ref": "attack-data",
+      "uuid": "c9000000-0000-4000-8000-000000000035",
+      "title": "Data on or through the product read or altered",
+      "description": "Data, commands or configuration stored on, sent by or processed in the product are disclosed or tampered with.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-annex-i-i-2-e",
+        "defence-annex-i-i-2-f",
+        "defence-annex-i-i-2-g",
+        "defence-annex-i-i-2-m"
+      ]
+    },
+    {
+      "ref": "attack-dos",
+      "uuid": "c9000000-0000-4000-8000-000000000036",
+      "title": "Denial of service against or from the product",
+      "description": "The product is overwhelmed, or is used to overwhelm other devices and networks.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1498",
+          "title": "Network Denial of Service"
+        }
+      ],
+      "defence_refs": [
+        "defence-annex-i-i-2-h",
+        "defence-annex-i-i-2-i"
+      ]
+    },
+    {
+      "ref": "attack-component",
+      "uuid": "c9000000-0000-4000-8000-000000000037",
+      "title": "Vulnerable or compromised third-party component",
+      "description": "A library, open-source package or bought-in component brings a vulnerability or malicious code into the product.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "likely"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        },
+        {
+          "kind": "attack_technique",
+          "identifier": "T1195",
+          "title": "Supply Chain Compromise"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-13-5",
+        "defence-art-13-6",
+        "defence-annex-i-i-2-f",
+        "defence-annex-i-i-2-k",
+        "defence-annex-i-ii-1",
+        "defence-annex-i-ii-6",
+        "defence-annex-i-ii-7"
+      ]
+    },
+    {
+      "ref": "attack-no-updates",
+      "uuid": "c9000000-0000-4000-8000-000000000038",
+      "title": "Fixes do not reach users",
+      "description": "Vulnerabilities are found but not remediated, or updates are not distributed securely and promptly to the products in use.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-13-6",
+        "defence-art-13-8",
+        "defence-art-13-9",
+        "defence-art-13-17",
+        "defence-art-14-8",
+        "defence-annex-i-i-2-c",
+        "defence-annex-i-ii-2",
+        "defence-annex-i-ii-4",
+        "defence-annex-i-ii-7",
+        "defence-annex-i-ii-8"
+      ]
+    },
+    {
+      "ref": "attack-undetected",
+      "uuid": "c9000000-0000-4000-8000-000000000039",
+      "title": "Exploitation of the product goes unnoticed",
+      "description": "Nothing in the product records access or changes, so neither user nor manufacturer sees an attack in progress.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-annex-i-i-2-l"
+      ]
+    },
+    {
+      "ref": "attack-assessment-gap",
+      "uuid": "c9000000-0000-4000-8000-00000000003a",
+      "title": "Risk assessment missing, stale or not followed",
+      "description": "The cybersecurity risk assessment Article 13 requires was never done, is out of date, or did not shape the design.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-13-2",
+        "defence-art-13-3",
+        "defence-art-13-4",
+        "defence-art-13-7",
+        "defence-annex-i-i-1"
+      ]
+    },
+    {
+      "ref": "attack-documentation-gap",
+      "uuid": "c9000000-0000-4000-8000-00000000003b",
+      "title": "Conformity cannot be demonstrated",
+      "description": "Technical documentation, the conformity assessment, the EU declaration of conformity or the CE marking is missing or incomplete when an authority asks.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-13-3",
+        "defence-art-13-4",
+        "defence-art-13-7",
+        "defence-art-13-12",
+        "defence-art-13-13",
+        "defence-art-13-14",
+        "defence-art-13-15",
+        "defence-art-13-20",
+        "defence-art-13-21",
+        "defence-art-13-22"
+      ]
+    },
+    {
+      "ref": "attack-reporting",
+      "uuid": "c9000000-0000-4000-8000-00000000003c",
+      "title": "Exploited vulnerability or severe incident not reported in time",
+      "description": "The 24-hour, 72-hour and final-report deadlines to the CSIRT and ENISA are missed, and users are not told.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-14-1",
+        "defence-art-14-3",
+        "defence-art-14-8",
+        "defence-annex-i-ii-5"
+      ]
+    },
+    {
+      "ref": "attack-user-info",
+      "uuid": "c9000000-0000-4000-8000-00000000003d",
+      "title": "Users not equipped to use the product securely",
+      "description": "Users lack the instructions, contact point or end-of-support date they need, and run the product insecurely or past its support.",
+      "likelihood": {
+        "mode": "qualitative",
+        "level_code": "possible"
+      },
+      "references": [
+        {
+          "kind": "url",
+          "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "title": "Regulation (EU) 2024/2847 (Cyber Resilience Act)"
+        }
+      ],
+      "defence_refs": [
+        "defence-art-13-8",
+        "defence-art-13-16",
+        "defence-art-13-17",
+        "defence-art-13-18",
+        "defence-art-13-19",
+        "defence-art-13-23"
+      ]
+    }
+  ],
+  "defences": [
+    {
+      "ref": "defence-art-13-2",
+      "uuid": "c9000000-0000-4000-8000-000000000002",
+      "title": "Art. 13(2) Cybersecurity risk assessment shapes the whole life cycle",
+      "description": "The manufacturer assesses the product's cybersecurity risks and uses the result in planning, design, development, production, delivery and maintenance, to minimise risk, prevent incidents and limit their impact, including on users' health and safety. An assessment like this one is that analysis.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(2)"
+        }
+      ],
+      "links": {
+        "attack-assessment-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-3",
+      "uuid": "c9000000-0000-4000-8000-000000000003",
+      "title": "Art. 13(3) Risk assessment documented, mapped to Annex I and kept up to date",
+      "description": "The assessment is written down, analyses risk from the intended and foreseeable use and the operating environment, says which Annex I Part I(2) requirements apply and how, how Part I(1) and Part II are applied, and is updated through the support period.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(3)"
+        }
+      ],
+      "links": {
+        "attack-assessment-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-4",
+      "uuid": "c9000000-0000-4000-8000-000000000004",
+      "title": "Art. 13(4) Risk assessment in the technical documentation, exclusions justified",
+      "description": "The risk assessment goes into the technical documentation, with a clear justification for every essential requirement that does not apply.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(4)"
+        }
+      ],
+      "links": {
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-assessment-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-5",
+      "uuid": "c9000000-0000-4000-8000-000000000005",
+      "title": "Art. 13(5) Due diligence on third-party components",
+      "description": "Components sourced from others, free and open-source ones included, are checked so they do not compromise the product's cybersecurity.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(5)"
+        }
+      ],
+      "links": {
+        "attack-component": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-6",
+      "uuid": "c9000000-0000-4000-8000-000000000006",
+      "title": "Art. 13(6) Vulnerabilities in components reported upstream and fixed",
+      "description": "A vulnerability found in an integrated component is reported to whoever maintains it and remediated under Part II, sharing any fix the manufacturer develops.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(6)"
+        }
+      ],
+      "links": {
+        "attack-component": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-7",
+      "uuid": "c9000000-0000-4000-8000-000000000007",
+      "title": "Art. 13(7) Cybersecurity aspects systematically documented",
+      "description": "Relevant cybersecurity aspects, vulnerabilities learned of and information from third parties are recorded in proportion to the risk, and the risk assessment is updated with them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(7)"
+        }
+      ],
+      "links": {
+        "attack-assessment-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-8",
+      "uuid": "c9000000-0000-4000-8000-000000000008",
+      "title": "Art. 13(8) Support period set and vulnerabilities handled throughout it",
+      "description": "The support period reflects how long the product is expected to be used, at least five years unless its use is shorter; vulnerabilities are handled effectively for that period, and a coordinated vulnerability disclosure policy is in place.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(8)"
+        }
+      ],
+      "links": {
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-user-info": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-9",
+      "uuid": "c9000000-0000-4000-8000-000000000009",
+      "title": "Art. 13(9) Security updates kept available",
+      "description": "Each security update stays available for at least 10 years after it is issued, or for the rest of the support period if longer.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(9)"
+        }
+      ],
+      "links": {
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-12",
+      "uuid": "c9000000-0000-4000-8000-00000000000a",
+      "title": "Art. 13(12) Technical documentation, conformity assessment, declaration and CE marking",
+      "description": "Before the product is placed on the market, the technical documentation is drawn up, the conformity assessment procedure carried out, and the EU declaration of conformity issued and the CE marking affixed.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(12)"
+        }
+      ],
+      "links": {
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-13",
+      "uuid": "c9000000-0000-4000-8000-00000000000b",
+      "title": "Art. 13(13) Documentation and declaration kept for authorities",
+      "description": "The technical documentation and the EU declaration of conformity are kept for at least 10 years, or the support period if longer.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(13)"
+        }
+      ],
+      "links": {
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-14",
+      "uuid": "c9000000-0000-4000-8000-00000000000c",
+      "title": "Art. 13(14) Series production stays in conformity",
+      "description": "Procedures keep series-produced products conforming as the design, the production process or the referenced standards change.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(14)"
+        }
+      ],
+      "links": {
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-15",
+      "uuid": "c9000000-0000-4000-8000-00000000000d",
+      "title": "Art. 13(15) Product identifiable by type, batch or serial number",
+      "description": "Each product carries an element that identifies it, or the information is on its packaging or accompanying documents.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(15)"
+        }
+      ],
+      "links": {
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-16",
+      "uuid": "c9000000-0000-4000-8000-00000000000e",
+      "title": "Art. 13(16) Manufacturer's name and contact details shown",
+      "description": "The manufacturer's name or trademark and postal and digital contact details are on the product, its packaging or accompanying documents, and in the user information.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(16)"
+        }
+      ],
+      "links": {
+        "attack-user-info": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-17",
+      "uuid": "c9000000-0000-4000-8000-00000000000f",
+      "title": "Art. 13(17) Single point of contact for users",
+      "description": "An easily identifiable single point of contact lets users reach the manufacturer quickly, including to report vulnerabilities, by a means of their choice and not only automated tools.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(17)"
+        }
+      ],
+      "links": {
+        "attack-user-info": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-18",
+      "uuid": "c9000000-0000-4000-8000-000000000010",
+      "title": "Art. 13(18) Information and instructions to the user",
+      "description": "The product comes with the Annex II information and instructions for secure installation, operation and use, clear and in an understandable language, kept available for at least 10 years or the support period.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(18)"
+        }
+      ],
+      "links": {
+        "attack-user-info": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-insecure-config": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-19",
+      "uuid": "c9000000-0000-4000-8000-000000000011",
+      "title": "Art. 13(19) End of support date shown at purchase",
+      "description": "At least the month and year the support period ends are stated clearly at the time of purchase and, where feasible, users are notified when support has ended.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(19)"
+        }
+      ],
+      "links": {
+        "attack-user-info": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-20",
+      "uuid": "c9000000-0000-4000-8000-000000000012",
+      "title": "Art. 13(20) EU declaration of conformity provided with the product",
+      "description": "A copy of the EU declaration of conformity, or a simplified one with the address of the full text, accompanies the product.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(20)"
+        }
+      ],
+      "links": {
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-21",
+      "uuid": "c9000000-0000-4000-8000-000000000013",
+      "title": "Art. 13(21) Corrective action, withdrawal or recall",
+      "description": "A manufacturer that knows or suspects non-conformity immediately brings the product or its processes into conformity, or withdraws or recalls it.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(21)"
+        }
+      ],
+      "links": {
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-22",
+      "uuid": "c9000000-0000-4000-8000-000000000014",
+      "title": "Art. 13(22) Cooperation with market surveillance authorities",
+      "description": "On a reasoned request the manufacturer provides the information needed to show conformity and cooperates on measures to remove the risks.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(22)"
+        }
+      ],
+      "links": {
+        "attack-documentation-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-13-23",
+      "uuid": "c9000000-0000-4000-8000-000000000015",
+      "title": "Art. 13(23) Authorities and users told before operations cease",
+      "description": "A manufacturer that will stop operating, and so stop complying, tells the market surveillance authorities and, as far as possible, users beforehand.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.13(23)"
+        }
+      ],
+      "links": {
+        "attack-user-info": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-14-1",
+      "uuid": "c9000000-0000-4000-8000-000000000016",
+      "title": "Art. 14(1) Actively exploited vulnerabilities notified",
+      "description": "An actively exploited vulnerability is notified through the single reporting platform to the coordinating CSIRT and ENISA: an early warning within 24 hours, a notification within 72 hours and a final report within 14 days of a fix being available (Art. 14(2)). Applies from 11 September 2026.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.14(1)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-14-3",
+      "uuid": "c9000000-0000-4000-8000-000000000017",
+      "title": "Art. 14(3) Severe incidents notified",
+      "description": "A severe incident affecting the product's security is notified the same way: early warning within 24 hours, notification within 72 hours, final report within a month (Art. 14(4)). Applies from 11 September 2026.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.14(3)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-art-14-8",
+      "uuid": "c9000000-0000-4000-8000-000000000018",
+      "title": "Art. 14(8) Impacted users informed",
+      "description": "Users affected by an actively exploited vulnerability or severe incident are told about it and about the mitigations they can apply, where appropriate in a machine-readable format.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ART.14(8)"
+        }
+      ],
+      "links": {
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-1",
+      "uuid": "c9000000-0000-4000-8000-000000000019",
+      "title": "Annex I Part I(1) Appropriate level of cybersecurity based on the risks",
+      "description": "The product is designed, developed and produced to ensure a level of cybersecurity appropriate to the risks the assessment found.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(1)"
+        }
+      ],
+      "links": {
+        "attack-assessment-gap": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-a",
+      "uuid": "c9000000-0000-4000-8000-00000000001a",
+      "title": "Annex I Part I(2)(a) No known exploitable vulnerabilities at release",
+      "description": "The product is made available without vulnerabilities that are known and exploitable.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(A)"
+        }
+      ],
+      "links": {
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-b",
+      "uuid": "c9000000-0000-4000-8000-00000000001b",
+      "title": "Annex I Part I(2)(b) Secure by default, with reset",
+      "description": "The product ships with a secure default configuration, unless agreed otherwise for a tailor-made product, and can be reset to its original state.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(B)"
+        }
+      ],
+      "links": {
+        "attack-insecure-config": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-c",
+      "uuid": "c9000000-0000-4000-8000-00000000001c",
+      "title": "Annex I Part I(2)(c) Vulnerabilities addressable through security updates",
+      "description": "Security updates can fix vulnerabilities, automatically by default where applicable with an easy opt-out, with users notified and able to postpone them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(C)"
+        }
+      ],
+      "links": {
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-d",
+      "uuid": "c9000000-0000-4000-8000-00000000001d",
+      "title": "Annex I Part I(2)(d) Protection from unauthorised access",
+      "description": "Authentication, identity and access management protect the product, and possible unauthorised access is reported.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(D)"
+        }
+      ],
+      "links": {
+        "attack-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-e",
+      "uuid": "c9000000-0000-4000-8000-00000000001e",
+      "title": "Annex I Part I(2)(e) Confidentiality of data",
+      "description": "Stored, transmitted and processed data is kept confidential, for example by state-of-the-art encryption at rest and in transit.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(E)"
+        }
+      ],
+      "links": {
+        "attack-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-f",
+      "uuid": "c9000000-0000-4000-8000-00000000001f",
+      "title": "Annex I Part I(2)(f) Integrity of data, commands, programs and configuration",
+      "description": "Data, commands, programs and configuration are protected against unauthorised modification, and corruption is reported.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(F)"
+        }
+      ],
+      "links": {
+        "attack-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-component": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-g",
+      "uuid": "c9000000-0000-4000-8000-000000000020",
+      "title": "Annex I Part I(2)(g) Data minimisation",
+      "description": "The product processes only the data adequate, relevant and necessary for its intended purpose.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(G)"
+        }
+      ],
+      "links": {
+        "attack-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-h",
+      "uuid": "c9000000-0000-4000-8000-000000000021",
+      "title": "Annex I Part I(2)(h) Availability of essential functions",
+      "description": "Essential and basic functions stay available, also after an incident, through resilience and denial-of-service mitigation.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(H)"
+        }
+      ],
+      "links": {
+        "attack-dos": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-i",
+      "uuid": "c9000000-0000-4000-8000-000000000022",
+      "title": "Annex I Part I(2)(i) Minimal impact on other devices and networks",
+      "description": "The product and connected devices do as little harm as possible to the availability of services other devices or networks provide.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(I)"
+        }
+      ],
+      "links": {
+        "attack-dos": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-j",
+      "uuid": "c9000000-0000-4000-8000-000000000023",
+      "title": "Annex I Part I(2)(j) Limited attack surface",
+      "description": "The product is designed to limit its attack surfaces, external interfaces included.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(J)"
+        }
+      ],
+      "links": {
+        "attack-insecure-config": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-access": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-k",
+      "uuid": "c9000000-0000-4000-8000-000000000024",
+      "title": "Annex I Part I(2)(k) Exploitation mitigation",
+      "description": "Exploitation mitigation mechanisms and techniques reduce the impact of an incident.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(K)"
+        }
+      ],
+      "links": {
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        },
+        "attack-component": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "impact"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-l",
+      "uuid": "c9000000-0000-4000-8000-000000000025",
+      "title": "Annex I Part I(2)(l) Security logging and monitoring",
+      "description": "The product records and monitors relevant internal activity, such as access to or changes of data, services or functions, with an opt-out for the user.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(L)"
+        }
+      ],
+      "links": {
+        "attack-undetected": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-i-2-m",
+      "uuid": "c9000000-0000-4000-8000-000000000026",
+      "title": "Annex I Part I(2)(m) Secure deletion and transfer of user data",
+      "description": "Users can permanently and easily remove all data and settings, and any transfer of data to other products is secure.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.I(2)(M)"
+        }
+      ],
+      "links": {
+        "attack-data": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-1",
+      "uuid": "c9000000-0000-4000-8000-000000000027",
+      "title": "Annex I Part II(1) Vulnerabilities and components identified, with an SBOM",
+      "description": "Vulnerabilities and components are identified and documented, including a software bill of materials in a common machine-readable format covering at least top-level dependencies.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(1)"
+        }
+      ],
+      "links": {
+        "attack-component": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-2",
+      "uuid": "c9000000-0000-4000-8000-000000000028",
+      "title": "Annex I Part II(2) Vulnerabilities remediated without delay",
+      "description": "Vulnerabilities are addressed and remediated without delay, including through security updates, separate from functionality updates where technically feasible.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(2)"
+        }
+      ],
+      "links": {
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-3",
+      "uuid": "c9000000-0000-4000-8000-000000000029",
+      "title": "Annex I Part II(3) Regular security testing and review",
+      "description": "The product's security is tested and reviewed effectively and regularly.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(3)"
+        }
+      ],
+      "links": {
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-4",
+      "uuid": "c9000000-0000-4000-8000-00000000002a",
+      "title": "Annex I Part II(4) Fixed vulnerabilities publicly disclosed",
+      "description": "Once an update is available, information on the fixed vulnerabilities, their impact, severity and remediation is shared and published, delayed only in justified cases until users can patch.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(4)"
+        }
+      ],
+      "links": {
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-5",
+      "uuid": "c9000000-0000-4000-8000-00000000002b",
+      "title": "Annex I Part II(5) Coordinated vulnerability disclosure policy",
+      "description": "A coordinated vulnerability disclosure policy is in place and enforced.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(5)"
+        }
+      ],
+      "links": {
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-reporting": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-6",
+      "uuid": "c9000000-0000-4000-8000-00000000002c",
+      "title": "Annex I Part II(6) Vulnerability information sharing and a reporting address",
+      "description": "Sharing information about vulnerabilities in the product and its third-party components is facilitated, including a contact address for reporting them.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(6)"
+        }
+      ],
+      "links": {
+        "attack-component": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "limited"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-known-vuln": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-7",
+      "uuid": "c9000000-0000-4000-8000-00000000002d",
+      "title": "Annex I Part II(7) Secure update distribution",
+      "description": "Mechanisms distribute updates securely so vulnerabilities are fixed or mitigated in time, automatically for security updates where applicable.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(7)"
+        }
+      ],
+      "links": {
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "moderate"
+          },
+          "reduction_target": "likelihood"
+        },
+        "attack-component": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "weak"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    },
+    {
+      "ref": "defence-annex-i-ii-8",
+      "uuid": "c9000000-0000-4000-8000-00000000002e",
+      "title": "Annex I Part II(8) Security updates disseminated without delay and free of charge",
+      "description": "Security updates go out without delay and, unless agreed otherwise for a tailor-made product, free of charge, with advisory messages telling users what to do.",
+      "is_transfer": false,
+      "status": "todo",
+      "references": [
+        {
+          "kind": "control",
+          "identifier": "CRA:ANNEX.I.II(8)"
+        }
+      ],
+      "links": {
+        "attack-no-updates": {
+          "strength": {
+            "mode": "qualitative",
+            "level_code": "strong"
+          },
+          "reduction_target": "likelihood"
+        }
+      }
+    }
+  ]
+}

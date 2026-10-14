@@ -679,3 +679,91 @@ describe('ChartCard: add from a template (2.5.1)', () => {
         expect(wrapper.attributes('draggable')).toBe('true');
     });
 });
+
+/**
+ * W105: both floating panels sit inside the chart's scroll container, which
+ * clips them. Below the bottom tier of a chart taller than the window a panel
+ * opened out of sight, so the card scrolls it into view — when it appears,
+ * and again when its content grows. jsdom has no layout and no
+ * `scrollIntoView`, so this asserts the call and its arguments; that the
+ * panel then fits is e2e scenario 15's to show.
+ */
+describe('ChartCard: floating panels scroll into view (W105)', () => {
+    let scrolled: { el: Element; options: unknown }[];
+
+    beforeEach(() => {
+        scrolled = [];
+        Element.prototype.scrollIntoView = function (
+            this: Element,
+            options?: unknown,
+        ) {
+            scrolled.push({ el: this, options });
+        };
+    });
+
+    it('reveals the template picker when it opens and when a template is chosen', async () => {
+        resetTemplateOptionsCache();
+        (window as unknown as { axios: { get: unknown } }).axios.get = vi
+            .fn()
+            .mockImplementation((url: string) =>
+                Promise.resolve(
+                    url === '/templates.options'
+                        ? {
+                              data: {
+                                  templates: [
+                                      {
+                                          uuid: 'tpl1',
+                                          title: 'ISO/IEC 27001',
+                                          counts: {
+                                              risk: 3,
+                                              attack: 4,
+                                              defence: 93,
+                                          },
+                                      },
+                                  ],
+                              },
+                          }
+                        : { data: { nodes: [] } },
+                ),
+            );
+        const wrapper = mountCard(createAssessmentStore(makeInit()));
+
+        await wrapper
+            .find('[data-testid="add-from-template"]')
+            .trigger('click');
+        await flushPromises();
+
+        const panel = wrapper.find('[data-testid="template-picker"]').element
+            .parentElement!;
+        expect(scrolled.length).toBeGreaterThan(0);
+        expect(scrolled.every((s) => s.el === panel)).toBe(true);
+        expect(scrolled.at(-1)!.options).toEqual({
+            block: 'nearest',
+            inline: 'nearest',
+        });
+
+        const before = scrolled.length;
+        await wrapper.find('[data-testid="template-option"]').trigger('click');
+        await flushPromises();
+        expect(scrolled.length).toBeGreaterThan(before);
+        expect(scrolled.at(-1)!.el).toBe(panel);
+    });
+
+    it('reveals the suggestions panel when the suggestions arrive', async () => {
+        const store = createAssessmentStore(makeInit());
+        vi.spyOn(store, 'suggestChildren').mockResolvedValue({
+            childType: 'attack',
+            suggestions: [{ title: 'Phishing', description: null }],
+            cancelled: false,
+        });
+        const wrapper = mountCard(store);
+
+        await findAssistantButton(wrapper)?.trigger('click');
+        await flushPromises();
+
+        const panel = wrapper.find('[data-testid="suggestions-panel"]').element;
+        const last = scrolled.at(-1)!;
+        expect(last.el.contains(panel)).toBe(true);
+        expect(last.options).toEqual({ block: 'nearest', inline: 'nearest' });
+    });
+});

@@ -140,7 +140,7 @@ Each service keeps `build:` beside `image:`. Compose pulls an image it does not 
 
 Before anything is pushed, the workflow boots the new images from a directory holding nothing but `docker-compose.yml` and a `.env`, with `--pull never`, and requires `/up` and the setup screen to answer and `assistant-install list` to read the catalogue from inside the assistant image. That is the acceptance test for the whole arrangement, run on every release. `tests/Unit/Deployment/ComposeImageDeployTest.php` keeps the compose file from drifting between releases: every buildable service names an image, and no service bind-mounts a path from the checkout.
 
-The packages are **private**, and only the maintainer's deployments pull them: a host runs `docker login ghcr.io` once with a token scoped to `read:packages` only. Everyone else builds from source (README), and since Compose builds when the pull fails, the same compose file serves both. The workflow runs only in the private development repository (its job's `if:`); the public repository carries the same file, and there it does nothing, so a release tag pushed there can never write to these packages.
+The packages are **public** (decided 2026-10-12), so pulling needs no login. The workflow builds and boots the image in either repository but its Publish step runs only in the public one (`github.repository == 'danionita/arguesecure-onlinev2'`): its tree carries no agent instructions, and its release tags publish the images. Compose builds when a pull fails, so the same compose file serves a source build and an image-only deployment.
 
 ---
 

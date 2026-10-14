@@ -38,13 +38,9 @@ env:
 jobs:
   publish:
     name: Build, boot from the image alone, publish
-    # Only the private development repository publishes, to its private
-    # packages. The public repository carries this same file (CLAUDE.md, "Two
-    # repositories"), and a release tag pushed there must not build or write
-    # to the maintainer's images.
-    if: github.repository == 'danionita/arguesecure-online-v2'
     runs-on: ubuntu-latest
-    # The only job in this repository that writes anything, and only here.
+    # The only job in this repository that writes anything, and only in the
+    # Publish step, which runs in the public repository alone.
     permissions:
       contents: read
       packages: write
@@ -163,7 +159,11 @@ jobs:
           sudo rm -rf "$RUNNER_TEMP/deploy"
 
       - name: Publish
-        if: github.event_name != 'pull_request'
+        # Only the public repository publishes (decided 2026-10-12): its tree
+        # carries no agent instructions, and its release tags build the
+        # images. The private repository still builds and boots the image on
+        # pull requests and manual runs, so a break is caught before a release.
+        if: github.event_name != 'pull_request' && github.repository == 'danionita/arguesecure-onlinev2'
         env:
           IMAGE: ${{ steps.tags.outputs.image }}
           VERSION: ${{ steps.tags.outputs.version }}
