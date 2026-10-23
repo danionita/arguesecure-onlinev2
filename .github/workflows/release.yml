@@ -17,7 +17,8 @@ name: Release
 # for a release whose tag was cut from the wrong commit), or, started with
 # repoint_tag and repoint_sha, to point an existing tag at another commit of
 # main without a rebuild (after the history was rewritten), or, started with
-# notes_version, to rewrite the notes of an existing release. One mode per run.
+# notes_version, to set the notes of an existing tag's release (made if it has none).
+# One mode per run.
 on:
   workflow_dispatch:
     inputs:
@@ -34,7 +35,7 @@ on:
         type: string
         default: ""
       notes_version:
-        description: Only rewrite the notes of this existing release (say 2.6.3) from docs/RELEASE-<version>.md on main
+        description: Only set the notes of this tagged release (say 2.6.3) from docs/RELEASE-<version>.md on main, creating the release if the tag has none
         type: string
         default: ""
       move_tag:
@@ -178,14 +179,16 @@ jobs:
           gh release create "$TAG" --target "$SHA" --title "ArgueSecure $version" --notes-file "docs/RELEASE-$version.md" "$latest"
 
   notes:
-    name: Rewrite the notes of an existing release
+    name: Set the notes of a tagged release
     if: github.repository == 'danionita/arguesecure-onlinev2' && github.ref == 'refs/heads/main' && inputs.notes_version != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Edit the release
+        with:
+          fetch-depth: 0
+      - name: Edit or create the release
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.notes_version }}
@@ -196,4 +199,11 @@ jobs:
           [ -z "$REPOINT_TAG" ] && [ "$REFRESH" != true ] && [ "$MOVE" != true ] || { echo "one mode per run" >&2; exit 1; }
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "'$VERSION' is not x.y.z" >&2; exit 1; }
           [ -f "docs/RELEASE-$VERSION.md" ] || { echo "docs/RELEASE-$VERSION.md is missing" >&2; exit 1; }
-          gh release edit "v$VERSION" --notes-file "docs/RELEASE-$VERSION.md"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            gh release edit "v$VERSION" --notes-file "docs/RELEASE-$VERSION.md"
+          else
+            # The tag must already exist (--verify-tag): this mode never makes one.
+            latest=--latest=false
+            [ "$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n1)" = "v$VERSION" ] && latest=--latest
+            gh release create "v$VERSION" --verify-tag --title "ArgueSecure $VERSION" --notes-file "docs/RELEASE-$VERSION.md" "$latest"
+          fi
