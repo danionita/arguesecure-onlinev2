@@ -25,6 +25,7 @@ import Icon from '@/Components/UI/Icon.vue';
 import Toggle from '@/Components/UI/Toggle.vue';
 import Tooltip from '@/Components/UI/Tooltip.vue';
 import AdminLayout from '@/Pages/Admin/AdminLayout.vue';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, useForm } from '@inertiajs/vue3';
 
 /** What the runtime reports it loaded. `preset` is null for a custom file. */
@@ -60,6 +61,8 @@ const props = defineProps<{
 }>();
 
 const form = useForm({ ...props.settings });
+
+useUnsavedChanges(() => form.isDirty);
 
 function submit() {
     form.put(route('admin.assistant.update'));

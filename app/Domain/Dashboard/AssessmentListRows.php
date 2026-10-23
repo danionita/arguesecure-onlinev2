@@ -39,7 +39,6 @@ final class AssessmentListRows
             'title' => $assessment->title ?? 'Untitled assessment',
             'description' => $assessment->description,
             'is_public' => (bool) $assessment->is_public,
-            'is_template' => (bool) $assessment->is_template,
             // Names only; a per-assessment colour would make one list read as
             // fifteen unrelated palettes (W43 item 18).
             'tags' => $assessment->rootNode?->tags

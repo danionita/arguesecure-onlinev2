@@ -110,7 +110,7 @@ const approxProbability = computed(() => {
             v-if="isUncalibrated('likelihood')"
             class="text-status-todo-text bg-status-todo-bg border-status-todo-border rounded-md border px-2 py-1 text-xs"
         >
-            This assessment still uses the unmodified system likelihood scale.
+            This assessment still uses the unmodified shared likelihood bands.
         </p>
 
         <div v-if="(node.likelihood_mode ?? 'quantitative') === 'quantitative'">

@@ -29,6 +29,7 @@ class CsvUserImporter
      */
     public function parse(string $csv): array
     {
+        $csv = self::normalise($csv);
         $lines = preg_split('/\r\n|\r|\n/', trim($csv));
         $lines = array_values(array_filter($lines, fn (string $line): bool => trim($line) !== ''));
 
@@ -36,7 +37,9 @@ class CsvUserImporter
             return [];
         }
 
-        $header = str_getcsv(array_shift($lines));
+        $headerLine = array_shift($lines);
+        $delimiter = self::delimiterOf($headerLine);
+        $header = str_getcsv($headerLine, $delimiter);
         $normalizedHeader = array_map(
             fn (string $column): string => strtolower(trim($column)),
             $header,
@@ -55,7 +58,8 @@ class CsvUserImporter
                     rawName: '',
                     rawEmail: '',
                     admin: false,
-                    errors: ['CSV must have a header row containing "name" and "email" columns.'],
+                    errors: ['CSV must have a header row containing "name" and "email" columns'
+                        .' (columns read as separated by '.self::delimiterName($delimiter).').'],
                 ),
                 $lines,
                 array_keys($lines),
@@ -69,7 +73,7 @@ class CsvUserImporter
 
         foreach ($lines as $i => $line) {
             $lineNumber = $i + 2; // +1 for header, +1 for 1-indexing
-            $fields = str_getcsv($line);
+            $fields = str_getcsv($line, $delimiter);
 
             $errors = [];
 
@@ -152,6 +156,9 @@ class CsvUserImporter
                 $user->password = Hash::make($password);
                 $user->is_admin = $row->admin;
                 $user->is_active = true;
+                // W115: the credential sheet's password is one the admin
+                // hands over, so it is good for one sign-in (security.md §4).
+                $user->must_change_password = true;
                 $user->save();
 
                 $created[] = ['user' => $user, 'password' => $password];
@@ -159,6 +166,57 @@ class CsvUserImporter
 
             return $created;
         });
+    }
+
+    /**
+     * Turn what a spreadsheet saved into plain UTF-8 text (D90). Excel's "CSV
+     * UTF-8" starts with a byte-order mark, "Unicode Text" is UTF-16, and
+     * plain "CSV" is Windows-1252, which an Inertia response cannot carry
+     * (invalid UTF-8 fails json_encode). Idempotent: the preview sends the
+     * result back to the browser and the commit parses it again.
+     */
+    public static function normalise(string $csv): string
+    {
+        if (str_starts_with($csv, "\xFF\xFE")) {
+            $csv = mb_convert_encoding(substr($csv, 2), 'UTF-8', 'UTF-16LE');
+        } elseif (str_starts_with($csv, "\xFE\xFF")) {
+            $csv = mb_convert_encoding(substr($csv, 2), 'UTF-8', 'UTF-16BE');
+        } elseif (str_starts_with($csv, "\xEF\xBB\xBF")) {
+            $csv = substr($csv, 3);
+        }
+
+        if (! mb_check_encoding($csv, 'UTF-8')) {
+            $csv = mb_convert_encoding($csv, 'UTF-8', 'Windows-1252');
+        }
+
+        return $csv;
+    }
+
+    /**
+     * The delimiter is decided from the header line only: it names "name"
+     * and "email", so a wrong guess is caught by the header check rather than
+     * silently misreading data rows. A comma wins a tie.
+     */
+    private static function delimiterOf(string $headerLine): string
+    {
+        $best = ',';
+
+        foreach ([';', "\t"] as $candidate) {
+            if (substr_count($headerLine, $candidate) > substr_count($headerLine, $best)) {
+                $best = $candidate;
+            }
+        }
+
+        return $best;
+    }
+
+    private static function delimiterName(string $delimiter): string
+    {
+        return match ($delimiter) {
+            ';' => 'semicolons',
+            "\t" => 'tabs',
+            default => 'commas',
+        };
     }
 
     /**

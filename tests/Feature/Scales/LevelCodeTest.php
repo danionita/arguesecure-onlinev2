@@ -59,7 +59,7 @@ function codeTestBands(Assessment $assessment, string $kind): array
 function saveBands(User $actor, Assessment $assessment, string $kind, array $bands): TestResponse
 {
     return test()->actingAs($actor)
-        ->put(route('assessments.scales.update', [$assessment, $kind]), ['bands' => $bands]);
+        ->put(route('assessments.scales.update', $assessment), ['scales' => [$kind => ['bands' => $bands]]]);
 }
 
 function impactLevels(Assessment $assessment): Collection
@@ -174,7 +174,7 @@ test('a code that is not slug-shaped is rejected rather than derived around', fu
     // fixture could ever name. It is a 422, not a quiet re-derivation, because
     // nothing the editor sends can look like this.
     saveBands($assessment->owner, $assessment, 'impact', $bands)
-        ->assertSessionHasErrors('bands.0.code');
+        ->assertSessionHasErrors('scales.impact.bands.0.code');
 })->group('scales');
 
 // --- collisions, against the real unique index ----------------------------

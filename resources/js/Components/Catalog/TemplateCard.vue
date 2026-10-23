@@ -4,17 +4,24 @@
  * "Use this template" creates a copy owned by the current user — editing
  * the template afterwards never reaches an assessment already created
  * from it (TemplateController::store()'s own docblock).
+ *
+ * Administrators also get Edit and Delete (W141). Presentation only: the
+ * routes behind them refuse everyone else on their own.
  */
 import Button from '@/Components/UI/Button.vue';
 import Icon from '@/Components/UI/Icon.vue';
 import type { TemplateSummary } from './types';
 
-defineProps<{
-    template: TemplateSummary;
-    using: boolean;
-}>();
+withDefaults(
+    defineProps<{
+        template: TemplateSummary;
+        using: boolean;
+        canManage?: boolean;
+    }>(),
+    { canManage: false },
+);
 
-defineEmits<{ use: [] }>();
+defineEmits<{ use: []; delete: [] }>();
 </script>
 
 <template>
@@ -38,20 +45,42 @@ defineEmits<{ use: [] }>();
                     {{ template.description }}
                 </p>
                 <p class="text-text-muted mt-0.5 text-xs">
-                    <span v-if="template.owner">by {{ template.owner }} · </span
-                    >{{ template.currency }}
+                    {{ template.currency }}
                 </p>
             </div>
         </div>
 
-        <Button
-            variant="primary"
-            icon="copy"
-            size="sm"
-            :loading="using"
-            @click="$emit('use')"
-        >
-            Use this template
-        </Button>
+        <div class="flex shrink-0 items-center gap-2">
+            <template v-if="canManage">
+                <Button
+                    variant="ghost"
+                    icon="pencil"
+                    size="sm"
+                    :href="route('assessments.show', template.uuid)"
+                    :aria-label="`Edit template ${template.title ?? ''}`"
+                >
+                    Edit
+                </Button>
+                <Button
+                    variant="ghost"
+                    icon="trash-2"
+                    size="sm"
+                    :aria-label="`Delete template ${template.title ?? ''}`"
+                    @click="$emit('delete')"
+                >
+                    Delete
+                </Button>
+            </template>
+            <Button
+                variant="primary"
+                icon="copy"
+                size="sm"
+                class="shrink-0 whitespace-nowrap"
+                :loading="using"
+                @click="$emit('use')"
+            >
+                Use this template
+            </Button>
+        </div>
     </div>
 </template>

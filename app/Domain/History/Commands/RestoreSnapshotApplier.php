@@ -38,10 +38,14 @@ final class RestoreSnapshotApplier implements CommandApplier
      * @param  array<string, mixed>  $command
      * @return array<string, mixed>
      */
-    public function apply(array $command): array
+    public function apply(array $command, int $assessmentId): array
     {
-        $assessmentId = (int) ($command['assessment_id'] ?? 0);
         $snapshotId = (int) ($command['snapshot_id'] ?? 0);
+
+        // D82: only the operation's own assessment may be restored by it.
+        if (isset($command['assessment_id']) && (int) $command['assessment_id'] !== $assessmentId) {
+            throw new UndoConflictException('Cannot undo: this change belongs to another assessment.');
+        }
 
         $assessment = Assessment::query()->find($assessmentId);
         $snapshot = Snapshot::query()->find($snapshotId);

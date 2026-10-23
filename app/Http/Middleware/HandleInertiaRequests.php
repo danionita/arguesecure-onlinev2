@@ -2,14 +2,26 @@
 
 namespace App\Http\Middleware;
 
+use App\Domain\Release\ReleaseInfo;
 use App\Models\Assessment;
+use Closure;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleInertiaRequests extends Middleware
 {
     /** A sidebar group is scanned at a glance; the full list is one click away. */
     private const NAV_LIMIT = 10;
+
+    /**
+     * The session flash keys a controller writes with `->with(…)` that the
+     * shared chrome shows as a toast (W115). An allowlist, not the whole bag:
+     * the bag also carries `restore`, `status` and `shareTokenAssessmentId`,
+     * which are data for one page rather than sentences for a person.
+     */
+    private const FLASH_KEYS = ['success', 'error'];
 
     /**
      * The root template that is loaded on the first page visit.
@@ -24,6 +36,54 @@ class HandleInertiaRequests extends Middleware
     public function version(Request $request): ?string
     {
         return parent::version($request);
+    }
+
+    /**
+     * W115: what a controller flashed with `->with('success', …)` reaches the
+     * page, as Inertia's own flash data rather than as a shared prop.
+     *
+     * Until W115 nothing shared the flash bag, so every `->with('success', …)`
+     * stopped in the server-side session: "Version saved.", the restore
+     * summary, a restore that failed and why, "Saved as a template." — all
+     * written, all discarded (the `DEFECT:` pin in `ScaleResetTest`, now a
+     * `FIXED:` guard).
+     *
+     * Flash data rather than the pin's suggested `'flash'` prop, for one
+     * reason a prop cannot meet: Inertia keeps a page's props in the
+     * browser's history state, so a prop-borne "Version saved." would toast
+     * again every time someone pressed Back to that page. Flash data is
+     * delivered with exactly one response and stripped from history
+     * (inertia-laravel's `Response::resolveFlashData()` pulls it from the
+     * session; the client stores history with `flash: {}`), and the client
+     * fires one `flash` event per response that carries it — which is the
+     * "render it once" the pin asked for, decided by the library rather than
+     * by a layout guessing which visits are new.
+     *
+     * The values are read here, *before* the controller runs, because that is
+     * when Laravel's flash bag holds what the previous request wrote. Only
+     * GETs: a page is rendered on a GET, and the request a redirect leads to
+     * is one. Anything else would move the message off the page it was
+     * written for. Reading does not consume Laravel's copy, so W87's two
+     * controllers that pass `session('success')` as their own prop still see
+     * it.
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        // Only a request that will render a page may take the message: a
+        // notification poll or a download between the redirect and the page
+        // would otherwise consume it.
+        if ($request->isMethod('GET') && $request->hasSession() && ($request->header('X-Inertia') || ! $request->expectsJson())) {
+            $flashed = array_filter(
+                $request->session()->only(self::FLASH_KEYS),
+                fn (mixed $value): bool => is_string($value) && $value !== '',
+            );
+
+            if ($flashed !== []) {
+                Inertia::flash($flashed);
+            }
+        }
+
+        return parent::handle($request, $next);
     }
 
     /**
@@ -128,6 +188,9 @@ class HandleInertiaRequests extends Middleware
             // round trip and a frame of the badge showing the wrong number.
             // `notifications_unread_index` is what keeps it a seek.
             'notificationCount' => $user->unreadNotifications()->count(),
+            // W124. Authenticated pages only: a sign-in page does not tell a
+            // stranger which release is running.
+            'version' => ReleaseInfo::for(config('arguesecure.version')),
         ];
     }
 

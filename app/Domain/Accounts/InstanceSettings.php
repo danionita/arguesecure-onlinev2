@@ -3,6 +3,7 @@
 namespace App\Domain\Accounts;
 
 use App\Domain\Assistant\Availability;
+use App\Domain\Identity\Oidc\OidcConfig;
 use App\Models\InstanceSetting;
 
 /**
@@ -50,6 +51,8 @@ class InstanceSettings
      *     assistant_suggestions_enabled: bool,
      *     assistant_summary_enabled: bool,
      *     session_lifetime_minutes: int,
+     *     require_two_factor: bool,
+     *     sso_only: bool,
      * }
      */
     public static function all(): array
@@ -64,6 +67,8 @@ class InstanceSettings
             'assistant_suggestions_enabled' => $row->assistant_suggestions_enabled,
             'assistant_summary_enabled' => $row->assistant_summary_enabled,
             'session_lifetime_minutes' => $row->session_lifetime_minutes,
+            'require_two_factor' => $row->require_two_factor,
+            'sso_only' => $row->sso_only,
         ];
     }
 
@@ -87,6 +92,22 @@ class InstanceSettings
     public static function publicAssessmentsAllowed(): bool
     {
         return InstanceSetting::singleton()->public_assessments_allowed;
+    }
+
+    /**
+     * D79: non-admins sign in through the provider only. Meaningless without
+     * a provider, so it is false unless one is configured: an instance whose
+     * provider settings were removed must not refuse every password.
+     */
+    public static function ssoOnly(): bool
+    {
+        return OidcConfig::enabled() && InstanceSetting::singleton()->sso_only;
+    }
+
+    /** D78: password sign-in sends an account with no second factor to enrolment. */
+    public static function requireTwoFactor(): bool
+    {
+        return InstanceSetting::singleton()->require_two_factor;
     }
 
     /**
@@ -156,6 +177,8 @@ class InstanceSettings
      *     assistant_suggestions_enabled: bool,
      *     assistant_summary_enabled: bool,
      *     session_lifetime_minutes: int,
+     *     require_two_factor: bool,
+     *     sso_only: bool,
      * }
      */
     private static function defaults(): array
@@ -177,6 +200,10 @@ class InstanceSettings
             'assistant_suggestions_enabled' => true,
             'assistant_summary_enabled' => true,
             'session_lifetime_minutes' => 480,
+            // Off (W116, D78): on, it would send every account to enrolment at
+            // its next sign-in with no warning.
+            'require_two_factor' => false,
+            'sso_only' => false,
         ];
     }
 }

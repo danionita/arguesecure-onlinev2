@@ -2,9 +2,8 @@
 
 ## Starting one
 
-Choose **New assessment** in the sidebar or on *My assessments*, and give it
-a title. To start from a ready-made structure, open **Templates** in the
-sidebar instead — see [Templates](/help/templates).
+Choose **New assessment**, and give it a title and, if offered, a **Scale**. For a ready-made structure, open
+**Templates** in the sidebar — see [Templates](/help/templates).
 
 ## Adding a node
 
@@ -58,7 +57,7 @@ description to edit it in place. The pop-up's tabs:
 | History | Every change to this node, each one revertable |
 
 The root's **Scales** tab (managers only) holds the currency, risk tolerance,
-amortisation period and value scales. **Delete** is in the pop-up header.
+amortisation period and scales: pick one or edit the bands, then save. **Delete** is in the pop-up header.
 
 ## Structure
 
@@ -72,5 +71,6 @@ amortisation period and value scales. **Delete** is in the pop-up header.
 ## Finding your way
 
 Search with `/`. **Filters** dim nodes that don't match a label, status,
-type or *missing values*. Collapse branches, focus on one subtree, and zoom
+type or *missing values*. Collapse branches (a collapsed card shows a small number: how many
+children it is hiding; click it to expand), focus on one subtree, and zoom
 each view separately.

@@ -119,13 +119,8 @@ test('correct password must be provided to delete account', function () {
 });
 
 test('user can revoke another one of their own sessions', function () {
-    // phpunit.xml forces SESSION_DRIVER=array for the whole suite (not
-    // owned by this package), so no request here ever writes a row into
-    // the `sessions` table itself. SessionRegistry reads that table
-    // directly (see its class doc — it only works under the database
-    // session driver, which is this project's actual .env default
-    // outside of tests), so this test seeds the row SessionRegistry
-    // expects and drives revocation through the real route/middleware.
+    // A seeded row stands in for the other device; SessionRevocationTest
+    // signs in on two devices and checks the revoked one is signed out.
     $user = User::factory()->create();
 
     DB::table('sessions')->insert([
@@ -162,11 +157,10 @@ test('user cannot revoke a session belonging to someone else', function () {
 });
 
 test('revoking the current session id is rejected, not silently deleted', function () {
-    // Full-stack HTTP round trips can't reliably reproduce "this exact
-    // request's session id" across two separate test calls under the
-    // array session driver, so this exercises ProfileController's rule
-    // directly: it must refuse to delete the id matching the request's
-    // own session rather than deferring to SessionRegistry.
+    // SessionRevocationTest covers this over HTTP; this exercises
+    // ProfileController's rule directly: it must refuse to delete the id
+    // matching the request's own session rather than deferring to
+    // SessionRegistry.
     $user = User::factory()->create();
 
     // Store::isValidId() requires a 40-char alphanumeric id (Laravel's

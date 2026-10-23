@@ -17,6 +17,12 @@ export interface ReverbProps {
     scheme: string | null;
 }
 
+/** The `nav.version` shared prop (ReleaseInfo::for()), W124. */
+export interface VersionProps {
+    label: string;
+    notesUrl: string;
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

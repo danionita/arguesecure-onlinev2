@@ -37,6 +37,7 @@
  * commit and arrive on another in the next (W36, broken once by W72).
  */
 import Icon from '@/Components/UI/Icon.vue';
+import type { VersionProps } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import NavGroup from './NavGroup.vue';
@@ -55,6 +56,8 @@ const props = defineProps<{
     sharedWithMe: NavAssessment[];
     isAdmin: boolean;
     notificationCount: number;
+    /** W124: the running build and its release notes; absent on partial pages. */
+    version?: VersionProps;
     /** Icon-rail mode: labels move to accessible names, groups become links. */
     railed: boolean;
     /** Whether the labelled panel is on screen at all (docked or floating). */
@@ -140,6 +143,23 @@ const toggleLabel = computed(() => {
                 <Icon name="shield" :size="20" class="text-node-root-text" />
                 <span v-if="!compact" class="truncate">ArgueSecure</span>
             </Link>
+            <!--
+                W124/W129 (D90): the running version, small and muted, beside
+                the name; the label is the link to that release's notes. On
+                this row rather than under it, so neither width gains a row
+                and the toggle below keeps its place (e2e 17). Expanded only:
+                the rail has room for the shield and nothing else.
+            -->
+            <a
+                v-if="version && !compact"
+                :href="version.notesUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                :title="`Release notes for ${version.label}`"
+                class="text-text-muted hover:text-text-primary focus-visible:outline-focus-ring ml-auto shrink-0 rounded text-xs outline-none hover:underline focus-visible:outline-2"
+                data-testid="nav-version"
+                >{{ version.label }}</a
+            >
         </div>
 
         <!--

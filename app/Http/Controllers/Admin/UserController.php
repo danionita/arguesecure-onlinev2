@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Domain\Accounts\SessionRegistry;
 use App\Domain\Accounts\TemporaryPassword;
+use App\Domain\Retention\AssessmentEraser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DestroyUserRequest;
 use App\Http\Requests\Admin\ResetPasswordRequest;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
+use App\Models\Assessment;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -70,18 +72,27 @@ class UserController extends Controller
         $user->password = Hash::make($password);
         $user->is_admin = $validated['is_admin'];
         $user->is_active = true;
+        // W115: a password the admin did not type is one they have read off
+        // a screen, so it is good for one sign-in — the same rule a reset
+        // follows (security.md §4). A typed one is the admin's choice to
+        // hand over, and is left alone.
+        $user->must_change_password = ! isset($validated['password']);
         $user->save();
 
-        return redirect()->route('admin.users.index')->with(
-            'generatedPassword',
-            isset($validated['password']) ? null : $password,
-        );
+        return $this->toIndexShowing(isset($validated['password']) ? null : $password);
     }
 
     public function edit(User $user): Response
     {
         return Inertia::render('Admin/Users/Edit', [
-            'targetUser' => $user->only(['id', 'name', 'email', 'is_admin', 'is_active']),
+            'targetUser' => [
+                ...$user->only(['id', 'name', 'email', 'is_admin', 'is_active']),
+                // W116: whether, never what — the secret and codes are hidden.
+                'two_factor_enabled' => $user->hasTwoFactorEnabled(),
+            ],
+            // W117: the provider link, shown so it can be removed. Issuer and
+            // last use only; the subject is the provider's, not the admin's.
+            'identity' => $user->identities()->first(['issuer', 'last_used_at']),
             'ownedAssessmentCount' => $user->ownedAssessments()->count(),
         ]);
     }
@@ -129,24 +140,48 @@ class UserController extends Controller
         // the user's behalf).
         SessionRegistry::revokeAllExcept($user->id);
 
-        return redirect()->route('admin.users.index')->with(
-            'generatedPassword',
-            isset($validated['password']) ? null : $password,
-        );
+        return $this->toIndexShowing(isset($validated['password']) ? null : $password);
     }
 
-    public function destroy(DestroyUserRequest $request, User $user): RedirectResponse
+    public function destroy(DestroyUserRequest $request, User $user, AssessmentEraser $eraser): RedirectResponse
     {
         $validated = $request->validated();
 
-        DB::transaction(function () use ($user, $validated) {
+        DB::transaction(function () use ($user, $validated, $eraser) {
+            // D81: deleted assessments are neither counted by
+            // DestroyUserRequest nor reached by the default scope, but
+            // owner_user_id cascades on the user's delete, and a calibrated
+            // one cannot be cascaded (1451). Transfer them with the rest, or
+            // erase them when no target was named.
             if (isset($validated['transfer_to_user_id'])) {
-                $user->ownedAssessments()->update(['owner_user_id' => $validated['transfer_to_user_id']]);
+                $user->ownedAssessments()->withTrashed()->update(['owner_user_id' => $validated['transfer_to_user_id']]);
+            } else {
+                $user->ownedAssessments()->onlyTrashed()->get()->each(fn (Assessment $a) => $eraser->erase($a));
             }
 
             SessionRegistry::revokeAllExcept($user->id);
             $user->delete();
         });
+
+        return redirect()->route('admin.users.index');
+    }
+
+    /**
+     * Back to the users table, carrying a generated password to it once.
+     *
+     * W115. This used to be `->with('generatedPassword', …)`, and nothing
+     * shared the session's flash bag with the page, so the table never
+     * received it: an admin who left the password blank created an account
+     * nobody knew the password of. Inertia's flash data reaches exactly the
+     * next page and is kept out of the browser's history state, so pressing
+     * Back to the table does not show the password again — which is what
+     * "shown once" on that banner has to mean for a credential.
+     */
+    private function toIndexShowing(?string $generatedPassword): RedirectResponse
+    {
+        if ($generatedPassword !== null) {
+            Inertia::flash('generatedPassword', $generatedPassword);
+        }
 
         return redirect()->route('admin.users.index');
     }

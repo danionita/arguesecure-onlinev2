@@ -50,7 +50,7 @@ function bandsOf(Assessment $assessment, string $kind): array
 function calibrateAs(User $actor, Assessment $assessment, string $kind, array $bands): TestResponse
 {
     return test()->actingAs($actor)
-        ->put(route('assessments.scales.update', [$assessment, $kind]), ['bands' => $bands]);
+        ->put(route('assessments.scales.update', $assessment), ['scales' => [$kind => ['bands' => $bands]]]);
 }
 
 // --- the clone, which is the whole point ---------------------------------
@@ -379,19 +379,23 @@ test('a manager can calibrate a scale', function () {
 test('an anonymous caller is refused', function () {
     $assessment = Assessment::factory()->create();
 
-    test()->put(route('assessments.scales.update', [$assessment, 'impact']), ['bands' => []])
+    test()->put(route('assessments.scales.update', $assessment), ['scales' => ['impact' => ['bands' => []]]])
         ->assertRedirect(route('login'));
 })->group('scales');
 
-test('an unknown scale kind is not found rather than reaching a column name', function () {
+test('an unknown scale kind is never read, and a payload with no real kind is refused', function () {
     $assessment = Assessment::factory()->create();
+    $before = $assessment->impact_scale_id;
 
     // The kind selects a column on `assessments`. Building one from request
-    // input is a legacy defect this codebase forbids by name, so the value is
-    // checked against a fixed list first.
+    // input is a legacy defect this codebase forbids by name: the kinds are a
+    // fixed list the FormRequest validates, so a key outside it is never
+    // looked at, and a payload with nothing else in it is a 422 (W126).
     test()->actingAs($assessment->owner)
-        ->put(route('assessments.scales.update', [$assessment, 'colour']), ['bands' => []])
-        ->assertNotFound();
+        ->put(route('assessments.scales.update', $assessment), ['scales' => ['colour' => ['bands' => []]]])
+        ->assertSessionHasErrors('scales');
+
+    expect($assessment->fresh()->impact_scale_id)->toBe($before);
 })->group('scales');
 
 test('the calibration route carries the authenticated rate limit', function () {

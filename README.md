@@ -24,9 +24,11 @@ roadmap done.
 - **Built together, live.** You see who else is in an assessment. Each node
   is edited by one person at a time. Comments support @mentions, and nodes can
   be assigned to people. Notifications tell you when something needs you.
-- **Nothing is lost.** Every change is recorded. Versions are saved
-  automatically and whenever you ask, and any version can be compared or
-  restored. Structural changes can be undone.
+- **Nothing is lost by accident.** Every change is recorded. Versions are
+  saved automatically and whenever you ask, and any version can be compared
+  or restored. Structural changes can be undone. A deleted assessment can be
+  restored for 30 days, and erased for good before then when an engagement
+  ends.
 - **Start from a template.** Twelve are bundled, among them complete
   gap-analysis templates for ISO/IEC 27001, GDPR, NIS2 and the CIS Controls.
   You can also pull individual risks, attacks or defences from any template
@@ -83,7 +85,7 @@ empty; the database will not start without them. A source build needs them
 set in `.env` too.
 
 `docker compose up` pulls `ghcr.io/danionita/arguesecure:latest`. Set
-`ARGUESECURE_VERSION` in `.env` to pin a release (`2.6.3`) or to follow a
+`ARGUESECURE_VERSION` in `.env` to pin a release (`2.7.0`) or to follow a
 minor line (`2.6`); then `docker compose pull && docker compose up -d`
 upgrades it. The images are public and need no login. Everything below, from
 the first start on, is the same either way.
@@ -106,6 +108,38 @@ administrator. Creating it also loads the bundled templates. After that,
 administrators create accounts under **Admin → Users**, one at a time or in
 bulk from a CSV file. There is no public registration.
 
+### Two-factor authentication
+
+Any account can add a code from an authenticator app (any app that supports
+time-based one-time passwords, RFC 6238) to its password, from the profile
+page, with ten single-use recovery codes. It needs no email server, SMS or
+outside service. Under **Admin → Instance settings**, *Require two-factor
+authentication for password sign-in* sends every account that has none to set
+it up straight after its password; it is off by default, so turning it on
+never locks anyone out. An administrator can remove another account's second
+factor (a lost phone) from that account's page, and the account sets it up
+again. The secret and the recovery codes are encrypted with `APP_KEY`: keep it
+safe, because losing it makes every enrolled secret unreadable.
+
+### Single sign-on
+
+To sign in through your organisation's identity provider, register
+`<APP_URL>/auth/oidc/callback` at the provider and enter its details under
+**Admin → Authentication** (the secret is stored encrypted with `APP_KEY` and
+never shown again), or set the `OIDC_*` variables described in `.env.example`.
+A value in the environment wins, field by field, over one stored in the
+application. ArgueSecure speaks OpenID
+Connect (authorization-code flow with PKCE), which Microsoft Entra ID, Google
+Workspace, Okta, Keycloak, Authentik and Authelia all offer. Only Keycloak has
+been tested against this build; the others, Entra ID included, are expected to
+work but are unverified. A first sign-in
+links to the existing account with the same verified email; with
+`OIDC_ALLOWED_DOMAINS` it can also create a non-admin account that sees nothing
+until someone shares an assessment with it. *Sign in with SSO only* on the same
+**Authentication** tab turns off password sign-in for everyone but
+administrators, who keep it for when the provider is down. SAML, SCIM and
+group mapping are not supported.
+
 ### Behind a reverse proxy
 
 To serve ArgueSecure through SWAG, nginx, Traefik or similar, set `APP_URL`
@@ -121,8 +155,10 @@ bind-mounted, and defaults to `./data`.
 Every signed-in account can start an assessment from a template. The **Add
 from template** button on a node, and **From template** in the new-node
 dialog, also let you copy a template's risks, attacks or defences into an
-existing assessment. Only administrators can publish an assessment as a
-template.
+existing assessment. Templates belong to nobody: any administrator creates,
+edits and deletes them on the Templates page, and can publish a copy of an
+assessment as a template from its Share dialog (the copy is not linked to the
+assessment, and cannot be unpublished, only deleted).
 
 | Template | What it contains |
 |---|---|
@@ -145,7 +181,8 @@ of scope. Their descriptions summarise the controls; they are not the text of
 the standards, and not legal advice.
 
 When you upgrade to a release that adds templates, load them into your
-instance with the seeder below. It is idempotent and creates no users:
+instance with the seeder below. It is idempotent, creates no users and needs
+no administrator, because templates have no owner:
 
 ```bash
 docker compose exec app php artisan db:seed --class='Database\Seeders\SampleContentSeeder' --force
@@ -210,8 +247,13 @@ feature costs, and what the assistant is never allowed to do.
 ## Running it day to day
 
 ```bash
-# Follow the logs
-docker compose logs -f app
+# Follow the logs. Application logs go to the containers' stderr at `info`;
+# set LOG_LEVEL=debug in .env and `docker compose up -d` for more.
+docker compose logs -f app queue
+
+# Only the security event log (sign-ins, admin actions, sharing, exports):
+# one JSON object per line, see docs/specs/security.md section 11.1
+docker compose logs --no-log-prefix -f app | jq -R -c 'fromjson? | select(.channel=="security")'
 
 # Upgrade (migrations run when the app container starts). Take a database
 # dump first (below). Add --profile assistant to both commands if you run
@@ -226,6 +268,38 @@ docker compose down
 # Stop and delete all data. This cannot be undone.
 docker compose down -v
 ```
+
+**Upgrading to 2.7 signs everyone out once.** Sessions moved from Redis to
+the database, so that signing out other devices, and a password change or
+reset, actually ends the other sessions. Nothing needs changing in `.env`:
+the `SESSION_DRIVER` line older versions copied there is now ignored and can
+be deleted.
+
+### Security log
+
+Admin → **Security log** lists the last 50 security events (sign-ins and
+refusals, account, settings and sharing changes, exports) and downloads the
+matching ones as CSV or JSON, filtered by date range and event, up to 50,000
+rows. The events are stored for `SECURITY_LOG_RETENTION_DAYS` days (90 by
+default); the same lines still go to the app container's standard error, which
+is the copy to ship to a log collector. Application logs (errors and warnings)
+are not offered in the interface; read them with `docker compose logs app`.
+
+### Deleted assessments
+
+A deleted assessment stays restorable under **My assessments → Deleted** for
+`TRASH_RETENTION_DAYS` days (30 by default, at least 1), then the `scheduler`
+container erases it with everything that belongs to it: nodes, history,
+versions, comments and the notifications about it. Its owner or an
+administrator can erase it sooner. To run the clean-up now:
+
+```bash
+docker compose exec app php artisan arguesecure:purge-deleted
+```
+
+An erased assessment survives only in database dumps taken before it was
+erased, and in short-lived Redis keys (calculation results, edit locks), which
+expire within hours and hold figures, not text.
 
 ### Backups
 
@@ -275,7 +349,7 @@ running it.
 | Document | Covers |
 |---|---|
 | [`docs/PLAN.md`](docs/PLAN.md) | The rewrite plan, its decisions and its work packages |
-| [`docs/RELEASE-2.6.3.md`](docs/RELEASE-2.6.3.md) | The latest release notes, and what is still open |
+| [`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md) | The latest release notes, and what is still open |
 | [`docs/specs/schema.md`](docs/specs/schema.md) | Database, models and authorization |
 | [`docs/specs/calculation-engine.md`](docs/specs/calculation-engine.md) | The quantification model (normative) |
 | [`docs/specs/ui.md`](docs/specs/ui.md) | The editor, the keyboard map and reports |

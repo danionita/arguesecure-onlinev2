@@ -118,7 +118,12 @@ test.describe('the read-only share link', () => {
             await page.goto(shareUrl);
             await expect(page).not.toHaveURL(/\/s\//);
 
-            await page.goto(`/assessments/${assessmentUuid}`);
+            // W114: the link itself lands on the assessment. No second
+            // navigation — until 2.7 it went to the dashboard, which sent a
+            // holder without an account to the sign-in page.
+            await expect(page).toHaveURL(
+                new RegExp(`/assessments/${assessmentUuid}$`),
+            );
             await expect(page.getByRole('tree')).toBeVisible();
 
             // Into the list, because that is where a card's button is named
@@ -143,7 +148,6 @@ test.describe('the read-only share link', () => {
         try {
             const page = await context.newPage();
             await page.goto(shareUrl);
-            await page.goto(`/assessments/${assessmentUuid}`);
             await expect(page.getByRole('tree')).toBeVisible();
             // The affordances below are list-view ones.
             await useListView(page);
@@ -184,7 +188,6 @@ test.describe('the read-only share link', () => {
         try {
             const page = await context.newPage();
             await page.goto(shareUrl);
-            await page.goto(`/assessments/${assessmentUuid}`);
             await expect(page.getByRole('tree')).toBeVisible();
 
             // Issued from the page's own origin with its own cookies and a
@@ -266,7 +269,6 @@ test.describe('the read-only share link', () => {
             // nothing here.
             await login(page, linkHolderEmail, linkHolderPassword());
             await page.goto(shareUrl);
-            await page.goto(`/assessments/${assessmentUuid}`);
             await expect(page.getByRole('tree')).toBeVisible();
 
             const edit = await apiRequest(
@@ -304,7 +306,6 @@ test.describe('the read-only share link', () => {
         try {
             const holderPage = await holder.newPage();
             await holderPage.goto(shareUrl);
-            await holderPage.goto(`/assessments/${assessmentUuid}`);
             await expect(holderPage.getByRole('tree')).toBeVisible();
 
             const ownerPage = await owner.newPage();

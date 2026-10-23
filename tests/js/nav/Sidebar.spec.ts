@@ -543,3 +543,53 @@ describe('the rail shows a visible tooltip, not only an accessible name', () => 
         expect(wrapper.find('[role="tooltip"]').exists()).toBe(false);
     });
 });
+
+describe('version and release notes (W124, W129)', () => {
+    const version = {
+        label: 'v2.6.3',
+        notesUrl:
+            'https://github.com/danionita/arguesecure-onlinev2/blob/v2.6.3/docs/RELEASE-2.6.3.md',
+    };
+
+    it('shows the version as the link to its release notes when expanded', () => {
+        const link = render({ version }).get('[data-testid="nav-version"]');
+
+        expect(link.element.tagName).toBe('A');
+        expect(link.text()).toBe('v2.6.3');
+        expect(link.attributes('href')).toBe(version.notesUrl);
+        expect(link.attributes('target')).toBe('_blank');
+        expect(link.attributes('rel')).toContain('noopener');
+        expect(link.attributes('title')).toBe('Release notes for v2.6.3');
+    });
+
+    it('has no separate release-notes button', () => {
+        expect(render({ version }).text()).not.toContain('Release notes');
+    });
+
+    it('sits in the logo row, so no row is added at either width', () => {
+        const wrapper = render({ version });
+        const logoRow = wrapper.get('[data-testid="nav-version"]').element
+            .parentElement as HTMLElement;
+
+        expect(logoRow.textContent).toContain('ArgueSecure');
+        expect(logoRow.classList.contains('h-9')).toBe(true);
+    });
+
+    it('draws nothing in the collapsed rail', () => {
+        const wrapper = render({
+            version,
+            panelVisible: false,
+            railed: true,
+        });
+
+        expect(wrapper.find('[data-testid="nav-version"]').exists()).toBe(
+            false,
+        );
+    });
+
+    it('draws nothing when the page carries no version', () => {
+        expect(render().find('[data-testid="nav-version"]').exists()).toBe(
+            false,
+        );
+    });
+});

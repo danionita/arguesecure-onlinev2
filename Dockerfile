@@ -143,6 +143,17 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /var/www/html
 
+# W112: application logs go to stderr, where `docker compose logs` and any
+# log shipper read them. Unset, Laravel falls back to `stack` -> `single`: an
+# unrotated storage/logs/laravel.log on the data volume, at debug, which no
+# operator tool sees. Set here rather than only in .env.example so that a
+# deployment whose .env predates these keys gets them too; a value in .env
+# (env_file) still overrides either. php-fpm's catch_workers_output carries a
+# web request's stderr to the container's; the artisan services (queue,
+# scheduler, reverb) write to it directly.
+ENV LOG_CHANNEL=stderr \
+    LOG_LEVEL=info
+
 COPY --from=vendor /app ./
 COPY --from=assets /app/public/build ./public/build
 
@@ -150,6 +161,12 @@ RUN mkdir -p storage/framework/{cache,sessions,testing,views} storage/logs boots
     && chown -R www-data:www-data storage bootstrap/cache \
     && mkdir -p /var/lib/nginx/tmp /var/log/nginx /run \
     && chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run
+
+# W124: the version the sidebar shows, from the release tag (image.yml passes
+# it). Last, so a new value invalidates no layer above it. A plain `docker
+# build` leaves it empty and the app reads the VERSION file instead.
+ARG ARGUESECURE_BUILD_VERSION=
+ENV ARGUESECURE_BUILD_VERSION=$ARGUESECURE_BUILD_VERSION
 
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \

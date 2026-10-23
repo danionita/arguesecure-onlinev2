@@ -2,7 +2,9 @@
 
 use App\Domain\Assistant\Availability;
 use App\Domain\Assistant\Help\CorpusWarmer;
+use App\Domain\Retention\TrashPurger;
 use App\Domain\Snapshots\AutoVersioner;
+use App\Models\SecurityEventRecord;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -51,3 +53,32 @@ Schedule::command('assistant:warm')
     ->when(fn (): bool => Availability::configured())
     ->withoutOverlapping(10)
     ->runInBackground();
+
+/*
+ * W113 (security.md §12): erase every assessment deleted longer ago than
+ * TRASH_RETENTION_DAYS. Daily is enough — the period is counted in days —
+ * and the `scheduler` container runs it like the version saver above.
+ */
+Artisan::command('arguesecure:purge-deleted', function (TrashPurger $purger) {
+    $erased = $purger->purge();
+    $this->info("Erased {$erased} deleted assessment(s).");
+})->purpose('Erase assessments deleted longer ago than the retention period');
+
+Schedule::command('arguesecure:purge-deleted')
+    ->daily()
+    ->withoutOverlapping();
+
+/*
+ * W128 (D98): remove stored security events older than
+ * SECURITY_LOG_RETENTION_DAYS. The stderr stream is not touched.
+ */
+Artisan::command('arguesecure:purge-security-events', function () {
+    $removed = SecurityEventRecord::query()
+        ->where('created_at', '<', now()->subDays((int) config('arguesecure.security_log_retention_days')))
+        ->delete();
+    $this->info("Removed {$removed} security event(s).");
+})->purpose('Remove stored security events older than the retention period');
+
+Schedule::command('arguesecure:purge-security-events')
+    ->daily()
+    ->withoutOverlapping();

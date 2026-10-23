@@ -298,7 +298,7 @@ MCadd(d, S) = Total(S) − Total(S ∪ {d})   ≥ 0
 
 Produce **two ranked lists**, and label the baseline on every report:
 
-- **Defences ranked by importance** — `MC(d, current)` over implemented defences: what we would lose by turning it off.
+- **Defences ranked by cost benefit** — implemented defences, each with `MC(d, current)`, what we would lose by turning it off. Priced defences are ordered by cost-benefit ratio, then net benefit; free and unpriced by `MC`.
 - **Defences ranked by opportunity** — `MCadd(d, current)` over todo defences: what we would gain by doing it. This is the roadmap.
 - Shelved defences may be evaluated with `MCadd` on demand ("what did we give up?"), never included in a total.
 - Optionally, importance against the target baseline for roadmap prioritisation. Note that `MC` against target is **smaller** than against current for any defence overlapping a planned one — that is real diminishing returns, and it is why the baseline must be labelled.
@@ -404,7 +404,7 @@ Use IEEE double (`float` / `number`) throughout. Every operation is a product of
 ### 11.4 Caching and invalidation
 
 - Cache the `CalculationResults` for **all three baselines together**, in Redis, key `as:calc:{assessment_id}:v{calc_version}:e{engine_version}`, TTL 6 h.
-- **Invalidate by explicit version bump, not TTL or fingerprint.** An observer increments `assessments.calc_version` on: any create/update/delete/restore of a node; any `risk_attack` or `attack_defence` mutation; any scale or scale-level change; and any change to `currency` or `amortization_years`. Old keys age out on their own. Deterministic and race-free.
+- **Invalidate by explicit version bump, not TTL or fingerprint.** An observer increments `assessments.calc_version` on: any create/update/delete/restore of a node; any `risk_attack` or `attack_defence` mutation; any scale or scale-level change; and any change to `currency` or `amortization_years`. `put()` keeps one entry per assessment: it records the key it wrote in `as:calc:{assessment_id}:latest` and deletes the entry that pointer named before (W109, D72), so superseded keys do not wait out their TTL. Deterministic and race-free.
 - On bump, dispatch a queued `RecalculateAssessment` job, **debounced 250 ms per assessment** via a Redis `SET NX` guard, which recomputes and broadcasts `AssessmentTotalsUpdated` on `presence-assessment.{id}`. Dragging a slider produces one broadcast, not forty.
 - Snapshots store `results` verbatim and **never recompute**.
 

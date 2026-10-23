@@ -1,38 +1,34 @@
 # How to read a report
 
 **Report** is the third position of the view switcher, beside Chart and
-List. It is marked **Beta**: the figures are the same ones the other views
-use, and the layout is still being refined. It is built for reading,
-printing and sending to people who don't need the editor.
+List. It is marked **Beta**: the figures are the ones the other views use,
+and the layout is still being refined. It is for reading, printing and
+sending to people who don't need the editor.
 
 ## Options
 
-The row above the report is always visible, and every change applies at
-once:
+The row above the report has two buttons, and every change applies at once:
 
-- **Baseline** — the current state, the target (roadmap) state, or both.
-- **Shelved** — show only implemented and planned defences, or include the
-  shelved ones too.
-- **Comments**, **Methodology** and **Assignees** — add or remove those
-  sections. Keep the methodology on: it explains, next to the numbers, the
-  assumptions they rest on. Assignees are off by default because they put
-  people's names in the document.
+- **Defences** — which defences the report covers: implemented ones always,
+  planned ones with the target figures, and shelved ones listed only.
+- **Sections** — switch any section on or off. Comments, the methodology, the
+  model-quality warnings and assignees start off; the methodology states the
+  assumptions the numbers rest on. A report that leaves sections out names
+  them.
 
 The search box finds text in the report; zoom changes its type size.
 
 ## What's in it
 
-1. **Cover** — title, owner, date, the scales in use and how complete the
-   assessment is.
+1. **Cover** — title, owner, date, the scales in use and the current known risk.
 2. **Executive summary** — your own words, then inherent, current and target
    annual loss and what the defences buy.
 3. **The plan: cost and benefit** — what the planned controls cost against
    the risk they remove.
 4. **Risk register** — every risk, its impact, the attacks behind it and its
    loss before and after.
-5. **Defences ranked by importance** — implemented controls, by how much loss
-   would return if each were switched off, with cost, CBR, ROSI and net
-   benefit.
+5. **Defences ranked by cost benefit** — implemented controls: the loss that
+   would return if each were switched off, cost, CBR, ROSI and net benefit.
 6. **Defences ranked by opportunity** — planned controls, by what each would
    buy. This is the roadmap. With shelved defences included, a third list
    shows what shelving them gave up.
@@ -52,8 +48,7 @@ The search box finds text in the report; zoom changes its type size.
 - **Every figure is labelled with its baseline**, because they can differ by
   an order of magnitude.
 - **The importance and opportunity lists do not add up to the total
-  reduction**, and are never presented as if they did — see [the
-  quantification model](/help/quantification).
+  reduction** — see [the quantification model](/help/quantification).
 - **Priced, free and unpriced defences are listed separately.** An unpriced
   control is not a free one.
 - **A control that costs more than it saves** (CBR under 1) is highlighted.
@@ -73,8 +68,11 @@ started as a draft is marked as machine-drafted in the report.
 **JSON**, **Excel** or **Word**, using the options currently set.
 *Everything expanded* ignores them and includes every section except
 assignees. JSON is a complete, portable copy of the assessment's data.
+Titles and descriptions are always written as text in every format. In the
+CSV, text starting with `=`, `+`, `-` or `@` gets a leading `'` so a
+spreadsheet shows it rather than calculating it.
 
 **Print** uses your browser's print dialog with a stylesheet made for paper:
 page breaks between sections, table headers repeated, light colours whatever
 your theme. Choose **Save as PDF** as the destination to get a PDF. The chart
-and the list print too.
+and the list print too: **Print** asks which of the three to print.

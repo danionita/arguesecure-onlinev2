@@ -18,7 +18,7 @@ use App\Domain\History\Exceptions\UndoConflictException;
  */
 class ReparentEdgeApplier implements CommandApplier
 {
-    public function apply(array $command): array
+    public function apply(array $command, int $assessmentId): array
     {
         $edge = (string) $command['edge'];
         $targetParentUuid = (string) $command['parent_uuid'];
@@ -31,9 +31,9 @@ class ReparentEdgeApplier implements CommandApplier
         $meta = EdgeResolver::meta($edge);
         $modelClass = $meta['model'];
 
-        $targetParent = EdgeResolver::findNode($targetParentUuid);
-        $currentParent = EdgeResolver::findNode($currentParentUuid);
-        $child = EdgeResolver::findNode($childUuid);
+        $targetParent = EdgeResolver::findNodeIn($assessmentId, $targetParentUuid);
+        $currentParent = EdgeResolver::findNodeIn($assessmentId, $currentParentUuid);
+        $child = EdgeResolver::findNodeIn($assessmentId, $childUuid);
 
         if ($targetParent === null || $targetParent->trashed() || $child === null || $child->trashed()) {
             throw new UndoConflictException('Cannot undo: an endpoint of this move no longer exists.');

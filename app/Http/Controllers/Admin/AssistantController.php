@@ -7,6 +7,8 @@ use App\Domain\Assistant\Availability;
 use App\Domain\Assistant\Health;
 use App\Domain\Assistant\ModelCatalog;
 use App\Domain\Assistant\RuntimeModel;
+use App\Domain\Audit\SecurityEvent;
+use App\Domain\Audit\SecurityLog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateAssistantSettingsRequest;
 use Illuminate\Http\RedirectResponse;
@@ -65,7 +67,10 @@ class AssistantController extends Controller
 
     public function update(UpdateAssistantSettingsRequest $request, Health $health, RuntimeModel $runtimeModel): RedirectResponse
     {
-        InstanceSettings::update($request->validated());
+        $validated = $request->validated();
+        InstanceSettings::update($validated);
+
+        SecurityLog::record(SecurityEvent::SettingsUpdated, $request->user(), null, ['settings' => $validated]);
 
         // The probe from thirty seconds ago was taken while the feature was
         // off, or while the container was still loading several gigabytes of

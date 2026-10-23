@@ -14,7 +14,7 @@
  * `flex-wrap` returning to the row is exactly how a future change would wrap
  * the bar without anyone noticing.
  */
-import { mount } from '@vue/test-utils';
+import { mount, type VueWrapper } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import Toolbar from '../../../resources/js/Components/Toolbar/Toolbar.vue';
 import {
@@ -23,20 +23,29 @@ import {
 } from '../../../resources/js/composables/useEditorView';
 import { makeFixtureStore } from '../composables/support/fixture';
 
-function mountToolbar() {
+function mountToolbar(availableTags: string[] = []) {
     const store = makeFixtureStore();
     const view = createEditorView(store, { assessmentUuid: 'a1', userId: 1 });
     const wrapper = mount(Toolbar, {
         // The editor always supplies this — it is what puts Report in the
         // switcher — and the switcher's third position is what W81's
         // ordering assertion below is about.
-        props: { reportHref: '/assessments/a1/report' },
+        props: { reportHref: '/assessments/a1/report', availableTags },
         global: {
             provide: { [EDITOR_VIEW_KEY as symbol]: view },
             stubs: { teleport: true },
         },
     });
     return { wrapper, view, store };
+}
+
+/** The category group whose accessible name is `title` — W132's pairing of heading and controls. */
+function categoryGroup(wrapper: VueWrapper, title: string) {
+    const heading = wrapper.findAll('h3').find((h) => h.text() === title);
+    expect(heading, `heading "${title}"`).toBeDefined();
+    return wrapper.get(
+        `[role="group"][aria-labelledby="${heading!.attributes('id')}"]`,
+    );
 }
 
 describe('Toolbar', () => {
@@ -72,7 +81,7 @@ describe('Toolbar', () => {
         // Both live inside the same right-hand group, so they move together
         // and cannot be separated by a control added between them later.
         const group = row.get('.ml-auto');
-        expect(group.text()).toContain('View');
+        expect(group.text()).toContain('Chart');
         expect(group.find('[role="group"]').exists()).toBe(true);
     });
 
@@ -101,7 +110,7 @@ describe('Toolbar', () => {
         expect(children[0].textContent).toContain('100%');
         expect(children[0].textContent).not.toContain('View');
         // ...the switcher last, against the row's right edge.
-        expect(children[1].textContent).toContain('View');
+        expect(children[1].getAttribute('aria-label')).toBe('View');
         expect(children[1].textContent).toContain('Report');
     });
 
@@ -185,9 +194,49 @@ describe('Toolbar filters', () => {
 
         await wrapper.get('button[aria-haspopup="true"]').trigger('click');
 
-        const toggle = wrapper.get('[aria-label="Filter by defence status"]')
-            .element.parentElement!;
+        const toggle = categoryGroup(wrapper, 'Values').element;
         expect(toggle.textContent).toContain('Missing values');
         expect(toggle.textContent).not.toContain('Missing values only');
+    });
+
+    /**
+     * W132. Each set sits under a heading that names what it filters, and the
+     * heading is the group's accessible name — so asserting on the group found
+     * *by* its heading proves the pairing, where "the text appears somewhere"
+     * would pass with the headings stacked at the top.
+     */
+    it('puts every filter set under its own category heading', async () => {
+        const { wrapper } = mountToolbar();
+        await wrapper.get('button[aria-haspopup="true"]').trigger('click');
+
+        const type = categoryGroup(wrapper, 'Node type').text();
+        expect(type).toContain('Risk');
+        expect(type).toContain('Transfer');
+        expect(type).not.toContain('Implemented');
+
+        const status = categoryGroup(wrapper, 'Defence status').text();
+        expect(status).toContain('Implemented');
+        expect(status).toContain('Shelved');
+        expect(status).not.toContain('Risk');
+
+        const values = categoryGroup(wrapper, 'Values').text();
+        expect(values).toContain('Missing values');
+        expect(values).not.toContain('Implemented');
+    });
+
+    it('shows the Tags category only when the assessment has tags', async () => {
+        const without = mountToolbar();
+        await without.wrapper
+            .get('button[aria-haspopup="true"]')
+            .trigger('click');
+        expect(without.wrapper.text()).not.toContain('Tags');
+
+        const withTags = mountToolbar(['alpha', 'beta']);
+        await withTags.wrapper
+            .get('button[aria-haspopup="true"]')
+            .trigger('click');
+        const tags = categoryGroup(withTags.wrapper, 'Tags').text();
+        expect(tags).toContain('alpha');
+        expect(tags).toContain('beta');
     });
 });

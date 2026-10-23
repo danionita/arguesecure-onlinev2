@@ -49,7 +49,6 @@ const row = {
     title: 'Payment platform',
     description: 'Cardholder data',
     is_public: false,
-    is_template: false,
     is_owner: false,
     can_manage: false,
     can_delete: false,

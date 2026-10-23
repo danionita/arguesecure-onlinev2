@@ -40,12 +40,13 @@ const UUID = '11111111-2222-3333-4444-555555555555';
 function mountActions(
     over: {
         abilities?: Partial<AssessmentActionsAbilities>;
+        isTemplate?: boolean;
         viewMode?: 'chart' | 'list' | 'report';
     } = {},
 ) {
     return mount(AssessmentActions, {
         props: {
-            assessment: { uuid: UUID },
+            assessment: { uuid: UUID, is_template: over.isTemplate },
             abilities: { manage: false, ...over.abilities },
             viewMode: over.viewMode,
         },
@@ -118,6 +119,19 @@ describe('a viewer sees the subset their abilities allow', () => {
     });
 });
 
+describe('a template has no Share (W141)', () => {
+    it('keeps Settings but not Share, even for someone who may manage it', () => {
+        const wrapper = mountActions({
+            abilities: { manage: true },
+            isTemplate: true,
+        });
+        const text = wrapper.get('[data-testid="assessment-actions"]').text();
+
+        expect(text).toContain('Settings');
+        expect(text).not.toContain('Share');
+    });
+});
+
 describe('Share and Print, as they were (D40: "move as they are")', () => {
     it('emits share rather than navigating, so a page-level dialog can open', async () => {
         const wrapper = mountActions({ abilities: { manage: true } });
@@ -130,7 +144,7 @@ describe('Share and Print, as they were (D40: "move as they are")', () => {
         expect(wrapper.emitted('share')).toHaveLength(1);
     });
 
-    it('prints the current view: emits print, then calls window.print', async () => {
+    it('does not print on the Print click itself: it asks which view first (W138)', async () => {
         const printSpy = vi.fn();
         window.print = printSpy;
 
@@ -140,29 +154,9 @@ describe('Share and Print, as they were (D40: "move as they are")', () => {
             .find((b) => b.text() === 'Print')!
             .trigger('click');
 
-        expect(wrapper.emitted('print')).toHaveLength(1);
-        expect(printSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('names what Print prints, because the same click means three different things', () => {
-        expect(
-            mountActions({ viewMode: 'chart' })
-                .findAll('button')
-                .find((b) => b.text() === 'Print')!
-                .attributes('aria-label'),
-        ).toBe('Print chart');
-        expect(
-            mountActions({ viewMode: 'list' })
-                .findAll('button')
-                .find((b) => b.text() === 'Print')!
-                .attributes('aria-label'),
-        ).toBe('Print list');
-        expect(
-            mountActions({ viewMode: 'report' })
-                .findAll('button')
-                .find((b) => b.text() === 'Print')!
-                .attributes('aria-label'),
-        ).toBe('Print report');
+        expect(printSpy).not.toHaveBeenCalled();
+        expect(wrapper.emitted('print')).toBeUndefined();
+        expect(wrapper.findAll('[role="menuitem"]')).toHaveLength(3);
     });
 });
 

@@ -65,13 +65,17 @@ test('the tab renders the three scales of the default set', function () {
         ->get(route('admin.defaults.edit'))
         ->viewData('page')['props'];
 
-    expect(array_keys($props['scales']))->toEqualCanonicalizing(['impact', 'likelihood', 'strength'])
-        // 2.5.1: one default set, so nothing to name.
-        ->and($props)->not->toHaveKey('setKey')
+    $standard = $props['scaleSets'][0];
+
+    // W126: every admin scale is sent, Standard first.
+    expect($standard['key'])->toBe(ScaleSets::DEFAULT_KEY)
+        ->and($standard['name'])->toBe('Standard')
+        ->and($standard['is_builtin'])->toBeTrue()
+        ->and(array_keys($standard['scales']))->toEqualCanonicalizing(['impact', 'likelihood', 'strength'])
         ->and($props['missingKinds'])->toBe([])
-        ->and($props['scales']['impact']['bands'][0])->toHaveKey('code')
+        ->and($standard['scales']['impact']['bands'][0])->toHaveKey('code')
         // D45: the editor cannot change a colour, so it is not handed one.
-        ->and($props['scales']['impact']['bands'][0])->not->toHaveKey('color');
+        ->and($standard['scales']['impact']['bands'][0])->not->toHaveKey('color');
 })->group('scales');
 
 test('a non-admin cannot reach the Defaults tab or write to it', function () {
@@ -79,7 +83,7 @@ test('a non-admin cannot reach the Defaults tab or write to it', function () {
 
     test()->actingAs($user)->get(route('admin.defaults.edit'))->assertForbidden();
     test()->actingAs($user)
-        ->put(route('admin.defaults.update', ['kind' => 'impact']), ['bands' => defaultsBands()])
+        ->put(route('admin.scales.update', 'default'), ['scales' => ['impact' => ['bands' => defaultsBands()]]])
         ->assertForbidden();
     test()->actingAs($user)
         ->put(route('admin.defaults.currency'), ['default_currency' => 'USD'])
@@ -90,9 +94,9 @@ test('an anonymous caller is redirected to login', function () {
     test()->get(route('admin.defaults.edit'))->assertRedirect(route('login'));
 })->group('scales');
 
-test('an unknown kind is not found rather than reaching a scale', function () {
+test('an unknown scale is not found rather than reaching a row', function () {
     test()->actingAs(admin())
-        ->put(route('admin.defaults.update', ['kind' => 'colour']), ['bands' => defaultsBands()])
+        ->put(route('admin.scales.update', 'no-such-scale'), ['scales' => ['impact' => ['bands' => defaultsBands()]]])
         ->assertNotFound();
 })->group('scales');
 
@@ -105,7 +109,7 @@ test('saving edits the shared system scale in place rather than cloning it', fun
     $bands[0]['label'] = 'Barely worth mentioning';
 
     test()->actingAs(admin())
-        ->put(route('admin.defaults.update', ['kind' => 'impact']), ['bands' => $bands])
+        ->put(route('admin.scales.update', 'default'), ['scales' => ['impact' => ['bands' => $bands]]])
         ->assertRedirect(route('admin.defaults.edit'));
 
     $after = defaultImpactScale();
@@ -125,7 +129,7 @@ test('a code is frozen across a rename here too', function () {
     $bands[$index]['label'] = 'Medium';
 
     test()->actingAs(admin())
-        ->put(route('admin.defaults.update', ['kind' => 'impact']), ['bands' => $bands])
+        ->put(route('admin.scales.update', 'default'), ['scales' => ['impact' => ['bands' => $bands]]])
         ->assertRedirect();
 
     $codes = defaultImpactScale()->levels->pluck('code');
@@ -153,14 +157,14 @@ test('an assessment that has calibrated is untouched by a default edit', functio
     $own[0]['label'] = 'Ours alone';
 
     test()->actingAs($assessment->owner)
-        ->put(route('assessments.scales.update', [$assessment, 'impact']), ['bands' => $own])
+        ->put(route('assessments.scales.update', $assessment), ['scales' => ['impact' => ['bands' => $own]]])
         ->assertRedirect();
 
     $bands = defaultsBands();
     $bands[0]['label'] = 'Changed centrally';
 
     test()->actingAs(admin())
-        ->put(route('admin.defaults.update', ['kind' => 'impact']), ['bands' => $bands])
+        ->put(route('admin.scales.update', 'default'), ['scales' => ['impact' => ['bands' => $bands]]])
         ->assertRedirect();
 
     $theirs = Scale::query()->findOrFail($assessment->fresh()->impact_scale_id);
@@ -195,7 +199,7 @@ test('an assessment still following the default keeps its bands and values when 
     $bands[0]['lower_bound'] = 0.0;
 
     test()->actingAs(admin())
-        ->put(route('admin.defaults.update', ['kind' => 'impact']), ['bands' => $bands])
+        ->put(route('admin.scales.update', 'default'), ['scales' => ['impact' => ['bands' => $bands]]])
         ->assertRedirect();
 
     // Through 2.5 this cleared the risk's impact and moved the assessment's
@@ -226,7 +230,7 @@ test('a new assessment starts from the edited default', function () {
     $bands[0]['label'] = 'Barely worth mentioning';
 
     test()->actingAs(admin())
-        ->put(route('admin.defaults.update', ['kind' => 'impact']), ['bands' => $bands])
+        ->put(route('admin.scales.update', 'default'), ['scales' => ['impact' => ['bands' => $bands]]])
         ->assertRedirect();
 
     $assessment = app(AssessmentCreator::class)->create(admin(), 'Next one');
@@ -282,7 +286,7 @@ test('both editors are handed the same band shape', function () {
 
     $adminBand = test()->actingAs(admin())
         ->get(route('admin.defaults.edit'))
-        ->viewData('page')['props']['scales']['impact']['bands'][0];
+        ->viewData('page')['props']['scaleSets'][0]['scales']['impact']['bands'][0];
 
     $assessmentBand = test()->actingAs($assessment->owner)
         ->get(route('assessments.settings.edit', $assessment->uuid))
@@ -307,7 +311,7 @@ test('an incomplete set is named rather than silently rendered short', function 
         ->viewData('page')['props'];
 
     expect($props['missingKinds'])->toBe(['strength'])
-        ->and($props['scales']['strength'])->toBeNull();
+        ->and($props['scaleSets'][0]['scales']['strength'])->toBeNull();
 })->group('scales');
 
 test('instance settings no longer writes the default currency', function () {

@@ -29,6 +29,7 @@ import CoverSection from './CoverSection.vue';
 import DefenceRankingSection from './DefenceRankingSection.vue';
 import ExecutiveSummarySection from './ExecutiveSummarySection.vue';
 import ProgrammeSection from './ProgrammeSection.vue';
+import { omittedLabel } from './reportSections';
 import RiskRegisterSection from './RiskRegisterSection.vue';
 import TransfersSection from './TransfersSection.vue';
 import type { ReportData } from './types';
@@ -60,6 +61,9 @@ const importanceAttributionRows = computed(() => [
     ...props.report.defencesByImportance.free,
     ...props.report.defencesByImportance.unpriced,
 ]);
+
+const shows = (id: string) =>
+    !props.report.options.omittedSections.includes(id);
 </script>
 
 <template>
@@ -68,6 +72,7 @@ const importanceAttributionRows = computed(() => [
         :style="zoomStyle"
     >
         <CoverSection
+            v-if="shows('cover')"
             :cover="report.cover"
             :currency="report.assessment.currency"
         />
@@ -78,6 +83,7 @@ const importanceAttributionRows = computed(() => [
             refers to.
         -->
         <SummaryNarrative
+            v-if="shows('written-summary')"
             :assessment-uuid="assessment.uuid"
             :narrative="assessment.summaryNarrative ?? null"
             :generated="assessment.summaryNarrativeGenerated ?? false"
@@ -87,6 +93,7 @@ const importanceAttributionRows = computed(() => [
         />
 
         <ExecutiveSummarySection
+            v-if="shows('executive-summary')"
             :summary="report.executiveSummary"
             :baseline="report.options.baseline"
             :currency="report.assessment.currency"
@@ -94,25 +101,31 @@ const importanceAttributionRows = computed(() => [
         />
 
         <ProgrammeSection
+            v-if="shows('programme')"
             :programme="report.programme"
             :currency="report.assessment.currency"
         />
 
         <RiskRegisterSection
+            v-if="shows('risk-register')"
             :risks="report.riskRegister"
             :baseline="report.options.baseline"
             :currency="report.assessment.currency"
         />
 
         <DefenceRankingSection
-            title="Defences ranked by importance"
-            description="Implemented controls, by marginal contribution — how much annual expected loss would return if each were switched off."
+            v-if="shows('defences-importance')"
+            title="Defences ranked by cost benefit"
+            description="Implemented controls. Priced ones are ordered by cost-benefit ratio; free and unpriced ones by the annual expected loss that would return if each were switched off."
             :buckets="report.defencesByImportance"
             benefit-label="If removed"
             :currency="report.assessment.currency"
         />
 
-        <section class="report-section break-inside-avoid">
+        <section
+            v-if="shows('defences-importance')"
+            class="report-section break-inside-avoid"
+        >
             <h3 class="text-text-primary text-sm font-semibold">
                 Share of risk reduction (log-share attribution)
             </h3>
@@ -131,6 +144,7 @@ const importanceAttributionRows = computed(() => [
         </section>
 
         <DefenceRankingSection
+            v-if="shows('defences-opportunity')"
             title="Defences ranked by opportunity"
             description="Todo controls, by what implementing each would buy against the current baseline — the roadmap."
             :buckets="report.defencesByOpportunity"
@@ -145,18 +159,23 @@ const importanceAttributionRows = computed(() => [
             :buckets="report.shelvedOpportunity"
             benefit-label="If unshelved"
             :currency="report.assessment.currency"
-            heading-level="h3"
+            :heading-level="shows('defences-opportunity') ? 'h3' : 'h2'"
         />
 
         <TransfersSection
+            v-if="shows('transfers')"
             :transfers="report.transfers"
             :baseline="report.options.baseline"
             :currency="report.assessment.currency"
         />
 
-        <ControlCoverageSection :coverage="report.controlCoverage" />
+        <ControlCoverageSection
+            v-if="shows('control-coverage')"
+            :coverage="report.controlCoverage"
+        />
 
         <AssessmentTreeSection
+            v-if="shows('tree')"
             :tree="report.tree"
             :baseline="report.options.baseline"
             :currency="report.assessment.currency"
@@ -168,8 +187,25 @@ const importanceAttributionRows = computed(() => [
             :options="report.options"
             :summary-generated="
                 (assessment.summaryNarrativeGenerated ?? false) &&
-                !!assessment.summaryNarrative
+                !!assessment.summaryNarrative &&
+                shows('written-summary')
             "
         />
+
+        <!--
+            W139, D118. A report with sections left out names them, so a
+            partial document cannot pass for a complete one.
+        -->
+        <p
+            v-if="report.options.omittedSections.length > 0"
+            class="text-text-muted text-xs"
+            data-testid="sections-omitted"
+        >
+            <template v-if="!shows('cover')">
+                Report on {{ report.cover.title || 'Untitled assessment' }}.
+            </template>
+            Sections left out of this report:
+            {{ report.options.omittedSections.map(omittedLabel).join(', ') }}.
+        </p>
     </main>
 </template>

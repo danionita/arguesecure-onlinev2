@@ -5,6 +5,7 @@ namespace App\Domain\Reporting\Export;
 use App\Domain\Reporting\Money;
 use App\Domain\Reporting\ReportOptions;
 use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Writer\Word2007;
 
@@ -19,12 +20,13 @@ use PhpOffice\PhpWord\Writer\Word2007;
  * the recipient that the file is not what it claims, and then loses the
  * styles anyway.
  *
- * **Every string goes in as text.** `addText()` and `addCell()->addText()`
- * escape their content; nothing here builds markup from a title, a rationale
- * or the written summary. The summary in particular may be model-drafted
- * text a person accepted (W54, D24) — the accept step is the guardrail, and
- * a renderer that interpreted what it carried would be a second surface for
- * exactly what D24 exists to stop.
+ * **Every string goes in as text.** PhpWord writes text into the XML raw
+ * unless output escaping is switched on — its default is off — so `export()`
+ * switches it on before it builds anything (W106). Nothing here builds markup
+ * from a title, a rationale or the written summary. The summary in particular
+ * may be model-drafted text a person accepted (W54, D24) — the accept step is
+ * the guardrail, and a renderer that interpreted what it carried would be a
+ * second surface for exactly what D24 exists to stop.
  *
  * Tables repeat their header row across pages (`tblHeader`). The
  * full-assessment section is 14 columns of a 200-row assessment; a header
@@ -39,6 +41,11 @@ final class WordExporter
     {
         $sections = (new ReportSectionBuilder)->build($report, $options);
         $money = new Money($this->currency($report));
+
+        // A process-wide setting, and deliberately left on: a queue worker
+        // that ran one export with it off would write the next one's titles
+        // raw too.
+        Settings::setOutputEscapingEnabled(true);
 
         $word = new PhpWord;
         $word->getSettings()->setUpdateFields(true);

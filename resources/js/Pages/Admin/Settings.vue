@@ -13,6 +13,7 @@ import Button from '@/Components/UI/Button.vue';
 import Input from '@/Components/UI/Input.vue';
 import Toggle from '@/Components/UI/Toggle.vue';
 import AdminLayout from '@/Pages/Admin/AdminLayout.vue';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
@@ -23,6 +24,8 @@ const props = defineProps<{
 }>();
 
 const form = useForm({ ...props.settings });
+
+useUnsavedChanges(() => form.isDirty);
 
 function submit() {
     form.put(route('admin.settings.update'));
@@ -45,6 +48,11 @@ function submit() {
                 label="Session lifetime (minutes)"
                 :error="form.errors.session_lifetime_minutes"
             />
+
+            <!--
+                Require two-factor and SSO-only moved to the Authentication tab
+                (W133, D105).
+            -->
 
             <!--
                 No "registration locked" control here: CLAUDE.md is explicit

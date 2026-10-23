@@ -62,3 +62,4 @@ CLAUDE.local.md
 
 # A local Redis started in the checkout writes its snapshot here.
 /dump.rdb
+/coverage/

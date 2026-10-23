@@ -66,6 +66,8 @@ function page() {
             currencies: { EUR: 'Euro', USD: 'US Dollar' },
             maxAmortizationYears: 10,
             scales: { impact: null, likelihood: null, strength: null },
+            scaleSets: [],
+            scaleSetKey: null,
             topBandMultiplier: 5,
             flashSuccess: null,
             errors: {},

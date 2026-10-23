@@ -20,6 +20,14 @@ use Illuminate\Database\QueryException;
  * @property bool $assistant_suggestions_enabled
  * @property bool $assistant_summary_enabled
  * @property int $session_lifetime_minutes
+ * @property bool $require_two_factor
+ * @property bool $sso_only
+ * @property string|null $oidc_issuer
+ * @property string|null $oidc_client_id
+ * @property string|null $oidc_client_secret
+ * @property string|null $oidc_button_label
+ * @property string|null $oidc_allowed_domains
+ * @property bool $oidc_trust_email
  */
 class InstanceSetting extends Model
 {
@@ -41,7 +49,25 @@ class InstanceSetting extends Model
         'assistant_suggestions_enabled',
         'assistant_summary_enabled',
         'session_lifetime_minutes',
+        'require_two_factor',
+        'sso_only',
+        // W133, D106. OidcConfig reads these only for a field the
+        // environment leaves empty.
+        'oidc_issuer',
+        'oidc_client_id',
+        'oidc_client_secret',
+        'oidc_button_label',
+        'oidc_allowed_domains',
+        'oidc_trust_email',
     ];
+
+    /**
+     * The secret never leaves the model by accident: not in toArray(), not in
+     * an Inertia prop, not in a log context.
+     *
+     * @var list<string>
+     */
+    protected $hidden = ['oidc_client_secret'];
 
     /**
      * @return array<string, string>
@@ -55,6 +81,10 @@ class InstanceSetting extends Model
             'assistant_suggestions_enabled' => 'boolean',
             'assistant_summary_enabled' => 'boolean',
             'session_lifetime_minutes' => 'integer',
+            'require_two_factor' => 'boolean',
+            'sso_only' => 'boolean',
+            'oidc_client_secret' => 'encrypted',
+            'oidc_trust_email' => 'boolean',
         ];
     }
 

@@ -29,6 +29,37 @@ class AssessmentPolicy
         'viewer' => ['view'],
     ];
 
+    /**
+     * A template has no owner and is not shared (W141, T2): every ability on
+     * it is an admin's, whatever `is_public`, a share token or a stray
+     * collaborator row says, except the two below. One hook for all of them, so
+     * an ability added later cannot forget the rule and fall through to the
+     * owner, role and public paths this closes.
+     *
+     * - `useAsTemplate` is the one any signed-in account holds: it falls through.
+     * - `transferOwnership` is nobody's: there is no owner to hand it from.
+     *
+     * Erasing a template that reached the trash (`forceDelete`) is an admin's too.
+     */
+    public function before(?User $user, string $ability, mixed $assessment = null): ?bool
+    {
+        if (! $assessment instanceof Assessment || ! $assessment->is_template) {
+            return null;
+        }
+
+        return match ($ability) {
+            'useAsTemplate' => null,
+            'transferOwnership' => false,
+            default => $this->isAdmin($user),
+        };
+    }
+
+    /** Creating a template from nothing, on the Templates page (W141). */
+    public function createTemplate(?User $user): bool
+    {
+        return $this->isAdmin($user);
+    }
+
     public function view(?User $user, Assessment $assessment): bool
     {
         return $this->isAdmin($user)
@@ -81,10 +112,12 @@ class AssessmentPolicy
      * contains is an instance-wide decision, the same kind an admin makes
      * about users and defaults. Through 2.5 the owner could publish too.
      *
-     * It grants nothing on the reading side of the original: publishing does
-     * not touch `is_public`, and being a template adds no write ability for
-     * anyone — tests/Feature/Templates/TemplateSecurityTest.php asserts that
-     * verb by verb rather than once.
+     * Since W141 publishing copies the assessment into a separate template
+     * and writes nothing to the original, so this gates the copy, not a flag.
+     * A template itself is reachable only by admins (`view`, `update`,
+     * `manage` and `delete` above), whatever `is_public` or a stray
+     * collaborator row says, and has no owner to transfer to — asserted verb
+     * by verb in tests/Feature/Templates/TemplateSecurityTest.php.
      */
     public function saveAsTemplate(?User $user, Assessment $assessment): bool
     {
@@ -103,7 +136,10 @@ class AssessmentPolicy
         return $user !== null && (bool) $assessment->is_template;
     }
 
-    /** Only the owner or an admin transfers ownership or hard-deletes (schema.md §3.7). */
+    /**
+     * Only the owner or an admin transfers ownership or hard-deletes (schema.md §3.7).
+     * A template has no owner to hand over, so nobody does, an admin included.
+     */
     public function transferOwnership(?User $user, Assessment $assessment): bool
     {
         return $this->isAdmin($user) || $this->isOwner($user, $assessment);
@@ -111,6 +147,9 @@ class AssessmentPolicy
 
     public function forceDelete(?User $user, Assessment $assessment): bool
     {
+        // A template that ended up in the trash (a bundled one deleted before
+        // the conversion, or through the generic delete route) has no owner to
+        // erase it, so an admin does.
         return $this->transferOwnership($user, $assessment);
     }
 

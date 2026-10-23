@@ -167,13 +167,11 @@ class ShareController extends Controller
             'created_at' => Carbon::make($assessment->share_token_created_at)?->toJSON(),
         ]);
 
-        // W12 (tree editor) owns the assessment show page and its route
-        // name; it doesn't exist yet in this worktree. Sending the holder
-        // to the dashboard is a placeholder landing point — the access
-        // grant itself (the session flag above) is what this route exists
-        // to establish, and AssessmentPolicy::view() already honours it
-        // regardless of where the redirect points.
-        return redirect()->route('dashboard')->with('shareTokenAssessmentId', $assessment->id);
+        // W114: the editor, which renders read-only because the policy
+        // grants a token holder `view` alone. This used to point at the
+        // dashboard, which requires a login, so a holder without an
+        // account landed on the sign-in page despite holding a valid grant.
+        return redirect()->route('assessments.show', $assessment);
     }
 
     /**

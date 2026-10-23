@@ -25,6 +25,7 @@
  * thing they came for, which on the editor is a tree they wanted to be in.
  */
 import ChromeHeaderBand from '@/Components/Chrome/ChromeHeaderBand.vue';
+import { useFlashToasts } from '@/Components/Chrome/flashToasts';
 import NotificationPanel from '@/Components/Nav/NotificationPanel.vue';
 import Sidebar from '@/Components/Nav/Sidebar.vue';
 import {
@@ -33,17 +34,22 @@ import {
     useSidebar,
 } from '@/Components/Nav/useSidebar';
 import ToastContainer from '@/Components/UI/ToastContainer.vue';
+import UnsavedChangesDialog from '@/Components/UI/UnsavedChangesDialog.vue';
 // W49. Loaded here rather than only in Report/Show.vue so the chart and the
 // list print too — same stylesheet, same browser pipeline, no new dependency
 // (PLAN-2.2.md D6). Its report rules are scoped to `.report-*` and its editor
 // rules to `.editor-print`, so neither view can disturb the other's page
 // breaks.
 import { useTheme } from '@/Components/UI/useTheme';
+import type { VersionProps } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import '../../css/print.css';
 
 useTheme();
+
+// W115: what a controller flashed, shown once, in the `ToastContainer` below.
+useFlashToasts();
 
 const page = usePage();
 
@@ -53,6 +59,7 @@ interface NavProps {
     myAssessments?: { uuid: string; title: string }[];
     sharedWithMe?: { uuid: string; title: string; ownerName?: string | null }[];
     notificationCount?: number;
+    version?: VersionProps;
 }
 
 // Defaulted rather than asserted: several component tests and the Help pages
@@ -178,6 +185,7 @@ const editorPrint = computed(() => ASSESSMENT_EDITOR.test(currentUrl.value));
                     :shared-with-me="nav.sharedWithMe ?? []"
                     :is-admin="nav.isAdmin ?? false"
                     :notification-count="badgeCount"
+                    :version="nav.version"
                     :railed="sidebar.railed.value"
                     :panel-visible="sidebar.panelVisible.value"
                     :is-overlay="sidebar.isOverlay.value"
@@ -232,5 +240,6 @@ const editorPrint = computed(() => ASSESSMENT_EDITOR.test(currentUrl.value));
         />
 
         <ToastContainer />
+        <UnsavedChangesDialog />
     </div>
 </template>

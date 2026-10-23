@@ -132,6 +132,7 @@ function childEdge(childUuid: string): AttackDefenceLink | undefined {
                 :path-key="pathKey"
                 :edge="edge"
                 :has-children="childUuids.length > 0"
+                :child-count="childUuids.length"
                 :collapsed="!expanded"
                 :selected="chart.selectedPathKey.value === pathKey"
                 :drag-payload="dragPayload"

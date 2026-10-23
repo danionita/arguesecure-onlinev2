@@ -61,15 +61,20 @@ class AssessmentSettingsController extends Controller
              * assessment and its level ids do not exist until the clone runs.
              */
             'scales' => ScaleDescriber::forAssessment($assessment),
+            // W126: every admin scale in full, so picking one fills the editors
+            // without a request, and the key the dropdown starts on (null is
+            // Custom).
+            'scaleSets' => ScaleDescriber::allSets(),
+            'scaleSetKey' => $assessment->scale_set_key,
             'topBandMultiplier' => ScaleDescriber::topBandMultiplier(),
             /*
-             * The message a scale save or reset leaves behind.
+             * The message a scales save leaves behind.
              *
              * Read here and passed as a prop, rather than relied on as a
              * shared one: `HandleInertiaRequests::share()` does not share the
              * session's flash bag, so a `->with('success', …)` reaches the
-             * server-side session and stops there. That matters for these two
-             * writes in particular — a calibration that removes a band reports
+             * server-side session and stops there. That matters for this
+             * write in particular — a save that removes a band reports
              * how many stored values it emptied, and someone spent a workshop
              * arriving at them.
              */

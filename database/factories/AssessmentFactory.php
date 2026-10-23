@@ -61,8 +61,9 @@ class AssessmentFactory extends Factory
         return $this->state(fn (): array => ['is_public' => true]);
     }
 
+    /** Ownerless, as the database CHECK requires of every template (W141). */
     public function template(): static
     {
-        return $this->state(fn (): array => ['is_template' => true]);
+        return $this->state(fn (): array => ['is_template' => true, 'owner_user_id' => null]);
     }
 }

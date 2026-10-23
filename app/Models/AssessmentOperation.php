@@ -25,12 +25,21 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed> $inverse
  * @property ?Carbon $undone_at
  * @property ?int $undone_by
+ * @property ?Carbon $redone_at
+ * @property ?Carbon $superseded_at
  * @property ?Carbon $created_at
  * @property ?User $user
  */
 class AssessmentOperation extends Model
 {
     public $timestamps = false;
+
+    /**
+     * W108: `undone_at` keeps microseconds so redo can tell which of two
+     * undos in the same second came last. The other date columns have none
+     * and MariaDB drops the fraction on write.
+     */
+    protected $dateFormat = 'Y-m-d H:i:s.u';
 
     protected $guarded = [];
 
@@ -39,6 +48,8 @@ class AssessmentOperation extends Model
         return [
             'inverse' => 'array',
             'undone_at' => 'datetime',
+            'redone_at' => 'datetime',
+            'superseded_at' => 'datetime',
             'created_at' => 'datetime',
         ];
     }

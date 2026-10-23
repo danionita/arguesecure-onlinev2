@@ -10,6 +10,7 @@ use App\Domain\Reporting\Money;
 use App\Domain\Reporting\ReportBuilder;
 use App\Domain\Reporting\ReportOptions;
 use App\Models\Assessment;
+use Illuminate\Support\Arr;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Tests\Feature\Reporting\ExportFixture;
@@ -263,12 +264,103 @@ test('include methodology reaches every format', function () {
         ->get(route('assessments.report.export-html', $assessment).'?include_methodology=0')->getContent();
 
     expect($on)->toContain('Appendix: methodology')
-        ->and($off)->not->toContain('Appendix: methodology');
+        ->and($on)->not->toContain('methodology appendix is not included')
+        ->and($off)->not->toContain('Appendix: methodology')
+        // W153: leaving it out is stated, as the warnings' omission is.
+        ->and($off)->toContain('The methodology appendix is not included in this report.');
 
     // The independence assumption and the per-occurrence definition of
     // impact are the two statements ui.md §9 names by name.
     expect($on)->toContain('independent')
         ->and($on)->toContain('loss per occurrence');
+});
+
+/*
+ * W153, D120. The four optional appendices and details all start off; only
+ * `download=1` turns three of them on, and never the assignees.
+ */
+test('comments, methodology, warnings and assignees all default off', function () {
+    $defaults = ReportOptions::fromQuery([]);
+
+    expect($defaults->includeComments)->toBeFalse()
+        ->and($defaults->includeMethodology)->toBeFalse()
+        ->and($defaults->includeWarnings)->toBeFalse()
+        ->and($defaults->showAssignees)->toBeFalse()
+        ->and($defaults->omittedSections)->toBe([]);
+
+    $download = ReportOptions::fromQuery(['download' => '1']);
+    expect($download->includeComments)->toBeTrue()
+        ->and($download->includeMethodology)->toBeTrue()
+        ->and($download->includeWarnings)->toBeTrue()
+        ->and($download->showAssignees)->toBeFalse();
+});
+
+/*
+ * W136, D105. The warnings appendix is optional, but a report without it must
+ * not read as "the model raised none": it says how many it left out.
+ */
+test('include_warnings defaults off, and download=1 turns it on', function () {
+    expect(ReportOptions::fromQuery([])->includeWarnings)->toBeFalse()
+        ->and(ReportOptions::fromQuery(['include_warnings' => '0'])->includeWarnings)->toBeFalse()
+        ->and(ReportOptions::fromQuery(['include_warnings' => '1'])->includeWarnings)->toBeTrue()
+        ->and(ReportOptions::fromQuery(['download' => '1', 'include_warnings' => '0'])->includeWarnings)->toBeTrue();
+});
+
+test('include_warnings=0 leaves the warnings out of every format and states how many', function () {
+    $assessment = ExportFixture::assessment();
+    $warnings = assembled($assessment, ReportOptions::fromQuery(['include_warnings' => '1']))['appendices']['warnings'];
+    expect($warnings)->not->toBeEmpty();
+    $count = count($warnings);
+    $message = $warnings[0]['message'];
+    $note = $count === 1
+        ? '1 model-quality warning was left out of this report.'
+        : "{$count} model-quality warnings were left out of this report.";
+
+    $html = fn (string $query): string => $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-html', $assessment).$query)->getContent();
+
+    $on = $html('?include_warnings=1');
+    $off = $html('?include_warnings=0');
+
+    expect($on)->toContain('Appendix: warnings')
+        ->and($on)->toContain(e($message))
+        ->and($off)->not->toContain(e($message))
+        ->and($off)->toContain($note)
+        ->and($on)->not->toContain('were left out of this report');
+
+    // The same on the other renderings of the one assembled report.
+    $report = assembled($assessment, ReportOptions::fromQuery(['include_warnings' => '0']));
+    expect($report['appendices']['warnings'])->toBe([])
+        ->and($report['appendices']['warningsOmitted'])->toBe($count);
+
+    $word = docxText($this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-word', $assessment).'?include_warnings=0')->getContent());
+    expect($word)->not->toContain($message)
+        ->and($word)->toContain($note);
+
+    $csv = $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.defences-csv', $assessment).'?include_warnings=0')->getContent();
+    expect($csv)->not->toContain($message)
+        ->and($csv)->toContain($note);
+});
+
+test('the methodology appendix points at the warnings appendix only when it exists', function () {
+    $assessment = ExportFixture::assessment();
+    $get = fn (string $q): string => $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-html', $assessment).$q)->getContent();
+
+    expect($get('?include_methodology=1&include_warnings=1'))->toContain('the warnings appendix names each place')
+        ->and($get('?include_methodology=1&include_warnings=0'))->not->toContain('the warnings appendix names each place');
+});
+
+test('download=1 keeps the warnings even when the query says to omit them', function () {
+    $assessment = ExportFixture::assessment();
+
+    $html = $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-html', $assessment).'?download=1&include_warnings=0')->getContent();
+
+    expect($html)->toContain('Appendix: warnings')
+        ->and($html)->not->toContain('were left out of this report');
 });
 
 test('show assignees is off by default and adds a column only when chosen', function () {
@@ -422,4 +514,118 @@ test('the section list is the same for every format', function () {
     foreach ($titles as $title) {
         expect($html)->toContain(htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
     }
+});
+
+/*
+ * W139, D118. Every section can be left out with `omit_sections`; a report that
+ * leaves some out names them, and the figures in the rest do not move.
+ */
+test('omit_sections defaults to none, drops unknown ids, keeps document order, and download=1 clears it', function () {
+    expect(ReportOptions::fromQuery([])->omittedSections)->toBe([])
+        ->and(ReportOptions::fromQuery(['omit_sections' => 'transfers, bogus,cover,cover'])->omittedSections)->toBe(['cover', 'transfers'])
+        ->and(ReportOptions::fromQuery(['omit_sections' => ['tree', 'cover', ['x']]])->omittedSections)->toBe(['cover', 'tree'])
+        ->and(ReportOptions::fromQuery(['download' => '1', 'omit_sections' => 'cover'])->omittedSections)->toBe([])
+        ->and(ReportOptions::fromQuery(['omit_sections' => 'cover'])->includes('cover'))->toBeFalse()
+        ->and(ReportOptions::fromQuery([])->includes('cover'))->toBeTrue();
+});
+
+test('each omittable section is removed alone, in the builder that feeds every format', function () {
+    $assessment = ExportFixture::assessment();
+    $all = ReportOptions::fromQuery(['include_shelved' => '1']);
+    $report = assembled($assessment, $all);
+    // The fixture has no written summary, which would drop the section anyway.
+    $report['writtenSummary'] = ['text' => 'A written summary.', 'generated' => false];
+    $builder = new ReportSectionBuilder;
+    $ids = fn (ReportOptions $o): array => array_map(
+        fn ($s) => $s->key,
+        $builder->build($report, $o),
+    );
+    $baseline = $ids($all);
+
+    // `tree` is the query id; the section carries the id `full-assessment`.
+    $sectionId = fn (string $id): string => $id === 'tree' ? 'full-assessment' : $id;
+
+    foreach (array_keys(ReportOptions::SECTIONS) as $id) {
+        $without = $ids(ReportOptions::fromQuery(['include_shelved' => '1', 'omit_sections' => $id]));
+        $gone = array_values(array_diff($baseline, $without));
+
+        // The fixture cites no framework control, so control coverage renders
+        // nothing either way; every other section must go, alone.
+        expect($gone)->toBe($id === 'control-coverage' ? [] : [$sectionId($id)]);
+        expect(array_values(array_diff($without, $baseline, ['sections-omitted'])))->toBe([]);
+    }
+
+    // Every omittable section is present in the baseline, so none passes by being empty.
+    expect($baseline)->toContain(...array_map($sectionId, array_values(array_diff(array_keys(ReportOptions::SECTIONS), ['control-coverage']))));
+});
+
+test('omitting a section is named in every format and moves no figure', function () {
+    $assessment = ExportFixture::assessment();
+    $query = '?omit_sections=programme,transfers';
+    $note = 'Sections left out of this report: Programme, Transfers.';
+
+    $html = fn (string $q): string => $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-html', $assessment).$q)->getContent();
+
+    $full = $html('');
+    $partial = $html($query);
+
+    expect($full)->toContain('The plan: cost and benefit')
+        ->and($full)->not->toContain('Sections left out')
+        ->and($partial)->not->toContain('The plan: cost and benefit')
+        ->and($partial)->toContain($note);
+
+    $word = docxText($this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-word', $assessment).$query)->getContent());
+    expect($word)->toContain($note)->and($word)->not->toContain('The plan: cost and benefit');
+
+    $csv = $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.defences-csv', $assessment).$query)->getContent();
+    expect($csv)->toContain($note);
+
+    // Same engine run: the cover's figures are identical either way.
+    $a = assembled($assessment, ReportOptions::fromQuery([]));
+    $b = assembled($assessment, ReportOptions::fromQuery(['omit_sections' => 'programme,risk-register,tree']));
+    // `generatedAt` is the wall clock and can differ by a second between the two builds.
+    expect(Arr::except($b['cover'], 'generatedAt'))->toBe(Arr::except($a['cover'], 'generatedAt'))
+        ->and($b['executiveSummary'])->toBe($a['executiveSummary']);
+});
+
+test('a report without its cover still names what it assesses, and array and comma forms both omit', function () {
+    $assessment = ExportFixture::assessment();
+    $title = assembled($assessment, ReportOptions::fromQuery([]))['cover']['title'];
+
+    $html = $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-html', $assessment).'?omit_sections=cover')->getContent();
+    expect($html)->toContain('Report on '.e($title).'.')
+        ->and($html)->toContain('Sections left out of this report: Cover.');
+
+    expect(ReportOptions::fromQuery(['omit_sections' => ['programme,transfers', 'cover']])->omittedSections)
+        ->toBe(['cover', 'programme', 'transfers']);
+});
+
+test('download=1 keeps every section even when the query omits them', function () {
+    $assessment = ExportFixture::assessment();
+
+    $html = $this->actingAs($assessment->owner)
+        ->get(route('assessments.report.export-html', $assessment).'?download=1&omit_sections=programme')->getContent();
+
+    expect($html)->toContain('The plan: cost and benefit')
+        ->and($html)->not->toContain('Sections left out');
+});
+
+test('the page and the exports list the same omittable sections', function () {
+    $ts = file_get_contents(base_path('resources/js/Components/Report/reportSections.ts'));
+    preg_match_all("/id: '([a-z-]+)',\s*label: '([^']+)'/", $ts, $m);
+
+    // The page prints "Appendix: references" for the appendix, the exports'
+    // own heading; every other label is the same string on both sides.
+    $labels = array_map(
+        fn (string $label, string $id): string => $id === 'references' ? 'Appendix: '.strtolower($label) : $label,
+        $m[2],
+        $m[1],
+    );
+
+    expect($m[1])->toBe(array_keys(ReportOptions::SECTIONS))
+        ->and($labels)->toBe(array_values(ReportOptions::SECTIONS));
 });

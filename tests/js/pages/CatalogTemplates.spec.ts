@@ -23,9 +23,16 @@ import Templates from '../../../resources/js/Pages/Catalog/Templates.vue';
 
 const route = () => '/templates.use/x';
 
+const router = vi.hoisted(() => ({
+    visit: vi.fn(),
+    post: vi.fn(),
+    delete: vi.fn(),
+}));
+
 vi.mock('@inertiajs/vue3', () => ({
     Head: { name: 'Head', template: '<div><slot /></div>' },
-    router: { visit: vi.fn() },
+    Link: { name: 'Link', template: '<a><slot /></a>' },
+    router,
 }));
 
 beforeAll(() => {
@@ -37,19 +44,27 @@ function template(over: Partial<TemplateSummary> = {}): TemplateSummary {
         uuid: 't1',
         title: 'ISO 27001 baseline',
         description: 'A starting point for a management-system audit.',
-        owner: 'Dana',
         currency: 'EUR',
         updatedAt: null,
         ...over,
     };
 }
 
-function page(templates: TemplateSummary[]) {
+function page(templates: TemplateSummary[], canManage = false) {
     return mount(Templates, {
-        props: { templates },
+        props: { templates, canManage },
         global: {
+            mocks: { route },
             stubs: {
-                AuthenticatedLayout: { template: '<div><slot /></div>' },
+                AuthenticatedLayout: {
+                    template: '<div><slot name="header" /><slot /></div>',
+                },
+                ConfirmDialog: {
+                    props: ['show', 'title'],
+                    emits: ['confirm', 'cancel'],
+                    template:
+                        '<div v-if="show" data-testid="confirm"><button data-testid="ok" @click="$emit(\'confirm\')" /></div>',
+                },
             },
         },
     });
@@ -111,5 +126,72 @@ describe('with templates: the panel wraps rows only, not double-padded (item 15)
             expect(row.classes()).toContain('px-4');
             expect(row.classes()).toContain('py-3');
         }
+    });
+});
+
+describe('managing templates (W141)', () => {
+    it('shows an admin New, Edit and Delete, and a non-admin none of them', () => {
+        const admin = page([template()], true);
+        expect(admin.text()).toContain('New template');
+        expect(admin.text()).toContain('Edit');
+        expect(admin.text()).toContain('Delete');
+
+        const member = page([template()], false);
+        expect(member.text()).not.toContain('New template');
+        expect(member.text()).not.toContain('Edit');
+        expect(member.text()).not.toContain('Delete');
+        expect(member.text()).toContain('Use this template');
+    });
+
+    it('creates a template by posting to the create route', async () => {
+        router.post.mockClear();
+        const wrapper = page([], true);
+
+        await wrapper
+            .findAll('button')
+            .find((b) => b.text() === 'New template')!
+            .trigger('click');
+
+        expect(router.post).toHaveBeenCalledWith('/templates.use/x');
+    });
+
+    it('asks before deleting and deletes that template only on confirm', async () => {
+        router.delete.mockClear();
+        const wrapper = page(
+            [template({ uuid: 't1' }), template({ uuid: 't2' })],
+            true,
+        );
+        expect(wrapper.find('[data-testid="confirm"]').exists()).toBe(false);
+
+        await wrapper
+            .findAll('button')
+            .filter((b) => b.text() === 'Delete')[1]
+            .trigger('click');
+
+        expect(router.delete).not.toHaveBeenCalled();
+        expect(wrapper.find('[data-testid="confirm"]').exists()).toBe(true);
+
+        await wrapper.get('[data-testid="ok"]').trigger('click');
+
+        expect(router.delete).toHaveBeenCalledTimes(1);
+        expect(router.delete.mock.calls[0][0]).toBe('/templates.use/x');
+    });
+
+    it('offers an admin to create one from the empty state', () => {
+        expect(page([], true).text()).toContain('Create one here');
+        expect(page([], false).text()).not.toContain('Create one here');
+    });
+});
+
+describe('W140: the "Use this template" label stays on one line', () => {
+    it('the button cannot be squeezed or wrapped by a long description', () => {
+        const wrapper = page([template()]);
+        const button = wrapper
+            .findAll('button')
+            .find((b) => b.text().includes('Use this template'));
+
+        expect(button).toBeDefined();
+        expect(button!.classes()).toContain('shrink-0');
+        expect(button!.classes()).toContain('whitespace-nowrap');
     });
 });

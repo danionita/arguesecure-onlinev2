@@ -215,6 +215,101 @@ test.describe('the chart view', () => {
     });
 
     /**
+     * W127/D95. A collapsed card says how many children it hides, without
+     * hover, adds no height, and still does so after a reload.
+     */
+    test('a collapsed card shows how many children it hides', async ({
+        page,
+    }) => {
+        await login(page, adminEmail, adminPassword());
+        await openChart(page);
+
+        const card = page
+            .getByRole('button', { name: `Risk: ${RISK}`, exact: true })
+            .locator('xpath=ancestor::div[contains(@class,"group/chartcard")]')
+            .first();
+        const childCount = await page
+            .locator('li[role="treeitem"][aria-level="2"]')
+            .filter({ hasText: RISK })
+            .first()
+            .locator('li[role="treeitem"][aria-level="3"]')
+            .count();
+        expect(childCount).toBeGreaterThan(0);
+        await expect(card.getByTestId('hidden-count')).toHaveCount(0);
+        const heightExpanded = (await card.boundingBox())!.height;
+
+        await card.hover();
+        await card.getByRole('button', { name: 'Collapse' }).click();
+        // Pointer away: the badge must be there at rest, not only on hover.
+        await page.mouse.move(0, 0);
+        const badge = card.getByTestId('hidden-count');
+        await expect(badge).toBeVisible();
+        await expect(badge).toHaveText(String(childCount));
+        expect((await card.boundingBox())!.height).toBe(heightExpanded);
+
+        await page.reload();
+        await expect(page.getByRole('tree')).toBeVisible();
+        await expect(
+            page
+                .getByRole('button', { name: `Risk: ${RISK}`, exact: true })
+                .locator(
+                    'xpath=ancestor::div[contains(@class,"group/chartcard")]',
+                )
+                .first()
+                .getByTestId('hidden-count'),
+        ).toHaveText(String(childCount));
+
+        // Clicking the badge expands, and the badge goes.
+        await page
+            .getByRole('button', { name: /^Expand, \d+ hidden child/ })
+            .first()
+            .click();
+        await expect(page.getByTestId('hidden-count')).toHaveCount(0);
+    });
+
+    /**
+     * W130/D104. The count sits in the bottom bar, slides left as the actions
+     * open beside it on hover, and the bar is closed again at rest.
+     */
+    test('the count slides left on hover and the bar closes once the pointer leaves', async ({
+        page,
+    }) => {
+        await login(page, adminEmail, adminPassword());
+        await openChart(page);
+
+        const root = page
+            .locator('li[role="treeitem"][aria-level="1"]')
+            .locator('div.group\\/chartcard')
+            .first();
+        await root.hover();
+        await root.getByRole('button', { name: 'Collapse' }).click();
+        await page.mouse.move(0, 0);
+
+        const badge = root.getByTestId('hidden-count');
+        const actions = root.getByTestId('card-actions');
+        await expect(badge).toBeVisible();
+        // Pointer away: the actions are closed. (The stuck-open case needs a
+        // button that keeps focus after a click; it is guarded by the class
+        // assertions in tests/js/chart/ChartCard.spec.ts.)
+        await expect(actions).toHaveCSS('opacity', '0');
+        // Wait for the closing transition to finish: read early, the badge is
+        // still part-way left and the later comparison is against a moving
+        // target (it passed or failed on timing, never on behaviour).
+        await expect(actions).toHaveCSS('max-width', '0px');
+        const restX = (await badge.boundingBox())!.x;
+
+        await root.hover();
+        await expect(actions).toHaveCSS('opacity', '1');
+        await expect
+            .poll(async () => (await badge.boundingBox())!.x)
+            .toBeLessThan(restX);
+
+        // Leave the root collapsed state as found.
+        await badge.click();
+        await expect(page.getByTestId('hidden-count')).toHaveCount(0);
+    });
+
+    /**
      * W105. The template picker and the assistant's suggestions float below
      * the card that opened them, inside the chart's scroll container. That
      * container used to be only as tall as the chart, so on a card with

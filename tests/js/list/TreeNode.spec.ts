@@ -83,3 +83,9 @@ describe('the list indents one level with a specified offset (D51)', () => {
         expect(groupElement).toMatch(/\bborder-border-subtle\b/);
     });
 });
+
+describe('the list hands its card the child count (W127)', () => {
+    it('passes the number of children, which the card shows while collapsed', () => {
+        expect(source).toMatch(/:child-count="childUuids\.length"/);
+    });
+});

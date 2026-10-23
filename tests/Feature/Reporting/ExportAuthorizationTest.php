@@ -125,7 +125,7 @@ test('a valid share-link session grants anonymous access to every export', funct
     $assessment->update(['is_public' => false]);
     $token = ShareTokenService::generate($assessment);
 
-    $this->get('/s/'.$token)->assertRedirect(route('dashboard'));
+    $this->get('/s/'.$token)->assertRedirect(route('assessments.show', $assessment));
 
     foreach (ExportFixture::routeNames() as $name) {
         $this->get(route($name, $assessment))->assertOk();

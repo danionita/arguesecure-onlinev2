@@ -1,11 +1,14 @@
 <script setup lang="ts">
 /**
  * The template list (schema.md §3.14, PLAN.md Phase 8 item 4).
- * TemplateController::index() already filters to templates the caller can
- * `view`, so everything rendered here is usable.
+ * TemplateController::index() lists every template for every signed-in
+ * account, so everything rendered here is usable. Administrators also create,
+ * edit and delete templates here, and only here (W141).
  */
 import TemplateCard from '@/Components/Catalog/TemplateCard.vue';
 import type { TemplateSummary } from '@/Components/Catalog/types';
+import Button from '@/Components/UI/Button.vue';
+import ConfirmDialog from '@/Components/UI/ConfirmDialog.vue';
 import EmptyState from '@/Components/UI/EmptyState.vue';
 import { useToast } from '@/Components/UI/useToast';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -14,10 +17,32 @@ import { ref } from 'vue';
 
 defineProps<{
     templates: TemplateSummary[];
+    canManage: boolean;
 }>();
 
 const toast = useToast();
 const usingUuid = ref<string | null>(null);
+const deleting = ref<TemplateSummary | null>(null);
+const deleteBusy = ref(false);
+
+function createTemplate() {
+    router.post(route('templates.create'));
+}
+
+function confirmDelete() {
+    if (deleting.value === null) {
+        return;
+    }
+
+    deleteBusy.value = true;
+    router.delete(route('templates.destroy', deleting.value.uuid), {
+        preserveScroll: true,
+        onFinish: () => {
+            deleteBusy.value = false;
+            deleting.value = null;
+        },
+    });
+}
 
 async function useTemplate(template: TemplateSummary) {
     usingUuid.value = template.uuid;
@@ -43,9 +68,22 @@ async function useTemplate(template: TemplateSummary) {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-text-primary text-xl leading-tight font-semibold">
-                Templates
-            </h2>
+            <div class="flex items-center justify-between gap-4">
+                <h2
+                    class="text-text-primary text-xl leading-tight font-semibold"
+                >
+                    Templates
+                </h2>
+                <Button
+                    v-if="canManage"
+                    icon="plus"
+                    size="sm"
+                    variant="primary"
+                    @click="createTemplate"
+                >
+                    New template
+                </Button>
+            </div>
         </template>
 
         <div class="mx-auto max-w-3xl px-4 py-6 sm:px-6">
@@ -71,7 +109,11 @@ async function useTemplate(template: TemplateSummary) {
                 v-if="templates.length === 0"
                 icon="layout-grid"
                 title="No templates yet"
-                description="An administrator can publish any assessment as a template from its Share dialog; it then appears here for everyone."
+                :description="
+                    canManage
+                        ? 'Create one here, or publish an assessment as a template from its Share dialog.'
+                        : 'An administrator can publish a template; it then appears here for everyone.'
+                "
             />
             <div
                 v-else
@@ -83,9 +125,22 @@ async function useTemplate(template: TemplateSummary) {
                     :key="template.uuid"
                     :template="template"
                     :using="usingUuid === template.uuid"
+                    :can-manage="canManage"
                     @use="useTemplate(template)"
+                    @delete="deleting = template"
                 />
             </div>
+
+            <ConfirmDialog
+                :show="deleting !== null"
+                :title="`Delete ${deleting?.title ?? 'this template'}?`"
+                message="The template is deleted for good. Assessments already created from it are copies and are not affected."
+                confirm-label="Delete template"
+                danger
+                :loading="deleteBusy"
+                @confirm="confirmDelete"
+                @cancel="deleting = null"
+            />
         </div>
     </AuthenticatedLayout>
 </template>

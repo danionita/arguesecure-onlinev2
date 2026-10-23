@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Redis;
  * (calculation-engine.md §11.4): `assessments.calc_version` is incremented
  * by App\Observers\Concerns\TriggersRecalculation on every node, pivot or
  * scale change, and that new version is part of the cache key itself, so
- * a stale entry is simply never looked up again — it ages out of Redis on
- * its own TTL with nothing left pointing at it. This is deterministic and
+ * a stale entry is simply never looked up again, and put() deletes it
+ * (D72, below). This is deterministic and
  * race-free: two concurrent writers bumping the version means whichever
  * request/job reads afterward asks for a *later* key than either write
  * alone would have produced, and there is no way to observe a version
@@ -57,9 +57,46 @@ final class CalculationCache
         return $results instanceof CalculationResults ? $results : null;
     }
 
+    /**
+     * Writes this version's entry and deletes whichever entry the previous
+     * put() wrote, so each assessment holds one entry, not one per edit
+     * (PLAN-2.7.md D72). Before this, every edit left its predecessor to
+     * linger for the full TTL, and that growth is what a Redis running
+     * `noeviction` would eventually refuse writes over, the queue's
+     * included.
+     *
+     * The previous version cannot be derived from the current one: nothing
+     * guarantees consecutive versions (W64 bumps once per coalesced block, and
+     * the debounced job skips the versions in between), so a per-assessment
+     * pointer records the key last written. One script makes the swap atomic,
+     * so two concurrent writers cannot both read the same pointer and leave one
+     * entry orphaned. A writer holding an older version than the pointer's (a
+     * request that read the assessment before an edit landed) replaces the
+     * newer entry; the next read misses and writes it back, so the bound still
+     * holds and the cost is one recompute.
+     *
+     * phpredis applies REDIS_PREFIX to KEYS but not to ARGV, so the pointer
+     * holds the prefixed key name the script received, and DEL reads it back
+     * as-is: the key the earlier write made, not a second prefix on top.
+     */
     public function put(Assessment $assessment, CalculationResults $results): void
     {
-        Redis::setex(self::key($assessment), self::TTL_SECONDS, serialize($results));
+        // ->command() reaches phpredis' native eval($script, $args, $numKeys),
+        // as LockManager does for set(): the Laravel connection's own eval()
+        // takes ($script, $numKeys, ...$args) and phpredis' stubs disagree.
+        Redis::connection()->command('eval', [
+            <<<'LUA'
+            local previous = redis.call('GET', KEYS[2])
+            redis.call('SETEX', KEYS[1], ARGV[1], ARGV[2])
+            redis.call('SETEX', KEYS[2], ARGV[1], KEYS[1])
+            if previous and previous ~= KEYS[1] then
+                redis.call('DEL', previous)
+            end
+            return 1
+            LUA,
+            [self::key($assessment), self::latestKey($assessment), self::TTL_SECONDS, serialize($results)],
+            2,
+        ]);
     }
 
     /**
@@ -107,5 +144,15 @@ final class CalculationCache
             $assessment->calc_version,
             self::ENGINE_VERSION,
         );
+    }
+
+    /**
+     * The pointer put() keeps to the entry it wrote last. Its name shares the
+     * `as:calc:{id}:` prefix so a sweep of `as:calc:*` clears it with the
+     * entries, but not the `v` that every entry key carries next.
+     */
+    public static function latestKey(Assessment $assessment): string
+    {
+        return sprintf('as:calc:%d:latest', $assessment->id);
     }
 }

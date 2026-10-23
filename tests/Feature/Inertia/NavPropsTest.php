@@ -149,3 +149,40 @@ test('the sidebar does not issue a query per assessment', function () {
     // that matters is "does not grow with the number of assessments".
     expect(count($queries))->toBeLessThan(20);
 });
+
+test('the nav prop carries the running version and its notes link (W124)', function () {
+    config(['arguesecure.version' => '2.7.0']);
+
+    $this->actingAs(User::factory()->create())->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page
+            ->where('nav.version.label', 'v2.7.0')
+            ->where('nav.version.notesUrl', 'https://github.com/danionita/arguesecure-onlinev2/blob/v2.7.0/docs/RELEASE-2.7.0.md'));
+});
+
+test('an unversioned build says dev and links to the releases list (W124)', function () {
+    config(['arguesecure.version' => 'dev']);
+
+    $this->actingAs(User::factory()->create())->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page
+            ->where('nav.version.label', 'dev')
+            ->where('nav.version.notesUrl', 'https://github.com/danionita/arguesecure-onlinev2/releases'));
+});
+
+test('a signed-out page carries no version (W124)', function () {
+    config(['arguesecure.version' => '2.7.0']);
+    // An empty users table redirects every guest page to first-run setup.
+    User::factory()->create();
+
+    $this->get(route('login'))
+        ->assertInertia(fn ($page) => $page
+            ->where('nav.authenticated', false)
+            ->missing('nav.version'));
+});
+
+test('with no build version given, the app reports the VERSION file (W129)', function () {
+    // The test environment sets no ARGUESECURE_BUILD_VERSION, which is the
+    // case of a source build: it must not read `dev` (the 2.6.3 report).
+    expect(config('arguesecure.version'))
+        ->toBe(trim(file_get_contents(base_path('VERSION'))))
+        ->not->toBe('dev');
+});

@@ -30,6 +30,8 @@ function options(overrides: Partial<ReportOptions> = {}): ReportOptions {
         includeShelved: false,
         includeComments: false,
         includeMethodology: true,
+        includeWarnings: true,
+        omittedSections: [],
         showAssignees: false,
         download: false,
         ...overrides,

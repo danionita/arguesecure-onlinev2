@@ -35,6 +35,8 @@ use App\Domain\Reporting\ReportOptions;
  *   would put rejected controls in a document sent to an auditor.
  * - **`includeComments`** — the comment appendix, which is the one option
  *   that changes what was *fetched* upstream.
+ * - **`includeWarnings`** (W136) — the model-quality warnings appendix; when
+ *   off, a one-line count of what was left out replaces it.
  * - **`includeMethodology`** — the appendix stating the independence
  *   assumption and the per-occurrence definition of impact.
  * - **`showAssignees`** — adds a column of names, and only when chosen. A
@@ -66,19 +68,19 @@ final class ReportSectionBuilder
     public function build(array $report, ReportOptions $options): array
     {
         $sections = [
-            $this->cover($report),
-            $this->writtenSummary($report),
-            $this->executiveSummary($report, $options),
-            $this->programme($report),
-            $this->riskRegister($report, $options),
-            $this->defences(
+            $options->includes('cover') ? $this->cover($report) : null,
+            $options->includes('written-summary') ? $this->writtenSummary($report) : null,
+            $options->includes('executive-summary') ? $this->executiveSummary($report, $options) : null,
+            $options->includes('programme') ? $this->programme($report) : null,
+            $options->includes('risk-register') ? $this->riskRegister($report, $options) : null,
+            ! $options->includes('defences-importance') ? null : $this->defences(
                 'defences-importance',
-                'Defences ranked by importance',
-                'Implemented controls, by marginal contribution — how much annual expected loss would return if each were switched off.',
+                'Defences ranked by cost benefit',
+                'Implemented controls. Priced ones are ordered by cost-benefit ratio; free and unpriced ones by the annual expected loss that would return if each were switched off.',
                 'If removed',
                 $this->arr($report['defencesByImportance'] ?? []),
             ),
-            $this->defences(
+            ! $options->includes('defences-opportunity') ? null : $this->defences(
                 'defences-opportunity',
                 'Defences ranked by opportunity',
                 'Todo controls, by what implementing each would buy against the current baseline — the roadmap.',
@@ -92,13 +94,14 @@ final class ReportSectionBuilder
                 'If unshelved',
                 $this->arr($report['shelvedOpportunity'] ?? []),
             ) : null,
-            $this->transfers($report, $options),
-            $this->controlCoverage($report),
-            $this->tree($report, $options),
-            $this->references($report),
+            $options->includes('transfers') ? $this->transfers($report, $options) : null,
+            $options->includes('control-coverage') ? $this->controlCoverage($report) : null,
+            $options->includes('tree') ? $this->tree($report, $options) : null,
+            $options->includes('references') ? $this->references($report) : null,
             $options->includeComments ? $this->comments($report) : null,
-            $this->warnings($report),
-            $options->includeMethodology ? $this->methodology($report) : null,
+            $options->includeWarnings ? $this->warnings($report) : $this->warningsOmitted($report),
+            $options->includeMethodology ? $this->methodology($report, $options) : $this->methodologyOmitted(),
+            $this->sectionsOmitted($report, $options),
         ];
 
         return array_values(array_filter(
@@ -119,10 +122,10 @@ final class ReportSectionBuilder
             [Cell::text('Owner'), Cell::text($this->str($owner['name'] ?? null))],
             [Cell::text('Generated'), Cell::text($this->str($cover['generatedAt'] ?? null))],
             [Cell::text('Currency'), Cell::text($this->currency($report))],
-            [Cell::text('Valued risk/attack pairs'), Cell::text(
+            [Cell::text('Risk/attack pairs counted in the total'), Cell::text(
                 $this->int($completeness['pairsValued'] ?? 0).' of '.$this->int($completeness['pairsTotal'] ?? 0)
             )],
-            [Cell::text('Coverage'), Cell::percent($this->float($completeness['coverage'] ?? null))],
+            [Cell::text('Share counted in the total'), Cell::percent($this->float($completeness['coverage'] ?? null))],
         ];
 
         $prose = [];
@@ -669,8 +672,95 @@ final class ReportSectionBuilder
         );
     }
 
+    /**
+     * W136, D105: the section is switched off, so the document says how many
+     * warnings it left out — nothing when there were none.
+     *
+     * @param  array<string, mixed>  $report
+     */
+    private function warningsOmitted(array $report): ?ReportSection
+    {
+        $omitted = $this->int($this->arr($report['appendices'] ?? [])['warningsOmitted'] ?? 0);
+        if ($omitted === 0) {
+            return null;
+        }
+
+        // A one-cell table rather than prose: the CSV carries only tables, and
+        // the statement has to reach every format.
+        return new ReportSection(
+            'warnings',
+            'Appendix: warnings',
+            [],
+            ['Note'],
+            [[Cell::text($omitted === 1
+                ? '1 model-quality warning was left out of this report.'
+                : "{$omitted} model-quality warnings were left out of this report.")]],
+        );
+    }
+
+    /**
+     * Says the methodology appendix is not in this report (W153, D120): it
+     * states the independence assumption and the definition of impact, so a
+     * report without it must not read as one that never needed them. A
+     * one-cell table, like the warnings note.
+     */
+    private function methodologyOmitted(): ReportSection
+    {
+        return new ReportSection(
+            'methodology-omitted',
+            'Methodology not included',
+            [],
+            ['Note'],
+            [[Cell::text('The methodology appendix is not included in this report.')]],
+        );
+    }
+
+    /**
+     * Names the sections `omit_sections` left out (W139, D118), so a partial
+     * document cannot pass for a complete one. A one-cell table, like the
+     * warnings note, because the CSV carries only tables.
+     *
+     * @param  array<string, mixed>  $report
+     */
+    private function sectionsOmitted(array $report, ReportOptions $options): ?ReportSection
+    {
+        if ($options->omittedSections === []) {
+            return null;
+        }
+
+        $names = array_map(
+            fn (string $id): string => ReportOptions::SECTIONS[$id],
+            $options->omittedSections,
+        );
+
+        return new ReportSection(
+            'sections-omitted',
+            'Sections left out',
+            [],
+            ['Note'],
+            [[Cell::text($this->coverNote($report, $options).'Sections left out of this report: '.implode(', ', $names).'.')]],
+        );
+    }
+
+    /**
+     * Without its cover a report would name nothing it assesses, so the
+     * left-out line carries the title the cover would have.
+     *
+     * @param  array<string, mixed>  $report
+     */
+    private function coverNote(array $report, ReportOptions $options): string
+    {
+        if ($options->includes('cover')) {
+            return '';
+        }
+
+        $title = $this->str($this->arr($report['cover'] ?? [])['title'] ?? null);
+
+        return 'Report on '.($title !== '' ? $title : 'Untitled assessment').'. ';
+    }
+
     /** @param array<string, mixed> $report */
-    private function methodology(array $report): ReportSection
+    private function methodology(array $report, ReportOptions $options): ReportSection
     {
         $rows = [];
         foreach ($this->rowsOf($this->arr($report['cover'] ?? [])['scaleCalibration'] ?? []) as $scale) {
@@ -692,7 +782,7 @@ final class ReportSectionBuilder
             [
                 'Annual expected loss for a risk/attack pair is the attack rate per year multiplied by the loss per occurrence of the risk, multiplied by (1 − strength) for each defence in the baseline being read.',
                 'Impact is loss per occurrence, not annual loss. Likelihood is a rate per year, not a probability, and may exceed 1.',
-                'Defences are assumed independent. Where they are not — two controls stopping the same step of the same attack — this overstates the reduction they buy together, and the warnings appendix names each place the assumption was applied.',
+                'Defences are assumed independent. Where they are not — two controls stopping the same step of the same attack — this overstates the reduction they buy together'.($options->includeWarnings ? ', and the warnings appendix names each place the assumption was applied.' : '.'),
                 'A pair with no impact or no likelihood is excluded from the total rather than counted as zero, because counting it as zero would understate risk. A defence with no recorded strength is treated as reducing nothing, which overstates residual risk — the safe direction.',
                 'Computed losses are reported as currency with a reduction percentage. They are never mapped to a low/medium/high band.',
             ],

@@ -13,7 +13,7 @@ use App\Models\Node;
  */
 class ReorderPositionsApplier implements CommandApplier
 {
-    public function apply(array $command): array
+    public function apply(array $command, int $assessmentId): array
     {
         $scope = (string) $command['scope'];
         /** @var list<array{key: array<string, string>, position: int}> $entries */
@@ -26,7 +26,7 @@ class ReorderPositionsApplier implements CommandApplier
             $position = (int) $entry['position'];
 
             if ($scope === 'nodes') {
-                $node = Node::where('uuid', $key['node_uuid'])->first();
+                $node = Node::where('assessment_id', $assessmentId)->where('uuid', $key['node_uuid'])->first();
 
                 if ($node === null) {
                     throw new UndoConflictException('Cannot undo: a node in this reorder no longer exists.');
@@ -39,8 +39,8 @@ class ReorderPositionsApplier implements CommandApplier
             }
 
             $meta = EdgeResolver::meta($scope);
-            $parent = EdgeResolver::findNode($key['parent_uuid']);
-            $child = EdgeResolver::findNode($key['child_uuid']);
+            $parent = EdgeResolver::findNodeIn($assessmentId, $key['parent_uuid']);
+            $child = EdgeResolver::findNodeIn($assessmentId, $key['child_uuid']);
 
             if ($parent === null || $child === null) {
                 throw new UndoConflictException('Cannot undo: an endpoint in this reorder no longer exists.');

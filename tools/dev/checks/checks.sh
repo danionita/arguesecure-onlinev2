@@ -226,6 +226,16 @@ teardown() {
     echo "removed; .env and .env.testing are left in place (gitignored)"
 }
 
+# Pest under pcov and Vitest under v8, then the floors in coverage-floors.json
+# (D88). Reports go to the git-ignored coverage/ directory; the gate runs where
+# the reports are, so container mode needs no copy back.
+coverage() {
+    php_run php -m | grep -qix pcov || { echo "pcov is not loaded: install php8.3-pcov (cloud-setup.sh), or use CHECKS_MODE=containers" >&2; return 1; }
+    php_run php -d pcov.directory=app -d memory_limit=-1 artisan test --coverage-clover=coverage/php/clover.xml "${PEST_ARGS[@]}" || return 1
+    node_run npx vitest run --coverage || return 1
+    node_run node tools/dev/checks/coverage-gate.mjs
+}
+
 # Formats the named files where vendor/ and node_modules/ are, and in
 # container mode copies them back into the checkout.
 fix() {
@@ -248,12 +258,14 @@ case "${1:-}" in
         CHECKS=() PEST_ARGS=()
         for arg in "$@"; do
             case "$arg" in
-                pint | phpstan | pest | lint | format | types | vitest) CHECKS+=("$arg") ;;
+                pint | phpstan | pest | lint | format | types | vitest | coverage) CHECKS+=("$arg") ;;
                 --*) PEST_ARGS+=("$arg") ;;
                 *) echo "unknown check: $arg" >&2; exit 64 ;;
             esac
         done
         [ ${#CHECKS[@]} -gt 0 ] || CHECKS=(pint phpstan pest lint format types vitest)
+        # `coverage` is not one of the seven: it reruns both suites under a
+        # coverage driver (W119), so it is asked for by name.
         if [ "$CHECKS_MODE" = native ] && { [ ! -d "$ROOT/vendor" ] || [ ! -d "$ROOT/node_modules" ]; }; then
             echo "no vendor/ or node_modules/ yet: run '$0 setup' first" >&2
             exit 1
@@ -270,6 +282,7 @@ case "${1:-}" in
                 format) node_run npm run format:check ;;
                 types) node_run npm run type-check ;;
                 vitest) node_run npm run test:unit ;;
+                coverage) coverage ;;
             esac
             record "$c" $?
         done

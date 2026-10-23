@@ -11,8 +11,8 @@ RUN apk add --no-cache icu-libs libzip oniguruma libpng libjpeg-turbo freetype g
     && docker-php-ext-configure intl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" pdo_mysql mbstring intl bcmath zip pcntl opcache gd \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
+    && pecl install redis pcov \
+    && docker-php-ext-enable redis pcov \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 

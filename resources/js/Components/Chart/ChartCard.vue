@@ -84,6 +84,7 @@ import {
     formatRate,
     formatRateShort,
 } from '@/Components/UI/format';
+import HiddenCountBadge from '@/Components/UI/HiddenCountBadge.vue';
 import Icon from '@/Components/UI/Icon.vue';
 import IconButton from '@/Components/UI/IconButton.vue';
 import Tooltip from '@/Components/UI/Tooltip.vue';
@@ -103,6 +104,8 @@ const props = defineProps<{
     pathKey: string;
     edge?: AttackDefenceLink;
     hasChildren: boolean;
+    /** Direct children; the badge shows it while collapsed (W127). */
+    childCount?: number;
     collapsed: boolean;
     selected: boolean;
     /** What dragging this occurrence means; null for the root. See ChartNode.vue. */
@@ -203,6 +206,17 @@ const unresolvedCommentCount = computed(
 const canEdit = computed(() => store.abilities.update);
 const showAddChild = computed(
     () => node.value !== undefined && hasChildType(node.value.type),
+);
+
+/** D95: the count stands in for the chevron while collapsed. */
+const showBadge = computed(
+    () => props.collapsed && (props.childCount ?? 0) > 0,
+);
+const showBar = computed(
+    () =>
+        showBadge.value ||
+        props.hasChildren ||
+        (showAddChild.value && canEdit.value),
 );
 
 // W85/D50: the same trigger and the same guardrail (D24) as the tree card
@@ -636,39 +650,69 @@ const tosBar = computed(() => {
             projector, and a destructive action reachable only by hovering a
             small icon is the wrong thing to have there.
         -->
+        <!--
+            W127 follow-up (D104): one bar on the bottom edge. A collapsed card
+            shows its hidden-children count there at rest, in the bar's own
+            button ground (the owner: it must read as the expand button, always
+            showing, with the count on it); on hover the count
+            slides left as the add-child actions open out beside it, so the
+            count is the "expand" button. It is absolute, so it adds no height.
+
+            Revealed by hover or by *keyboard* focus (`focus-visible`), not by
+            `focus-within`: a mouse click leaves focus on the clicked button,
+            and `focus-within` then kept the bar open after the pointer left,
+            and while other cards were used, until the button was used again.
+        -->
         <div
-            class="bg-surface-1 border-border-subtle absolute -bottom-2 left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded border px-0.5 shadow-sm group-focus-within/chartcard:flex group-hover/chartcard:flex"
+            v-if="showBar"
+            class="absolute -bottom-2 left-1/2 flex -translate-x-1/2 items-center rounded border px-0.5"
+            :class="
+                showBadge
+                    ? 'bg-surface-1 border-border-subtle shadow-sm'
+                    : 'group-hover/chartcard:bg-surface-1 group-hover/chartcard:border-border-subtle group-has-focus-visible/chartcard:bg-surface-1 group-has-focus-visible/chartcard:border-border-subtle border-transparent group-hover/chartcard:shadow-sm group-has-focus-visible/chartcard:shadow-sm'
+            "
+            data-testid="card-bar"
         >
-            <IconButton
-                v-if="hasChildren"
-                :icon="collapsed ? 'chevron-right' : 'chevron-down'"
-                :label="collapsed ? 'Expand' : 'Collapse'"
-                @click="emit('toggle')"
+            <HiddenCountBadge
+                v-if="showBadge"
+                :count="childCount ?? 0"
+                @toggle="emit('toggle')"
             />
-            <IconButton
-                v-if="showAddChild && canEdit"
-                icon="plus"
-                label="Add child"
-                @click="emit('addChild')"
-            />
-            <IconButton
-                v-if="showAddChild && canEdit"
-                icon="copy"
-                :label="`Add ${templateChildType}s from a template`"
-                data-testid="add-from-template"
-                @click="openTemplates"
-            />
-            <!-- W85 item 19 / D50: the assistant trigger, gated on the same
-                 three conditions as on the tree card (NodeCard.vue), and the
-                 same label — "the same trigger" is the whole of D50. -->
-            <IconButton
-                v-if="showAddChild && canEdit && store.assistantAvailable"
-                icon="square-plus"
-                :label="`Suggest ${assistantChildType}s`"
-                :disabled="assistantAsking"
-                data-testid="ask-assistant"
-                @click="askAssistant"
-            />
+            <div
+                class="invisible flex max-w-0 items-center gap-0.5 overflow-hidden opacity-0 transition-[max-width,opacity,visibility] duration-150 group-hover/chartcard:visible group-hover/chartcard:max-w-48 group-hover/chartcard:opacity-100 group-has-focus-visible/chartcard:visible group-has-focus-visible/chartcard:max-w-48 group-has-focus-visible/chartcard:opacity-100"
+                data-testid="card-actions"
+            >
+                <IconButton
+                    v-if="hasChildren && !showBadge"
+                    :icon="collapsed ? 'chevron-right' : 'chevron-down'"
+                    :label="collapsed ? 'Expand' : 'Collapse'"
+                    @click="emit('toggle')"
+                />
+                <IconButton
+                    v-if="showAddChild && canEdit"
+                    icon="plus"
+                    label="Add child"
+                    @click="emit('addChild')"
+                />
+                <IconButton
+                    v-if="showAddChild && canEdit"
+                    icon="copy"
+                    :label="`Add ${templateChildType}s from a template`"
+                    data-testid="add-from-template"
+                    @click="openTemplates"
+                />
+                <!-- W85 item 19 / D50: the assistant trigger, gated on the same
+                     three conditions as on the tree card (NodeCard.vue), and
+                     the same label — "the same trigger" is the whole of D50. -->
+                <IconButton
+                    v-if="showAddChild && canEdit && store.assistantAvailable"
+                    icon="square-plus"
+                    :label="`Suggest ${assistantChildType}s`"
+                    :disabled="assistantAsking"
+                    data-testid="ask-assistant"
+                    @click="askAssistant"
+                />
+            </div>
         </div>
 
         <!-- W52/W58, shared with the tree card via AssistantPanel.vue: floats

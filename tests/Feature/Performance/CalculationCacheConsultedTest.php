@@ -69,7 +69,10 @@ test('a warm CalculationCache entry is consulted by the assessment show route in
     // find fresh.
     $graph = app(AssessmentGraphLoader::class)->load($assessment);
     $results = app(RiskCalculator::class)->compute($graph);
-    (new CalculationCache)->put($assessment, $results);
+    // fresh(): the factories above bumped calc_version in the database, and
+    // put() keeps one entry per assessment (W109), so a write under the
+    // model's stale version would replace the entry the request reads.
+    (new CalculationCache)->put($assessment->fresh(), $results);
 
     $cachedInherent = $results->inherent->total;
 

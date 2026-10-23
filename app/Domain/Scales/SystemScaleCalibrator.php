@@ -90,6 +90,20 @@ final class SystemScaleCalibrator
 
     /**
      * Gives every assessment still pointing at this shared scale its own copy
+     * of it, as it is now (W126: deleting a scale needs this on its own, with
+     * no edit following).
+     *
+     * @return int how many assessments were moved onto their own copy
+     */
+    public function release(Scale $scale): int
+    {
+        return DB::transaction(fn (): int => TriggersRecalculation::coalesce(
+            fn (): int => $this->detachFollowers($scale),
+        ));
+    }
+
+    /**
+     * Gives every assessment still pointing at this shared scale its own copy
      * of it, *as it is now*, before the edit (2.5.1).
      *
      * Defaults are defaults: an admin changing the default impact bands is

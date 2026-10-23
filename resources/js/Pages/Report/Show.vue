@@ -99,10 +99,11 @@ import AssessmentActions from '@/Components/Toolbar/AssessmentActions.vue';
 import Button from '@/Components/UI/Button.vue';
 import { useTheme } from '@/Components/UI/useTheme';
 import { useCanvas } from '@/composables/useCanvas';
+import { usePrintOnArrival } from '@/composables/usePrintOnArrival';
 import { useReportSearch } from '@/composables/useReportSearch';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import '../../../css/print.css';
 import ChromeHeaderBand from '../../Components/Chrome/ChromeHeaderBand.vue';
 import ChromeTitleRow from '../../Components/Chrome/ChromeTitleRow.vue';
@@ -141,8 +142,40 @@ const isGuest = computed(() => !page.props.auth?.user);
 const currentUserId = computed(() => page.props.auth?.user?.id ?? null);
 const abilities = computed(() => props.abilities ?? { manage: false });
 
+/**
+ * W110 (D70). Options changed in quick succession become one request: each
+ * click shows at once in the options row (`shownOptions`), and the page is
+ * re-requested once the clicks stop for `OPTIONS_SETTLE_MS`. Before this,
+ * every click was its own request against the report's rate limit, so a few
+ * quick toggles answered 429.
+ *
+ * The document itself keeps rendering `report.options`, the server's: it
+ * shows what was assembled, and the row only runs ahead of it until the
+ * response lands. The export menus follow the row, so an export taken
+ * straight after a click carries the option the row shows ticked.
+ */
+const OPTIONS_SETTLE_MS = 300;
+const pendingOptions = ref<Partial<ReportData['options']>>({});
+let settleTimer: ReturnType<typeof setTimeout> | null = null;
+let sendCount = 0;
+
+const shownOptions = computed<ReportData['options']>(() => ({
+    ...props.report.options,
+    ...pendingOptions.value,
+}));
+
 function updateOptions(patch: Partial<ReportData['options']>) {
-    const next = { ...props.report.options, ...patch };
+    pendingOptions.value = { ...pendingOptions.value, ...patch };
+    if (settleTimer !== null) clearTimeout(settleTimer);
+    settleTimer = setTimeout(sendOptions, OPTIONS_SETTLE_MS);
+}
+
+function sendOptions() {
+    settleTimer = null;
+    const send = ++sendCount;
+    const sent = { ...pendingOptions.value };
+    let cancelled = false;
+    const next = { ...props.report.options, ...sent };
     router.get(
         route('assessments.report.show', props.assessment.uuid),
         {
@@ -150,11 +183,38 @@ function updateOptions(patch: Partial<ReportData['options']>) {
             include_shelved: next.includeShelved ? '1' : '0',
             include_comments: next.includeComments ? '1' : '0',
             include_methodology: next.includeMethodology ? '1' : '0',
+            include_warnings: next.includeWarnings ? '1' : '0',
             show_assignees: next.showAssignees ? '1' : '0',
+            omit_sections: next.omittedSections.join(','),
         },
-        { preserveState: true, preserveScroll: true, replace: true },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            // Answered, succeeded or not, what was sent is no longer pending:
+            // the row falls back to the server's options. Only the newest
+            // request settles them (Inertia cancels an older one in flight,
+            // and the newer carries every key the older did), a key changed
+            // again since this one was sent stays pending for the next, and a
+            // cancelled request settles nothing: the server never answered it.
+            onCancel: () => {
+                cancelled = true;
+            },
+            onFinish: () => {
+                if (cancelled || send !== sendCount) return;
+                const left = { ...pendingOptions.value };
+                for (const key of Object.keys(sent) as (keyof typeof sent)[]) {
+                    if (left[key] === sent[key]) delete left[key];
+                }
+                pendingOptions.value = left;
+            },
+        },
     );
 }
+
+onBeforeUnmount(() => {
+    if (settleTimer !== null) clearTimeout(settleTimer);
+});
 
 /**
  * Download mode (W33): `?download=1`. Reached from the export menu's
@@ -207,6 +267,9 @@ function showPrintHintOnce() {
  * `@print` handler is `showPrintHintOnce` alone, so the hint is not shown
  * twice.
  */
+// W138: Chart/List/Report menu items from the editor arrive with a token.
+usePrintOnArrival(showPrintHintOnce);
+
 function onPrint() {
     showPrintHintOnce();
     window.print();
@@ -289,7 +352,8 @@ const shareDialogOpen = ref(false);
                     :assessment="assessment"
                     :abilities="abilities"
                     view-mode="report"
-                    :export-options="report.options"
+                    :user-id="currentUserId"
+                    :export-options="shownOptions"
                     @share="shareDialogOpen = true"
                     @print="showPrintHintOnce"
                 />
@@ -315,7 +379,7 @@ const shareDialogOpen = ref(false);
         -->
         <div v-if="!isDownload" class="no-print">
             <ReportOptionsRow
-                :options="report.options"
+                :options="shownOptions"
                 :search="search"
                 :zoom="canvas.zoom.value"
                 :report-href="route('assessments.report.show', assessment.uuid)"
@@ -369,7 +433,7 @@ const shareDialogOpen = ref(false);
                     <div class="flex shrink-0 items-center gap-2">
                         <ExportMenu
                             :assessment-uuid="assessment.uuid"
-                            :options="report.options"
+                            :options="shownOptions"
                         />
                         <!--
                             D35: "Print as configured" is just "Print". The
@@ -390,7 +454,7 @@ const shareDialogOpen = ref(false);
             </ChromeHeaderBand>
 
             <ReportOptionsRow
-                :options="report.options"
+                :options="shownOptions"
                 :search="search"
                 :zoom="canvas.zoom.value"
                 :report-href="route('assessments.report.show', assessment.uuid)"

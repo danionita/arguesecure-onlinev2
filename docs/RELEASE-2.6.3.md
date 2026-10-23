@@ -59,8 +59,13 @@ pull && docker compose up -d`. There is no migration and the compose file is
 unchanged.
 
 **Templates already loaded stay as they were**, as in 2.6.2: the seeder skips
-a template that exists. The two new templates are *new*, so an existing
-instance can load them from the template picker.
+a template that exists. The two new templates are new files, but the seeder
+runs only when the first administrator is created, so an existing instance
+does not get them by itself. Load them with the command in
+[`specs/deployment.md`](specs/deployment.md) §6:
+`docker compose exec app php artisan db:seed --class='Database\Seeders\SampleContentSeeder' --force`.
+It creates no users, skips every template already present and seeds the two
+new ones.
 
 ## Verification behind this release
 

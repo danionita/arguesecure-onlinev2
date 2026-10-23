@@ -102,6 +102,10 @@ async function clickDownload(
  * the kind of test that passes for months and then fails on a faster machine.
  * It did, once the suite dropped from 4.9 to 3.6 minutes.
  *
+ * Since W110 (D70) the page has its own limiter, `throttle:report-views`
+ * at 60/min, so this file no longer comes near it; the retry stays as
+ * cheap insurance.
+ *
  * The limit is spec-correct and stays; the suite waits it out, exactly as
  * `fetchReport` already does for the export endpoints. Retrying on the
  * server's own `Retry-After` rather than sleeping unconditionally keeps the
@@ -188,9 +192,7 @@ test.describe('the report', () => {
         // implementing them would buy — two separate sections, because they
         // answer two different questions.
         await expect(
-            page
-                .getByRole('heading', { name: /importance|implemented/i })
-                .first(),
+            page.getByRole('heading', { name: /cost benefit/i }).first(),
         ).toBeVisible();
         await expect(
             page
@@ -213,29 +215,39 @@ test.describe('the report', () => {
         // in the export menu, named by what it produces. A button that
         // prints what is on screen needs no qualifier.
         //
-        // W83 mounts `AssessmentActions.vue` (D40) for this authenticated
-        // viewer, which sets `aria-label="Print report"` on the button
-        // (`printLabel`, keyed on `view-mode="report"` — the same pattern
-        // `ZoomControls.vue` uses for "Decrease chart size" vs "Decrease
-        // text size"). The aria-label is the accessible name, so the exact
-        // match moves from the visible text to it.
-        const button = page.getByRole('button', {
-            name: 'Print report',
+        // W138: for this authenticated viewer `AssessmentActions.vue` (D40)
+        // renders Print as a menu that asks which view to print. The trigger
+        // is named "Print"; the items are "Print chart", "Print list" and
+        // "Print report", the current view first.
+        const trigger = page.getByRole('button', {
+            name: 'Print',
             exact: true,
         });
-        await expect(button).toBeVisible();
+        await expect(trigger).toBeVisible();
 
         // window.print() opens a native dialog that would hang the run, so
         // it is stubbed and its invocation observed. This asserts the wiring
-        // — that the button reaches the print pipeline at all — which is the
-        // part that can regress silently.
+        // — that the menu item reaches the print pipeline at all — which is
+        // the part that can regress silently.
         await page.evaluate(() => {
             (window as unknown as { __printed: boolean }).__printed = false;
             window.print = () => {
                 (window as unknown as { __printed: boolean }).__printed = true;
             };
         });
-        await button.click();
+
+        // Opening the menu asks; it does not print yet.
+        await trigger.click();
+        await expect(page.getByRole('menuitem')).toHaveCount(3);
+        expect(
+            await page.evaluate(
+                () => (window as unknown as { __printed: boolean }).__printed,
+            ),
+        ).toBe(false);
+
+        await page
+            .getByRole('menuitem', { name: 'Print report', exact: true })
+            .click();
 
         expect(
             await page.evaluate(
@@ -298,14 +310,13 @@ test.describe('the report', () => {
     });
 
     /**
-     * W83 replaces the open/close options panel with an always-visible row
-     * beside the search box (brief item 5: "every option on one line,
-     * always visible"). There is no "Report options" heading and no
-     * open/close affordance any more — this test replaces
-     * "the options panel can be closed, and says how to get it back",
-     * which asserted exactly the behaviour removed.
+     * W83 replaced the open/close options panel with a row beside the search
+     * box; W136 (D106) put the settings behind two buttons in that row,
+     * Defences and Sections (W153 renamed Content). The buttons are always on screen, beside the
+     * search box, and there is no "Report options" panel to open or close.
+     * The settings are in the pop-ups, so each is opened before it is read.
      */
-    test('the options row is always visible, beside the search box, with no open/close affordance', async ({
+    test('the Defences and Sections buttons are always visible beside the search box and hold the settings', async ({
         page,
     }) => {
         await login(page, adminEmail, adminPassword());
@@ -316,11 +327,38 @@ test.describe('the report', () => {
             page.getByRole('searchbox', { name: 'Search the assessment' }),
         ).toBeVisible();
         await expect(
-            page.getByRole('radiogroup', { name: 'Baseline' }),
+            page.getByRole('button', { name: /^Defences/ }),
         ).toBeVisible();
         await expect(
-            page.getByRole('radiogroup', { name: 'Shelved defences' }),
+            page.getByRole('button', { name: /^Sections/ }),
         ).toBeVisible();
+
+        // Closed until opened: the settings live in the pop-ups.
+        await expect(
+            page.getByRole('switch', { name: /^Planned defences/ }),
+        ).toHaveCount(0);
+
+        await page.getByRole('button', { name: /^Defences/ }).click();
+        await expect(
+            page.getByRole('switch', { name: /^Implemented defences/ }),
+        ).toBeDisabled();
+        await expect(
+            page.getByRole('switch', { name: /^Planned defences/ }),
+        ).toBeChecked();
+        await expect(
+            page.getByRole('switch', { name: /^Shelved defences/ }),
+        ).not.toBeChecked();
+
+        await page.getByRole('button', { name: /^Sections/ }).click();
+        // The four optional appendices and details start off.
+        for (const name of [
+            'Include comments',
+            'Include methodology',
+            'Include model-quality warnings',
+            'Show assignees',
+        ]) {
+            await expect(page.getByRole('switch', { name })).not.toBeChecked();
+        }
 
         await expect(
             page.getByRole('button', { name: 'Report options' }),
@@ -333,8 +371,15 @@ test.describe('the report', () => {
         // per-session default that a stored "closed" preference could hide.
         await page.reload();
         await expect(
-            page.getByRole('radiogroup', { name: 'Baseline' }),
+            page.getByRole('button', { name: /^Defences/ }),
         ).toBeVisible();
+        await expect(
+            page.getByRole('button', { name: /^Sections/ }),
+        ).toBeVisible();
+        await page.getByRole('button', { name: /^Defences/ }).click();
+        await expect(
+            page.getByRole('switch', { name: /^Planned defences/ }),
+        ).toBeChecked();
     });
 
     /**

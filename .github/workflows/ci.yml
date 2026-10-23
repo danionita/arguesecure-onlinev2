@@ -22,6 +22,10 @@ jobs:
   php:
     name: PHP â€” Pint, PHPStan, Pest
     runs-on: ubuntu-latest
+    # CI runs in the public repository only (D80): the private repository has
+    # no Actions minutes to spend, and its checks run on the owner's machine.
+    # A skipped job bills nothing, and the file stays identical in both.
+    if: github.repository == 'danionita/arguesecure-onlinev2'
     services:
       db:
         image: mariadb:11
@@ -94,6 +98,7 @@ jobs:
   js:
     name: JS â€” ESLint, vue-tsc, Vitest
     runs-on: ubuntu-latest
+    if: github.repository == 'danionita/arguesecure-onlinev2'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -110,6 +115,7 @@ jobs:
   docker:
     name: Docker â€” build and boot
     runs-on: ubuntu-latest
+    if: github.repository == 'danionita/arguesecure-onlinev2'
     needs: [php, js]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -175,6 +181,41 @@ jobs:
           # And it must be a real page, not an error body served with a 200.
           curl -sf http://localhost:8000/setup | grep -qi "setup"
 
+      - name: Assert application logs reach the container's stderr, not a file
+        # W112. The probe runs in a php-fpm worker, as a web request's code
+        # does, and logs through the app container's own environment: the
+        # .env copied above leaves LOG_CHANNEL and LOG_LEVEL commented out,
+        # so this is the image's default under test. `docker logs` keeps the
+        # container's stdout and stderr apart, which `docker compose logs`
+        # does not, and nginx's access log on stdout names the probe's URL,
+        # never its message.
+        run: |
+          docker compose exec -T app sh -c 'cat > public/w112-probe.php' <<'PHP'
+          <?php
+          require __DIR__.'/../vendor/autoload.php';
+          $app = require __DIR__.'/../bootstrap/app.php';
+          $app->make(Illuminate\Contracts\Http\Kernel::class)->bootstrap();
+          Illuminate\Support\Facades\Log::info('w112 info line');
+          Illuminate\Support\Facades\Log::debug('w112 debug line');
+          PHP
+          curl -fsS http://localhost:8000/w112-probe.php
+          docker compose exec -T app rm public/w112-probe.php
+          sleep 2
+
+          docker logs "$(docker compose ps -q app)" >app.out 2>app.err
+          grep -q 'production.INFO: w112 info line' app.err
+          if grep -q 'w112 info line' app.out; then
+            echo "the log line went to stdout" >&2; exit 1
+          fi
+          # Dropped at the image's level, info.
+          if grep -q 'w112 debug line' app.err; then
+            echo "a debug line was logged" >&2; exit 1
+          fi
+
+          # The storage bind mount, as written by the container's uid.
+          sudo test -d data/storage/logs
+          sudo test ! -e data/storage/logs/laravel.log
+
       - name: Tear down
         if: always()
         run: docker compose down -v
@@ -182,6 +223,7 @@ jobs:
   e2e:
     name: E2E — Playwright release scenarios
     runs-on: ubuntu-latest
+    if: github.repository == 'danionita/arguesecure-onlinev2'
     # Also after `docker`, not merely after the cheap checks: both jobs
     # build the same image, and running them at once doubled the anonymous
     # composer traffic that codeload was already 429ing. Serialising them
@@ -287,17 +329,11 @@ jobs:
         # dumped when /up never came up. Anything that fails *after* boot
         # needs these too.
         run: |
+          # Since W112 these carry Laravel's log too, so a queue worker's
+          # "FAIL" is followed by its exception rather than leaving it in a
+          # laravel.log on the data volume.
           docker compose -p arguesecure-e2e --env-file .env.e2e \
             -f docker-compose.yml -f docker-compose.e2e.yml logs --no-color --tail=400
-
-          # The container logs give the queue worker's verdict per job but
-          # never its reason: a broadcast that cannot reach Reverb prints
-          # "FAIL" and the exception goes to Laravel's log instead. That is
-          # the whole diagnosis for the one scenario still failing here, and
-          # it has cost several CI rounds to not have. sudo because storage
-          # is a bind mount written as the container's uid.
-          echo "----- laravel.log -----"
-          sudo tail -n 200 ./data-e2e/storage/logs/laravel.log || echo "(no laravel.log)"
 
       - name: Upload Playwright report
         if: failure()
@@ -322,6 +358,7 @@ jobs:
   security:
     name: Security â€” audit and secret scan
     runs-on: ubuntu-latest
+    if: github.repository == 'danionita/arguesecure-onlinev2'
     # gitleaks-action lists a pull request's commits to scan them, which the
     # workflow-wide `contents: read` does not cover: on a `pull_request`
     # run it dies on a 403 before scanning anything. Read-only, this job only.
@@ -350,7 +387,15 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
-      - run: npm audit --package-lock-only --omit=dev
+      # Every npm package here is a devDependency, including the ones Vite
+      # bundles for browsers, so `--omit=dev` reports 0 whatever the lock
+      # holds. Audit the whole lock; accepted findings are named, with a
+      # reason, in tools/dev/audit-allowlist.json (W122, D86).
+      # npm exits 1 whenever it finds anything, so its status is ignored; the
+      # gate decides, and fails on output that is not an audit report.
+      - run: |
+          npm audit --package-lock-only --json > "$RUNNER_TEMP/npm-audit.json" || true
+          node tools/dev/audit-gate.mjs "$RUNNER_TEMP/npm-audit.json"
 
       - name: gitleaks
         uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9

@@ -18,7 +18,13 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    // D71: fixed, not read from SESSION_DRIVER. SessionRegistry lists and
+    // revokes sessions as rows of the `sessions` table, so under any other
+    // driver the profile page's session list is empty and no password
+    // change, admin reset or revoke ends another session. A fixed value also
+    // overrides the SESSION_DRIVER=redis that installs before 2.7 copied
+    // into their own .env from .env.example.
+    'driver' => 'database',
 
     /*
     |--------------------------------------------------------------------------

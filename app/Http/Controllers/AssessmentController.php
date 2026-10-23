@@ -70,6 +70,9 @@ class AssessmentController extends Controller
                 // AssessmentGraph the calculator receives.
                 'risk_tolerance' => $assessment->risk_tolerance,
                 'is_public' => (bool) $assessment->is_public,
+                // W141. A template opens in this same editor; the page only
+                // hides what has no meaning without an owner (sharing).
+                'is_template' => (bool) $assessment->is_template,
             ],
             'nodes' => $nodes->map(fn (Node $node): array => $this->nodeToArray($node))->values(),
             'riskAttackLinks' => $graph->riskAttackLinks,
@@ -95,6 +98,8 @@ class AssessmentController extends Controller
                 'update' => (bool) $user?->can('update', $assessment),
                 'manage' => (bool) $user?->can('manage', $assessment),
                 'transfer' => (bool) $user?->can('transferOwnership', $assessment),
+                // W141. Whether the Share dialog may offer "Publish as template".
+                'publishTemplate' => (bool) $user?->can('saveAsTemplate', $assessment) && ! $assessment->is_template,
             ],
             // W52. Sent with the page rather than fetched from
             // /assistant/status on mount: the editor already makes one request

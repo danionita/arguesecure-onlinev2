@@ -97,11 +97,12 @@ test('completing first-run setup leaves the instance with the bundled templates'
         'password_confirmation' => $password,
     ])->assertRedirect(route('dashboard'));
 
-    $owner = User::query()->where('email', 'first-admin@example.com')->sole();
+    User::query()->where('email', 'first-admin@example.com')->sole();
 
     $templates = Assessment::query()->where('is_template', true)->get();
     expect($templates)->not->toBeEmpty();
-    expect($templates->pluck('owner_user_id')->unique()->all())->toBe([$owner->id]);
+    // Templates belong to nobody (W141): the first admin gets none of them.
+    expect($templates->pluck('owner_user_id')->unique()->all())->toBe([null]);
 
     // 2.5.1: every bundled fixture is a template, the demo web shop
     // included — it used to need a `db:seed`, which no longer exists.

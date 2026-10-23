@@ -921,10 +921,14 @@ final class ReportAssembler
             }
         }
 
+        // W136: a report that leaves the section out carries only how many
+        // warnings it left out, so the omission can be stated and the
+        // messages are not in the payload of a document that omits them.
         return [
             'references' => $references,
             'comments' => $comments,
-            'warnings' => $warnings,
+            'warnings' => $options->includeWarnings ? $warnings : [],
+            'warningsOmitted' => $options->includeWarnings ? 0 : count($warnings),
         ];
     }
 

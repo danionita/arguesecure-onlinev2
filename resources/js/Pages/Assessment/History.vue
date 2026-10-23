@@ -36,6 +36,7 @@ import EmptyState from '@/Components/UI/EmptyState.vue';
 import Icon from '@/Components/UI/Icon.vue';
 import Select from '@/Components/UI/Select.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -180,6 +181,7 @@ function savedByLine(snapshot: VersionSnapshot): string {
 
 const naming = ref(false);
 const form = useForm({ name: '' });
+useUnsavedChanges(() => form.isDirty);
 
 function saveVersion() {
     form.post(
@@ -319,7 +321,14 @@ const pendingRestore = ref<VersionSnapshot | null>(null);
                             autofocus
                         />
                     </label>
-                    <Button variant="ghost" size="sm" @click="naming = false">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        @click="
+                            naming = false;
+                            form.reset();
+                        "
+                    >
                         Cancel
                     </Button>
                     <Button

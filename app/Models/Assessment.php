@@ -18,6 +18,11 @@ use Illuminate\Support\Str;
  * description live on the root node (schema.md §3.3); listings join
  * `nodes` on `type = 'root'`. `title`/`description` below are read-only
  * accessors proxying that node, never real columns.
+ *
+ * @property ?string $scale_set_key which admin-defined scale the bands were last
+ *                                  set to (W126); NULL is Custom. A label, not an
+ *                                  input to any calculation, and assigned as a
+ *                                  property by `AssessmentScaleApplier` only.
  */
 class Assessment extends Model
 {
@@ -27,8 +32,9 @@ class Assessment extends Model
     use SoftDeletes;
 
     /**
-     * uuid, owner_user_id, share_token(_created_at) and calc_version are
-     * deliberately absent — identity, ownership-transfer and cache-key
+     * uuid, owner_user_id, is_template (which the database ties to
+     * owner_user_id being null, W141), share_token(_created_at) and
+     * calc_version are deliberately absent — identity, ownership-transfer and cache-key
      * columns set only by services (security.md §7).
      *
      * @var list<string>
@@ -46,7 +52,6 @@ class Assessment extends Model
         // which calculation-engine.md forbids outright.
         'risk_tolerance',
         'is_public',
-        'is_template',
     ];
 
     /**

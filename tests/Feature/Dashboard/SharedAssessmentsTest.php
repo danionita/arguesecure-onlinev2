@@ -94,11 +94,7 @@ test('a template someone else owns is not advertised here either', function () {
     // reason: readable is not shared-with-me.
     $user = User::factory()->create();
     $stranger = User::factory()->create();
-    Assessment::factory()->create([
-        'owner_user_id' => $stranger->id,
-        'is_template' => true,
-        'is_public' => true,
-    ]);
+    Assessment::factory()->template()->public()->create();
 
     $this->actingAs($user)
         ->get(route('assessments.shared'))

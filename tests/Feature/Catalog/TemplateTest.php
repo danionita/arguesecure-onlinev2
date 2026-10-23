@@ -9,92 +9,14 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 /*
  * Templates (schema.md §3.14, PLAN.md Phase 8 item 4). Per CLAUDE.md's
- * W20 non-negotiables: marking an assessment as a template needs `manage`;
- * every route touching an assessment goes through AssessmentPolicy, no
+ * W20 non-negotiables: every route touching an assessment goes through AssessmentPolicy, no
  * exceptions. Creating from a template must be a genuine copy — later
  * edits to the template must never propagate into an assessment already
  * created from it — proved directly, not just asserted, below.
  */
-function templateMember(Assessment $assessment, User $user, string $role): void
-{
-    $assessment->members()->attach($user->id, [
-        'role' => $role,
-        'invited_by' => $assessment->owner_user_id,
-        'invited_at' => now(),
-        'accepted_at' => now(),
-    ]);
-}
-
-// --- marking a template -------------------------------------------------
-
-test('an anonymous user is rejected from marking an assessment as a template', function () {
-    $assessment = Assessment::factory()->create();
-
-    $this->patch(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertRedirect(route('login'));
-
-    expect($assessment->fresh()->is_template)->toBeFalse();
-});
-
-test('an editor collaborator cannot mark an assessment as a template', function () {
-    $assessment = Assessment::factory()->create();
-    $editor = User::factory()->create();
-    templateMember($assessment, $editor, 'editor');
-
-    $this->actingAs($editor)
-        ->patch(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertForbidden();
-
-    expect($assessment->fresh()->is_template)->toBeFalse();
-});
-
-/*
- * W45 narrowed this route from `manage` to `saveAsTemplate` (owner or admin),
- * so this test asserts the opposite of what it did when W20 wrote it. The
- * change is deliberate and is argued in AssessmentPolicy::saveAsTemplate:
- * publishing sets `is_public` too, exposing every value in the assessment to
- * every account on the instance, which is not the same decision as inviting a
- * colleague — and unlike an invitation it cannot be taken back from whoever
- * has already read it.
- *
- * The full W45 suite lives in tests/Feature/Templates/. This one stays here so
- * the W20 file does not quietly describe a rule the application no longer has.
- */
-test('a manager collaborator cannot mark an assessment as a template', function () {
-    $assessment = Assessment::factory()->create();
-    $manager = User::factory()->create();
-    templateMember($assessment, $manager, 'manager');
-
-    $this->actingAs($manager)
-        ->patch(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertForbidden();
-
-    expect($assessment->fresh()->is_template)->toBeFalse();
-});
-
-test('an admin can mark and unmark an assessment as a template', function () {
-    $assessment = Assessment::factory()->create();
-    $admin = User::factory()->admin()->create();
-
-    $this->actingAs($admin)
-        ->patch(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertRedirect();
-    expect($assessment->fresh()->is_template)->toBeTrue();
-
-    $this->actingAs($admin)
-        ->patch(route('assessments.template.update', $assessment), ['is_template' => false])
-        ->assertRedirect();
-    expect($assessment->fresh()->is_template)->toBeFalse();
-});
-
-test('2.5.1: the owner who is not an admin can no longer publish a template', function () {
-    $assessment = Assessment::factory()->create();
-
-    $this->actingAs($assessment->owner)
-        ->patch(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertForbidden();
-    expect($assessment->fresh()->is_template)->toBeFalse();
-});
+// Marking an assessment as a template is gone (W141): publishing copies it
+// into a separate, ownerless template. That and who may do it are covered in
+// tests/Feature/Templates/TemplatePublishTest.php.
 
 // --- listing --------------------------------------------------------------
 

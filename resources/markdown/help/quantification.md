@@ -57,7 +57,7 @@ difference is deliberate:
   that quietly understates risk by default is worse than one that shows an
   honest, partial number. Instead, the total is shown as a lower bound
   (`≥ €53,500`) alongside how many of the possible paths were actually
-  valued, so you can see at a glance how complete the picture is.
+  valued, so you can see at a glance how many values are entered.
 - **A missing defence *strength* is treated as zero reduction** — the
   defence is counted as present but contributing nothing. This overstates
   the residual risk, which is the safe direction to be wrong in: an
@@ -118,10 +118,9 @@ inherent through current to target and a proportional bar — never as a
 low/medium/high band. Impact-per-occurrence and annual-loss are different
 units that typically differ by an order of magnitude; mapping an annual-loss
 figure back through a per-occurrence band would be a silent unit error, so
-the tool never does it. If an assessment still uses an uncalibrated system
-default scale, you'll see a persistent notice on its reports, because a
-precise-looking euro figure computed off a default calibration is misleading
-on its own terms.
+the tool never does it. If an assessment still uses a shared starting scale
+unchanged, its reports carry a persistent notice: a precise-looking euro figure
+from a starting scale is misleading.
 
 An attack linked to more than one risk shows a warning: totals assume the
 attack succeeding causes *every* linked loss to occur. If two risks actually

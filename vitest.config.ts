@@ -17,5 +17,13 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         include: ['tests/js/**/*.spec.ts'],
+        // Read only by `vitest run --coverage` (checks.sh coverage, W119). A
+        // file no spec imports still counts, as 0%.
+        coverage: {
+            provider: 'v8',
+            include: ['resources/js/**'],
+            reporter: ['json-summary', 'text-summary'],
+            reportsDirectory: 'coverage/js',
+        },
     },
 });

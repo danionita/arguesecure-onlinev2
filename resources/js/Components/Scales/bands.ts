@@ -66,6 +66,67 @@ export interface ScaleDetail {
     })[];
 }
 
+/** The three kinds of band a scale has, in display order. */
+export const KINDS = ['impact', 'likelihood', 'strength'] as const;
+
+export type Kind = (typeof KINDS)[number];
+
+/** The working copy the editors change: bands per kind. */
+export type ScaleDraft = Record<Kind, EditableBand[]>;
+
+/**
+ * One admin scale as `ScaleDescriber::allSets()` sends it (W126): a named
+ * calibration of all three kinds.
+ */
+export interface ScaleSetDetail {
+    key: string;
+    name: string;
+    is_builtin: boolean;
+    scales: Record<string, ScaleDetail | null>;
+}
+
+/**
+ * A fresh, editable copy of a scale's bands for each kind. Never shares an
+ * array with its source, so editing the draft cannot change the props it
+ * came from.
+ *
+ * `code` is carried and never rendered (D44); it is what freezes a code
+ * across a rename.
+ */
+export function draftFrom(
+    scales: Record<string, ScaleDetail | null>,
+): ScaleDraft {
+    return Object.fromEntries(
+        KINDS.map((kind) => [
+            kind,
+            (scales[kind]?.bands ?? []).map((band) => ({
+                code: band.code,
+                label: band.label,
+                lower_bound: Number(band.lower_bound),
+                upper_bound:
+                    band.upper_bound === null ? null : Number(band.upper_bound),
+                representative: Number(band.representative),
+            })),
+        ]),
+    ) as ScaleDraft;
+}
+
+/** The request body both screens send: `scales.{kind}.bands`. */
+export function payloadFrom(draft: ScaleDraft): {
+    scales: Record<Kind, { bands: EditableBand[] }>;
+} {
+    return {
+        scales: Object.fromEntries(
+            KINDS.map((kind) => [kind, { bands: draft[kind] }]),
+        ) as Record<Kind, { bands: EditableBand[] }>,
+    };
+}
+
+/** Whether two drafts hold the same bands, so "Not saved yet" can be honest. */
+export function draftsEqual(a: ScaleDraft, b: ScaleDraft): boolean {
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
 /**
  * The default representative for a band.
  *

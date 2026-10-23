@@ -8,9 +8,8 @@ import Icon from '@/Components/UI/Icon.vue';
 import Input from '@/Components/UI/Input.vue';
 import Modal from '@/Components/UI/Modal.vue';
 import AdminLayout from '@/Pages/Admin/AdminLayout.vue';
-import type { PageProps } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 interface UserRow {
     id: number;
@@ -34,7 +33,15 @@ const props = defineProps<{
     filters: { search: string; sort: string; direction: 'asc' | 'desc' };
 }>();
 
-const page = usePage<PageProps<{ generatedPassword?: string | null }>>();
+// W115: Inertia flash data, delivered with one response and kept out of
+// browser history, so Back to this table does not show a password again.
+const page = usePage();
+const generatedPassword = computed(() => {
+    const value = (page.flash as Record<string, unknown> | undefined)
+        ?.generatedPassword;
+
+    return typeof value === 'string' && value !== '' ? value : null;
+});
 
 const search = ref(props.filters.search);
 
@@ -120,13 +127,13 @@ function confirmDelete() {
 
     <AdminLayout title="Users">
         <div
-            v-if="page.props.generatedPassword"
+            v-if="generatedPassword"
+            data-testid="generated-password"
             class="border-status-implemented-border bg-status-implemented-bg text-status-implemented-text mb-4 rounded-md border px-4 py-3 text-sm"
         >
-            Generated password (shown once, not stored anywhere else):
-            <code class="font-mono font-semibold">{{
-                page.props.generatedPassword
-            }}</code>
+            Generated password (shown once, not stored anywhere else; they must
+            change it at first sign-in):
+            <code class="font-mono font-semibold">{{ generatedPassword }}</code>
         </div>
 
         <div class="mb-4 flex items-center justify-between gap-4">

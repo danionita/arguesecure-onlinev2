@@ -10,6 +10,7 @@
  * select renders" would pass just as happily against a parallel endpoint,
  * which is the failure this file exists to make impossible.
  */
+import { hasUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import NodeModal from '../../../resources/js/Components/NodeModal/NodeModal.vue';
@@ -23,6 +24,7 @@ import {
 import { makeComputedStore, makeInit, SCALE_LEVELS, SCALES } from './fixture';
 
 vi.mock('@inertiajs/vue3', () => ({
+    router: { on: () => () => {} },
     Link: {
         name: 'Link',
         props: ['href'],
@@ -145,6 +147,35 @@ function mountTab(store: AssessmentStore = makeComputedStore()) {
 
     return wrapper;
 }
+
+describe('the Scales tab guards unsaved edits (W142)', () => {
+    it('is unsaved once a field differs from the store, and clean again after Save', async () => {
+        const wrapper = mountTab();
+        await flushPromises();
+        expect(hasUnsavedChanges()).toBe(false);
+
+        await wrapper.get('#scales-tab-currency').setValue('USD');
+        expect(hasUnsavedChanges()).toBe(true);
+
+        await wrapper.get('button').trigger('click');
+        await flushPromises();
+        expect(hasUnsavedChanges()).toBe(false);
+    });
+});
+
+describe('the Scales tab dirty check is not fooled by number formatting', () => {
+    it('is clean after saving a tolerance typed as 5000.0', async () => {
+        const wrapper = mountTab();
+        await flushPromises();
+
+        const inputs = wrapper.findAll('input');
+        await inputs[inputs.length - 1].setValue('5000.0');
+        expect(hasUnsavedChanges()).toBe(true);
+        await wrapper.get('button').trigger('click');
+        await flushPromises();
+        expect(hasUnsavedChanges()).toBe(false);
+    });
+});
 
 describe('the Scales tab reads and writes the settings controller', () => {
     it('asks the settings controller for its own props rather than a new endpoint', async () => {

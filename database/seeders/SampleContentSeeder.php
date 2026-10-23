@@ -30,9 +30,9 @@ use Illuminate\Support\Facades\Log;
  *
  * # Owner resolution
  *
- * A seeded assessment needs an owner, and nothing here may invent one. The
- * owner is the administrator passed in by SetupController, or — for `run()`
- * — the oldest existing `is_admin = 1` row; with none, nothing is seeded.
+ * Templates have no owner (W141), so the library seeds whether or not an
+ * administrator exists. An owner is passed only for a fixture that is not a
+ * template; none ships today, and the seeder refuses one without it.
  *
  * # Idempotency
  *
@@ -47,7 +47,7 @@ class SampleContentSeeder extends Seeder
     /**
      * Called by SetupController once the first administrator exists.
      */
-    public function seedReferenceContent(User $owner): void
+    public function seedReferenceContent(?User $owner = null): void
     {
         $scales = (new SystemScaleSeeder)->run();
 
@@ -67,26 +67,12 @@ class SampleContentSeeder extends Seeder
     }
 
     /**
-     * The same content, owned by the oldest existing administrator — for an
-     * instance whose first administrator predates a fixture. Seeds nothing,
-     * and says so, when there is no administrator yet.
+     * The same content, for an instance whose fixtures have moved on since it
+     * was set up. Needs no administrator: nothing it seeds has an owner.
      */
     public function run(): void
     {
-        $owner = User::query()->where('is_admin', true)->oldest('id')->first();
-
-        if ($owner === null) {
-            Log::warning(
-                'SampleContentSeeder: skipped — no admin user exists yet. '
-                .'Reference content needs an existing admin to own it and '
-                .'nothing here creates or seeds a credential (CLAUDE.md). '
-                .'Complete first-run setup, which seeds it automatically.'
-            );
-
-            return;
-        }
-
-        $this->seedReferenceContent($owner);
+        $this->seedReferenceContent();
     }
 
     /**

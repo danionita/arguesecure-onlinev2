@@ -153,6 +153,8 @@ export interface AssessmentSummary {
      */
     risk_tolerance?: number | null;
     is_public: boolean;
+    /** W141: opened from the Templates page; no owner, no sharing. */
+    is_template?: boolean;
 }
 
 /**
@@ -176,6 +178,8 @@ export interface Abilities {
     manage: boolean;
     /** Whether the current user may transfer ownership (owner or admin) — AssessmentPolicy::transferOwnership(). */
     transfer: boolean;
+    /** W141: whether the Share dialog offers "Publish as template" (admins). */
+    publishTemplate?: boolean;
 }
 
 /**

@@ -60,10 +60,27 @@ The domain is **Target of Assessment → Risks → Attacks → Defences/Transfer
 | `is_admin` | boolean | no | default `0`. Replaces the legacy `$user->name != "admin"` check. |
 | `is_active` | boolean | no | default `1`. Deactivation preserves authorship attribution; deletion does not. |
 | `last_login_at` | datetime | yes | |
+| `two_factor_secret` | text | yes | W116. The TOTP secret, **encrypted** with the app key (the model casts it). Null unless a second factor is confirmed. |
+| `two_factor_recovery_codes` | text | yes | W116. Encrypted JSON array of ten keyed hashes (HMAC-SHA256 under the app key); a used code is removed. Never the codes themselves. |
+| `two_factor_confirmed_at` | datetime | yes | W116. Set when a code from the new secret was confirmed; **this** is what says an account has the factor. |
+| `two_factor_last_step` | bigint unsigned | yes | W116. The RFC 6238 time step of the last code accepted; a code is accepted only for a greater step. |
 | `remember_token` | varchar(100) | yes | |
 | timestamps | | | |
 
 Indexes: `users_email_unique (email)`, `users_is_admin_index (is_admin)`.
+
+#### `user_identities` — W117
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+| `id` | bigint unsigned PK | no | |
+| `user_id` | bigint unsigned FK → `users` | no | ON DELETE CASCADE |
+| `issuer` | varchar(255) | no | the OpenID Connect provider's issuer |
+| `subject` | varchar(255) | no | the provider's stable `sub` for this person |
+| `last_used_at` | datetime | yes | |
+| timestamps | | | |
+
+Indexes: UNIQUE `(issuer, subject)`, UNIQUE `(user_id, issuer)` (one provider per instance, so one identity per account). The email is only how a link is first made.
 
 ### 3.2 `scales` and `scale_levels`
 
@@ -103,6 +120,21 @@ Seeded sets:
 |---|---|---|
 | `default` | Standard | The original system default, bands unchanged since W22. |
 | `small-organisation` | Small organisation | W77. Impact shifted down two decades (0→100 … 100k→∞), likelihood boundaries lower and wider, strength more pessimistic at the top. A ten-person firm's real losses all fall in the default set's bottom two bands, and a scale whose top three bands are unreachable cannot rank the risks it is being used on. |
+
+##### `scale_sets` (W126, D93)
+
+"Set" is the code's word for what the interface calls a **scale**: a named calibration of impact, likelihood and strength. A set's three `scales` rows are found by `scales.set_key`; the name lives here.
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+| `id` | bigint unsigned | no | PK. |
+| `key` | varchar(64) | no | Unique. The value of `scales.set_key`. There is deliberately **no foreign key**: the W77 migration, the seeder and `ScaleSets::resolve()` read `set_key` as a plain string. |
+| `name` | varchar(64) | no | Unique (case-insensitive under the table collation). What the dropdowns show. |
+| `is_builtin` | boolean | no | The two seeded scales. A built-in scale can be edited, never renamed or deleted: `AssessmentCreator` falls back to `default`. |
+| `position` | int unsigned | no | Order among built-ins; custom scales sort after them by name. |
+| `created_at`, `updated_at` | timestamp | no | |
+
+An admin creates a custom scale by copying a complete one (three system `scales` rows and their levels, `set_key` = a slug of the name made unique). Deleting one first gives every assessment still pointing at its rows private, identical copies (`SystemScaleCalibrator::release()`), because the assessment FKs are `RESTRICT`, then removes the rows. `default_scale_calibration` no longer exists (2.5.1); the scale a new assessment starts from is chosen in the New assessment pop-up.
 
 #### `scale_levels`
 
@@ -178,7 +210,8 @@ Every generated value is editable; invariant 5 is re-validated on save.
 | `is_public` | boolean | no | default `0` — listed publicly and readable by anyone |
 | `share_token` | char(43) | yes | UNIQUE; base64url of 32 random bytes; unlisted revocable read-only link |
 | `share_token_created_at` | datetime | yes | |
-| `is_template` | boolean | no | default `0` |
+| `is_template` | boolean | no | default `0`. **W141:** a template has no owner, and `owner_user_id` is `NULL` exactly when this is `1` (CHECK `assessments_template_ownerless`); not in `$fillable`. |
+| `scale_set_key` | varchar(64) | yes | W126. Which admin scale the assessment's bands were last set to; `NULL` is **Custom**. A label, not an input to any calculation, and not a foreign key. Written only at creation and by `AssessmentScaleApplier`, which compares the stored bands with every scale (label, bounds, representative, in order, per kind) — never on page load, so a later admin edit to the scale does not turn the assessment into Custom. Backfilled once by the migration: `default` where the bands equal Standard's, else `NULL`. |
 | `calc_version` | int unsigned | no | default `0`; bumped on any change affecting totals. The calculation cache key. |
 | timestamps | | | |
 | `deleted_at` | datetime | yes | soft delete |
@@ -254,7 +287,7 @@ chk_nodes_nonneg:
 
 The mode checks deliberately permit `mode` set with the value still `NULL`. That is the legitimate "user picked quantitative but has not typed a number yet" state, and the engine treats it as *missing* — see [calculation-engine.md §6](calculation-engine.md#6-missing-values).
 
-**Deletion semantics.** Node deletion is always soft. The `ON DELETE CASCADE` from `assessments` is the only cascade that fires in normal operation. Hard deletion exists for admins and for a scheduled empty-trash job; when it fires, pivots, comments, revisions, tags and references cascade away. History survives soft deletes; hard delete is a genuine purge.
+**Deletion semantics.** Node deletion is always soft. The `ON DELETE CASCADE` from `assessments` is the only cascade that fires in normal operation. Hard deletion exists for the owner and admins (*Erase permanently*) and for a scheduled empty-trash job (`arguesecure:purge-deleted`, daily, `trash_retention_days`); when it fires, pivots, comments, revisions, tags and references cascade away. History survives soft deletes; hard delete is a genuine purge. Both go through `App\Domain\Retention\AssessmentEraser` (W113), never a bare `DELETE`, for reasons the cascade alone does not cover: the assessment's three `*_scale_id` columns are pointed at a system scale before its row is deleted, because a calibrated assessment both owns its scales (cascade) and references them (`RESTRICT`), and MariaDB refuses that DELETE with 1451 (the repoint runs only when it owns scales, one system scale per kind); `node_revisions` rows go with the assessment (`assessment_id` cascades) rather than being left with a null `node_id`. Notifications naming the assessment (`data.assessment_uuid`) are deleted with it.
 
 ### 3.5 `risk_attack`
 
@@ -391,8 +424,10 @@ A reconstruction with any of these holes produces an assessment that **looks** r
 | `kind` | varchar(64) | no | `node.create`, `node.delete`, `node.move`, `link.create`, `link.delete`, `subtree.clone`, `catalog.insert` |
 | `summary` | varchar(255) | no | human-readable: `Deleted attack 'Phishing'` |
 | `inverse` | json | no | a serialized command that undoes it |
-| `undone_at` | datetime | yes | |
+| `undone_at` | datetime(6) | yes | microseconds since W108: redo orders by it |
 | `undone_by` | bigint unsigned | yes | FK → `users.id` **ON DELETE SET NULL** |
+| `redone_at` | datetime | yes | set when a redo consumes this row; it stays undone (W108) |
+| `superseded_at` | datetime | yes | set on every undone row when a new operation is recorded; it stays undone but can no longer be redone (W121) |
 | `created_at` | datetime | no | |
 
 Index: `assessment_operations_stack_index (assessment_id, undone_at, id DESC)`.
@@ -401,9 +436,27 @@ Index: `assessment_operations_stack_index (assessment_id, undone_at, id DESC)`.
 
 - **One linear stack per assessment, not per user.** Per-user undo in a live multi-user editor produces incoherent history and is a known trap.
 - Only the newest not-yet-undone operation is undoable. Any editor may undo it, but the UI names the author: *"Undo Dana's deletion of 'Phishing'?"*
-- Redo is the undo of an undo, pushed as a new operation.
+- Redo is the undo of an undo, pushed as a new operation. The row it consumed keeps `undone_at` and gets `redone_at`, which takes it off both stacks: undo skips it because it is undone, redo because it is redone. Clearing its `undone_at` instead, as 2.6 did, put it back on the undo stack holding the redo command, so a later undo re-applied the change (W108). Redo takes the most recently undone row, which is why `undone_at` keeps microseconds: at one-second precision two undos in one second tied, and no tiebreak on `id` is right for both Ctrl+Z, Ctrl+Z (the lower id came last) and undo, redo, undo (the higher one did).
+- A new operation ends the redo stack: `UndoService::record()` stamps `superseded_at` on every row that is undone and not yet redone, and `redo()` skips stamped rows. Redo's own pushed row does not stamp, so undo, undo, redo, redo still works. It is a column because it cannot be derived: redo pushes a row, which would otherwise count as newer work (W121). Rows redone before W108's migration still hold a redo command as their `inverse`, and rows undone before W121's are not stamped; neither is repaired, since which rows are affected cannot be told from the row alone.
+- Every applier resolves the uuids in a command inside the operation's own assessment (`CommandApplier::apply($command, $assessmentId)`); a uuid from another assessment reads as a node that does not exist (W121). The `inverse` is written only by server code, so this is defence in depth.
 - **If the inverse cannot be applied cleanly** — a referenced node was hard-deleted, or a field has since been edited by someone else — **refuse with an explicit message rather than partially applying.**
 - Only structural changes enter the stack. Field edits are recovered through `node_revisions` "revert this field", which is recorded as a normal edit, not an undo.
+
+### 3.10a `security_events` — the stored security log (W128)
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+| `id` | bigint unsigned PK | no | |
+| `created_at` | datetime | no | UTC; indexed |
+| `level` | varchar(16) | no | `info` or `warning` |
+| `event` | varchar(64) | no | a `SecurityEvent` value |
+| `actor_id` | bigint unsigned | yes | **no FK**: a row outlives the account |
+| `actor_email` | varchar(254) | yes | |
+| `target` | json | yes | `{type, id, email?}` as in security.md §11.1 |
+| `ip` | varchar(45) | yes | |
+| `details` | json | yes | already redacted |
+
+Index `(event, created_at)`. Written only by the `security` log channel; deleted only by `arguesecure:purge-security-events` after `SECURITY_LOG_RETENTION_DAYS`.
 
 ### 3.11 `tags` and `node_tag`
 
@@ -516,7 +569,7 @@ Nothing rewrites an existing snapshot. v1 is not a migration step; it is a shape
 
 Two mechanisms, both needed.
 
-**(a) Template assessments** — `assessments.is_template = 1`. "New from template" runs `AssessmentCloner`, which also clones assessment-owned scales, tags, `node_tag` and `node_references` (§3.12) and remaps every `uuid`. References were the one thing it silently dropped until W78, so a template's citations vanished on instantiation while the structure arrived intact.
+**(a) Template assessments** — `assessments.is_template = 1`, with `owner_user_id = NULL` (W141, 2.7.0): a template is nobody's assessment, only admins reach it through the assessment routes, and the Templates page is the only place one is created, edited (in the ordinary editor) or deleted (permanently). "Publish as template" copies an assessment through `AssessmentCloner` into a new template and writes nothing to the original; there is no link back and no unpublish. "New from template" runs `AssessmentCloner`, which also clones assessment-owned scales, tags, `node_tag` and `node_references` (§3.12) and remaps every `uuid`. References were the one thing it silently dropped until W78, so a template's citations vanished on instantiation while the structure arrived intact.
 
 Inserting a catalogue entry copies no references, and that is not an omission: a `catalog_entries` row has no reference of its own to copy.
 
@@ -567,6 +620,11 @@ A deliberate **singleton row**, not a key/value table: there is exactly one inst
 | `assistant_suggestions_enabled` | boolean | no | W87 (D48), default `1`. |
 | `assistant_summary_enabled` | boolean | no | W87 (D48), default `1`. One switch per assistant feature, each **subordinate to `Availability`** and able only to subtract from it — no value here makes a feature work where the deployment runs no runtime, which `UpdateSettingsRequest` enforces with `declined`. They default **on** because they are read only after an admin has switched `assistant_enabled` on; defaulting them off would make that a two-step act whose second step is invisible. |
 | `session_lifetime_minutes` | int unsigned | no | default `480`; read by `App\Http\Middleware\ApplyInstanceSessionLifetime` and applied to `config('session.lifetime')` before the session starts |
+| `require_two_factor` | boolean | no | W116 (D78), default `0`. On: an account with no second factor is sent to enrolment after its password. Off by default so switching it on never locks anyone out unannounced. |
+| `sso_only` | boolean | no | W117 (D79), default `0`. On, and with a provider configured, non-admins cannot sign in with a password. |
+| `oidc_issuer`, `oidc_client_id`, `oidc_button_label`, `oidc_allowed_domains` | varchar(255), varchar(255), varchar(100), text | yes | W133 (D106). The OpenID Connect provider as stored on the Authentication tab; null means not set here. A same-named `OIDC_*` environment value wins (`OidcConfig`). Domains are lower-case, comma-separated. |
+| `oidc_client_secret` | text | yes | W133 (D106). The client secret under the `encrypted` cast (`APP_KEY`), in `$hidden`, never returned to a page. |
+| `oidc_trust_email` | boolean | no | W133 (D106), default `0`. |
 | timestamps | | | |
 
 Named CHECK:

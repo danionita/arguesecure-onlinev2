@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Domain\Scales\ScaleSets;
 use App\Models\Scale;
 use App\Models\ScaleLevel;
+use App\Models\ScaleSet;
 use Illuminate\Database\Seeder;
 
 /**
@@ -66,8 +67,10 @@ class SystemScaleSeeder extends Seeder
     public function run(): array
     {
         $default = $this->seedSet(ScaleSets::DEFAULT_KEY, $this->defaultBands());
+        $this->seedName(ScaleSets::DEFAULT_KEY, 'Standard', 0);
 
         $this->seedSet(ScaleSets::SMALL_ORGANISATION_KEY, $this->smallOrganisationBands());
+        $this->seedName(ScaleSets::SMALL_ORGANISATION_KEY, 'Small organisation', 1);
 
         return $default;
     }
@@ -185,6 +188,25 @@ class SystemScaleSeeder extends Seeder
                 ],
             ],
         ];
+    }
+
+    /**
+     * The built-in scale's name (W126, D93). Only created when missing, so an
+     * admin's edits to a name or order are never undone by a re-seed; a
+     * built-in cannot be renamed in the interface, so this only matters to a
+     * hand-edited database.
+     */
+    private function seedName(string $key, string $name, int $position): void
+    {
+        if (ScaleSet::query()->where('key', $key)->exists()) {
+            return;
+        }
+
+        $set = new ScaleSet(['name' => $name]);
+        $set->key = $key;
+        $set->is_builtin = true;
+        $set->position = $position;
+        $set->save();
     }
 
     /**

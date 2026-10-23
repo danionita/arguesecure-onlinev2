@@ -67,6 +67,8 @@ export function useReportSearch(getReport: () => ReportData) {
     /** Every rendered row of `tree.risks[].attacks[].defences[]`, title + description (+ rationale for a defence) — never a figure. */
     function rows(): Row[] {
         const out: Row[] = [];
+        // An omitted tree renders no rows, so it has nothing to find (W139).
+        if (getReport().options.omittedSections.includes('tree')) return out;
         for (const risk of getReport().tree.risks) {
             out.push({
                 uuid: risk.uuid,

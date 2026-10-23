@@ -14,7 +14,8 @@ in.
 | **Manager** | Everything an editor can, plus share, change settings and scales, and delete the assessment. |
 
 The owner and administrators can always do everything. Only they can transfer
-ownership or delete an assessment permanently. The share dialog lists every
+ownership or erase a deleted assessment permanently; a manager can delete
+one and restore it. The share dialog lists every
 collaborator with their role and who invited them; removing someone takes
 effect immediately.
 
@@ -31,7 +32,8 @@ role. Administrators can turn public assessments off for the whole instance.
 ## The read-only link
 
 Each assessment can also have one **revocable read-only link**: anyone who
-holds it can view the assessment without an account. The owner or a manager
+holds it can view the assessment without an account: opening the link goes
+straight to the assessment, read-only. The owner or a manager
 can create, copy and revoke it. Revoking stops the link working at once, for
 good; a new link is a new address.
 

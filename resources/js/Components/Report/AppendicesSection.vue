@@ -24,22 +24,35 @@ const props = defineProps<{
 }>();
 
 // Appendix letters are sequential and skip whichever optional sections
-// (comments, methodology) are switched off, so "A. References" is always
+// (comments, methodology, warnings) are switched off, so "A. References" is always
 // first and the warnings appendix always lands on the next free letter.
 const letters = computed(() => {
     let code = 'A'.charCodeAt(0);
     const next = () => String.fromCharCode(code++);
-    const references = next();
+    const references = props.options.omittedSections.includes('references')
+        ? null
+        : next();
     const comments = props.options.includeComments ? next() : null;
     const methodology = props.options.includeMethodology ? next() : null;
-    const warnings = next();
+    const warnings = props.options.includeWarnings ? next() : null;
 
     return { references, comments, methodology, warnings };
 });
+
+// Nothing left to print under the heading (W139): leave the heading out too.
+const hasAppendix = computed(
+    () =>
+        Object.values(letters.value).some((letter) => letter !== null) ||
+        props.appendices.warningsOmitted > 0,
+);
 </script>
 
 <template>
-    <section class="report-section" aria-labelledby="appendices-heading">
+    <section
+        v-if="hasAppendix"
+        class="report-section"
+        aria-labelledby="appendices-heading"
+    >
         <h2
             id="appendices-heading"
             class="text-text-primary text-xl font-semibold"
@@ -47,7 +60,7 @@ const letters = computed(() => {
             Appendices
         </h2>
 
-        <div class="mt-4 break-inside-avoid">
+        <div v-if="letters.references" class="mt-4 break-inside-avoid">
             <h3 class="text-text-primary text-sm font-semibold">
                 {{ letters.references }}. References
             </h3>
@@ -204,7 +217,29 @@ const letters = computed(() => {
             </div>
         </div>
 
-        <div class="mt-6 break-inside-avoid">
+        <p
+            v-if="!options.includeMethodology"
+            class="text-text-muted mt-6 text-xs"
+            data-testid="methodology-omitted"
+        >
+            The methodology appendix is not included in this report.
+        </p>
+
+        <p
+            v-if="!options.includeWarnings && appendices.warningsOmitted > 0"
+            class="text-text-muted mt-6 text-xs"
+            data-testid="warnings-omitted"
+        >
+            {{ appendices.warningsOmitted }}
+            {{
+                appendices.warningsOmitted === 1
+                    ? 'model-quality warning was'
+                    : 'model-quality warnings were'
+            }}
+            left out of this report.
+        </p>
+
+        <div v-if="options.includeWarnings" class="mt-6 break-inside-avoid">
             <h3 class="text-text-primary text-sm font-semibold">
                 {{ letters.warnings }}. Model-quality warnings
             </h3>

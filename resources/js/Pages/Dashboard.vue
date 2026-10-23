@@ -74,6 +74,7 @@ const props = defineProps<{
     mentions: Mention[];
     myAssessments: DashboardAssessment[];
     sharedWithMe: DashboardAssessment[];
+    counts: { mine: number; shared: number };
 }>();
 
 const notificationsHeadingId = useId();
@@ -102,11 +103,11 @@ const notificationTabs = computed(() => [
 ]);
 
 const assessmentTabs = computed(() => [
-    { key: 'mine', label: 'Mine', count: props.myAssessments.length },
+    { key: 'mine', label: 'Mine', count: props.counts.mine },
     {
         key: 'shared',
         label: 'Shared with me',
-        count: props.sharedWithMe.length,
+        count: props.counts.shared,
     },
 ]);
 </script>

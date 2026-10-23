@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\Auth\OidcController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\SetupController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use Illuminate\Support\Facades\Route;
 
 // First-run setup (PLAN.md Phase 3 item 2). Guarded twice over: the
@@ -16,11 +18,29 @@ Route::middleware(['guest', 'throttle:setup'])->group(function () {
     Route::post('setup', [SetupController::class, 'store'])->name('setup.store');
 });
 
+// W117: single sign-on. Neither 'guest' nor 'auth': the callback must work
+// for someone who is signed out, and the same redirect serves a signed-in
+// user stepping up before an email change (D79). Both answer 404 unless a
+// provider is configured, and both are GETs (D74).
+Route::middleware('throttle:oidc')->prefix('auth/oidc')->group(function () {
+    Route::get('redirect', [OidcController::class, 'redirect'])->name('oidc.redirect');
+    Route::get('callback', [OidcController::class, 'callback'])->name('oidc.callback');
+});
+
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    // W116: the second step. A guest route on purpose — the account is not
+    // signed in until the code is right. Its limits live in the controller
+    // (5/min per pending account and per IP, failures only), as login's do.
+    Route::get('two-factor-challenge', [TwoFactorChallengeController::class, 'create'])
+        ->name('two-factor.challenge');
+    Route::post('two-factor-challenge', [TwoFactorChallengeController::class, 'store'])
+        ->middleware('throttle:two-factor')
+        ->name('two-factor.challenge.store');
 });
 
 // 'active' is deliberately on this whole authenticated group, not just

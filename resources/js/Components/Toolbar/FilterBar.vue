@@ -18,8 +18,6 @@
  * W43 closes that gap.
  */
 import Chip from '@/Components/UI/Chip.vue';
-import Dropdown from '@/Components/UI/Dropdown.vue';
-import Icon from '@/Components/UI/Icon.vue';
 import IconButton from '@/Components/UI/IconButton.vue';
 import Toggle from '@/Components/UI/Toggle.vue';
 import type {
@@ -28,6 +26,8 @@ import type {
 } from '@/composables/useFilters';
 import type { DefenceStatus } from '@/stores/assessmentStore';
 import { computed } from 'vue';
+import FilterCategory from './FilterCategory.vue';
+import FilterPopover from './FilterPopover.vue';
 
 const props = withDefaults(
     defineProps<{
@@ -75,120 +75,86 @@ const activeCount = computed(
 
 <template>
     <div class="flex items-center gap-2 text-sm">
-        <Dropdown align="left" width="80">
-            <template #trigger="{ open }">
-                <button
-                    type="button"
-                    class="border-border-default bg-surface-1 text-text-primary hover:bg-surface-2 focus-visible:outline-focus-ring inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
-                    :aria-expanded="open"
-                    aria-haspopup="true"
-                >
-                    <Icon name="filter" :size="14" />
-                    Filters
-                    <span
-                        v-if="activeCount > 0"
-                        class="bg-surface-2 text-text-secondary rounded-full px-1.5 text-[10px] tabular-nums"
-                        aria-hidden="true"
+        <FilterPopover :count="activeCount">
+            <FilterCategory title="Node type">
+                <div class="flex flex-wrap items-center gap-1">
+                    <button
+                        v-for="[type, label] in typeOptions"
+                        :key="type"
+                        type="button"
+                        :aria-pressed="filters.state.types.includes(type)"
+                        @click="filters.toggleType(type)"
                     >
-                        {{ activeCount }}
-                    </span>
-                    <span class="sr-only" v-if="activeCount > 0">
-                        {{ activeCount }} active
-                    </span>
-                    <Icon name="chevron-down" :size="14" />
-                </button>
-            </template>
-
-            <template #content>
-                <div class="space-y-3 p-3">
-                    <div
-                        class="flex flex-wrap items-center gap-1"
-                        role="group"
-                        aria-label="Filter by type"
-                    >
-                        <button
-                            v-for="[type, label] in typeOptions"
-                            :key="type"
-                            type="button"
-                            :aria-pressed="filters.state.types.includes(type)"
-                            @click="filters.toggleType(type)"
-                        >
-                            <Chip
-                                :tone="
-                                    filters.state.types.includes(type)
-                                        ? type
-                                        : 'neutral'
-                                "
-                            >
-                                {{ label }}
-                            </Chip>
-                        </button>
-                    </div>
-
-                    <div
-                        class="flex flex-wrap items-center gap-1"
-                        role="group"
-                        aria-label="Filter by defence status"
-                    >
-                        <button
-                            v-for="[status, label] in statusOptions"
-                            :key="status"
-                            type="button"
-                            :aria-pressed="
-                                filters.state.statuses.includes(status)
+                        <Chip
+                            :tone="
+                                filters.state.types.includes(type)
+                                    ? type
+                                    : 'neutral'
                             "
-                            @click="filters.toggleStatus(status)"
                         >
-                            <Chip
-                                :tone="
-                                    filters.state.statuses.includes(status)
-                                        ? status
-                                        : 'neutral'
-                                "
-                            >
-                                {{ label }}
-                            </Chip>
-                        </button>
-                    </div>
-
-                    <div
-                        v-if="availableTags.length"
-                        class="flex flex-wrap items-center gap-1"
-                        role="group"
-                        aria-label="Filter by tag"
-                    >
-                        <button
-                            v-for="tag in availableTags"
-                            :key="tag"
-                            type="button"
-                            :aria-pressed="filters.state.tags.includes(tag)"
-                            @click="filters.toggleTag(tag)"
-                        >
-                            <Chip
-                                tone="neutral"
-                                :icon="
-                                    filters.state.tags.includes(tag)
-                                        ? 'check'
-                                        : undefined
-                                "
-                            >
-                                {{ tag }}
-                            </Chip>
-                        </button>
-                    </div>
-
-                    <!-- W34 / brief item 8: "only" came off the label. It was
-                         never accurate — the filter dims what does not match
-                         rather than hiding it — and the word made a reader
-                         look for a mode they had not entered. -->
-                    <Toggle
-                        :model-value="filters.state.missingOnly"
-                        label="Missing values"
-                        @update:model-value="filters.setMissingOnly"
-                    />
+                            {{ label }}
+                        </Chip>
+                    </button>
                 </div>
-            </template>
-        </Dropdown>
+            </FilterCategory>
+
+            <FilterCategory title="Defence status">
+                <div class="flex flex-wrap items-center gap-1">
+                    <button
+                        v-for="[status, label] in statusOptions"
+                        :key="status"
+                        type="button"
+                        :aria-pressed="filters.state.statuses.includes(status)"
+                        @click="filters.toggleStatus(status)"
+                    >
+                        <Chip
+                            :tone="
+                                filters.state.statuses.includes(status)
+                                    ? status
+                                    : 'neutral'
+                            "
+                        >
+                            {{ label }}
+                        </Chip>
+                    </button>
+                </div>
+            </FilterCategory>
+
+            <FilterCategory v-if="availableTags.length" title="Tags">
+                <div class="flex flex-wrap items-center gap-1">
+                    <button
+                        v-for="tag in availableTags"
+                        :key="tag"
+                        type="button"
+                        :aria-pressed="filters.state.tags.includes(tag)"
+                        @click="filters.toggleTag(tag)"
+                    >
+                        <Chip
+                            tone="neutral"
+                            :icon="
+                                filters.state.tags.includes(tag)
+                                    ? 'check'
+                                    : undefined
+                            "
+                        >
+                            {{ tag }}
+                        </Chip>
+                    </button>
+                </div>
+            </FilterCategory>
+
+            <!-- W34 / brief item 8: "only" came off the label. It was
+                 never accurate — the filter dims what does not match
+                 rather than hiding it — and the word made a reader
+                 look for a mode they had not entered. -->
+            <FilterCategory title="Values">
+                <Toggle
+                    :model-value="filters.state.missingOnly"
+                    label="Missing values"
+                    @update:model-value="filters.setMissingOnly"
+                />
+            </FilterCategory>
+        </FilterPopover>
 
         <!-- Active filters stay on the bar: the spec's "shows what is active"
              must not require opening the dropdown to satisfy. -->

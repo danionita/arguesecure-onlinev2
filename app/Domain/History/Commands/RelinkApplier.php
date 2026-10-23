@@ -14,7 +14,7 @@ use App\Domain\History\Exceptions\UndoConflictException;
  */
 class RelinkApplier implements CommandApplier
 {
-    public function apply(array $command): array
+    public function apply(array $command, int $assessmentId): array
     {
         $edge = (string) $command['edge'];
         $parentUuid = (string) $command['parent_uuid'];
@@ -24,8 +24,8 @@ class RelinkApplier implements CommandApplier
         $extra = $command['extra'] ?? [];
 
         $meta = EdgeResolver::meta($edge);
-        $parent = EdgeResolver::findNode($parentUuid);
-        $child = EdgeResolver::findNode($childUuid);
+        $parent = EdgeResolver::findNodeIn($assessmentId, $parentUuid);
+        $child = EdgeResolver::findNodeIn($assessmentId, $childUuid);
 
         if ($parent === null || $parent->trashed() || $child === null || $child->trashed()) {
             throw new UndoConflictException('Cannot undo: an endpoint of this link no longer exists.');

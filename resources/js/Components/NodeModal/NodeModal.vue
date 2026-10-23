@@ -23,6 +23,10 @@ import Tabs from '@/Components/UI/Tabs.vue';
 import Tooltip from '@/Components/UI/Tooltip.vue';
 import type { TabItem } from '@/Components/UI/types';
 import { LOCKS_KEY } from '@/composables/useLocks';
+import {
+    confirmLeave,
+    hasUnsavedChanges,
+} from '@/composables/useUnsavedChanges';
 import { NODE_TYPES, type CardType } from '@/constants/nodeTypes';
 import { ASSESSMENT_STORE_KEY } from '@/stores/assessmentStore';
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -51,6 +55,13 @@ const {
 } = useNodeModal();
 
 onMounted(restoreFromQuery);
+
+// Closing from the backdrop, Escape or the X: ask first when a tab with its
+// own Save (Scales) holds edits. Details autosaves and never counts.
+async function requestClose() {
+    if (hasUnsavedChanges('node-modal') && !(await confirmLeave())) return;
+    close();
+}
 
 // --- one editor per node (2.5.1) ---------------------------------------------
 //
@@ -357,7 +368,7 @@ const selectedTab = computed(() =>
         :show="openUuid !== null || draft !== null"
         :title="modalTitle"
         size="lg"
-        @close="close"
+        @close="requestClose"
     >
         <!--
             W71 item 24. The type used to be a `<Badge tone="neutral">` in the

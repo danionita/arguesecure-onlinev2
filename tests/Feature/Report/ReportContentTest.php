@@ -98,7 +98,7 @@ test('the risk register reconciles risk-view ALE to the golden vector', function
         );
 });
 
-test('defences ranked by importance match the closed-form marginal contribution', function () {
+test('defences ranked by cost benefit match the closed-form marginal contribution', function () {
     $assessment = buildWorkedExampleAssessment();
 
     $this->actingAs($assessment->owner)

@@ -87,6 +87,20 @@ describe('ViewSwitcher in the editor', () => {
     });
 });
 
+describe('ViewSwitcher label (W134)', () => {
+    it('has no visible caption, and the group is still named "View"', () => {
+        const wrapper = mount(ViewSwitcher, {
+            props: { viewMode: editorMode(), reportHref: REPORT_HREF },
+        });
+
+        expect(wrapper.find('#view-mode-label').exists()).toBe(false);
+        expect(wrapper.text()).not.toMatch(/^View/);
+        const group = wrapper.get('[role="radiogroup"]');
+        expect(group.attributes('aria-label')).toBe('View');
+        expect(group.attributes('aria-labelledby')).toBeUndefined();
+    });
+});
+
 describe('ViewSwitcher on the report page', () => {
     function mountOnReport() {
         return mount(ViewSwitcher, {

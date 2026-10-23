@@ -35,6 +35,11 @@ abstract class TestCase extends BaseTestCase
 
         $this->withoutVite();
 
+        // Sessions are rows (D71) and the database driver sweeps expired ones
+        // on a 2-in-100 lottery: a `delete` that would land in the query
+        // counts of the performance tests on one run in fifty.
+        config(['session.lottery' => [0, 100]]);
+
         Redis::connection()->flushdb();
     }
 }

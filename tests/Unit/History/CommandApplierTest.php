@@ -57,11 +57,11 @@ test('delete_node then restore_node round-trips cleanly', function () {
     $risk = Risk::factory()->create(['assessment_id' => $assessment->id]);
     $dispatcher = new CommandDispatcher;
 
-    $reverse = $dispatcher->apply(['action' => 'delete_node', 'node_uuids' => [$risk->uuid]]);
+    $reverse = $dispatcher->apply(['action' => 'delete_node', 'node_uuids' => [$risk->uuid]], $assessment->id);
     expect($risk->fresh()->trashed())->toBeTrue();
     expect($reverse)->toBe(['action' => 'restore_node', 'node_uuids' => [$risk->uuid]]);
 
-    $dispatcher->apply($reverse);
+    $dispatcher->apply($reverse, $assessment->id);
     expect($risk->fresh()->trashed())->toBeFalse();
 });
 
@@ -73,7 +73,7 @@ test('restore_node refuses when the node was hard-deleted', function () {
 
     $dispatcher = new CommandDispatcher;
 
-    expect(fn () => $dispatcher->apply(['action' => 'restore_node', 'node_uuids' => [$risk->uuid]]))
+    expect(fn () => $dispatcher->apply(['action' => 'restore_node', 'node_uuids' => [$risk->uuid]], $assessment->id))
         ->toThrow(UndoConflictException::class);
 });
 
@@ -91,11 +91,11 @@ test('unlink then relink restores the exact strength and reduction target', func
     $reverse = $dispatcher->apply([
         'action' => 'unlink', 'edge' => 'attack_defence',
         'parent_uuid' => $attack->uuid, 'child_uuid' => $defence->uuid,
-    ]);
+    ], $assessment->id);
 
     expect(AttackDefence::query()->where('attack_node_id', $attack->id)->where('defence_node_id', $defence->id)->exists())->toBeFalse();
 
-    $dispatcher->apply($reverse);
+    $dispatcher->apply($reverse, $assessment->id);
 
     $restored = AttackDefence::query()->where('attack_node_id', $attack->id)->where('defence_node_id', $defence->id)->first();
     expect($restored->position)->toBe(2);
@@ -118,7 +118,7 @@ test('relink refuses when an endpoint has since been deleted', function () {
 
     $defence->delete();
 
-    expect(fn () => $dispatcher->apply($relink))->toThrow(UndoConflictException::class);
+    expect(fn () => $dispatcher->apply($relink, $assessment->id))->toThrow(UndoConflictException::class);
 });
 
 test('reorder_positions restores exact prior positions for every sibling', function () {
@@ -138,11 +138,11 @@ test('reorder_positions restores exact prior positions for every sibling', funct
         ],
     ];
 
-    $reverse = $dispatcher->apply($command);
+    $reverse = $dispatcher->apply($command, $assessment->id);
     expect(RiskAttack::query()->where('attack_node_id', $a->id)->value('position'))->toBe(1);
     expect(RiskAttack::query()->where('attack_node_id', $b->id)->value('position'))->toBe(0);
 
-    $dispatcher->apply($reverse);
+    $dispatcher->apply($reverse, $assessment->id);
     expect(RiskAttack::query()->where('attack_node_id', $a->id)->value('position'))->toBe(0);
     expect(RiskAttack::query()->where('attack_node_id', $b->id)->value('position'))->toBe(1);
 });
@@ -150,6 +150,6 @@ test('reorder_positions restores exact prior positions for every sibling', funct
 test('an unrecognised action is refused, never silently ignored', function () {
     $dispatcher = new CommandDispatcher;
 
-    expect(fn () => $dispatcher->apply(['action' => 'drop_table']))
+    expect(fn () => $dispatcher->apply(['action' => 'drop_table'], 1))
         ->toThrow(UndoConflictException::class);
 });

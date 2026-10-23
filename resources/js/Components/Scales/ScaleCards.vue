@@ -1,78 +1,57 @@
 <script setup lang="ts">
 /**
- * The three scale cards — impact, likelihood and defence strength (W65,
- * relocated and reduced in W87; ui.md §8, PLAN-2.5.md D44-D47).
+ * The three band editors of a scale — impact, likelihood and defence strength
+ * (W65, relocated and reduced in W87; ui.md §8, PLAN-2.5.md D44-D47; made a
+ * controlled component in W126, D94).
  *
  * ## One component, two screens
  *
- * Assessment settings edits an assessment's own calibration; the admin
- * **Defaults** tab edits the seeded system set new assessments start from.
- * D47 is explicit that the admin "wants the same band editor the assessment
- * gets, not a different one", so this is that editor, and the two screens
- * differ only in the URLs they hand it and the sentence above it.
+ * Assessment settings edits an assessment's own bands; the admin Defaults tab
+ * edits each admin-defined scale. D47 is explicit that the admin "wants the
+ * same band editor the assessment gets, not a different one", so this is that
+ * editor.
+ *
+ * ## It saves nothing (W126)
+ *
+ * It used to hold its own working copy and save each kind on its own request.
+ * A scale is now saved as a whole — one Save for all three kinds — and the
+ * assessment page swaps the whole draft when a scale is picked from the
+ * dropdown, so the draft lives in the parent and this component edits it
+ * through `v-model`. Where the Save button is, and what it does, is the
+ * parent's business.
  *
  * ## What W87 removed, and why each removal is not a regression
  *
- * - **The code column** (D44). `scale_levels.code` is internal: it is derived
- *   from the label on create and frozen on rename, and the editor carries it
- *   back untouched without drawing it. Asking a user for a machine key they
- *   never see the effect of was the input equivalent of a control that does
- *   nothing.
+ * - **The code column** (D44). `scale_levels.code` is internal: derived from
+ *   the label on create, frozen on rename, carried back untouched, drawn
+ *   nowhere.
  * - **The colour input** (D45). Nothing outside the old calibration screen
- *   read `scale_levels.color`. The column stays with its `#9CA3AF` default.
- * - **The live preview** ("a €50,000 loss falls in moderate"). It answered a
- *   question the band table above it already answers by being a table of
- *   ranges, and it was the only reason `color` reached the client.
- * - **The "Still using the system defaults" warning.** Using the defaults is
- *   the normal state — most assessments never calibrate — and a warning says
- *   something is wrong. What the flag actually means is still stated, as a
- *   fact on the card: this scale is shared, and saving gives the assessment
- *   its own copy.
- *
- * ## Saving is per scale, and that has not changed
- *
- * Three separate requests. The three scales are agreed in different
- * conversations — impact with the business, likelihood with whoever watches
- * the logs — and one Save spanning all three would make each of those a change
- * to the other two. It also keeps a rejected calibration local: a bad impact
- * band cannot block a good likelihood one.
+ *   read `scale_levels.color`.
+ * - **The live preview** and the **"Still using the system defaults"
+ *   warning**: using the defaults is the normal state, and a warning says
+ *   something is wrong.
  */
 import BandTable from '@/Components/Scales/BandTable.vue';
-import type { EditableBand, ScaleDetail } from '@/Components/Scales/bands';
-import Button from '@/Components/UI/Button.vue';
-import Chip from '@/Components/UI/Chip.vue';
-import type { FormDataConvertible } from '@inertiajs/core';
-import { router } from '@inertiajs/vue3';
-import { reactive, ref } from 'vue';
+import {
+    KINDS,
+    type Kind,
+    type ScaleDetail,
+    type ScaleDraft,
+} from '@/Components/Scales/bands';
 
 const props = withDefaults(
     defineProps<{
+        /** Only for each kind's unit; the bands being edited are `modelValue`. */
         scales: Record<string, ScaleDetail | null>;
+        modelValue: ScaleDraft;
         currency: string;
         topBandMultiplier: number;
-        /** `PUT` target per kind. */
-        saveUrls: Record<string, string>;
-        /**
-         * `PUT` target per kind for "Reset to default", or absent where there
-         * is nothing above to reset to — the admin's Defaults tab *is* the
-         * default, so it offers no reset (D47).
-         */
-        resetUrls?: Record<string, string>;
-        /**
-         * Whether to state where each scale comes from. True for an
-         * assessment, where "shared" versus "this assessment's own" decides
-         * whether a save clones; meaningless on the admin tab, where every
-         * scale is shared by definition.
-         */
-        showOrigin?: boolean;
-        errors?: Record<string, string>;
+        disabled?: boolean;
     }>(),
-    { resetUrls: undefined, showOrigin: false, errors: () => ({}) },
+    { disabled: false },
 );
 
-const KINDS = ['impact', 'likelihood', 'strength'] as const;
-
-type Kind = (typeof KINDS)[number];
+const emit = defineEmits<{ 'update:modelValue': [draft: ScaleDraft] }>();
 
 const COPY: Record<Kind, { title: string; blurb: string }> = {
     impact: {
@@ -91,144 +70,46 @@ const COPY: Record<Kind, { title: string; blurb: string }> = {
     },
 };
 
-/** Working copies, so an unsaved edit is never confused with a stored one. */
-const draft = reactive<Record<string, EditableBand[]>>(
-    Object.fromEntries(
-        KINDS.map((kind) => [
-            kind,
-            (props.scales[kind]?.bands ?? []).map((band) => ({
-                // Carried, never rendered, never edited. This is what freezes
-                // a code across a rename (D44).
-                code: band.code,
-                label: band.label,
-                lower_bound: Number(band.lower_bound),
-                upper_bound:
-                    band.upper_bound === null ? null : Number(band.upper_bound),
-                representative: Number(band.representative),
-            })),
-        ]),
-    ),
-);
-
-const busy = ref<string | null>(null);
-
-function save(kind: Kind) {
-    busy.value = kind;
-
-    router.put(
-        props.saveUrls[kind],
-        // Cast at the boundary rather than giving EditableBand an index
-        // signature. Inertia's FormDataConvertible requires one, and adding it
-        // to the interface would let any key at all pass type-checking into a
-        // payload whose shape is a precise contract with the controller's
-        // validation rules — which is where the actual guarantee lives.
-        { bands: draft[kind] as unknown as FormDataConvertible[] },
-        {
-            preserveScroll: true,
-            onFinish: () => {
-                busy.value = null;
-            },
-        },
-    );
-}
-
-function reset(kind: Kind) {
-    const url = props.resetUrls?.[kind];
-    if (url === undefined) return;
-
-    busy.value = kind;
-
-    router.put(
-        url,
-        {},
-        {
-            preserveScroll: true,
-            onFinish: () => {
-                busy.value = null;
-            },
-        },
-    );
+function update(kind: Kind, bands: ScaleDraft[Kind]) {
+    emit('update:modelValue', { ...props.modelValue, [kind]: bands });
 }
 </script>
 
 <template>
     <div>
-        <p
-            v-if="errors.bands"
-            class="border-danger-border bg-danger-bg text-danger-text mb-6 rounded-lg border p-3 text-sm"
-            data-testid="band-errors"
-        >
-            {{ errors.bands }}
-        </p>
-
         <section
             v-for="kind in KINDS"
             :key="kind"
             class="border-border-subtle bg-surface-1 mb-6 rounded-lg border p-4"
             :data-scale="kind"
         >
-            <div class="mb-3 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                    <h3
-                        class="text-text-primary flex items-center gap-2 text-sm font-semibold"
-                    >
-                        {{ COPY[kind].title }}
-                        <!--
-                            A fact, not a warning (W87). It says what a save
-                            will do — clone, or edit in place — which is the
-                            only thing `is_system` decides for the person
-                            reading it.
-                        -->
-                        <Chip v-if="showOrigin && scales[kind]?.is_system"
-                            >Instance default</Chip
-                        >
-                        <Chip v-else-if="showOrigin"
-                            >This assessment’s own</Chip
-                        >
-                    </h3>
-                    <p class="text-text-secondary mt-0.5 text-xs">
-                        {{ COPY[kind].blurb }}
-                    </p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Button
-                        v-if="resetUrls?.[kind]"
-                        variant="secondary"
-                        :disabled="busy !== null"
-                        :data-testid="`reset-${kind}`"
-                        @click="reset(kind)"
-                    >
-                        Reset to default
-                    </Button>
-                    <Button
-                        variant="primary"
-                        :loading="busy === kind"
-                        :data-testid="`save-${kind}`"
-                        @click="save(kind)"
-                    >
-                        Save {{ COPY[kind].title.toLowerCase() }}
-                    </Button>
-                </div>
+            <div class="mb-3">
+                <h3 class="text-text-primary text-sm font-semibold">
+                    {{ COPY[kind].title }}
+                </h3>
+                <p class="text-text-secondary mt-0.5 text-xs">
+                    {{ COPY[kind].blurb }}
+                </p>
             </div>
 
             <BandTable
                 v-if="scales[kind]"
-                :bands="draft[kind]"
+                :bands="modelValue[kind]"
                 :unit="scales[kind]!.unit"
                 :currency="currency"
                 :top-band-multiplier="topBandMultiplier"
-                :disabled="busy !== null"
-                @update:bands="(next) => (draft[kind] = next)"
+                :disabled="disabled"
+                @update:bands="(next) => update(kind, next)"
             />
             <p v-else class="text-text-muted text-xs" data-testid="no-scale">
-                This scale is not configured, so nothing here can be edited yet.
+                These bands are not configured, so nothing here can be edited
+                yet.
             </p>
         </section>
 
         <!--
-            The consequence, said once at the foot. Recalibrating is not an
-            edit to a setting — it moves every figure already computed from
-            this scale, including ones people have quoted.
+            The consequence, said once at the foot: a band change moves every
+            figure computed from it, including ones people have quoted.
         -->
         <p class="text-text-muted text-xs">
             <slot name="footnote">

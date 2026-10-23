@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Domain\Accounts\CsvUserImporter;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -14,6 +15,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class ImportPreviewRequest extends FormRequest
 {
+    private ?string $normalisedCsv = null;
+
     public function authorize(): bool
     {
         return (bool) $this->user()?->is_admin;
@@ -32,10 +35,12 @@ class ImportPreviewRequest extends FormRequest
 
     public function csvContent(): string
     {
-        if ($this->hasFile('csv_file')) {
-            return (string) file_get_contents($this->file('csv_file')->getRealPath());
-        }
-
-        return (string) $this->input('csv_text');
+        // The controller asks twice (to parse, and to hand the text back to the
+        // preview page); normalising a megabyte once is enough.
+        return $this->normalisedCsv ??= CsvUserImporter::normalise(
+            $this->hasFile('csv_file')
+                ? (string) file_get_contents($this->file('csv_file')->getRealPath())
+                : (string) $this->input('csv_text'),
+        );
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 
 test('anonymous user cannot preview or commit an import', function () {
     $this->post('/admin/users/import/preview', ['csv_text' => "name,email\nA,a@example.com"])
@@ -110,3 +111,30 @@ test('the old Bulk import tab opens the import dialog on the Users tab (2.5.1)',
         ->get(route('admin.users.import.create'))
         ->assertRedirect(route('admin.users.index', ['import' => 1]));
 });
+
+// W123 (D90): an uploaded spreadsheet export reaches the preview as valid
+// UTF-8 JSON and the preview-to-commit round trip creates the same accounts.
+test('an uploaded Excel file imports through preview and commit', function (string $content) {
+    $admin = User::factory()->admin()->create();
+
+    $file = UploadedFile::fake()->createWithContent('roster.csv', $content);
+    $preview = $this->actingAs($admin)
+        ->post('/admin/users/import/preview', ['csv_file' => $file], ['X-Inertia' => 'true']);
+
+    $preview->assertOk();
+    expect($preview->json('props.validCount'))->toBe(2);
+    expect($preview->json('props.rejectedCount'))->toBe(0);
+    expect(collect($preview->json('props.rows'))->firstWhere('line', 2)['name'])->toBe('Ésther Müller');
+
+    // The browser re-sends the text the preview returned.
+    $this->actingAs($admin)
+        ->post('/admin/users/import/commit', ['csv_text' => $preview->json('props.csvText')], ['X-Inertia' => 'true'])
+        ->assertOk();
+
+    expect(User::query()->where('email', 'esther@example.com')->value('name'))->toBe('Ésther Müller');
+    expect(User::query()->where('email', 'ben@example.com')->exists())->toBeTrue();
+})->with([
+    'UTF-8 with a mark' => fn () => "\xEF\xBB\xBFname,email\r\nÉsther Müller,esther@example.com\r\nBen Bakker,ben@example.com\r\n",
+    'semicolons, Windows-1252' => fn () => mb_convert_encoding("name;email\r\nÉsther Müller;esther@example.com\r\nBen Bakker;ben@example.com\r\n", 'Windows-1252', 'UTF-8'),
+    'tabs, UTF-16' => fn () => "\xFF\xFE".mb_convert_encoding("name\temail\r\nÉsther Müller\testher@example.com\r\nBen Bakker\tben@example.com\r\n", 'UTF-16LE', 'UTF-8'),
+]);

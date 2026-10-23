@@ -1,0 +1,10 @@
+{
+    "accepted": [
+        {
+            "id": "GHSA-vfj7-8cjw-p6xm",
+            "package": "braces",
+            "reason": "Stack exhaustion on deeply nested glob patterns. Reached only through @vue/eslint-config-typescript 13 (eslint's own file globbing, run by developers and CI on this repository's files). Fixed by the 14.x upgrade, which changes lint results and is its own package.",
+            "date": "2026-10-15"
+        }
+    ]
+}

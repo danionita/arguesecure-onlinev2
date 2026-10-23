@@ -79,7 +79,6 @@ export interface TemplateSummary {
     uuid: string;
     title: string | null;
     description: string | null;
-    owner: string | null;
     currency: string;
     updatedAt: string | null;
 }

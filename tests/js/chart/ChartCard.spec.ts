@@ -9,6 +9,8 @@
  * guardrail rather than the chart card growing a second copy.
  */
 import { flushPromises, mount } from '@vue/test-utils';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 import ChartCard from '../../../resources/js/Components/Chart/ChartCard.vue';
@@ -181,6 +183,7 @@ function mountCard(
         uuid?: string;
         pathKey?: string;
         hasChildren?: boolean;
+        childCount?: number;
     } = {},
 ) {
     store.assistantAvailable = options.assistantAvailable ?? true;
@@ -190,6 +193,7 @@ function mountCard(
             uuid: options.uuid ?? 'risk1',
             pathKey: options.pathKey ?? 'root/risk1',
             hasChildren: options.hasChildren ?? false,
+            childCount: options.childCount,
             collapsed: options.collapsed ?? false,
             selected: false,
             dragPayload: null,
@@ -765,5 +769,135 @@ describe('ChartCard: floating panels scroll into view (W105)', () => {
         const last = scrolled.at(-1)!;
         expect(last.el.contains(panel)).toBe(true);
         expect(last.options).toEqual({ block: 'nearest', inline: 'nearest' });
+    });
+});
+
+/** W127/D95: the at-rest badge on a collapsed card. */
+describe('a collapsed card shows how many children it hides (W127)', () => {
+    it('shows the exact count, named for a screen reader, and expands on click', async () => {
+        const wrapper = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: true,
+            hasChildren: true,
+            childCount: 3,
+        });
+        const badge = wrapper.find('[data-testid="hidden-count"]');
+        expect(badge.text()).toBe('3');
+        expect(badge.attributes('aria-label')).toBe(
+            'Expand, 3 hidden children',
+        );
+        await badge.trigger('click');
+        expect(wrapper.emitted('toggle')).toHaveLength(1);
+    });
+
+    it('shows nothing when expanded, or on a leaf', () => {
+        const expanded = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: false,
+            hasChildren: true,
+            childCount: 3,
+        });
+        expect(expanded.find('[data-testid="hidden-count"]').exists()).toBe(
+            false,
+        );
+        const leaf = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: true,
+        });
+        expect(leaf.find('[data-testid="hidden-count"]').exists()).toBe(false);
+    });
+
+    it('sits in the bottom bar before the actions, which open out beside it on hover', () => {
+        const wrapper = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: true,
+            hasChildren: true,
+            childCount: 2,
+        });
+        const bar = wrapper.find('[data-testid="card-bar"]');
+        const kids = Array.from(bar.element.children);
+        // The count first, so it is the part that stays put on the left
+        // while the actions appear on its right.
+        expect(kids[0]).toBe(
+            wrapper.find('[data-testid="hidden-count"]').element,
+        );
+        const actions = bar.find('[data-testid="card-actions"]');
+        expect(kids[1]).toBe(actions.element);
+        expect(actions.classes()).toContain('max-w-0');
+        // Closed actions are out of the tab order and the accessibility tree.
+        expect(actions.classes()).toContain('invisible');
+        expect(actions.classes()).toContain('group-hover/chartcard:visible');
+        expect(actions.classes()).toContain(
+            'group-has-focus-visible/chartcard:visible',
+        );
+        expect(actions.classes()).toContain('group-hover/chartcard:max-w-48');
+        // Absolute and out of flow: the bar adds no height to the card.
+        expect(bar.classes()).toContain('absolute');
+        expect(bar.classes()).toContain('-bottom-2');
+        // The count is not itself behind a hover-only class.
+        expect(bar.classes().join(' ')).not.toMatch(/(^| )hidden( |$)/);
+    });
+
+    it('reads as a button at rest: the bar keeps its ground while the count shows', () => {
+        const withCount = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: true,
+            hasChildren: true,
+            childCount: 2,
+        });
+        const bar = withCount.find('[data-testid="card-bar"]').classes();
+        // Not only on hover: the owner asked for the expand button to look
+        // like a button when the card is not hovered.
+        for (const c of ['bg-surface-1', 'border-border-subtle', 'shadow-sm']) {
+            expect(bar).toContain(c);
+        }
+        expect(bar).not.toContain('border-transparent');
+        // Without a count the bar is invisible at rest and grounded on hover.
+        const expanded = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: false,
+            hasChildren: true,
+            childCount: 2,
+        });
+        const quiet = expanded.find('[data-testid="card-bar"]').classes();
+        expect(quiet).toContain('border-transparent');
+        expect(quiet).not.toContain('bg-surface-1');
+        expect(quiet).toContain('group-hover/chartcard:bg-surface-1');
+    });
+
+    it('drops the chevron while the count stands in for it, and keeps it when expanded', () => {
+        const collapsed = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: true,
+            hasChildren: true,
+            childCount: 2,
+        });
+        expect(collapsed.text()).not.toContain('Expand');
+        const labels = (w: ReturnType<typeof mountCard>) =>
+            w.findAllComponents(IconButton).map((b) => b.props('label'));
+        expect(labels(collapsed)).not.toContain('Expand');
+        const expanded = mountCard(createAssessmentStore(makeInit()), {
+            collapsed: false,
+            hasChildren: true,
+            childCount: 2,
+        });
+        expect(labels(expanded)).toContain('Collapse');
+    });
+});
+
+/**
+ * W127 follow-up (D104): the hover bar must not be held open by mouse focus.
+ * jsdom computes no CSS, so this reads the source, as list/TreeNode.spec.ts
+ * does for the same reason. Clicking a bar button leaves focus on it;
+ * `group-focus-within` then kept the bar visible after the pointer left, and
+ * while other cards were used, until the button was used again.
+ */
+describe('the hover bar is not held open by mouse focus (W127 follow-up)', () => {
+    const root = resolve(__dirname, '../../../resources/js/Components');
+    const chart = readFileSync(`${root}/Chart/ChartCard.vue`, 'utf8');
+    const list = readFileSync(`${root}/Tree/NodeCard.vue`, 'utf8');
+
+    it('chart card reveals on keyboard focus only', () => {
+        expect(chart).not.toMatch(/group-focus-within\/chartcard/);
+        expect(chart).toMatch(/group-has-focus-visible\/chartcard:max-w-48/);
+        expect(chart).toMatch(/group-hover\/chartcard:max-w-48/);
+    });
+
+    it('list card reveals on keyboard focus only', () => {
+        expect(list).not.toMatch(/group-focus-within\/card/);
+        expect(list).toMatch(/group-has-focus-visible\/card:opacity-100/);
     });
 });

@@ -5,10 +5,15 @@ use App\Domain\History\UndoService;
 use App\Domain\Structure\LinkService;
 use App\Domain\Structure\ReorderService;
 use App\Http\Controllers\Admin\AssistantController;
+use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\DefaultsController;
+use App\Http\Controllers\Admin\ScaleController as AdminScaleController;
+use App\Http\Controllers\Admin\SecurityLogController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserIdentityController;
 use App\Http\Controllers\Admin\UserImportController;
+use App\Http\Controllers\Admin\UserTwoFactorController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AssessmentHistoryController;
 use App\Http\Controllers\AssessmentLifecycleController;
@@ -28,6 +33,7 @@ use App\Http\Controllers\LockController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeRevisionController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Profile\TwoFactorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\ReportController;
@@ -38,10 +44,10 @@ use App\Http\Controllers\SummaryNarrativeController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UndoController;
+use App\Http\Middleware\RejectTemplate;
 use App\Models\Assessment;
 use App\Models\Attack;
 use App\Models\Defence;
-use App\Models\Node;
 use App\Models\Risk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -99,6 +105,22 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     Route::delete('/profile/sessions/{sessionId}', [ProfileController::class, 'revokeSession'])
         ->name('profile.sessions.destroy');
 
+    // W116: the profile's two-factor panel. Starting, regenerating codes and
+    // turning off take the current password, so they sit behind the same
+    // 5/min per-user bucket as the other password-taking routes.
+    Route::post('/profile/two-factor/confirm', [TwoFactorController::class, 'confirm'])
+        ->name('profile.two-factor.confirm');
+    Route::delete('/profile/two-factor/pending', [TwoFactorController::class, 'cancel'])
+        ->name('profile.two-factor.cancel');
+    Route::middleware('throttle:credentials')->group(function () {
+        Route::post('/profile/two-factor', [TwoFactorController::class, 'store'])
+            ->name('profile.two-factor.store');
+        Route::post('/profile/two-factor/recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])
+            ->name('profile.two-factor.recovery-codes');
+        Route::delete('/profile/two-factor', [TwoFactorController::class, 'destroy'])
+            ->name('profile.two-factor.destroy');
+    });
+
     // /admin is additionally gated on is_admin (PLAN.md Phase 3 item 3).
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::redirect('/', '/admin/users');
@@ -113,13 +135,28 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::delete('users/{user}/identity', [UserIdentityController::class, 'destroy'])->name('users.identity.destroy');
+        Route::delete('users/{user}/two-factor', [UserTwoFactorController::class, 'destroy'])->name('users.two-factor.destroy');
 
         Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
         Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
 
+        // W133, D105-D108: sign-in settings (SSO, SSO only, required two-factor).
+        Route::get('authentication', [AuthenticationController::class, 'edit'])->name('authentication.edit');
+        Route::put('authentication', [AuthenticationController::class, 'update'])->name('authentication.update');
+        Route::post('authentication/check', [AuthenticationController::class, 'check'])
+            ->middleware('throttle:oidc-check')
+            ->name('authentication.check');
+
         // 2.5.1: the assistant's switches, on a tab of their own.
         Route::get('assistant', [AssistantController::class, 'edit'])->name('assistant.edit');
         Route::put('assistant', [AssistantController::class, 'update'])->name('assistant.update');
+
+        // W128, D96–D100 — the stored security event log and its download.
+        Route::get('security-log', [SecurityLogController::class, 'index'])->name('security-log.index');
+        Route::get('security-log/download', [SecurityLogController::class, 'download'])
+            ->middleware('throttle:security-log-export')
+            ->name('security-log.download');
 
         // W87, D47 — the Defaults tab. Separate from Instance settings
         // because they answer different questions: that one is about the
@@ -128,10 +165,14 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         // `is_admin` exactly as every route above it is.
         Route::get('defaults', [DefaultsController::class, 'edit'])->name('defaults.edit');
         Route::put('defaults/currency', [DefaultsController::class, 'updateCurrency'])->name('defaults.currency');
-        // `{kind}` is checked against ScaleCalibrator::kinds() in the
-        // controller before it reaches anything that could use it to pick a
-        // scale, so a nonsense kind 404s rather than reaching a column name.
-        Route::put('defaults/scales/{kind}', [DefaultsController::class, 'update'])->name('defaults.update');
+        // W126, D92-D94: admin-defined scales. `{scaleSet:key}` binds by the
+        // scale's key, so an unknown one is a 404; the kinds inside a payload
+        // are a fixed list the FormRequest validates (no column name is ever
+        // built from request input).
+        Route::post('defaults/scales', [AdminScaleController::class, 'store'])->name('scales.store');
+        Route::put('defaults/scales/{scaleSet:key}', [AdminScaleController::class, 'update'])->name('scales.update');
+        Route::put('defaults/scales/{scaleSet:key}/name', [AdminScaleController::class, 'rename'])->name('scales.rename');
+        Route::delete('defaults/scales/{scaleSet:key}', [AdminScaleController::class, 'destroy'])->name('scales.destroy');
     });
 
     // W9 sharing (PLAN.md Phase 3 item 5). Every route below is fronted by
@@ -144,7 +185,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     // names that relation members() instead. Each FormRequest below and
     // CollaboratorService::assertBelongsTo() therefore make the
     // cross-assessment check explicitly (security.md §3.3 IDOR test).
-    Route::prefix('assessments/{assessment:uuid}/share')->name('share.')->group(function () {
+    Route::prefix('assessments/{assessment:uuid}/share')->name('share.')->middleware(RejectTemplate::class)->group(function () {
         Route::get('/', [ShareController::class, 'index'])->name('index');
         Route::get('users', [ShareController::class, 'searchUsers'])
             ->middleware('throttle:search')->name('users.search');
@@ -338,8 +379,11 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])->prefix('assessments
         $scope = $data['scope'];
         $order = $data['order'];
 
+        // W104: every uuid below comes from the body, so each lookup is
+        // scoped to the route's assessment, the one the policy checked. A
+        // node of another assessment answers as a node that does not exist.
         if ($scope === 'nodes') {
-            $rows = Node::whereIn('uuid', $order)->get()->keyBy('uuid');
+            $rows = $assessment->nodes()->whereIn('uuid', $order)->get()->keyBy('uuid');
             if ($rows->count() !== count($order)) {
                 return response()->json(['message' => 'A node in this reorder no longer exists.'], 422);
             }
@@ -370,12 +414,12 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])->prefix('assessments
 
         $parentUuid = (string) $data['parent_uuid'];
         $meta = EdgeResolver::meta($scope);
-        $parent = EdgeResolver::findNode($parentUuid);
+        $parent = EdgeResolver::findNodeIn($assessment->id, $parentUuid);
         if ($parent === null) {
             return response()->json(['message' => 'The parent of this reorder no longer exists.'], 422);
         }
 
-        $childRows = Node::whereIn('uuid', $order)->get()->keyBy('uuid');
+        $childRows = $assessment->nodes()->whereIn('uuid', $order)->get()->keyBy('uuid');
         if ($childRows->count() !== count($order)) {
             return response()->json(['message' => 'A node in this reorder no longer exists.'], 422);
         }
@@ -437,11 +481,15 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])->prefix('assessments
 
         $edge = $data['edge'];
         $meta = EdgeResolver::meta($edge);
-        $fromParent = EdgeResolver::findNode($data['from_parent_uuid']);
-        $toParent = EdgeResolver::findNode($data['to_parent_uuid']);
-        $child = EdgeResolver::findNode($data['child_uuid']);
+        // W104: scoped to the route's assessment, as in reorder above.
+        $fromParent = EdgeResolver::findNodeIn($assessment->id, $data['from_parent_uuid']);
+        $toParent = EdgeResolver::findNodeIn($assessment->id, $data['to_parent_uuid']);
+        $child = EdgeResolver::findNodeIn($assessment->id, $data['child_uuid']);
 
-        if ($fromParent === null || $toParent === null || $child === null) {
+        // W121 (D82): findNodeIn() includes trashed rows, and a move touching
+        // one is a link no screen shows, whose undo ReparentEdgeApplier refuses.
+        if ($fromParent === null || $toParent === null || $child === null
+            || $fromParent->trashed() || $toParent->trashed() || $child->trashed()) {
             return response()->json(['message' => 'An endpoint of this move no longer exists.'], 422);
         }
 
@@ -556,18 +604,24 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // same reason ShowAssessmentRequest uses Gate::forUser() rather than
 // `$request->user()?->can(...)` — a null/guest user must still reach
 // AssessmentPolicy::view()'s is_public/share-token branches instead of
-// short-circuiting to false first. `throttle:reports` matches
-// security.md §9's "Report generation: 10/min per user" row.
+// short-circuiting to false first.
+//
+// Two limiters (W110, D70): the page, re-requested by every option toggle,
+// carries security.md §9's "Report views" (60/min per user, 10/min per
+// address for a guest); the exports below carry "Report generation: 10/min
+// per user". They shared the second until toggling an option a few times
+// quickly answered 429.
 // ---------------------------------------------------------------------
-Route::middleware(['active', 'throttle:reports'])
+Route::middleware(['active'])
     ->prefix('assessments/{assessment:uuid}/report')
     ->name('assessments.report.')
     ->group(function () {
-        Route::get('/', [ReportController::class, 'show'])->name('show');
+        Route::get('/', [ReportController::class, 'show'])
+            ->middleware('throttle:report-views')->name('show');
 
         // W74 / D34 — the five formats behind the one export menu. Every one
-        // of them is a read of the same assembled report and carries the same
-        // `throttle:reports` and `active` middleware as the page, because an
+        // of them is a read of the same assembled report and carries
+        // `throttle:reports`, not the page's `report-views`, because an
         // export is a report generation: exempting them would put the
         // expensive path outside the limit that exists for it
         // (security.md §9, "Report generation: 10/min per user").
@@ -580,11 +634,13 @@ Route::middleware(['active', 'throttle:reports'])
         // PDF is deliberately not a route here. It is the browser's own print
         // pipeline (D6, not reopened) — no headless-Chromium sidecar, and
         // `dompdf` stays gone.
-        Route::get('export.html', [ReportController::class, 'exportHtml'])->name('export-html');
-        Route::get('defences.csv', [ReportController::class, 'defencesCsv'])->name('defences-csv');
-        Route::get('export.json', [ReportController::class, 'exportJson'])->name('export-json');
-        Route::get('export.xlsx', [ReportController::class, 'exportExcel'])->name('export-excel');
-        Route::get('export.docx', [ReportController::class, 'exportWord'])->name('export-word');
+        Route::middleware('throttle:reports')->group(function () {
+            Route::get('export.html', [ReportController::class, 'exportHtml'])->name('export-html');
+            Route::get('defences.csv', [ReportController::class, 'defencesCsv'])->name('defences-csv');
+            Route::get('export.json', [ReportController::class, 'exportJson'])->name('export-json');
+            Route::get('export.xlsx', [ReportController::class, 'exportExcel'])->name('export-excel');
+            Route::get('export.docx', [ReportController::class, 'exportWord'])->name('export-word');
+        });
     });
 
 // ---------------------------------------------------------------------
@@ -779,13 +835,11 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // sits in `auth`+`active` for the clean-401 reason above even though
 // `view` itself would tolerate a guest, matching how the W12 node-mutate
 // group reasons about `update`/`delete` never being guest-reachable.
-// `PATCH /assessments/{assessment:uuid}/template` needs `saveAsTemplate`
-// — owner or admin. W20 gated it on `manage`; W45 narrowed it, because
-// publishing sets `is_public` too and so exposes every value in the
-// assessment to the whole instance, which is an ownership-weight decision
-// rather than a sharing one (see AssessmentPolicy::saveAsTemplate).
-// `GET /assessments/{assessment:uuid}/template` reports the two flags to
-// the Share dialog and needs only `view`;
+// `POST /assessments/{assessment:uuid}/template` needs `saveAsTemplate`
+// — admin only — and copies the assessment into a new, ownerless template
+// (W141; through 2.6 `PATCH` flipped a flag on the assessment itself).
+// `POST /templates` and `DELETE /templates/{uuid}` create and erase one,
+// for admins.
 // `POST /templates/{assessment:uuid}/use` needs `view` on the source
 // (TemplateController::store()'s own docblock explains why `view`, not
 // `update`, is correct here) plus the source actually being a template,
@@ -806,8 +860,12 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     // 2.5.1: "add from template" in the editor — read-only, `useAsTemplate`.
     Route::get('templates/options', [TemplateController::class, 'options'])->name('templates.options');
     Route::get('templates/{assessment:uuid}/nodes', [TemplateController::class, 'nodes'])->name('templates.nodes');
-    Route::get('assessments/{assessment:uuid}/template', [TemplateController::class, 'show'])->name('assessments.template.show');
-    Route::patch('assessments/{assessment:uuid}/template', [TemplateController::class, 'update'])->name('assessments.template.update');
+    // W141: templates are managed here and nowhere else, by any admin. Publishing
+    // an assessment copies it into a separate template; there is no route that
+    // reads or clears a link back, because none exists.
+    Route::post('templates', [TemplateController::class, 'create'])->name('templates.create');
+    Route::delete('templates/{assessment:uuid}', [TemplateController::class, 'destroy'])->name('templates.destroy');
+    Route::post('assessments/{assessment:uuid}/template', [TemplateController::class, 'publish'])->name('assessments.template.publish');
 });
 
 // W21 — external references
@@ -915,6 +973,17 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     // who can read a thing can build their own private copy of it.
     Route::post('assessments/{assessment:uuid}/duplicate', [AssessmentLifecycleController::class, 'duplicate'])
         ->name('assessments.duplicate');
+
+    // W113: back from *Deleted*, or out of it for good. `withTrashed()` is
+    // what lets the binding find a deleted assessment at all; the controller
+    // answers 404 for a live one, after the policy (`delete` to restore,
+    // `forceDelete` to erase).
+    Route::post('assessments/{assessment:uuid}/restore', [AssessmentLifecycleController::class, 'restore'])
+        ->withTrashed()
+        ->name('assessments.restore');
+    Route::delete('assessments/{assessment:uuid}/erase', [AssessmentLifecycleController::class, 'erase'])
+        ->withTrashed()
+        ->name('assessments.erase');
 });
 
 // W43 labels (item 18). Appended as its own block, per the convention every
@@ -1195,9 +1264,8 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
         // merely unlinked. The three cards now live on Assessment settings,
         // and a screen that still answers its URL after its entry points are
         // removed is how a second, divergent editor survives a consolidation.
-        Route::put('{kind}', [ScaleCalibrationController::class, 'update'])->name('update');
-        // Reset one scale to the instance default (item 10). A write, so not a
-        // GET; `{kind}/reset` rather than a flag on the PUT, so a reset cannot
-        // be reached by a malformed save.
-        Route::put('{kind}/reset', [ScaleCalibrationController::class, 'reset'])->name('reset');
+        // W126, D94: one request saves all three kinds, all or nothing. The
+        // per-kind routes and "Reset to default" are gone: choosing a scale in
+        // the settings dropdown is how defaults are applied.
+        Route::put('', [ScaleCalibrationController::class, 'update'])->name('update');
     });

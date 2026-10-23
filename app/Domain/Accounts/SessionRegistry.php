@@ -5,6 +5,7 @@ namespace App\Domain\Accounts;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Lists and revokes a user's active sessions for the profile page's
@@ -13,11 +14,14 @@ use Illuminate\Support\Facades\DB;
  * `app/Models/**` is outside this package's file ownership and a session
  * row is infrastructure, not a domain entity.
  *
- * Only meaningful when `SESSION_DRIVER=database` (the project's current
- * default — see .env). If the deployment later switches to the redis
- * session driver from security.md §5, this table stops being populated
- * and the list will simply show nothing; that migration is out of scope
- * for W8.
+ * Every revocation path (password and email change, admin reset,
+ * deactivation and deletion, the profile page's revoke button) deletes
+ * rows here, so it revokes nothing unless the sessions live in this table.
+ * Until 2.7 the shipped environment chose the redis driver, under which
+ * the table stayed empty and every one of those paths was a no-op; D71
+ * fixed the driver to `database` in config/session.php, and
+ * tests/Feature/Auth/SessionRevocationTest.php drives each path through
+ * real sign-ins on that driver.
  */
 class SessionRegistry
 {
@@ -47,10 +51,16 @@ class SessionRegistry
      */
     public static function revoke(int $userId, string $sessionId): bool
     {
-        return DB::table('sessions')
+        $revoked = DB::table('sessions')
             ->where('user_id', $userId)
             ->where('id', $sessionId)
             ->delete() > 0;
+
+        if ($revoked) {
+            self::invalidateRememberCookies($userId);
+        }
+
+        return $revoked;
     }
 
     /**
@@ -62,7 +72,21 @@ class SessionRegistry
     {
         DB::table('sessions')
             ->where('user_id', $userId)
-            ->when($keepSessionId, fn ($query) => $query->where('id', '!=', $keepSessionId))
+            ->when($keepSessionId !== null, fn ($query) => $query->where('id', '!=', $keepSessionId))
             ->delete();
+
+        self::invalidateRememberCookies($userId);
+    }
+
+    /**
+     * A "remember me" cookie signs its device straight back in with a fresh
+     * session row, which would undo the revocation. The cookie is checked
+     * against the user's remember token (and, by the guard, their password
+     * hash), so replacing the token ends every remembered device; the
+     * caller's own session row is untouched and keeps working.
+     */
+    private static function invalidateRememberCookies(int $userId): void
+    {
+        DB::table('users')->where('id', $userId)->update(['remember_token' => Str::random(60)]);
     }
 }

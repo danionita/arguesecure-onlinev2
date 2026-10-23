@@ -39,6 +39,10 @@ jobs:
   publish:
     name: Build, boot from the image alone, publish
     runs-on: ubuntu-latest
+    # CI runs in the public repository only (D80): the private repository has
+    # no Actions minutes to spend, and its checks run on the owner's machine.
+    # A skipped job bills nothing, and the file stays identical in both.
+    if: github.repository == 'danionita/arguesecure-onlinev2'
     # The only job in this repository that writes anything, and only in the
     # Publish step, which runs in the public repository alone.
     permissions:
@@ -102,6 +106,7 @@ jobs:
           for attempt in 1 2 3 4; do
             if docker buildx build --load --platform linux/amd64 \
                  --secret id=composer_auth,env=COMPOSER_AUTH \
+                 --build-arg "ARGUESECURE_BUILD_VERSION=$VERSION" \
                  "${labels[@]}" --label "org.opencontainers.image.title=ArgueSecure" \
                  -t "$IMAGE:$VERSION" .; then
               break

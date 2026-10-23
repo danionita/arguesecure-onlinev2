@@ -215,10 +215,14 @@ services:
       retries: 10
     networks: [arguesecure]
 
+  # Never evicts (PLAN-2.7.md D72). This one Redis holds the queue and the
+  # edit locks, and an evicting policy may drop either under memory pressure
+  # without telling anyone. Full, it refuses writes instead, loudly; what that
+  # looks like and how to size it is in docs/specs/deployment.md.
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
     volumes:
       - ${DATA_PATH:-./data}/redis:/data
     healthcheck:

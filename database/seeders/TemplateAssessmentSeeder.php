@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Domain\References\ReferenceValidator;
+use App\Domain\Scales\ScaleSets;
 use App\Domain\Structure\LinkService;
 use App\Models\Assessment;
 use App\Models\Attack;
@@ -93,10 +94,9 @@ use Illuminate\Support\Str;
  * descriptions, numbers, nodes or edges is invisible to that instance
  * forever. `db:seed` reports it as skipped and exits successfully.
  *
- * This is the correct default and should stay. A seeded template is a real
- * assessment somebody may have started editing, and quietly overwriting
- * their work on the next deploy would be far worse than leaving a stale
- * copy. But it does mean a deployment can hold a version of an archetype
+ * This is the correct default and should stay. A seeded template is one an
+ * administrator may have edited since (W141), and quietly overwriting their
+ * work on the next deploy would be far worse than leaving a stale copy. But it does mean a deployment can hold a version of an archetype
  * that no longer matches the file in this repository, which is exactly the
  * "the fixtures are complete but the running instance looks wrong" shape
  * W76 was sent to diagnose — and it is diagnosed by comparing, not
@@ -116,11 +116,11 @@ use Illuminate\Support\Str;
  *   2. Check nothing has been built from it. An assessment created from a
  *      template is an independent copy (AssessmentCloner), so instances
  *      already created are unaffected either way — but confirm the
- *      template itself is not somebody's working copy.
- *   3. Delete the stale assessment through the application, not the
- *      database, so the deletion goes through the observers and the
- *      operation log like any other. Deleting the assessment cascades to
- *      its nodes, which is what releases the `root_uuid`.
+ *      template itself is not an administrator's work in progress.
+ *   3. Delete the stale template on the Templates page (an administrator),
+ *      not in the database, so the deletion goes through the application.
+ *      Deleting the template removes its nodes, which is what releases
+ *      the `root_uuid`.
  *   4. Re-run the seeder. `php artisan db:seed --class=SampleContentSeeder
  *      --force`. With the uuid gone the fixture no longer matches an
  *      existing node and seeds fresh; every other fixture is skipped, so
@@ -128,9 +128,8 @@ use Illuminate\Support\Str;
  *   5. Verify from the fixture, not by eye: the seeder logs `seeded=` and
  *      `skipped=` lists, and the key you deleted must appear in the first.
  *
- * A deployment that has never had an admin has never seeded anything
- * (SampleContentSeeder skips without an owner), so first-run setup does
- * not need any of this — it gets the current fixtures by definition.
+ * A deployment that has never seeded anything gets the current fixtures
+ * by definition (first-run setup seeds them), so it needs none of this.
  *
  * This class does not call `App\Domain\Structure\AssessmentCloner` or
  * `App\Domain\Catalog\CatalogInserter` — both solve a different problem
@@ -159,7 +158,7 @@ class TemplateAssessmentSeeder extends Seeder
      * @param  array{impact: Scale, likelihood: Scale, strength: Scale}  $systemScales
      * @return array{seeded: list<string>, skipped: list<string>}
      */
-    public function seedFiles(array $filePaths, User $owner, array $systemScales): array
+    public function seedFiles(array $filePaths, ?User $owner, array $systemScales): array
     {
         $seeded = [];
         $skipped = [];
@@ -205,19 +204,30 @@ class TemplateAssessmentSeeder extends Seeder
      * @param  array{impact: Scale, likelihood: Scale, strength: Scale}  $systemScales
      * @param  array<string, array<string, int>>  $levelIdsByKind
      */
-    private function seedOne(array $fixture, User $owner, array $systemScales, array $levelIdsByKind): void
+    private function seedOne(array $fixture, ?User $owner, array $systemScales, array $levelIdsByKind): void
     {
+        // A template belongs to nobody (W141): the owner, if one was passed,
+        // owns only a fixture that is not a template, and an instance without
+        // an admin seeds the whole library all the same.
+        $isTemplate = (bool) ($fixture['is_template'] ?? false);
+        if (! $isTemplate && $owner === null) {
+            throw new SeederFixtureException("Fixture '{$fixture['key']}' is not a template and needs an owner.");
+        }
+        $actor = $isTemplate ? null : $owner;
+
         $assessment = new Assessment;
         $assessment->uuid = (string) Str::uuid();
-        $assessment->owner_user_id = $owner->id;
+        $assessment->owner_user_id = $actor?->id;
         $assessment->currency = $fixture['currency'];
         $assessment->display_mode = 'mixed';
         $assessment->impact_scale_id = $systemScales['impact']->id;
         $assessment->likelihood_scale_id = $systemScales['likelihood']->id;
         $assessment->strength_scale_id = $systemScales['strength']->id;
+        // The default scale's rows, so the dropdown names it (W126).
+        $assessment->scale_set_key = ScaleSets::DEFAULT_KEY;
         $assessment->amortization_years = $fixture['amortization_years'] ?? 3;
-        $assessment->is_public = (bool) ($fixture['is_public'] ?? false);
-        $assessment->is_template = (bool) ($fixture['is_template'] ?? false);
+        $assessment->is_public = $isTemplate ? false : (bool) ($fixture['is_public'] ?? false);
+        $assessment->is_template = $isTemplate;
         $assessment->save();
 
         $root = new RootNode;
@@ -225,8 +235,8 @@ class TemplateAssessmentSeeder extends Seeder
         $root->assessment_id = $assessment->id;
         $root->title = $fixture['title'];
         $root->description = $fixture['description'] ?? null;
-        $root->created_by = $owner->id;
-        $root->updated_by = $owner->id;
+        $root->created_by = $actor?->id;
+        $root->updated_by = $actor?->id;
         $root->save();
 
         $tagsByName = [];
@@ -250,8 +260,8 @@ class TemplateAssessmentSeeder extends Seeder
             ]);
             $attack->uuid = $attackSpec['uuid'];
             $attack->assessment_id = $assessment->id;
-            $attack->created_by = $owner->id;
-            $attack->updated_by = $owner->id;
+            $attack->created_by = $actor?->id;
+            $attack->updated_by = $actor?->id;
             [$mode, $key, $value] = $this->resolveValue($attackSpec['likelihood'], 'likelihood_aro', $levelIdsByKind['likelihood']);
             $attack->likelihood_mode = $mode;
             $attack->{$key} = $value;
@@ -278,8 +288,8 @@ class TemplateAssessmentSeeder extends Seeder
             ]);
             $defence->uuid = $defenceSpec['uuid'];
             $defence->assessment_id = $assessment->id;
-            $defence->created_by = $owner->id;
-            $defence->updated_by = $owner->id;
+            $defence->created_by = $actor?->id;
+            $defence->updated_by = $actor?->id;
             $defence->position = $positions['defence']++;
             $defence->save();
 
@@ -297,8 +307,8 @@ class TemplateAssessmentSeeder extends Seeder
             ]);
             $risk->uuid = $riskSpec['uuid'];
             $risk->assessment_id = $assessment->id;
-            $risk->created_by = $owner->id;
-            $risk->updated_by = $owner->id;
+            $risk->created_by = $actor?->id;
+            $risk->updated_by = $actor?->id;
             $risk->position = $positions['risk']++;
             [$mode, $key, $value] = $this->resolveValue($riskSpec['impact'], 'impact_amount', $levelIdsByKind['impact']);
             $risk->impact_mode = $mode;

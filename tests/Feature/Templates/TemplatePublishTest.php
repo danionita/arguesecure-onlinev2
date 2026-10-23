@@ -1,119 +1,135 @@
 <?php
 
-use App\Domain\Accounts\InstanceSettings;
+use App\Domain\Structure\LinkService;
 use App\Models\Assessment;
+use App\Models\Attack;
+use App\Models\Defence;
+use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W45 — publishing and unpublishing; reworked in 2.5.1.
- *
- * Through 2.5 publishing set `is_public` as well as `is_template`, because
- * using a template needed `view` on it — so the owner's choice to publish
- * exposed the assessment itself to the whole instance, and the instance's
- * "no public assessments" rule had to stand in front of it.
- *
- * 2.5.1 separated the two. Publishing is an admin's decision
- * (`saveAsTemplate`), every signed-in account can list and use a template
- * (`useAsTemplate`), and `is_public` is left exactly as it was — so the
- * public-assessment rule no longer applies to templates in either direction.
+ * W141, T3 — publishing copies. The template is a separate, ownerless
+ * assessment; the source is neither flagged nor linked nor touched, and there
+ * is nothing to unpublish. Through 2.6 publishing flipped `is_template` on the
+ * assessment itself, so these tests replace the ones that asserted that.
  */
 
-test('publishing moves is_template and leaves is_public alone', function () {
+/** A small assessment with one of each node and both edges. */
+function sourceAssessment(): Assessment
+{
     $assessment = Assessment::factory()->create();
+    $risk = Risk::factory()->for($assessment)->create(['title' => 'Data breach']);
+    $attack = Attack::factory()->for($assessment)->create(['title' => 'Phishing']);
+    $defence = Defence::factory()->for($assessment)->create(['title' => 'MFA']);
+    app(LinkService::class)->linkRiskToAttack($risk, $attack);
+    app(LinkService::class)->linkAttackToDefence($attack, $defence);
+
+    return $assessment;
+}
+
+test('an admin publishes a copy: one ownerless template with the same shape and new uuids', function () {
+    $source = sourceAssessment();
     $admin = User::factory()->admin()->create();
 
-    $this->actingAs($admin)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertOk()
-        ->assertJson(['is_template' => true, 'is_public' => false]);
+    $response = $this->actingAs($admin)
+        ->postJson(route('assessments.template.publish', $source))
+        ->assertCreated();
 
-    $fresh = $assessment->fresh();
+    $template = Assessment::query()->where('uuid', $response->json('template.uuid'))->firstOrFail();
 
-    expect($fresh->is_template)->toBeTrue()
-        ->and($fresh->is_public)->toBeFalse();
+    expect($template->is_template)->toBeTrue()
+        ->and($template->owner_user_id)->toBeNull()
+        ->and($template->is_public)->toBeFalse()
+        ->and($template->share_token)->toBeNull()
+        ->and($template->id)->not->toBe($source->id)
+        ->and(Assessment::query()->where('is_template', true)->count())->toBe(1);
+
+    $titles = fn (Assessment $a) => $a->nodes()->orderBy('type')->pluck('title')->all();
+    expect($titles($template))->toBe($titles($source));
+    expect($template->nodes()->pluck('uuid')->intersect($source->nodes()->pluck('uuid')))->toBeEmpty();
+    expect($template->nodes()->count())->toBe(4);
+    expect(DB::table('risk_attack')->whereIn('risk_node_id', $template->nodes()->pluck('id'))->count())->toBe(1)
+        ->and(DB::table('attack_defence')->whereIn('attack_node_id', $template->nodes()->pluck('id'))->count())->toBe(1);
 });
 
-test('a published template is usable by a stranger but not readable by them', function () {
-    $assessment = Assessment::factory()->create();
+test('the source is left exactly as it was', function () {
+    $source = sourceAssessment();
+    $before = $source->fresh()->getAttributes();
+    $nodesBefore = DB::table('nodes')->where('assessment_id', $source->id)->orderBy('id')->get()->all();
     $admin = User::factory()->admin()->create();
-    $stranger = User::factory()->create();
+
+    $this->actingAs($admin)->postJson(route('assessments.template.publish', $source))->assertCreated();
+
+    expect($source->fresh()->getAttributes())->toBe($before)
+        ->and($source->fresh()->is_template)->toBeFalse()
+        ->and(DB::table('nodes')->where('assessment_id', $source->id)->orderBy('id')->get()->all())->toEqual($nodesBefore);
+});
+
+test('editing the source afterwards does not change the template, and the reverse', function () {
+    $source = sourceAssessment();
+    $admin = User::factory()->admin()->create();
+
+    $uuid = $this->actingAs($admin)->postJson(route('assessments.template.publish', $source))->json('template.uuid');
+    $template = Assessment::query()->where('uuid', $uuid)->firstOrFail();
+
+    $sourceRisk = Risk::query()->where('assessment_id', $source->id)->firstOrFail();
+    $templateRisk = Risk::query()->where('assessment_id', $template->id)->firstOrFail();
 
     $this->actingAs($admin)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => true])
+        ->patchJson(route('assessments.nodes.update', [$source, $sourceRisk->uuid]), ['title' => 'Renamed in the source', 'updated_at' => $sourceRisk->updated_at->toJSON()])
+        ->assertOk();
+    $this->actingAs($admin)
+        ->patchJson(route('assessments.nodes.update', [$template, $templateRisk->uuid]), ['title' => 'Renamed in the template', 'updated_at' => $templateRisk->updated_at->toJSON()])
         ->assertOk();
 
-    $this->actingAs($stranger)->post(route('templates.use', $assessment))->assertCreated();
-    $this->actingAs($stranger)->get(route('assessments.show', $assessment))->assertForbidden();
+    expect($templateRisk->fresh()->title)->toBe('Renamed in the template')
+        ->and($sourceRisk->fresh()->title)->toBe('Renamed in the source');
 });
 
-test('unpublishing leaves an assessment that was public still public', function () {
-    $assessment = Assessment::factory()->template()->public()->create();
+test('the copy carries none of the source’s people', function () {
+    $source = sourceAssessment();
+    $source->members()->attach(User::factory()->create()->id, [
+        'role' => 'editor',
+        'invited_by' => $source->owner_user_id,
+        'invited_at' => now(),
+        'accepted_at' => now(),
+    ]);
+    $source->forceFill(['is_public' => true])->save();
     $admin = User::factory()->admin()->create();
 
-    $this->actingAs($admin)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => false])
-        ->assertOk()
-        ->assertJson(['is_template' => false, 'is_public' => true]);
+    $uuid = $this->actingAs($admin)->postJson(route('assessments.template.publish', $source))->json('template.uuid');
+    $template = Assessment::query()->where('uuid', $uuid)->firstOrFail();
+
+    expect($template->members()->count())->toBe(0)
+        ->and($template->is_public)->toBeFalse();
 });
 
-test('an unpublished template disappears from the template list', function () {
-    $assessment = Assessment::factory()->template()->create();
+test('publishing again makes a second, independent template', function () {
+    $source = sourceAssessment();
     $admin = User::factory()->admin()->create();
-    $stranger = User::factory()->create();
 
-    $this->actingAs($admin)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => false])
-        ->assertOk();
+    $first = $this->actingAs($admin)->postJson(route('assessments.template.publish', $source))->json('template.uuid');
+    $second = $this->actingAs($admin)->postJson(route('assessments.template.publish', $source))->json('template.uuid');
 
-    $this->actingAs($stranger)
-        ->get(route('templates.index'))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page->where('templates', []));
+    expect($first)->not->toBe($second)
+        ->and(Assessment::query()->where('is_template', true)->count())->toBe(2);
 });
 
-test('publishing works on an instance that forbids public assessments', function () {
-    InstanceSettings::update(['public_assessments_allowed' => false]);
-    $assessment = Assessment::factory()->create();
+test('a template cannot be published', function () {
+    $template = Assessment::factory()->template()->create();
     $admin = User::factory()->admin()->create();
 
-    $this->actingAs($admin)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertOk();
+    $this->actingAs($admin)->postJson(route('assessments.template.publish', $template))->assertNotFound();
 
-    $fresh = $assessment->fresh();
-
-    expect($fresh->is_template)->toBeTrue()
-        ->and($fresh->is_public)->toBeFalse();
+    expect(Assessment::query()->where('is_template', true)->count())->toBe(1);
 });
 
-test('the status endpoint tells the owner they may not publish, and an admin that they may', function () {
-    $assessment = Assessment::factory()->create();
+test('the editor offers Publish to an admin on an assessment, and to nobody else', function () {
+    $source = sourceAssessment();
     $admin = User::factory()->admin()->create();
 
-    $this->actingAs($assessment->owner)
-        ->getJson(route('assessments.template.show', $assessment))
-        ->assertOk()
-        ->assertJson(['canSaveAsTemplate' => false]);
-
-    $this->actingAs($admin)
-        ->getJson(route('assessments.template.show', $assessment))
-        ->assertOk()
-        ->assertJson(['canSaveAsTemplate' => true]);
-});
-
-/*
- * The route still answers an ordinary form post with a redirect, as it has
- * since W20. The Share dialog is an axios panel inside a modal that must stay
- * open, so it asks for JSON instead — two shapes, one endpoint, both pinned so
- * neither consumer can be broken silently by the other.
- */
-test('a non-JSON request still gets its redirect', function () {
-    $assessment = Assessment::factory()->create();
-    $admin = User::factory()->admin()->create();
-
-    $this->actingAs($admin)
-        ->patch(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertRedirect(route('assessments.show', $assessment));
-
-    expect($assessment->fresh()->is_template)->toBeTrue();
+    $this->actingAs($admin)->get(route('assessments.show', $source))
+        ->assertInertia(fn ($page) => $page->where('abilities.publishTemplate', true));
+    $this->actingAs($source->owner)->get(route('assessments.show', $source))
+        ->assertInertia(fn ($page) => $page->where('abilities.publishTemplate', false));
 });

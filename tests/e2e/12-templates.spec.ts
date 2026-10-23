@@ -46,22 +46,25 @@ const BREACH = 'Cardholder data breach';
 const PHISHING = 'Phishing';
 const MFA = 'Multi-factor authentication';
 
+let publishedTemplateUuid = '';
+
 test.describe('templates', () => {
-    test('an assessment can be marked as a template', async ({ page }) => {
+    test('an assessment can be published as a template', async ({ page }) => {
         await login(page, adminEmail, adminPassword());
         const uuid = await openAssessment(page);
 
-        // `saveAsTemplate` — admins only since 2.5.1, because every account
-        // on the instance can start from a template. The admin is acting
-        // here, so this passes.
-        //
-        // The status is not asserted: the route answers an XHR with JSON and
-        // an ordinary form post with a redirect, and what comes back here
-        // depends on the headers apiRequest happens to send. The effect is
-        // the assertion that matters, and it is the one a user would check.
-        await apiRequest(page, 'patch', `/assessments/${uuid}/template`, {
-            is_template: true,
-        });
+        // `saveAsTemplate` — admins only. Since W141 publishing copies the
+        // assessment into a separate, ownerless template and leaves the
+        // assessment itself alone; the answer carries the copy's uuid.
+        const published = await apiRequest(
+            page,
+            'post',
+            `/assessments/${uuid}/template`,
+        );
+        expect(published.status).toBe(201);
+        publishedTemplateUuid = (
+            published.body as { template: { uuid: string } }
+        ).template.uuid;
 
         await page.goto('/templates');
         // Scoped since W41: the sidebar lists the same assessment under the
@@ -221,51 +224,52 @@ test.describe('templates', () => {
     });
 
     /*
-     * 2.5.1: publishing a template no longer sets `is_public`. The template
-     * list is open to every account and starting from a template copies it,
-     * so the source assessment itself stays exactly as private as it was —
-     * W45 coupled the two flags only because the list used to be limited to
-     * what the viewer could already read. Scenarios 13 and 14 go on to assert
-     * that a stranger is locked out of this assessment, which is now true
-     * with or without this step; unpublishing is still what a real user does
-     * when they are finished sharing, and both halves are asserted here.
+     * W141: the template is a copy, so the assessment it was published from
+     * stays exactly as private and as editable as it was, and there is nothing
+     * to unpublish — a template leaves the list when it is deleted.
      */
-    test('publishing leaves the assessment private, and unpublishing takes it off the list', async ({
+    test('publishing leaves the assessment alone, and deleting the template takes it off the list', async ({
         page,
     }) => {
         await login(page, adminEmail, adminPassword());
         const uuid = await openAssessment(page, ORIGINAL);
 
-        const published = await apiRequest(
+        // The assessment is still an assessment: it is not a template itself,
+        // so publishing it again is allowed (it makes a second copy) while
+        // publishing the template is not.
+        const again = await apiRequest(
             page,
-            'get',
-            `/assessments/${uuid}/template`,
+            'post',
+            `/assessments/${publishedTemplateUuid}/template`,
         );
-        expect(published.status).toBe(200);
-        expect(published.body).toMatchObject({
-            is_template: true,
-            is_public: false,
-        });
+        expect(again.status).toBe(404);
 
-        const unpublished = await apiRequest(
-            page,
-            'patch',
-            `/assessments/${uuid}/template`,
-            { is_template: false },
-        );
-        expect(unpublished.status).toBeLessThan(400);
-
-        const after = await apiRequest(
-            page,
-            'get',
-            `/assessments/${uuid}/template`,
-        );
-        expect(after.body).toMatchObject({
-            is_template: false,
-            is_public: false,
-        });
+        // The route answers a redirect to the Templates page. A plain XHR
+        // would re-send DELETE to it (405); Inertia's headers make Laravel
+        // answer 303, so the follow-up is a GET, as in the app (the version
+        // header keeps that GET from answering 409).
+        const removed = await page.evaluate(async (target) => {
+            const axios = (window as unknown as { axios: any }).axios;
+            try {
+                const version = window.history.state?.page?.version ?? '';
+                const response = await axios.delete(target, {
+                    headers: {
+                        'X-Inertia': 'true',
+                        'X-Inertia-Version': version,
+                    },
+                });
+                return response.status as number;
+            } catch (error: any) {
+                return (error?.response?.status ?? 0) as number;
+            }
+        }, `/templates/${publishedTemplateUuid}`);
+        expect(removed).toBeLessThan(400);
 
         await page.goto('/templates');
         await expect(mainContent(page).getByText(ORIGINAL)).toHaveCount(0);
+
+        // The assessment it was copied from is untouched.
+        await page.goto(`/assessments/${uuid}`);
+        await expect(page).toHaveURL(new RegExp(`/assessments/${uuid}$`));
     });
 });

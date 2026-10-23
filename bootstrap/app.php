@@ -3,6 +3,7 @@
 use App\Http\Middleware\ApplyInstanceSessionLifetime;
 use App\Http\Middleware\EnsureAssistantConfigured;
 use App\Http\Middleware\EnsurePasswordChanged;
+use App\Http\Middleware\EnsureTwoFactorEnrolled;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -55,6 +56,10 @@ return Application::configure(basePath: dirname(__DIR__))
             // docblock for the route-name whitelist that prevents a
             // redirect loop.
             EnsurePasswordChanged::class,
+            // W116 (D78): after the password check, so an account that owes
+            // both does the password first. Does nothing unless an admin has
+            // switched "require two-factor" on.
+            EnsureTwoFactorEnrolled::class,
         ]);
 
         // W8b: must run before Illuminate\Session\Middleware\StartSession

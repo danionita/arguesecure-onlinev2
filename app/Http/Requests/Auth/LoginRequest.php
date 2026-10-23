@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Domain\Accounts\InstanceSettings;
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,7 +44,13 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // W117 (D79): in SSO-only mode a non-admin has no password sign-in.
+        // Refused exactly like a wrong password, before the password is even
+        // checked, and counted against the same limiters.
+        $ssoOnlyRefusal = InstanceSettings::ssoOnly()
+            && ! User::query()->where('email', $this->input('email'))->where('is_admin', true)->exists();
+
+        if ($ssoOnlyRefusal || ! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
             RateLimiter::hit($this->ipThrottleKey());
 

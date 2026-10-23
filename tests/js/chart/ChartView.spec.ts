@@ -4,6 +4,8 @@
  * problem and not its figures, and the same modal the list view opens.
  */
 import { mount, type VueWrapper } from '@vue/test-utils';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ChartView from '../../../resources/js/Components/Chart/ChartView.vue';
 import { useNodeModal } from '../../../resources/js/Components/NodeModal/useNodeModal';
@@ -998,5 +1000,18 @@ describe('the scroll container (W105)', () => {
 
         expect(classes).toContain('h-[calc(100vh-13rem)]');
         expect(classes.some((c) => c.startsWith('max-h-'))).toBe(false);
+    });
+});
+
+describe('the chart hands each card its child count (W127)', () => {
+    it('passes the number of children, which the card shows while collapsed', () => {
+        const node = readFileSync(
+            resolve(
+                __dirname,
+                '../../../resources/js/Components/Chart/ChartNode.vue',
+            ),
+            'utf8',
+        );
+        expect(node).toMatch(/:child-count="childUuids\.length"/);
     });
 });

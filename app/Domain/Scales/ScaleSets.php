@@ -2,9 +2,10 @@
 
 namespace App\Domain\Scales;
 
-use App\Models\Scale;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use stdClass;
 
 /**
  * The catalogue of shared system scale *sets* (W77, PLAN-2.4.md D36).
@@ -20,16 +21,16 @@ use RuntimeException;
  *
  * - the **keys**, which the seeder writes and the settings form validates
  *   against;
- * - the **labels**, which only the settings form renders;
+ * - the **names**, which live in `scale_sets` (W126);
  * - **resolution**, which turns a key into the three scale ids an assessment
  *   is created with.
  *
- * ## Why labels are a constant and not a column
+ * ## Names are data since W126
  *
- * A set is not a row, so a `label` column would have to be repeated on three
- * rows that could then disagree. A deployment that seeds its own set under an
- * unknown key gets the key itself as its label — legible, and better than
- * either a blank option or a fourth place for the name to drift.
+ * They were a constant while a set was not a row. An admin can now create one,
+ * so the name lives in `scale_sets`, one row per set, and the three scales of
+ * a set stay keyed by `set_key` alone. "Set" is the code's word for what the
+ * interface calls a scale.
  */
 final class ScaleSets
 {
@@ -57,12 +58,6 @@ final class ScaleSets
     /** The three kinds a complete set has exactly one of (schema.md §3.2). */
     public const KINDS = ['impact', 'likelihood', 'strength'];
 
-    /** @var array<string, string> */
-    private const LABELS = [
-        self::DEFAULT_KEY => 'Standard',
-        self::SMALL_ORGANISATION_KEY => 'Small organisation',
-    ];
-
     /**
      * The options the settings select renders, in a stable order with the
      * default set first.
@@ -72,13 +67,13 @@ final class ScaleSets
     public static function options(): array
     {
         return array_map(
-            static fn (string $key): array => ['value' => $key, 'label' => self::label($key)],
-            self::selectableKeys(),
+            static fn (array $set): array => ['value' => $set['key'], 'label' => $set['name']],
+            self::catalogue(),
         );
     }
 
     /**
-     * The keys an admin may save.
+     * Every selectable scale with its name, in display order, from one query.
      *
      * DEFAULT_KEY is always present even when nothing has been seeded. That
      * is not defensive padding: it is the column's default, so an instance
@@ -88,17 +83,84 @@ final class ScaleSets
      * already holding. Anything else makes an unrelated setting unsaveable
      * for a reason that has nothing to do with scales.
      *
+     * Built-in scales come first, in their seeded order, then custom ones by
+     * name; a key `scale_sets` has no row for goes last, alphabetically,
+     * shown by its key.
+     *
+     * @return list<array{key: string, name: string, is_builtin: bool}>
+     */
+    public static function catalogue(): array
+    {
+        $sets = self::completeSets();
+
+        if (! isset($sets[self::DEFAULT_KEY])) {
+            $sets[self::DEFAULT_KEY] = ['name' => self::DEFAULT_KEY, 'is_builtin' => false, 'position' => 0, 'known' => false];
+        }
+
+        return self::arranged($sets);
+    }
+
+    /**
+     * The complete sets, with what `scale_sets` knows about each.
+     *
+     * @return array<string, array{name: string, is_builtin: bool, position: int, known: bool}>
+     */
+    private static function completeSets(): array
+    {
+        $kindsByKey = [];
+        $meta = [];
+
+        foreach (self::systemScaleRows() as $row) {
+            $key = (string) $row->set_key;
+            $kindsByKey[$key][$row->kind] = true;
+            $meta[$key] = [
+                'name' => $row->name !== null ? (string) $row->name : $key,
+                'is_builtin' => $row->is_builtin !== null && (bool) $row->is_builtin,
+                'position' => (int) ($row->position ?? 0),
+                'known' => $row->name !== null,
+            ];
+        }
+
+        $sets = [];
+
+        foreach ($kindsByKey as $key => $kinds) {
+            if (count($kinds) === count(self::KINDS)) {
+                $sets[(string) $key] = $meta[(string) $key];
+            }
+        }
+
+        return $sets;
+    }
+
+    /**
+     * @param  array<string, array{name: string, is_builtin: bool, position: int, known: bool}>  $sets
+     * @return list<array{key: string, name: string, is_builtin: bool}>
+     */
+    private static function arranged(array $sets): array
+    {
+        $keys = array_map('strval', array_keys($sets));
+        usort($keys, static function (string $a, string $b) use ($sets): int {
+            $rank = static fn (string $k): array => $sets[$k]['known']
+                ? [$sets[$k]['is_builtin'] ? 0 : 1, $sets[$k]['is_builtin'] ? $sets[$k]['position'] : 0, mb_strtolower($sets[$k]['name'])]
+                : [2, 0, $k];
+
+            return $rank($a) <=> $rank($b);
+        });
+
+        return array_map(
+            static fn (string $k): array => ['key' => $k, 'name' => $sets[$k]['name'], 'is_builtin' => $sets[$k]['is_builtin']],
+            $keys,
+        );
+    }
+
+    /**
+     * The keys an admin may save.
+     *
      * @return list<string>
      */
     public static function selectableKeys(): array
     {
-        $keys = self::seededKeys();
-
-        if (! in_array(self::DEFAULT_KEY, $keys, true)) {
-            array_unshift($keys, self::DEFAULT_KEY);
-        }
-
-        return $keys;
+        return array_map(static fn (array $set): string => $set['key'], self::catalogue());
     }
 
     /**
@@ -112,39 +174,38 @@ final class ScaleSets
      */
     public static function seededKeys(): array
     {
-        /** @var array<string, array<string, true>> $kindsByKey */
-        $kindsByKey = [];
+        return array_map(
+            static fn (array $set): string => $set['key'],
+            self::arranged(self::completeSets()),
+        );
+    }
 
-        foreach (self::systemScaleRows() as $row) {
-            /** @var string $key */
-            $key = $row->getAttribute('set_key');
-            $kindsByKey[$key][$row->kind] = true;
-        }
-
-        $complete = [];
-
-        foreach ($kindsByKey as $key => $kinds) {
-            if (count($kinds) === count(self::KINDS)) {
-                $complete[] = (string) $key;
+    /**
+     * A scale's name. A set seeded under a key `scale_sets` does not know
+     * (a deployment's own seeder) is shown by its key: legible, and better
+     * than a blank option.
+     */
+    public static function label(string $key): string
+    {
+        foreach (self::catalogue() as $set) {
+            if ($set['key'] === $key) {
+                return $set['name'];
             }
         }
 
-        sort($complete);
-
-        // The default set leads the list wherever it exists; the rest keep a
-        // stable alphabetical order so the select does not reshuffle itself
-        // when a deployment seeds another one.
-        if (($at = array_search(self::DEFAULT_KEY, $complete, true)) !== false) {
-            unset($complete[$at]);
-            array_unshift($complete, self::DEFAULT_KEY);
-        }
-
-        return array_values($complete);
+        return $key;
     }
 
-    public static function label(string $key): string
+    /** @return array<string, string> key => name */
+    public static function names(): array
     {
-        return self::LABELS[$key] ?? $key;
+        $names = [];
+
+        foreach (self::catalogue() as $set) {
+            $names[$set['key']] = $set['name'];
+        }
+
+        return $names;
     }
 
     /**
@@ -217,22 +278,25 @@ final class ScaleSets
     }
 
     /**
-     * Every shared system scale that belongs to a set.
+     * Every shared system scale that belongs to a set, with its `scale_sets`
+     * name and order when it has a row there (a left join, so a set seeded
+     * under a key `scale_sets` does not know still comes back).
      *
      * `set_key IS NULL` rows are excluded: a system scale predating the W77
      * migration cannot exist (it backfilled them all), so a NULL here would
      * be a row written by something that bypassed the seeder, and it belongs
      * to no set by definition.
      *
-     * @return EloquentCollection<int, Scale>
+     * @return Collection<int, stdClass>
      */
-    private static function systemScaleRows(?string $key = null): EloquentCollection
+    private static function systemScaleRows(?string $key = null): Collection
     {
-        return Scale::query()
-            ->whereNull('assessment_id')
-            ->where('is_system', true)
-            ->whereNotNull('set_key')
-            ->when($key !== null, fn ($query) => $query->where('set_key', $key))
-            ->get(['id', 'kind', 'set_key']);
+        return DB::table('scales')
+            ->leftJoin('scale_sets', 'scale_sets.key', '=', 'scales.set_key')
+            ->whereNull('scales.assessment_id')
+            ->where('scales.is_system', true)
+            ->whereNotNull('scales.set_key')
+            ->when($key !== null, fn ($query) => $query->where('scales.set_key', $key))
+            ->get(['scales.id', 'scales.kind', 'scales.set_key', 'scale_sets.name', 'scale_sets.is_builtin', 'scale_sets.position']);
     }
 }

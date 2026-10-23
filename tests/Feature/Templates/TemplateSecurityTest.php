@@ -6,37 +6,35 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W45, PLAN-2.2.md D12 — "is_public grants read only, and being a template
- * does not change that. The tests are the point."
- *
- * A template is the most exposed thing this application can produce: every
- * account on the instance can read it, including every risk, attack, defence
- * and every number on them. What must not follow from that is a single write.
+ * W45, PLAN-2.2.md D12, rewritten for W141 — a template has no owner, is
+ * reachable through the assessment routes by admins only, and is offered to
+ * everyone else through `useAsTemplate` alone. "The tests are the point."
  *
  * Each verb is asserted separately, deliberately. A single "a stranger cannot
  * edit a template" test would go green while one route stayed open, and the
- * route it left open would be whichever one was added last — which is exactly
- * how a hole of this kind survives a review.
+ * route it left open would be whichever one was added last.
+ *
+ * Nobody here is an admin except where the test says so, and a non-admin may do
+ * nothing but read the library and copy from it.
  */
 
-/** The template, and someone with an account who is not on it. */
+/** A template, public flag and stray collaborator row included on purpose. */
 function publishedTemplate(): Assessment
 {
-    return Assessment::factory()->template()->public()->create();
+    $template = Assessment::factory()->template()->public()->create();
+    $template->members()->attach(User::factory()->create()->id, [
+        'role' => 'manager',
+        'invited_by' => null,
+        'invited_at' => now(),
+        'accepted_at' => now(),
+    ]);
+
+    return $template;
 }
 
-// --- reading is allowed --------------------------------------------------
+// --- reading the library is allowed -------------------------------------
 
-test('any account can read a published template', function () {
-    $template = publishedTemplate();
-    $stranger = User::factory()->create();
-
-    $this->actingAs($stranger)
-        ->get(route('assessments.show', $template))
-        ->assertOk();
-});
-
-test('any account can create their own assessment from a published template', function () {
+test('any account can create their own assessment from a template', function () {
     $template = publishedTemplate();
     $stranger = User::factory()->create();
 
@@ -48,23 +46,62 @@ test('any account can create their own assessment from a published template', fu
 
     expect($clone->owner_user_id)->toBe($stranger->id)
         ->and($clone->is_template)->toBeFalse()
-        // The copy is not published just because its source was. Inheriting
-        // is_public here would publish someone's private working copy the
-        // moment they started it from a template.
+        // The copy is not published just because its source was.
         ->and($clone->is_public)->toBeFalse();
 });
 
-// --- and nothing else is -------------------------------------------------
+// --- the editor is for admins ---------------------------------------------
+
+test('a non-admin cannot open a template in the editor, even one marked public', function () {
+    $template = publishedTemplate();
+
+    $this->actingAs(User::factory()->create())
+        ->get(route('assessments.show', $template))
+        ->assertForbidden();
+});
+
+test('a collaborator row on a template grants nothing', function () {
+    $template = publishedTemplate();
+    $manager = $template->members()->firstOrFail();
+
+    $risk = Risk::factory()->for($template)->create(['title' => 'Untouched']);
+
+    $this->actingAs($manager)->get(route('assessments.show', $template))->assertForbidden();
+    $this->actingAs($manager)
+        ->patchJson(route('assessments.nodes.update', [$template, $risk->uuid]), ['title' => 'Edited', 'updated_at' => $risk->updated_at->toJSON()])
+        ->assertForbidden();
+    $this->actingAs($manager)
+        ->postJson(route('assessments.comments.store', [$template, $risk->uuid]), ['body' => 'Hello'])
+        ->assertForbidden();
+    $this->actingAs($manager)->delete(route('templates.destroy', $template))->assertForbidden();
+    expect($risk->fresh()->title)->toBe('Untouched');
+    $this->actingAs($manager)
+        ->patchJson(route('assessments.settings.update', $template), ['currency' => 'USD', 'title' => 'x', 'amortization_years' => 3])
+        ->assertForbidden();
+});
+
+test('an admin opens a template in the same editor, with no sharing', function () {
+    $template = publishedTemplate();
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->get(route('assessments.show', $template))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('assessment.is_template', true)
+            ->where('abilities.update', true)
+            ->where('abilities.transfer', false)
+            ->where('abilities.publishTemplate', false));
+});
+
+// --- and nothing else is, one verb at a time ------------------------------
 
 test('a stranger cannot PATCH a node in a template', function () {
     $template = publishedTemplate();
     $risk = Risk::factory()->for($template)->create(['title' => 'Untouched']);
-    $stranger = User::factory()->create();
 
-    $this->actingAs($stranger)
-        ->patchJson(route('assessments.nodes.update', [$template, $risk->uuid]), [
-            'title' => 'Edited by a stranger',
-        ])
+    $this->actingAs(User::factory()->create())
+        ->patchJson(route('assessments.nodes.update', [$template, $risk->uuid]), ['title' => 'Edited by a stranger'])
         ->assertForbidden();
 
     expect($risk->fresh()->title)->toBe('Untouched');
@@ -73,9 +110,8 @@ test('a stranger cannot PATCH a node in a template', function () {
 test('a stranger cannot DELETE a node in a template', function () {
     $template = publishedTemplate();
     $risk = Risk::factory()->for($template)->create();
-    $stranger = User::factory()->create();
 
-    $this->actingAs($stranger)
+    $this->actingAs(User::factory()->create())
         ->deleteJson(route('assessments.nodes.destroy', [$template, $risk->uuid]))
         ->assertForbidden();
 
@@ -84,75 +120,20 @@ test('a stranger cannot DELETE a node in a template', function () {
 
 test('a stranger cannot add a node to a template', function () {
     $template = publishedTemplate();
-    $stranger = User::factory()->create();
 
-    $this->actingAs($stranger)
-        ->postJson(route('assessments.nodes.store', $template), [
-            'type' => 'risk',
-            'title' => 'Injected',
-        ])
+    $this->actingAs(User::factory()->create())
+        ->postJson(route('assessments.nodes.store', $template), ['type' => 'risk', 'title' => 'Injected'])
         ->assertForbidden();
 
     expect(Risk::query()->where('assessment_id', $template->id)->count())->toBe(0);
 });
 
-test('a stranger cannot share a template', function () {
-    $template = publishedTemplate();
-    $stranger = User::factory()->create();
-    $accomplice = User::factory()->create();
-
-    $this->actingAs($stranger)
-        ->postJson(route('share.collaborators.store', $template), [
-            'user_id' => $accomplice->id,
-            'role' => 'editor',
-        ])
-        ->assertForbidden();
-
-    expect($template->fresh()->members()->count())->toBe(0);
-});
-
-test('a stranger cannot generate a share link for a template', function () {
-    $template = publishedTemplate();
-    $stranger = User::factory()->create();
-
-    $this->actingAs($stranger)
-        ->postJson(route('share.token.store', $template))
-        ->assertForbidden();
-
-    expect($template->fresh()->share_token)->toBeNull();
-});
-
-test('a stranger cannot delete a template', function () {
-    $template = publishedTemplate();
-    $stranger = User::factory()->create();
-
-    $this->actingAs($stranger)
-        ->delete(route('assessments.destroy', $template))
-        ->assertForbidden();
-
-    expect($template->fresh())->not->toBeNull();
-});
-
-test('a stranger cannot toggle a template flag', function () {
-    $template = publishedTemplate();
-    $stranger = User::factory()->create();
-
-    $this->actingAs($stranger)
-        ->patchJson(route('assessments.template.update', $template), ['is_template' => false])
-        ->assertForbidden();
-
-    expect($template->fresh()->is_template)->toBeTrue();
-});
-
 test('a stranger cannot tag a node in a template', function () {
     $template = publishedTemplate();
     $risk = Risk::factory()->for($template)->create();
-    $stranger = User::factory()->create();
 
-    $this->actingAs($stranger)
-        ->postJson(route('assessments.nodes.tags.store', [$template, $risk->uuid]), [
-            'name' => 'injected',
-        ])
+    $this->actingAs(User::factory()->create())
+        ->postJson(route('assessments.nodes.tags.store', [$template, $risk->uuid]), ['name' => 'injected'])
         ->assertForbidden();
 
     expect($risk->fresh()->tags()->count())->toBe(0);
@@ -161,20 +142,16 @@ test('a stranger cannot tag a node in a template', function () {
 test('a stranger cannot comment on a template', function () {
     $template = publishedTemplate();
     $risk = Risk::factory()->for($template)->create();
-    $stranger = User::factory()->create();
 
-    $this->actingAs($stranger)
-        ->postJson(route('assessments.comments.store', [$template, $risk->uuid]), [
-            'body' => 'Injected comment',
-        ])
+    $this->actingAs(User::factory()->create())
+        ->postJson(route('assessments.comments.store', [$template, $risk->uuid]), ['body' => 'Injected comment'])
         ->assertForbidden();
 });
 
 test('a stranger cannot change a template’s settings', function () {
     $template = publishedTemplate();
-    $stranger = User::factory()->create();
 
-    $this->actingAs($stranger)
+    $this->actingAs(User::factory()->create())
         ->patch(route('assessments.settings.update', $template), [
             'title' => 'Renamed by a stranger',
             'currency' => 'USD',
@@ -184,6 +161,49 @@ test('a stranger cannot change a template’s settings', function () {
 
     expect($template->fresh()->currency)->not->toBe('USD');
 });
+
+test('a stranger cannot delete a template through either route', function () {
+    $template = publishedTemplate();
+    $stranger = User::factory()->create();
+
+    $this->actingAs($stranger)->delete(route('assessments.destroy', $template))->assertStatus(404);
+    $this->actingAs($stranger)->delete(route('templates.destroy', $template))->assertForbidden();
+
+    expect($template->fresh())->not->toBeNull();
+});
+
+test('a stranger cannot publish, or publish again, a template', function () {
+    $template = publishedTemplate();
+
+    $this->actingAs(User::factory()->create())
+        ->postJson(route('assessments.template.publish', $template))
+        ->assertForbidden();
+
+    expect(Assessment::query()->where('is_template', true)->count())->toBe(1);
+});
+
+// --- sharing means nothing for a template, for anyone --------------------
+
+test('no sharing route works on a template, admins included', function (bool $admin) {
+    $template = publishedTemplate();
+    $user = $admin ? User::factory()->admin()->create() : User::factory()->create();
+    $other = User::factory()->create();
+
+    $this->actingAs($user);
+
+    $this->getJson(route('share.index', $template))->assertForbidden();
+    $this->getJson(route('share.users.search', $template).'?q=a')->assertForbidden();
+    $this->postJson(route('share.collaborators.store', $template), ['user_id' => $other->id, 'role' => 'editor'])->assertForbidden();
+    $this->patchJson(route('share.public.update', $template), ['is_public' => true])->assertForbidden();
+    $this->postJson(route('share.token.store', $template))->assertForbidden();
+    $this->deleteJson(route('share.token.destroy', $template))->assertForbidden();
+    $this->postJson(route('share.transfer', $template), ['user_id' => $other->id])->assertForbidden();
+
+    $fresh = $template->fresh();
+    expect($fresh->share_token)->toBeNull()
+        ->and($fresh->owner_user_id)->toBeNull()
+        ->and($fresh->members()->count())->toBe(1);
+})->with([[false], [true]]);
 
 // --- who may publish -----------------------------------------------------
 
@@ -198,21 +218,18 @@ test('an editor cannot publish an assessment as a template', function () {
     ]);
 
     $this->actingAs($editor)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => true])
+        ->postJson(route('assessments.template.publish', $assessment))
         ->assertForbidden();
 
-    expect($assessment->fresh()->is_template)->toBeFalse();
+    expect(Assessment::query()->where('is_template', true)->count())->toBe(0);
 });
 
 /*
- * The narrowing W45 introduced, and the reason it is a test rather than a
- * comment. Through W44 this route was gated on `manage`, which a `manager`
- * collaborator holds — so anyone who could invite a colleague could also
- * publish the assessment to the entire instance. Those are not the same
- * decision, and the second one cannot be taken back from whoever already read
- * it. See AssessmentPolicy::saveAsTemplate.
+ * The narrowing W45 introduced, kept: a `manager` collaborator can invite a
+ * colleague but cannot offer the assessment to the whole instance, which cannot
+ * be taken back from whoever already copied it. See AssessmentPolicy::saveAsTemplate.
  */
-test('a manager collaborator cannot publish an assessment as a template', function () {
+test('a manager collaborator and the owner cannot publish an assessment as a template', function () {
     $assessment = Assessment::factory()->create();
     $manager = User::factory()->create();
     $assessment->members()->attach($manager->id, [
@@ -222,69 +239,32 @@ test('a manager collaborator cannot publish an assessment as a template', functi
         'accepted_at' => now(),
     ]);
 
-    $this->actingAs($manager)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertForbidden();
+    $this->actingAs($manager)->postJson(route('assessments.template.publish', $assessment))->assertForbidden();
+    $this->actingAs($assessment->owner)->postJson(route('assessments.template.publish', $assessment))->assertForbidden();
 
-    expect($assessment->fresh()->is_template)->toBeFalse()
-        ->and($assessment->fresh()->is_public)->toBeFalse();
+    expect(Assessment::query()->where('is_template', true)->count())->toBe(0);
 });
 
 test('an anonymous user cannot publish an assessment as a template', function () {
     $assessment = Assessment::factory()->create();
 
-    $this->patch(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertRedirect(route('login'));
+    $this->post(route('assessments.template.publish', $assessment))->assertRedirect(route('login'));
 
-    expect($assessment->fresh()->is_template)->toBeFalse();
+    expect(Assessment::query()->where('is_template', true)->count())->toBe(0);
 });
 
-test('an admin can publish any assessment as a template', function () {
+test('the former route that flipped a flag on the assessment is gone', function () {
     $assessment = Assessment::factory()->create();
-    $admin = User::factory()->create(['is_admin' => true]);
+    $admin = User::factory()->admin()->create();
 
     $this->actingAs($admin)
-        ->patchJson(route('assessments.template.update', $assessment), ['is_template' => true])
-        ->assertOk();
+        ->patchJson('/assessments/'.$assessment->uuid.'/template', ['is_template' => true])
+        ->assertStatus(405);
+    $this->actingAs($admin)
+        ->getJson('/assessments/'.$assessment->uuid.'/template')
+        ->assertStatus(405);
 
-    expect($assessment->fresh()->is_template)->toBeTrue();
-});
-
-// --- the status endpoint --------------------------------------------------
-
-test('the template status endpoint reports state to a reader but does not offer them the control', function () {
-    $template = publishedTemplate();
-    $stranger = User::factory()->create();
-
-    $this->actingAs($stranger)
-        ->getJson(route('assessments.template.show', $template))
-        ->assertOk()
-        ->assertJson([
-            'is_template' => true,
-            'is_public' => true,
-            'canSaveAsTemplate' => false,
-        ]);
-});
-
-test('the template status endpoint is refused to someone who cannot view the assessment', function () {
-    $assessment = Assessment::factory()->create();
-    $stranger = User::factory()->create();
-
-    $this->actingAs($stranger)
-        ->getJson(route('assessments.template.show', $assessment))
-        ->assertForbidden();
-});
-
-test('the owner is told they may not publish — admins only since 2.5.1', function () {
-    $assessment = Assessment::factory()->create();
-
-    $this->actingAs($assessment->owner)
-        ->getJson(route('assessments.template.show', $assessment))
-        ->assertOk()
-        ->assertJson([
-            'is_template' => false,
-            'canSaveAsTemplate' => false,
-        ]);
+    expect($assessment->fresh()->is_template)->toBeFalse();
 });
 
 // --- tags survive the copy ------------------------------------------------

@@ -25,6 +25,13 @@ use App\Domain\Reporting\ReportOptions;
  * comma-separated file is a parsing accident, and the currency belongs in
  * the header row where it is stated once. `—` for anything missing, never
  * `0` and never `INF`.
+ *
+ * **Text is written as text.** A spreadsheet opening this file reads a cell
+ * starting with `=`, `+`, `-` or `@` — or a tab or carriage return, which
+ * some strip before looking — as a formula. Every text cell, header and
+ * section name starting with one gets a leading `'`, OWASP's CSV-injection
+ * advice (W106). Numbers come from `raw()` and are left alone: a negative
+ * figure is a number, and quoting it would make it text.
  */
 final class AssessmentCsvExporter
 {
@@ -45,11 +52,11 @@ final class AssessmentCsvExporter
                 continue;
             }
 
-            fputcsv($handle, ['Section', ...$section->headers]);
+            fputcsv($handle, array_map($this->text(...), ['Section', ...$section->headers]));
 
             foreach ($section->rows as $row) {
-                fputcsv($handle, [$section->title, ...array_map(
-                    fn (Cell $cell): string => $cell->raw(),
+                fputcsv($handle, [$this->text($section->title), ...array_map(
+                    fn (Cell $cell): string => $cell->kind === Cell::TEXT ? $this->text($cell->raw()) : $cell->raw(),
                     $row,
                 )]);
             }
@@ -65,5 +72,12 @@ final class AssessmentCsvExporter
         fclose($handle);
 
         return $csv === false ? '' : $csv;
+    }
+
+    private function text(string $value): string
+    {
+        // Past leading whitespace and control characters too: some importers
+        // trim them and then evaluate what is left.
+        return preg_match('/^[\x00-\x20]*[=+\-@]|^[\t\r]/', $value) === 1 ? "'".$value : $value;
     }
 }

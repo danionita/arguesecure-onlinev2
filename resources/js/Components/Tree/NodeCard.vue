@@ -106,6 +106,7 @@ import {
     type AttackDefenceLink,
 } from '@/stores/assessmentStore';
 import { computed, inject, nextTick, onMounted, ref } from 'vue';
+import HiddenCountBadge from '../UI/HiddenCountBadge.vue';
 import ValueChip from './ValueChip.vue';
 
 const props = defineProps<{
@@ -114,6 +115,8 @@ const props = defineProps<{
     edge?: AttackDefenceLink;
     expanded: boolean;
     hasChildren: boolean;
+    /** Direct children; the badge shows it while collapsed (W127). */
+    childCount?: number;
     /** What dragging this occurrence means; null for the root. See TreeNode.vue. */
     dragPayload?: DragPayload | null;
 }>();
@@ -708,6 +711,12 @@ const reductionLabel = computed(
                 {{ node.title || `Untitled ${meta.label.toLowerCase()}` }}
             </button>
 
+            <HiddenCountBadge
+                v-if="!expanded && (childCount ?? 0) > 0"
+                :count="childCount ?? 0"
+                @toggle="emit('toggle')"
+            />
+
             <!-- ui.md §6: someone else has this node open. Read-only for
                  everyone else until they close it (2.5.1). -->
             <Tooltip
@@ -905,7 +914,7 @@ const reductionLabel = computed(
                  tab away) — five actions per row, two of them synonyms, made
                  the row harder to read than the numbers on it. -->
             <div
-                class="flex shrink-0 items-center gap-0.5 opacity-40 transition-opacity group-focus-within/card:opacity-100 group-hover/card:opacity-100 has-[:focus-visible]:opacity-100"
+                class="flex shrink-0 items-center gap-0.5 opacity-40 transition-opacity group-hover/card:opacity-100 group-has-focus-visible/card:opacity-100 has-[:focus-visible]:opacity-100"
             >
                 <IconButton
                     v-if="showAddChild && store.abilities.update"

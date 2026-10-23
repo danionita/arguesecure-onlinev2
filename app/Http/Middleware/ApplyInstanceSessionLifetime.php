@@ -28,7 +28,13 @@ class ApplyInstanceSessionLifetime
 {
     public function handle(Request $request, Closure $next): Response
     {
-        config(['session.lifetime' => InstanceSettings::all()['session_lifetime_minutes']]);
+        $settings = InstanceSettings::all();
+
+        config(['session.lifetime' => $settings['session_lifetime_minutes']]);
+        // W116: EnsureTwoFactorEnrolled reads this instead of querying the
+        // settings row a second time on every request (the report page's
+        // query budget counts it).
+        config(['arguesecure.require_two_factor' => $settings['require_two_factor']]);
 
         return $next($request);
     }

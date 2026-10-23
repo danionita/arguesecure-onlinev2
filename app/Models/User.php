@@ -13,6 +13,9 @@ use Illuminate\Notifications\Notifiable;
 /**
  * @property-read AssessmentUser $pivot present only when this instance was
  *  loaded through Assessment::members(); absent otherwise.
+ * @property string|null $two_factor_secret
+ * @property list<string>|null $two_factor_recovery_codes
+ * @property int|null $two_factor_last_step
  */
 class User extends Authenticatable
 {
@@ -40,6 +43,12 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        // W116: the second factor never leaves the server — not in an Inertia
+        // prop (auth.user is this model), not in JSON, not in a log context.
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
+        'two_factor_last_step',
     ];
 
     /**
@@ -56,6 +65,10 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'must_change_password' => 'boolean',
             'last_login_at' => 'datetime',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
+            'two_factor_last_step' => 'integer',
         ];
     }
 
@@ -78,6 +91,22 @@ class User extends Authenticatable
                 $user->must_change_password = false;
             }
         });
+    }
+
+    /**
+     * Whether a second factor is *confirmed* (D77). An enrolment that was
+     * started and never finished leaves no trace in the row, so this cannot
+     * be true for an account that has not proved it holds the secret.
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return $this->two_factor_confirmed_at !== null && $this->two_factor_secret !== null;
+    }
+
+    /** @return HasMany<UserIdentity, $this> */
+    public function identities(): HasMany
+    {
+        return $this->hasMany(UserIdentity::class);
     }
 
     /** @return HasMany<Assessment, $this> */

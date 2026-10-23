@@ -229,6 +229,7 @@ function mountCard(
         edge?: AttackDefenceLink;
         withView?: boolean;
         expanded?: boolean;
+        childCount?: number;
     },
 ) {
     const provide: Record<symbol, unknown> = {
@@ -250,7 +251,8 @@ function mountCard(
             pathKey: occurrencePath(...(options.ancestors ?? []), options.uuid),
             edge: options.edge,
             expanded: options.expanded ?? false,
-            hasChildren: false,
+            hasChildren: (options.childCount ?? 0) > 0,
+            childCount: options.childCount,
         },
         global: { provide },
     });
@@ -1139,5 +1141,74 @@ describe('add from a template (2.5.1)', () => {
         expect(picker.exists()).toBe(true);
         expect(picker.text()).toContain('NIS2');
         expect(picker.text()).toContain('12 attacks');
+    });
+});
+
+/**
+ * W127/D95: a collapsed card says how many children it hides. Asserted as the
+ * exact number and the exact accessible name; presence alone would stay green
+ * if the badge showed on expanded cards or counted the wrong thing.
+ */
+describe('a collapsed card shows how many children it hides (W127)', () => {
+    const ancestors = ['root'];
+
+    it('shows the count while collapsed, named for a screen reader', () => {
+        const store = createAssessmentStore(makeInit());
+        const { wrapper } = mountCard(store, {
+            uuid: 'risk1',
+            ancestors,
+            childCount: 3,
+        });
+        const badge = wrapper.find('[data-testid="hidden-count"]');
+        expect(badge.text()).toBe('3');
+        expect(badge.attributes('aria-label')).toBe(
+            'Expand, 3 hidden children',
+        );
+    });
+
+    it('uses the singular for one child', () => {
+        const store = createAssessmentStore(makeInit());
+        const { wrapper } = mountCard(store, {
+            uuid: 'risk1',
+            ancestors,
+            childCount: 1,
+        });
+        expect(
+            wrapper
+                .find('[data-testid="hidden-count"]')
+                .attributes('aria-label'),
+        ).toBe('Expand, 1 hidden child');
+    });
+
+    it('shows nothing when expanded or when there are no children', () => {
+        const store = createAssessmentStore(makeInit());
+        const expanded = mountCard(store, {
+            uuid: 'risk1',
+            ancestors,
+            childCount: 3,
+            expanded: true,
+        });
+        expect(
+            expanded.wrapper.find('[data-testid="hidden-count"]').exists(),
+        ).toBe(false);
+        const leaf = mountCard(store, {
+            uuid: 'risk1',
+            ancestors,
+            childCount: 0,
+        });
+        expect(leaf.wrapper.find('[data-testid="hidden-count"]').exists()).toBe(
+            false,
+        );
+    });
+
+    it('expands when clicked', async () => {
+        const store = createAssessmentStore(makeInit());
+        const { wrapper } = mountCard(store, {
+            uuid: 'risk1',
+            ancestors,
+            childCount: 2,
+        });
+        await wrapper.find('[data-testid="hidden-count"]').trigger('click');
+        expect(wrapper.emitted('toggle')).toHaveLength(1);
     });
 });

@@ -3,6 +3,7 @@ import Button from '@/Components/UI/Button.vue';
 import Input from '@/Components/UI/Input.vue';
 import Toggle from '@/Components/UI/Toggle.vue';
 import AdminLayout from '@/Pages/Admin/AdminLayout.vue';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
@@ -12,6 +13,8 @@ const form = useForm({
     password_confirmation: '',
     is_admin: false,
 });
+
+useUnsavedChanges(() => form.isDirty);
 
 function submit() {
     form.post(route('admin.users.store'));

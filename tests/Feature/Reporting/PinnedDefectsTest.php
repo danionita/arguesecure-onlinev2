@@ -121,7 +121,7 @@ test('FIXED (W80): a stale figures= URL still renders the one report there is', 
 test('FIXED (W80): the section builder and the exporters take no figures option', function () {
     $assessment = ExportFixture::assessment();
     $report = app(ReportBuilder::class)->build($assessment, ReportOptions::fromQuery([]));
-    $options = ReportOptions::fromQuery([]);
+    $options = ReportOptions::fromQuery(['include_methodology' => '1']);
 
     // The section builder used to receive the choice and ignore it. There is
     // now nothing to ignore.

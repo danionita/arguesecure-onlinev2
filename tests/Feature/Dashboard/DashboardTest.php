@@ -138,3 +138,58 @@ test('the most recently touched assessments come first', function () {
             ->where('myAssessments.0.uuid', $recent->uuid)
         );
 });
+
+// D91 (W125): the tab counts are the real totals, not the six-row excerpt.
+test('the Mine count is every owned assessment, not the excerpt', function () {
+    $user = User::factory()->create();
+    Assessment::factory()->count(8)->create(['owner_user_id' => $user->id]);
+
+    $this->actingAs($user)->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page
+            ->has('myAssessments', 6)
+            ->where('counts.mine', 8)
+        );
+});
+
+test('the Mine count leaves out a trashed assessment, as /assessments does', function () {
+    $user = User::factory()->create();
+    Assessment::factory()->count(6)->create(['owner_user_id' => $user->id]);
+    Assessment::factory()->create(['owner_user_id' => $user->id])->delete();
+
+    $this->actingAs($user)->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page->where('counts.mine', 6));
+
+    $listed = $this->actingAs($user)->get(route('assessments.index'))
+        ->viewData('page')['props']['assessments'];
+
+    expect($listed)->toHaveCount(6);
+});
+
+test('the Shared count is every assessment shared with the user, and only those', function () {
+    $user = User::factory()->create();
+    $owner = User::factory()->create();
+
+    foreach (range(1, 7) as $_) {
+        $shared = Assessment::factory()->create(['owner_user_id' => $owner->id]);
+        $shared->members()->attach($user->id, [
+            'role' => 'viewer',
+            'invited_by' => $owner->id,
+            'invited_at' => now(),
+            'accepted_at' => now(),
+        ]);
+    }
+
+    // Public, but never shared with this user: reachable by link, not listed.
+    Assessment::factory()->create(['owner_user_id' => $owner->id, 'is_public' => true]);
+
+    $this->actingAs($user)->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page
+            ->has('sharedWithMe', 6)
+            ->where('counts.shared', 7)
+        );
+
+    $listed = $this->actingAs($user)->get(route('assessments.shared'))
+        ->viewData('page')['props']['assessments'];
+
+    expect($listed)->toHaveCount(7);
+});

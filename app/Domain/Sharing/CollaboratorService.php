@@ -2,11 +2,14 @@
 
 namespace App\Domain\Sharing;
 
+use App\Domain\Audit\SecurityEvent;
+use App\Domain\Audit\SecurityLog;
 use App\Models\Assessment;
 use App\Models\AssessmentUser;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Adds, re-roles and removes rows in `assessment_user` (schema.md §3.7).
@@ -70,6 +73,11 @@ class CollaboratorService
             'accepted_at' => Carbon::now(),
         ]);
 
+        SecurityLog::record(SecurityEvent::CollaboratorAdded, $invitedBy, SecurityLog::assessment($assessment), [
+            'user' => SecurityLog::user($target),
+            'role' => $role,
+        ]);
+
         return AssessmentUser::query()
             ->where('assessment_id', $assessment->id)
             ->where('user_id', $target->id)
@@ -87,8 +95,15 @@ class CollaboratorService
         self::assertBelongsTo($assessment, $collaborator);
         self::assertNotOwner($assessment, $collaborator);
 
+        $previous = $collaborator->role;
         $collaborator->role = $role;
         $collaborator->save();
+
+        SecurityLog::record(SecurityEvent::CollaboratorRoleChanged, Auth::user(), SecurityLog::assessment($assessment), [
+            'user_id' => $collaborator->user_id,
+            'from' => $previous,
+            'to' => $role,
+        ]);
     }
 
     /** @throws \InvalidArgumentException if $collaborator's user is the assessment's owner. */
@@ -98,6 +113,11 @@ class CollaboratorService
         self::assertNotOwner($assessment, $collaborator);
 
         $collaborator->delete();
+
+        SecurityLog::record(SecurityEvent::CollaboratorRemoved, Auth::user(), SecurityLog::assessment($assessment), [
+            'user_id' => $collaborator->user_id,
+            'role' => $collaborator->role,
+        ]);
     }
 
     private static function assertBelongsTo(Assessment $assessment, AssessmentUser $collaborator): void

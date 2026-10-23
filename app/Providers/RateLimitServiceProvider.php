@@ -58,8 +58,24 @@ class RateLimitServiceProvider extends ServiceProvider
         // "Search: 60/min per user."
         RateLimiter::for('search', fn (Request $request) => Limit::perMinute(60)->by($this->identify($request)));
 
-        // "Report generation: 10/min per user."
+        // "Report generation: 10/min per user." The five exports: each builds
+        // a file from the whole assessment.
         RateLimiter::for('reports', fn (Request $request) => Limit::perMinute(10)->by($this->identify($request)));
+
+        // W128, D99: downloading the stored security event log. Admin only;
+        // 6/min per account bounds how often 50,000 rows are read.
+        RateLimiter::for('security-log-export', fn (Request $request) => Limit::perMinute(6)->by($this->identify($request)));
+
+        // "Report views: 60/min per user, 10/min per address for a guest"
+        // (W110, D70). The report page, which every option toggle
+        // re-requests. It shared `reports` until the owner found the eleventh
+        // toggle in a minute answered 429. Assembling the page costs about
+        // what an export does, so the relief goes only to signed-in users,
+        // who are accountable for their requests; a public or share-link
+        // reader keeps the 10/min the page always had.
+        RateLimiter::for('report-views', fn (Request $request) => $request->user() === null
+            ? Limit::perMinute(10)->by($request->ip())
+            : Limit::perMinute(60)->by($this->identify($request)));
 
         // W51 — the assistant: 6/min per user.
         //
@@ -80,6 +96,21 @@ class RateLimitServiceProvider extends ServiceProvider
         // "First-run setup: 5/min per IP." Always a guest, by definition —
         // it is the screen that exists because no account does yet.
         RateLimiter::for('setup', fn (Request $request) => Limit::perMinute(5)->by($request->ip()));
+
+        // W117: "SSO redirect and callback: 30/min per IP." One sign-in is two
+        // requests (redirect, callback), so this is about 15 sign-ins a minute
+        // from one address: an office behind one NAT at nine o'clock. 10 was
+        // found, driving a real Keycloak, to allow only five.
+        RateLimiter::for('oidc', fn (Request $request) => Limit::perMinute(30)->by($request->ip()));
+
+        // W133, D107: "Check provider" makes the server fetch an address an
+        // admin typed. Per signed-in user, so it cannot be used to hammer a host.
+        RateLimiter::for('oidc-check', fn (Request $request) => Limit::perMinute(6)->by($this->identify($request)));
+
+        // W116: a coarse per-IP ceiling on the sign-in challenge. The real
+        // limit (5 failed codes/min per pending account and per IP) is counted
+        // in TwoFactorChallengeController; this only bounds raw request volume.
+        RateLimiter::for('two-factor', fn (Request $request) => Limit::perMinute(30)->by($request->ip()));
 
         // "Share-token resolution /s/{token}: 10/min per IP — this is the
         // brute-force surface for tokens." Keyed on IP rather than user

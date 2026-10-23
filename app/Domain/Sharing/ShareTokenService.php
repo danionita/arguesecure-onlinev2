@@ -2,8 +2,12 @@
 
 namespace App\Domain\Sharing;
 
+use App\Domain\Audit\SecurityEvent;
+use App\Domain\Audit\SecurityLog;
 use App\Models\Assessment;
+use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -45,6 +49,8 @@ class ShareTokenService
         $assessment->share_token_created_at = Carbon::now();
         $assessment->save();
 
+        SecurityLog::record(SecurityEvent::ShareLinkCreated, self::actor(), SecurityLog::assessment($assessment));
+
         return $token;
     }
 
@@ -60,10 +66,14 @@ class ShareTokenService
         $assessment->share_token = null;
         $assessment->share_token_created_at = null;
         $assessment->save();
+
+        SecurityLog::record(SecurityEvent::ShareLinkRevoked, self::actor(), SecurityLog::assessment($assessment));
     }
 
     /**
-     * Resolves a presented token to its assessment. Looked up by exact
+     * Resolves a presented token to its assessment. This is the redemption
+     * lookup (ShareController::resolveToken), so it is where the attempt is
+     * logged; it is not a general "is this token valid" check. Looked up by exact
      * column match — the 32-byte CSPRNG token space makes SQL-level
      * timing variance an immaterial side channel compared to the token's
      * guess-resistance, and comparing every row in application code would
@@ -71,11 +81,26 @@ class ShareTokenService
      */
     public static function resolve(string $token): ?Assessment
     {
-        if (strlen($token) !== 43) {
-            return null;
+        $assessment = strlen($token) === 43
+            ? Assessment::query()->where('share_token', $token)->first()
+            : null;
+
+        // A refused link is logged as a warning: a run of them from one
+        // address is someone guessing. Neither line carries the token.
+        if ($assessment === null) {
+            SecurityLog::record(SecurityEvent::ShareLinkRejected, self::actor());
+        } else {
+            SecurityLog::record(SecurityEvent::ShareLinkRedeemed, self::actor(), SecurityLog::assessment($assessment));
         }
 
-        return Assessment::query()->where('share_token', $token)->first();
+        return $assessment;
+    }
+
+    private static function actor(): ?User
+    {
+        $user = Auth::user();
+
+        return $user instanceof User ? $user : null;
     }
 
     /** 32 random bytes, base64url, no padding — 43 characters (schema.md §3.3). */

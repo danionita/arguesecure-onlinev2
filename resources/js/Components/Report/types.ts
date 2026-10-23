@@ -28,6 +28,10 @@ export interface ReportOptions {
     includeShelved: boolean;
     includeComments: boolean;
     includeMethodology: boolean;
+    /** The model-quality warnings appendix (W136). Default on, and on for `download`. */
+    includeWarnings: boolean;
+    /** Section ids left out of the report (W139); see `reportSections.ts`. Default none, and `download` clears it. */
+    omittedSections: string[];
     /** Names on nodes in the full-assessment section (W46). Default off, and `download` does not turn it on. */
     showAssignees: boolean;
     /** Requested through the Download button: everything expanded, both states, no options panel. */
@@ -309,6 +313,8 @@ export interface ReportAppendices {
     references: ReferenceRow[];
     comments: CommentRow[];
     warnings: WarningRow[];
+    /** How many warnings a report with `includeWarnings` off left out (W136); 0 otherwise. */
+    warningsOmitted: number;
 }
 
 export interface ReportData {

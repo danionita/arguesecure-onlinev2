@@ -42,7 +42,6 @@ export interface AssessmentSummary {
     title: string;
     description: string | null;
     is_public: boolean;
-    is_template: boolean;
     is_owner: boolean;
     can_manage: boolean;
     can_delete: boolean;
@@ -57,11 +56,30 @@ const props = defineProps<{
     emptyIcon: IconName;
     emptyTitle: string;
     emptyDescription: string;
+    /**
+     * How long a deleted assessment stays restorable (W113). Optional: the
+     * shared page does not carry it, and says the same without the number.
+     */
+    retentionDays?: number;
 }>();
 
 const filter = ref('');
 const pendingDelete = ref<AssessmentSummary | null>(null);
 const duplicating = ref<string | null>(null);
+
+/**
+ * Deleting is soft (W113), so the confirmation says where the assessment
+ * goes and for how long, rather than implying it is gone.
+ */
+const deleteMessage = computed(() => {
+    const title = `“${pendingDelete.value?.title}”`;
+    const kept =
+        props.retentionDays === undefined
+            ? 'until it is erased'
+            : `for ${props.retentionDays} ${props.retentionDays === 1 ? 'day' : 'days'}`;
+
+    return `${title} moves to Deleted on My assessments, where it can be restored ${kept}.`;
+});
 
 const visible = computed(() => {
     const term = filter.value.trim().toLowerCase();
@@ -103,14 +121,16 @@ function duplicate(assessment: AssessmentSummary) {
 /**
  * The same defaults the editor's action bar exports with when no report
  * options panel is on screen: the current baseline, no shelved defences,
- * methodology included.
+ * no optional appendix.
  */
 const exportOptions: ReportOptions = {
     baseline: 'current',
     includeShelved: false,
     includeComments: false,
-    includeMethodology: true,
+    includeMethodology: false,
+    includeWarnings: false,
     showAssignees: false,
+    omittedSections: [],
     download: false,
 };
 </script>
@@ -171,9 +191,6 @@ const exportOptions: ReportOptions = {
                     <div class="mt-2 flex flex-wrap items-center gap-2">
                         <Chip v-if="assessment.is_public" tone="todo">
                             Public
-                        </Chip>
-                        <Chip v-if="assessment.is_template" tone="neutral">
-                            Template
                         </Chip>
                         <TagChip
                             v-for="name in assessment.tags"
@@ -244,7 +261,7 @@ const exportOptions: ReportOptions = {
         <ConfirmDialog
             :show="pendingDelete !== null"
             title="Delete this assessment?"
-            :message="`“${pendingDelete?.title}” and everything in it will be removed from your list.`"
+            :message="deleteMessage"
             confirm-label="Delete"
             danger
             @confirm="confirmDelete"

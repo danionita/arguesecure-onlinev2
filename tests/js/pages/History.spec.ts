@@ -29,6 +29,7 @@ vi.mock('@inertiajs/vue3', () => ({
         reset: vi.fn(),
     }),
     router: {
+        on: () => () => {},
         get: (...args: unknown[]) => get(...args),
         post: vi.fn(),
     },

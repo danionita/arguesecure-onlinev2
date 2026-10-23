@@ -45,6 +45,7 @@ function render(over: Record<string, unknown> = {}) {
             mentions: [],
             myAssessments: [],
             sharedWithMe: [],
+            counts: { mine: 0, shared: 0 },
             ...over,
         },
     });
@@ -178,6 +179,25 @@ describe('counts on the tab labels', () => {
         // Three rows, one of them still wanting an answer.
         expect(tab.text()).toContain('1');
         expect(tab.text()).toContain('unresolved');
+    });
+
+    it('counts every owned assessment on Mine, not the six-row excerpt (D91)', () => {
+        // The excerpt is six rows; the total is eight. The tab and the section
+        // header must both say eight, or a count reads as the page's limit.
+        const wrapper = render({
+            myAssessments: Array.from({ length: 6 }, (_, i) => ({
+                ...assessment,
+                uuid: `a${i}`,
+            })),
+            counts: { mine: 8, shared: 0 },
+        });
+
+        const tab = wrapper
+            .findAll('[role="tab"]')
+            .find((t) => t.text().startsWith('Mine'))!;
+
+        expect(tab.text()).toContain('8');
+        expect(tab.text()).not.toContain('6');
     });
 
     it('draws no count at all when there is nothing to count', () => {

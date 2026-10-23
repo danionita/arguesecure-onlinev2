@@ -108,11 +108,12 @@ A template is reference material for the whole instance: every signed-in account
 
 | Ability | Who | What it allows |
 |---|---|---|
-| `saveAsTemplate` | admin only | set or clear `is_template` (the Share dialog's template panel) |
+| `saveAsTemplate` | admin only | publish an assessment as a template (the Share dialog's template panel): copies it into a new, ownerless template and writes nothing to the original (W141) |
 | `useAsTemplate` | any signed-in account, on an assessment with `is_template = 1` | list it (`templates.index`, `templates.options`), clone it (`templates.use`), read one type of its nodes (`templates.nodes`) |
 
+- **A template has no owner and only admins reach it (W141).** `view`, `comment`, `update`, `manage` and `delete` on a template are admin-only whatever `is_public` or a stray collaborator row says; `transferOwnership` is false for everyone, and `forceDelete` (erasing one that reached the trash) is admin-only. Every sharing route (`share.*`) answers **403** for a template, an admin included (`RejectTemplate`), so no collaborator, public flag, share link or ownership change can attach to one. `owner_user_id` is `NULL` exactly when `is_template = 1`, enforced by a database CHECK. Admins create, edit and delete templates on the Templates page; deletion is permanent.
 - **Publishing is an admin's decision.** Through 2.5 the owner could publish too. It is narrower than `manage` on purpose: every other `manage` action decides who inside an assessment can do what, and this one offers the assessment's contents to every account, which cannot be withdrawn from whoever has already copied it.
-- **Publishing moves `is_template` and nothing else.** Through 2.5 it also set `is_public`, because using a template needed `view`; `useAsTemplate` replaced that, so a template no longer has to be readable by everyone to be usable by everyone, and the instance's `public_assessments_allowed` setting no longer stands between an admin and the library. A template is opened in the editor only by those `view` already admits.
+- **Publishing copies, and writes nothing to the original.** Through 2.6 it flipped `is_template` on the assessment itself (and through 2.5 also set `is_public`); since W141 the template is a separate row, so a template never has to be readable by everyone to be usable by everyone, and the instance's `public_assessments_allowed` setting does not stand between an admin and the library. There is no unpublish: a published copy is removed by deleting it.
 - **`useAsTemplate` reads, it never writes.** Being a template adds no write ability to anyone. Every route behind it answers **404** for an assessment that is not a template, so none of them can be used to read the titles of an arbitrary assessment by uuid.
 - **`templates.nodes` returns titles, descriptions, the transfer flag and parent titles — never values.** A template's impacts and likelihoods describe its example system; copying them into someone else's assessment would present them as that assessment's own judgement (`app/Domain/Templates/TemplateNodes.php`). The copy itself goes through the ordinary `nodes.store` write, under the *target* assessment's `update`.
 - **Cloning is a copy, never a link**, and the copy is not a template: `is_template` and `is_public` are both false on it, so starting from a template never publishes the private work that follows.
@@ -159,11 +160,13 @@ An ambiguous first name resolves to nobody. Guessing between two Danas sends the
 
 ## 4. Authentication
 
-- **No public registration.** Login only, throttled to 5 attempts per minute per IP and per email, with a generic failure message that does not reveal whether the account exists.
+- **No public registration.** There is no registration form or route. Login is throttled to 5 attempts per minute per IP and per email, with a generic failure message that does not reveal whether the account exists. The one way an account appears without an admin is single sign-on (below), and only for the operator's own email domains.
+- **Single sign-on with OpenID Connect (W117, D74-D76, D79).** Authorization-code flow with PKCE (S256), `response_mode=query`, one provider per instance, configured on the admin Authentication tab or in the environment (`OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `OIDC_BUTTON_LABEL`, `OIDC_ALLOWED_DOMAINS`, `OIDC_TRUST_EMAIL`). **Stored settings (W133, D106):** the tab writes the same six fields to `instance_settings`; a field set in the environment wins over a stored one, field by field. The client secret is stored with the `encrypted` cast (so `APP_KEY` guards it, as it does the two-factor secrets), is in the model's `$hidden`, and is write-only in the UI: no page, response or log line carries it, and a save is logged as the names of the fields changed, never values. Rotating `APP_KEY` makes it unreadable and the admin enters it again. Anyone with admin rights can point sign-in at another provider, as an admin could already create admins; the security event is the record. *Check provider* fetches the saved issuer's discovery document (admin only, 6/min per user, no credentials sent). Unset issuer: no link, and `/auth/oidc/redirect` and `/auth/oidc/callback` answer 404. Both are GETs (CSP `form-action 'self'` would block a form redirecting to the provider; the callback is a top-level navigation that the `same_site=lax` cookie accompanies). `state`, `nonce` and the verifier live in the session and are good for one callback and ten minutes. The ID token is checked for signature (algorithm from an allow-list of RS/PS/ES, never `none` or HMAC; keys from the discovery document's `jwks_uri`, cached, refetched once on failure), `iss`, `aud`, `azp`, `exp`, `iat` and `nonce`. Discovery must be https (or localhost) and its `issuer` must equal the configured one. Who signs in: the account already linked to `(iss, sub)`; else the active account with the token's email, linked once, if the email is verified (or `OIDC_TRUST_EMAIL`) and the account has no identity from this issuer; else, if the email's domain is exactly in `OIDC_ALLOWED_DOMAINS`, a new non-admin account with a random password nobody is shown. Anything else, and every failure, shows the same message as a wrong password. After SSO the session is marked, and the instance's *require two-factor* rule does not apply (the provider's own factor is the organisation's to enforce). *Sign in with SSO only* (off by default; effective only with a provider configured) refuses password sign-in for non-admins; admins keep it as the way in when the provider is down. In that mode a non-admin's email change needs a provider sign-in (`prompt=login`, `max_age=0`) within the last five minutes instead of the current password. An admin can unlink an identity, which ends the account's sessions. Not built: SAML, SCIM, group mapping, single logout, several providers.
 - **First-run setup.** When `users` is empty the app serves a one-time setup screen creating the first admin. Guard it with a check that the table is still empty at the moment of submission, inside a transaction. **Never seed a credential**, in any environment, including tests and fixtures.
-- **Passwords** — argon2id via Laravel's hasher, `users.password varchar(255)` so the algorithm can change later. Minimum 12 characters, checked against Laravel's compromised-password rule (`Password::min(12)->uncompromised()`), which uses the k-anonymity HIBP range API. **If outbound network access is unavailable, degrade to length and complexity only — never block login.**
+- **Passwords** — argon2id via Laravel's hasher, `users.password varchar(255)` so the algorithm can change later. Minimum 12 characters, checked against Laravel's compromised-password rule (`Password::min(12)->uncompromised()`), which uses the k-anonymity HIBP range API. **If outbound network access is unavailable, degrade to length and complexity only — never block login.** The lookup is limited to 3 seconds (D84): a slow or silent service means the password is accepted on length alone, not that setup or a password change waits.
 - **Changing a password requires the current one.** Changing an email requires the current password. Both invalidate other sessions.
-- **Admin password reset** sets a temporary password shown once on screen and forces a change on next login. No email is sent; there is no SMTP dependency.
+- **Two-factor authentication (W116, D77, D78).** An account can add a TOTP code (RFC 6238, 30-second steps, one step of drift either side) from an authenticator app, with ten single-use recovery codes. With it on, a correct password does **not** sign in: it parks the account id and the *remember me* choice in the session and shows the challenge, which expires after five minutes; the session id changes when the code is accepted, and the remember-me cookie is issued only then. Failed codes are limited to 5/min per pending account and per IP (§9). A code is accepted for a time step greater than the last one accepted, with the step claimed by a conditional `UPDATE`, so a code works once even under concurrent requests. The secret and the recovery codes are encrypted at rest with the app key (so `APP_KEY` guards them), recovery codes are kept only as keyed hashes, and all four columns are in `User::$hidden`, and no Inertia prop, JSON response or log context carries them. An enrolment stores nothing until a code from the new secret is confirmed. Starting it, new recovery codes and turning it off take the current password (turning off also a code), and turning it off or an admin removing it ends the account's other sessions. Per account; the instance setting *Require two-factor authentication for password sign-in* (default **off**) sends an account without it to enrolment after its password. No SMTP, SMS or outside service is involved; passkeys are not built.
+- **Admin password reset** sets a temporary password shown once on screen and forces a change on next login. So does creating a user without typing a password, and every account made by CSV import (W115). The password reaches the page as Inertia flash data, which is delivered with one response and kept out of browser history, so pressing Back does not show it again. No email is sent; there is no SMTP dependency.
 - **Session invalidation** on password change, role change, deactivation and deletion.
 - **`is_active` is enforced on every request, not only at login (W8).** Session
   invalidation alone is reactive: it depends on the deactivating code path
@@ -183,7 +186,7 @@ An ambiguous first name resolves to nobody. Guessing between two Danas sends the
 Explicitly set — defect #6 was an *omission*, so state every value rather than relying on a default:
 
 ```php
-'driver'         => 'redis',
+'driver'         => 'database', // fixed, not read from SESSION_DRIVER (D71)
 'lifetime'       => 480,        // minutes, configurable
 'expire_on_close'=> false,
 'encrypt'        => true,
@@ -196,6 +199,8 @@ Explicitly set — defect #6 was an *omission*, so state every value rather than
 `SESSION_SECURE_COOKIE=true` in every deployed environment. Behind the SWAG reverse proxy this depends on `TrustProxies` being configured correctly — see [deployment.md §4](deployment.md#4-reverse-proxy).
 
 Regenerate the session id on login and on privilege change.
+
+**Sessions live in the database's `sessions` table (D71).** Every invalidation in §4, and the profile page's list of signed-in devices with its revoke button, works by deleting that user's rows from it (`SessionRegistry`). Under any other driver the table stays empty and all of them silently do nothing, which is what 2.0–2.6 shipped: the example environment chose Redis. So `config/session.php` does not read `SESSION_DRIVER`; an install that still sets it is ignored, and upgrading to 2.7 signs everyone out once. The suite runs on the same driver, and `tests/Feature/Auth/SessionRevocationTest.php` signs in on two devices and checks each revocation path signs the other one out.
 
 ---
 
@@ -253,10 +258,14 @@ The single most important architectural fix. Defect #2 existed because the relay
 |---|---|
 | Login | 5/min per IP **and** per email |
 | First-run setup | 5/min per IP |
+| SSO redirect and callback | 30/min per IP (a sign-in is two requests) |
+| Two-factor challenge (failed codes) | 5/min per pending account **and** per IP |
 | Password change / email change | 5/min per user |
 | Node and link mutations | 120/min per user |
-| Report generation | 10/min per user |
+| Report generation (the five exports) | 10/min per user |
+| Report views (the report page, re-requested by every option toggle) | 60/min per user; 10/min per IP without an account |
 | Search | 60/min per user |
+| Security log download (admin) | 6/min per user |
 | Share-token resolution `/s/{token}` | 10/min per IP — this is the brute-force surface for tokens |
 | Assistant generation | 6/min per user, **and one at a time** |
 | Everything else authenticated | 300/min per user |
@@ -273,7 +282,7 @@ The assistant's generating routes also sit behind `auth`, while the help pages t
 
 - **No paid libraries or services**, per the project constraint.
 - `composer.lock` and `package-lock.json` are both committed. The legacy repo had no `package-lock.json` at all, so builds were unreproducible.
-- CI runs `composer audit` and `npm audit --omit=dev`; a high or critical advisory fails the build.
+- CI runs `composer audit` and `tools/dev/audit-gate.mjs` over the whole npm lockfile (not `--omit=dev`, which audits nothing here); a high or critical advisory fails the build unless `tools/dev/audit-allowlist.json` names it with a reason.
 - Enable Dependabot for composer, npm and GitHub Actions.
 - Pin GitHub Actions to commit SHAs, not tags.
 - Docker base images pinned to a specific digest, refreshed deliberately.
@@ -286,6 +295,42 @@ The assistant's generating routes also sit behind `auth`, while the help pages t
 - `APP_DEBUG=false` in every deployed environment. Debugbar, if used at all, is `require-dev` only.
 - Log authentication events, authorization failures, admin actions, share-token creation and revocation, and role changes — with actor, target, IP and timestamp.
 - **Never log** passwords, tokens, session ids, or full request bodies of auth endpoints.
+
+### 11.1 The security event log (W111)
+
+Lines go to the `security` channel (`config/logging.php`): stderr, one JSON object per line, level `info` or above whatever `LOG_LEVEL` is, so `docker compose logs` and a log shipper carry it and a SIEM parses it without a grammar. `message` is the event name; `datetime` is the timestamp; `context` always has the same five keys:
+
+| Key | Content |
+|---|---|
+| `event` | The name from the table below. Never renamed once released; new ones are added. |
+| `actor` | `{id, email}` of the signed-in account that did it, or `null` (a guest, a failed sign-in, first-run setup). |
+| `target` | What it was done to: `{type: "user", id, email}` or `{type: "assessment", id: <uuid>}`, or `null`. For a sign-in that named no account, `id` is `null` and `email` is what was typed, lower-cased. |
+| `ip` | The client address as Laravel resolves it (`TrustProxies`). |
+| `details` | Event-specific, small, never a secret. |
+
+Refusals are warnings (`auth.login_failed`, `auth.lockout`, `authz.denied`, `share.link_rejected`, `mfa.challenge_failed`, `sso.login_failed`); the rest are info.
+
+| Event | When |
+|---|---|
+| `auth.login`, `auth.login_failed`, `auth.lockout`, `auth.logout` | A sign-in, a refused one (`details.reason`: `credentials` or `inactive`), the sixth attempt inside the throttle, a sign-out. |
+| `auth.password_changed` | An account changed its own password. |
+| `account.created`, `account.updated`, `account.admin_granted`, `account.admin_revoked`, `account.deactivated`, `account.reactivated`, `account.password_reset`, `account.deleted` | An account changed by an admin, the CSV import or first-run setup. `account.updated` lists the fields (`name`, `email`) and, for an email, the previous one. |
+| `admin.settings_updated` | Instance settings, the assistant switches, the default scales or currency; `details.settings` has the values. |
+| `admin.log_downloaded` | The security log was downloaded from admin; `details` has `format`, the `from`, `to` and `event` filters, `rows` and `truncated`. Written before the first byte is sent. |
+| `authz.denied` | Any response with status 403; `details` has the route name, method and path. |
+| `share.link_created`, `share.link_revoked`, `share.link_redeemed`, `share.link_rejected` | A share token generated, revoked, presented and accepted, presented and refused. |
+| `template.published`, `template.created`, `template.deleted` | The template library changed (W141): publishing offers a copy of an assessment to every account, and deleting one is final. Target is the template; publishing also names its `source` assessment. |
+| `share.public_changed`, `share.collaborator_added`, `share.collaborator_role_changed`, `share.collaborator_removed`, `share.ownership_transferred` | Who can open an assessment changed. |
+| `assessment.exported` | One of the five exports answered 200; `details.format` and `details.access` (`account`, `share_link` or `public`). |
+| `mfa.*`, `sso.*` | Recorded for W116 and W117, which dispatch `SecurityEventOccurred`; the names are in `SecurityEvent`. |
+
+**Where lines come from.** Most are recorded by `SecurityEventSubscriber` from events the framework and the models already fire (auth events, `User` and `Assessment` model events, the request lifecycle), so every path that changes an account is covered, not only the admin screens. The share and settings call sites write one line each through `SecurityLog`. A package that is not W111 reports an event with `SecurityEventOccurred::dispatch(...)` and writes no line of its own.
+
+**Redaction.** `RedactSensitiveData` is attached to every channel by a `tap`: a context or extra key naming a secret (`password`, `*_token`, `secret`, `session`, `cookie`, `authorization`, `recovery_code(s)`, `otp`, `api_key`, with or without `_confirmation`) has its value replaced with `[redacted]` at any depth, and a `/s/<token>` path is masked in the message and in every string value. The share token is therefore never in a line, and the share endpoints never pass it as context either.
+
+**Stored copy and download (W128).** Each record is also inserted into `security_events` by a handler on the `security` channel, after redaction, so the stored row never holds what stderr would not; a failed insert is reported on stderr and never fails the request. Rows are kept `SECURITY_LOG_RETENTION_DAYS` days (default 90, at least 1) and removed daily by `arguesecure:purge-security-events`. Admin → **Security log** shows the last 50 matching rows and downloads them as CSV or JSON (`GET /admin/security-log/download`), filtered by UTC date range and event or event family. Admin only, `security-log-export` limiter (6/min per account), at most 50,000 rows per download (`X-Rows-Truncated: 1` and `"truncated": true` when cut), streamed. A CSV cell starting with `=`, `+`, `-`, `@`, tab or CR is prefixed with `'`. The stored table is not tamper-evident; the stderr stream, shipped off the host, is the copy to rely on. The application log is not offered from the interface (it exists only on stderr since W112).
+
+The access log of the image's nginx masks the same path (deployment.md, Logs).
 - Generic error pages. No stack trace, no framework version, no SQL ever reaches the browser.
 - Redact `share_token` and `password` from all log context via a Monolog processor.
 
@@ -295,7 +340,7 @@ The assistant's generating routes also sit behind `auth`, while the help pages t
 
 - The tool holds risk assessments about client systems — commercially sensitive, occasionally covered by NDA. Treat assessment content as confidential by default; that is why `is_public` defaults to `0` and is read-only.
 - Deleting a user offers **transfer of owned assessments** before destruction, and states exactly what will be deleted.
-- Soft deletes plus a scheduled purge (default 30 days), documented so users know retention is finite.
+- Soft deletes plus a scheduled purge (default 30 days), documented so users know retention is finite. **Built in W113**: deleting an assessment is soft; *My assessments → Deleted* lists what the caller could restore. **Restore** is the `delete` ability (owner, manager, admin) and **Erase permanently** is `forceDelete` (owner and admin, §3.1), both by route (`assessments.restore`, `assessments.erase`), both answering 404 for an assessment that is not deleted, so erasing always takes two deliberate steps. `arguesecure:purge-deleted` runs daily in the `scheduler` container and erases what was deleted more than `TRASH_RETENTION_DAYS` (`arguesecure.trash_retention_days`, at least 1) days ago. Erasing (`App\Domain\Retention\AssessmentEraser`) removes every row that hangs off the assessment — `tests/Feature/Retention/EraseTest.php` walks the schema's foreign keys to prove it — and its notifications, which carry its title outside every foreign key. Database dumps, the Redis calculation cache (six-hour TTL, figures only) and short-lived Redis keys (edit locks, recalculation debounce) are outside its reach, and the README says so.
 - Backups (`storage/backups`) are excluded from git and must be excluded from any public bind mount.
 
 ---
@@ -305,7 +350,7 @@ The assistant's generating routes also sit behind `auth`, while the help pages t
 - Every item in §3.3 has a passing test.
 - CSP is active with nonces and there are **zero** console violations on every page, verified in the E2E run.
 - A scan of the built assets finds no external host reference.
-- `composer audit` and `npm audit --omit=dev` are clean at high and critical.
+- `composer audit` and the npm audit gate are clean at high and critical (accepted findings are listed with reasons in `tools/dev/audit-allowlist.json`).
 - No secret, key, password or token literal exists anywhere in the working tree — assert with a `gitleaks` (or equivalent) step in CI, not by eye.
 - Session cookies carry `HttpOnly`, `Secure` and `SameSite=Lax`, verified by an integration test asserting the `Set-Cookie` header.
 - A token-only session receives 403 on every mutating endpoint.

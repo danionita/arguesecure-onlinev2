@@ -58,10 +58,16 @@
 import ExportMenu from '@/Components/Report/ExportMenu.vue';
 import type { ReportOptions } from '@/Components/Report/types';
 import Button from '@/Components/UI/Button.vue';
-import { computed } from 'vue';
+import Dropdown from '@/Components/UI/Dropdown.vue';
+import { persistEditorViewMode } from '@/composables/useEditorViewMode';
+import { withPrintToken } from '@/composables/usePrintOnArrival';
+import { router } from '@inertiajs/vue3';
+import { computed, nextTick } from 'vue';
 
 export interface AssessmentActionsAssessment {
     uuid: string;
+    /** W141: a template has no owner to share it from, so it has no Share. */
+    is_template?: boolean;
 }
 
 /**
@@ -83,10 +89,19 @@ const props = withDefaults(
         abilities: AssessmentActionsAbilities;
         viewMode?: AssessmentActionsView;
         exportOptions?: ReportOptions;
+        /**
+         * The editor's own client-side switch. Present only where Chart and
+         * List are one click apart without navigation; absent on the report,
+         * which has to visit the editor to print them.
+         */
+        setViewMode?: ((mode: 'chart' | 'list') => void) | null;
+        userId?: string | number | null;
     }>(),
     {
         viewMode: 'chart',
         exportOptions: undefined,
+        setViewMode: null,
+        userId: null,
     },
 );
 
@@ -110,27 +125,79 @@ const exportOptions = computed<ReportOptions>(
             baseline: 'current',
             includeShelved: false,
             includeComments: false,
-            includeMethodology: true,
+            includeMethodology: false,
+            includeWarnings: false,
             showAssignees: false,
+            omittedSections: [],
             download: false,
         },
 );
 
-const printLabel = computed(() => {
-    if (props.viewMode === 'report') return 'Print report';
-    if (props.viewMode === 'list') return 'Print list';
-    return 'Print chart';
+/**
+ * Current view first: the common case stays Print, then Enter (D109).
+ */
+const printChoices = computed(() => {
+    const all: { value: AssessmentActionsView; label: string }[] = [
+        { value: 'chart', label: 'Chart' },
+        { value: 'list', label: 'List' },
+        { value: 'report', label: 'Report' },
+    ];
+
+    return [
+        ...all.filter((c) => c.value === props.viewMode),
+        ...all.filter((c) => c.value !== props.viewMode),
+    ];
 });
 
-/**
- * `emit` first, `window.print()` second: a caller's own listener (the
- * report's one-time PDF hint) runs before the print dialog steals focus,
- * which is the order a hint has to run in to be seen at all.
- */
-function onPrint() {
-    emit('print');
+function printNow() {
     if (typeof window !== 'undefined') window.print();
 }
+
+/**
+ * Print is a CSS pipeline per view (D42), so the chosen view has to be on
+ * screen before the dialog opens (D110). The current view prints in place; the
+ * other editor view is switched to client-side and printed after it has
+ * rendered; anything else is visited with a one-shot `?print=` token that the
+ * target prints on arrival (`usePrintOnArrival`).
+ *
+ * `print` is emitted for the report so its one-time "Save as PDF" hint can
+ * show before the dialog steals focus.
+ */
+async function printView(target: AssessmentActionsView) {
+    if (target === 'report') emit('print');
+
+    if (target === props.viewMode) {
+        printNow();
+        return;
+    }
+
+    if (target !== 'report' && props.setViewMode) {
+        props.setViewMode(target);
+        await nextTick();
+        window.requestAnimationFrame(() => window.setTimeout(printNow, 0));
+        return;
+    }
+
+    if (target === 'report') {
+        router.visit(
+            withPrintToken(
+                route('assessments.report.show', props.assessment.uuid),
+            ),
+        );
+        return;
+    }
+
+    persistEditorViewMode(target, {
+        assessmentUuid: props.assessment.uuid,
+        userId: props.userId,
+    });
+    router.visit(
+        withPrintToken(route('assessments.show', props.assessment.uuid)),
+    );
+}
+
+const itemClass =
+    'text-text-primary hover:bg-surface-2 focus-visible:outline-focus-ring flex w-full items-center justify-between gap-3 px-3 py-1.5 text-left text-xs outline-none focus-visible:outline-2 focus-visible:-outline-offset-2';
 </script>
 
 <template>
@@ -159,7 +226,7 @@ function onPrint() {
         </Button>
 
         <Button
-            v-if="abilities.manage"
+            v-if="abilities.manage && !assessment.is_template"
             size="sm"
             variant="ghost"
             icon="users"
@@ -173,13 +240,39 @@ function onPrint() {
             :options="exportOptions"
         />
 
-        <Button
-            size="sm"
-            icon="file-text"
-            :aria-label="printLabel"
-            @click="onPrint"
-        >
-            Print
-        </Button>
+        <Dropdown align="right" width="48">
+            <template #trigger>
+                <Button
+                    size="sm"
+                    icon="file-text"
+                    aria-haspopup="menu"
+                    data-testid="print-trigger"
+                >
+                    Print
+                </Button>
+            </template>
+
+            <template #content>
+                <div role="menu" aria-label="Print which view">
+                    <button
+                        v-for="(choice, index) in printChoices"
+                        :key="choice.value"
+                        type="button"
+                        role="menuitem"
+                        :aria-label="`Print ${choice.label.toLowerCase()}`"
+                        :data-testid="`print-${choice.value}`"
+                        :class="itemClass"
+                        @click="printView(choice.value)"
+                    >
+                        <span class="font-medium">{{ choice.label }}</span>
+                        <span
+                            v-if="index === 0"
+                            class="text-text-muted text-[11px]"
+                            >current view</span
+                        >
+                    </button>
+                </div>
+            </template>
+        </Dropdown>
     </div>
 </template>

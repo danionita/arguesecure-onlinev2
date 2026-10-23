@@ -104,6 +104,8 @@ function report(): ReportData {
             includeShelved: false,
             includeComments: false,
             includeMethodology: true,
+            includeWarnings: true,
+            omittedSections: [],
             showAssignees: false,
             download: false,
         },
@@ -186,6 +188,19 @@ function report(): ReportData {
 }
 
 describe('useReportSearch', () => {
+    it('finds nothing in a tree the report omits (W139)', () => {
+        const omitted = () => {
+            const r = report();
+            r.options.omittedSections = ['tree'];
+
+            return r;
+        };
+        const search = useReportSearch(omitted);
+        search.query.value = 'payment fraud';
+        expect(search.matchingUuids.value.size).toBe(0);
+        expect(search.matches.value).toEqual([]);
+    });
+
     it('matches on a risk title', () => {
         const search = useReportSearch(report);
         search.query.value = 'payment fraud';

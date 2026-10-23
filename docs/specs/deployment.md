@@ -32,9 +32,9 @@ Six containers, three of which are the same image with a different command.
 | `queue` | built (same image) | `php artisan queue:work --tries=3 --max-time=3600` | — | Recalculation jobs |
 | `scheduler` | built (same image) | `php artisan schedule:work` | — | Purges, backups |
 | `db` | `mariadb:11` pinned by digest | — | internal | Data |
-| `redis` | `redis:7-alpine` pinned by digest | — | internal | Cache, queue, sessions, locks, broadcast |
+| `redis` | `redis:7-alpine` pinned by digest | — | internal | Cache, queue, locks, broadcast |
 
-**Redis replaces memcached entirely.** The legacy stack ran both; Redis is needed anyway for locks and the queue, so memcached is one fewer moving part. The 1.x deployment set `CACHE_DRIVER=memcached` and `SESSION_DRIVER=database`; both are `redis` here, and the example file that carried the old values has been deleted rather than left beside the current one for someone to copy by mistake.
+**Redis replaces memcached entirely.** The legacy stack ran both; Redis is needed anyway for locks and the queue, so memcached is one fewer moving part. The 1.x deployment set `CACHE_DRIVER=memcached`; the cache is `redis` here, and the example file that carried the old values has been deleted rather than left beside the current one for someone to copy by mistake. Sessions are the exception: they are stored in MariaDB's `sessions` table, fixed in `config/session.php` rather than read from `SESSION_DRIVER`, because signing other devices out deletes rows there ([security.md §5](security.md#5-sessions-and-cookies), D71). 2.0–2.6 kept them in Redis, where no revocation reached them.
 
 **The Node websocket container is deleted.** Reverb is a PHP process on the same image, so the deployment has one language.
 
@@ -94,7 +94,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
     volumes: [ "${DATA_PATH:-./data}/redis:/data" ]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -135,6 +135,8 @@ Every release is published to GitHub's container registry by `.github/workflows/
 | a manual run of the workflow | `sha-<commit>`, `edge` |
 
 `ARGUESECURE_VERSION` in `.env` chooses the tag (default `latest`); `ARGUESECURE_IMAGE` overrides the repository, for a fork. Both published images always carry the same tag, so a pulled app and assistant come from the same commit and read the same `models.conf`. A source build keeps that true only if it rebuilds the assistant too (§8). Only `linux/amd64` is published: the deployments are x86 servers, and an emulated arm64 build would compile PHP extensions and run Vite under QEMU.
+
+The sidebar shows the running version (W124, D90). It is the release tag, passed by `image.yml` as the build argument `ARGUESECURE_BUILD_VERSION`, recorded by the `Dockerfile` as an environment variable and read by `config/arguesecure.php` (`version`); it is not `ARGUESECURE_VERSION`, which is only the tag a deployment pins. A build with no argument, such as a source checkout's `docker compose build`, reads the repository's `VERSION` file (the last release; W129), and shows `dev` only if that file is missing; a manual run shows `edge · <commit>`. The "Release notes" link goes to `docs/RELEASE-x.y.z.md` at tag `vx.y.z` in the public repository, so every release must ship that file; other values link to the releases list.
 
 Each service keeps `build:` beside `image:`. Compose pulls an image it does not have and builds only when the pull fails; `--build` always builds. A source checkout therefore works exactly as before, and its local build carries the published name until the next `docker compose pull` replaces it. Because every compose project on a host now builds to that one name, a second project on the same host — a throwaway deployability check, or the e2e stack, which `docker-compose.e2e.yml` gives its own `:e2e` tag — must set `ARGUESECURE_VERSION` to a name of its own; otherwise its build retags the image the real stack runs, and that stack's next `up` recreates itself from it and migrates its database with it.
 
@@ -213,13 +215,14 @@ Set `APP_URL` to the real public HTTPS URL. It is what queued jobs and the Rever
 | `DATA_PATH`, `APP_PORT` | host-side placement |
 | `DB_*`, `DB_ROOT_PASSWORD` | `DB_HOST=db` |
 | `REDIS_HOST=redis`, `REDIS_PASSWORD` | |
-| `CACHE_STORE=redis`, `SESSION_DRIVER=redis`, `QUEUE_CONNECTION=redis`, `BROADCAST_CONNECTION=reverb` | |
-| `SESSION_SECURE_COOKIE=true`, `SESSION_LIFETIME=480` | |
+| `CACHE_STORE=redis`, `QUEUE_CONNECTION=redis`, `BROADCAST_CONNECTION=reverb` | |
+| `SESSION_SECURE_COOKIE=true`, `SESSION_LIFETIME=480` | `SESSION_DRIVER` is not read: sessions are always in the database (D71). A `SESSION_DRIVER=redis` left in an older `.env` is harmless and can be deleted |
 | `REVERB_APP_ID`, `REVERB_APP_KEY`, `REVERB_APP_SECRET` | generated on first run alongside `APP_KEY` |
 | `REVERB_HOST`, `REVERB_PORT`, `REVERB_SCHEME` | where the **app** posts broadcasts to: the internal service, `reverb` / `8080` / `http` — see §2.1 |
 | `REVERB_CLIENT_HOST`, `REVERB_CLIENT_PORT`, `REVERB_CLIENT_SCHEME` | where the **browser** dials. Unset means "this page's own origin", which is correct behind the nginx proxy. Set only for a proxy-less local run |
 | `ARGUESECURE_DEFAULT_CURRENCY`, `ARGUESECURE_AMORTIZATION_YEARS` | product defaults |
 | `TRASH_RETENTION_DAYS` | default 30 |
+| `SECURITY_LOG_RETENTION_DAYS` | default 90, at least 1; days the admin Security log keeps stored events (W128). Stderr is not affected. |
 | `ASSISTANT_ENABLED` | **default `false`, and the common case.** Not merely a feature flag: when it is false the assistant routes are never registered, so the feature 404s rather than 403s (D25). Everything else in `config/assistant.php` is inert while it is off |
 | `ASSISTANT_MODEL_PATH`, `ASSISTANT_MODEL_FILE`, `ASSISTANT_MODEL`, `ASSISTANT_THREADS` | where the mounted GGUF is, which file, the label the admin page shows, and how many cores the runtime may take — §9 |
 | `ASSISTANT_BASE_URL`, `ASSISTANT_*_TIMEOUT`, `ASSISTANT_HEALTH_TTL`, `ASSISTANT_MAX_TOKENS_*`, `ASSISTANT_CONTEXT_TOKENS` | all optional with working defaults. **Read `config/assistant.php` before changing a timeout**: they are deliberately enormous because CPU inference runs for minutes, and every HTTP client in wide use defaults to one to two orders of magnitude less |
@@ -231,6 +234,10 @@ The assistant variables are the one group where setting them is not enough to sw
 **Never call `env()` outside a config file.** The legacy app called `env('LOCK_TIME')` inside a model and `env('HEARTRATE')` inside middleware, which silently returns `null` once `config:cache` runs — and `composer install` ran `artisan optimize`. That is a latent production bug; the rewrite reads everything through `config()`.
 
 ---
+
+### 5.1 Single sign-on (optional)
+
+Enter the provider on **Admin → Authentication**, or set `OIDC_ISSUER`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` (see `.env.example`; a value set there wins over one stored on the tab, field by field, so a bad stored value is fixed by editing `.env`), and register `<APP_URL>/auth/oidc/callback` as the redirect URI at the provider (Microsoft Entra ID, Google Workspace, Okta, Keycloak, Authentik, Authelia, or any OpenID Connect provider with discovery). The app container must reach the provider over https; the provider needs no inbound access to it. `OIDC_ALLOWED_DOMAINS` lets a first sign-in create a non-admin account for those email domains (empty creates none); the provider must send `email_verified`, or set `OIDC_TRUST_EMAIL=true` for a provider you control that does not. Leave `OIDC_ISSUER` empty for no SSO. Only Keycloak has been tested against this build; every other provider, Microsoft Entra ID included, is expected to work because they speak standard OpenID Connect, but has not been verified. **Microsoft Entra ID (written from Microsoft's documentation, not verified):** register a web application, add the redirect URI above, create a client secret, and use `https://login.microsoftonline.com/<tenant-id>/v2.0` as the issuer. Entra's ID tokens carry the `email` claim only if you add it as an optional claim, and do not carry `email_verified`: for a single-tenant app whose directory you control, set `OIDC_TRUST_EMAIL=true`; do not do so for a multi-tenant app. Keep an administrator able to sign in with a password: it is the way in if the provider is down.
 
 ## 6. First run and the entrypoint
 
@@ -249,20 +256,20 @@ The entrypoint script, before starting supervisord:
 
 There is **no default `db:seed`** (2.5.1): `DatabaseSeeder`, which created an administrator with a fixed address, was deleted.
 
-**Reference content is the exception, and arrives with the first admin** (W27). Templates and the two ISO catalogue libraries need an owning user, and at first boot there is none — so a fresh deployment reached the dashboard with no templates at all, which was nobody's decision. `SetupController` calls `SampleContentSeeder::seedReferenceContent()` the moment the first administrator is created, which is the earliest point an owner exists. It seeds every bundled template — including the demo web shop, a template since 2.5.1 — and the catalogue entries. Both halves are idempotent, and no credential is created anywhere. An instance whose first admin predates a fixture can run `php artisan db:seed --class='Database\Seeders\SampleContentSeeder' --force`, which uses the oldest existing admin as owner and creates no users.
+**Reference content is the exception, and arrives with the first admin** (W27). Through 2.6 templates needed an owning user, and at first boot there was none, so a fresh deployment reached the dashboard with no templates. Since W141 (2.7.0) templates have no owner, but `SetupController` still calls `SampleContentSeeder::seedReferenceContent()` the moment the first administrator is created, which keeps first-run behaviour unchanged. It seeds every bundled template — including the demo web shop, a template since 2.5.1 — and the catalogue entries. Both halves are idempotent, and no credential is created anywhere. An instance whose first admin predates a fixture can run `php artisan db:seed --class='Database\Seeders\SampleContentSeeder' --force`, which needs no administrator and creates no users.
 
 ---
 
 ## 7. CI
 
-GitHub Actions on every push and pull request:
+GitHub Actions on every push and pull request **in the public repository**. Every job is guarded by `github.repository == 'danionita/arguesecure-onlinev2'`, so in the private development repository they are skipped and cost nothing (D80). There the owner runs the same checks on their own machine: `tools/dev/checks/checks.sh` for the seven code checks, and the Docker, end-to-end and audit steps below by hand.
 
 | Job | Steps |
 |---|---|
 | `php` | PHP 8.3, `composer install`, `vendor/bin/pint --test`, `vendor/bin/phpstan analyse` (level 6+), `php artisan test` (Pest) against MariaDB and Redis service containers |
 | `js` | Node 22, `npm ci`, `npm run lint`, `npm run type-check` (`vue-tsc --noEmit`), `npm run test:unit` (Vitest) |
 | `docker` | `docker compose build`, `docker compose up -d`, poll `/up` until healthy, assert HTTP 200 on the login page, `docker compose down -v` |
-| `security` | `composer audit`, `npm audit --omit=dev`, a secret scan (gitleaks or equivalent) |
+| `security` | `composer audit --locked`, `tools/dev/audit-gate.mjs` over `npm audit` of the whole lockfile (D86: every npm package is a devDependency, so `--omit=dev` always reports 0), a secret scan (gitleaks or equivalent) |
 | `e2e` (W25) | Playwright against the composed stack |
 
 The `docker` job is the one that catches deployability regressions, which are silent and expensive to find late. Pin every action to a commit SHA.
@@ -283,7 +290,13 @@ The `docker` job is the one that catches deployability regressions, which are si
 
 ### Logs
 
-All containers log to stdout/stderr for `docker compose logs`. No log files inside the image. Laravel uses the `stderr` channel in production.
+All containers log to stdout/stderr for `docker compose logs`. No log files inside the image or on the data volume. The image sets `LOG_CHANNEL=stderr` and `LOG_LEVEL=info` (W112): an artisan service (queue, scheduler, Reverb) writes to its container's stderr directly, and a web request's lines reach the app container's through php-fpm's `catch_workers_output`. A value in `.env` overrides either; `.env.example` lists both, commented out, so the image stays the one source of the default. `LOG_LEVEL=debug` while diagnosing, `warning` for a quieter log; the change takes effect when `docker compose up -d` recreates the containers, which is when Compose re-reads `.env`.
+
+Until 2.7 neither was set, so Laravel fell back to `stack` → `single`: an unrotated `storage/logs/laravel.log` on the data volume, at `debug`. An upgraded instance stops writing to it; the old file can be deleted. CI's Docker job asserts both halves on the booted image: an application log line on the container's stderr, and no `laravel.log`.
+
+**The security event log (W111)** is a separate channel (since W128 also stored for 90 days and downloadable from Admin → Security log, below), `security`, that always writes to the container's stderr, one JSON object per line, at `info` whatever `LOG_LEVEL` says. Its fields and events are in [security.md §11](security.md#11-logging-and-error-handling). Select it from the rest of the output with a filter on the `"channel":"security"` key (`docker compose logs --no-log-prefix app | jq -R -c 'fromjson? | select(.channel=="security")'`), or ship the container's output to a log collector and match on `event`.
+
+**nginx's access log masks the share token.** A share link carries its token in the path (`/s/{token}`), so the log format (`docker/nginx.conf`) writes the request line from a masked copy of the URI: `GET /s/[redacted] HTTP/1.1`. Every other path is logged as requested. nginx's error log, at `warn`, can still quote a request line when a request fails before it is processed; a reverse proxy in front keeps its own access log, which is outside this image, and records `/s/{token}` unless it is configured as this one is.
 
 ### Resource budget
 
@@ -294,12 +307,28 @@ All containers log to stdout/stderr for `docker compose logs`. No log files insi
 | queue | ~60 MB |
 | scheduler | ~40 MB |
 | db | ~120 MB |
-| redis | ~20 MB (capped at 128 MB) |
+| redis | ~20 MB (capped at 128 MB, never evicts: see below) |
 | **Total** | **under 512 MB** |
 
 Tune php-fpm to `pm = ondemand` with a small `max_children`; the default `dynamic` settings are sized for a busier host than this.
 
 The `assistant` service is **not** in that budget and is not meant to be: it adds roughly 3 GB resident on its own. See §9.
+
+### Redis memory (W109, D72)
+
+**Redis never evicts.** It runs with `--maxmemory 128mb --maxmemory-policy noeviction`, because the one Redis holds the queue (recalculations, notifications, report and assistant jobs) and the edit locks, and an evicting policy such as `allkeys-lru` drops whichever key it picks when memory runs short: a queued job that never runs, or a lock that vanishes while its holder is still editing, with nothing logged. `noeviction` turns that silent loss into a visible failure.
+
+**What a full Redis looks like.** Redis keeps answering reads and refuses every write with `OOM command not allowed when used memory > 'maxmemory'`, which Laravel logs to stderr (`docker compose logs`). Everything that writes to Redis fails with it: queuing a job, so an edit is saved but the request reports an error and its totals are not recomputed; taking an edit lock; rate-limited routes, sign-in included, whose counters live in the Redis cache store; sessions too, until they move to the database (D71), so a full Redis then also blocks sign-in; and filling the calculation cache, so an assessment that is not already cached fails to open. Nothing already queued is lost, but a request that saves an edit and then fails to queue its recalculation leaves the edit saved and collaborators' totals stale until the next edit. Raising the limit recovers at once, with no restart: `docker compose exec redis redis-cli config set maxmemory 256mb`. Make it permanent in the `redis` service's `command`, for example in `docker-compose.override.yml`, since `config set` lasts only until Redis restarts.
+
+**What uses the memory, and how to size it.** The calculation cache is the part that grows with use. It holds one entry per assessment, deleted when the next one is written and expiring six hours after its last write, so (once entries written before an upgrade have expired, within six hours) it is bounded by the number of assessments opened or edited in the last six hours, times the size of an entry, which grows with the assessment's number of risk–attack pairs. Queued jobs are small and leave as the worker takes them; locks are a few bytes each and expire on their own. To size a deployment, measure it rather than estimate:
+
+```bash
+docker compose exec redis redis-cli info memory | grep -E '^(used_memory_human|used_memory_peak_human|maxmemory_human):'
+docker compose exec redis redis-cli --scan --pattern '*as:calc:*:v*' | head -5    # then, for one of them:
+docker compose exec redis redis-cli memory usage '<key>'
+```
+
+Keep `used_memory_peak` under half of `maxmemory`, so a backlog of queued work during a burst of edits has room. 128 MB leaves that margin for a team working on a few dozen assessments a day; raise it if the peak says otherwise.
 
 ---
 

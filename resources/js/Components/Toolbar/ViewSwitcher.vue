@@ -129,18 +129,12 @@ function set(value: string) {
 </script>
 
 <template>
-    <div class="flex items-center gap-2">
-        <span
-            id="view-mode-label"
-            class="text-text-muted text-xs font-medium tracking-wide uppercase"
-        >
-            View
-        </span>
-        <SegmentedControl
-            :model-value="selected"
-            :options="options"
-            aria-labelledby="view-mode-label"
-            @update:model-value="set"
-        />
-    </div>
+    <!-- No visible caption: the options say what they are. The group keeps its
+         accessible name through aria-label. -->
+    <SegmentedControl
+        :model-value="selected"
+        :options="options"
+        aria-label="View"
+        @update:model-value="set"
+    />
 </template>

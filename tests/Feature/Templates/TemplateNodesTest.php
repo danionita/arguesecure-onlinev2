@@ -17,7 +17,7 @@ use App\Models\User;
 
 function pickerTemplate(string $title = 'Standard'): Assessment
 {
-    $template = Assessment::factory()->create(['is_template' => true]);
+    $template = Assessment::factory()->template()->create();
     // The factory makes the root; the template's name lives on it.
     $template->rootNode()->firstOrFail()->update(['title' => $title]);
 

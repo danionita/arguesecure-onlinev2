@@ -95,7 +95,7 @@ const levelOptions = computed(() =>
             v-if="isUncalibrated('impact')"
             class="text-status-todo-text bg-status-todo-bg border-status-todo-border rounded-md border px-2 py-1 text-xs"
         >
-            This assessment still uses the unmodified system impact scale.
+            This assessment still uses the unmodified shared impact bands.
         </p>
 
         <div v-if="(node.impact_mode ?? 'quantitative') === 'quantitative'">

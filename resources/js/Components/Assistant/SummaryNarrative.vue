@@ -31,6 +31,7 @@
 import GenerationProgress from '@/Components/Assistant/GenerationProgress.vue';
 import Button from '@/Components/UI/Button.vue';
 import { useGenerationProgress } from '@/composables/useGenerationProgress';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -50,6 +51,9 @@ const draft = ref(props.draft);
 
 const editing = ref(false);
 const text = ref('');
+useUnsavedChanges(
+    () => editing.value && text.value !== (narrative.value ?? ''),
+);
 /** Whether what is in the editor started life as a model's draft. */
 const fromDraft = ref(false);
 

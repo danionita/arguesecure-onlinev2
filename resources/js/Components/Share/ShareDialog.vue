@@ -23,12 +23,7 @@ import PublicToggle from './PublicToggle.vue';
 import ShareLinkPanel from './ShareLinkPanel.vue';
 import TemplatePanel from './TemplatePanel.vue';
 import TransferOwnershipPanel from './TransferOwnershipPanel.vue';
-import type {
-    ShareCollaborator,
-    SharePayload,
-    ShareRole,
-    TemplateStatus,
-} from './types';
+import type { ShareCollaborator, SharePayload, ShareRole } from './types';
 
 const props = withDefaults(
     defineProps<{
@@ -36,9 +31,12 @@ const props = withDefaults(
         assessmentUuid: string;
         /** Whether the current user may transfer ownership (owner or admin). */
         canTransfer?: boolean;
+        /** Admins only (W141): whether to offer "Publish as template". */
+        canPublishTemplate?: boolean;
     }>(),
     {
         canTransfer: false,
+        canPublishTemplate: false,
     },
 );
 
@@ -47,27 +45,17 @@ const emit = defineEmits<{ close: [] }>();
 const { push } = useToast();
 
 const payload = ref<SharePayload | null>(null);
-const templateStatus = ref<TemplateStatus | null>(null);
+const templatePublished = ref(false);
 const loading = ref(false);
 const busy = ref(false);
 
 async function load() {
     loading.value = true;
     try {
-        // Two endpoints, one await: the template flags come from
-        // TemplateController, since ShareController belongs to W8 and this
-        // package does not own it. Requested together so the dialog never
-        // renders half its state.
-        const [share, template] = await Promise.all([
-            window.axios.get<SharePayload>(
-                route('share.index', props.assessmentUuid),
-            ),
-            window.axios.get<TemplateStatus>(
-                route('assessments.template.show', props.assessmentUuid),
-            ),
-        ]);
+        const share = await window.axios.get<SharePayload>(
+            route('share.index', props.assessmentUuid),
+        );
         payload.value = share.data;
-        templateStatus.value = template.data;
     } catch {
         push('Could not load sharing settings.', 'danger');
         emit('close');
@@ -154,19 +142,17 @@ function revokeLink() {
     );
 }
 
-async function setTemplate(isTemplate: boolean) {
+async function publishTemplate() {
     const succeeded = await mutate(() =>
-        window.axios.patch(
-            route('assessments.template.update', props.assessmentUuid),
-            { is_template: isTemplate },
+        window.axios.post(
+            route('assessments.template.publish', props.assessmentUuid),
         ),
     );
 
     if (succeeded) {
+        templatePublished.value = true;
         push(
-            isTemplate
-                ? 'Saved as a template. Anyone with an account can now read it.'
-                : 'Unpublished. This assessment is private again.',
+            'Published as a template. This assessment is unchanged.',
             'success',
         );
     }
@@ -232,14 +218,13 @@ onMounted(() => {
             </section>
 
             <section
-                v-if="templateStatus"
+                v-if="canPublishTemplate"
                 class="border-border-subtle border-t pt-4"
             >
                 <TemplatePanel
-                    :status="templateStatus"
                     :busy="busy"
-                    @publish="setTemplate(true)"
-                    @unpublish="setTemplate(false)"
+                    :published="templatePublished"
+                    @publish="publishTemplate"
                 />
             </section>
 

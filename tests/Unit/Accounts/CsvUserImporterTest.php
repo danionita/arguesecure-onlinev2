@@ -101,3 +101,66 @@ test('commit ignores invalid rows even if passed in', function () {
     expect($created)->toHaveCount(1);
     expect($created[0]['user']->email)->toBe('ada@example.com');
 });
+
+// W123 (D90): the three ways a spreadsheet saves a CSV. Each case imports
+// the same two people, so "same as the plain file" is the assertion.
+dataset('spreadsheet CSV encodings', [
+    'plain comma' => fn () => "name,email\nÉsther Müller,esther@example.com\nBen Bakker,ben@example.com",
+    'UTF-8 with a byte-order mark (Excel "CSV UTF-8")' => fn () => "\xEF\xBB\xBFname,email\nÉsther Müller,esther@example.com\nBen Bakker,ben@example.com",
+    'semicolons (Excel in a Dutch or German locale)' => fn () => "name;email\r\nÉsther Müller;esther@example.com\r\nBen Bakker;ben@example.com\r\n",
+    'tabs' => fn () => "name\temail\nÉsther Müller\testher@example.com\nBen Bakker\tben@example.com",
+    'Windows-1252 (Excel "CSV")' => fn () => mb_convert_encoding("name;email\r\nÉsther Müller;esther@example.com\r\nBen Bakker;ben@example.com", 'Windows-1252', 'UTF-8'),
+    'UTF-16 little-endian (Excel "Unicode Text")' => fn () => "\xFF\xFE".mb_convert_encoding("name\temail\r\nÉsther Müller\testher@example.com\r\nBen Bakker\tben@example.com", 'UTF-16LE', 'UTF-8'),
+]);
+
+test('imports the same people however the spreadsheet saved the file', function (string $csv) {
+    $rows = (new CsvUserImporter)->parse($csv);
+
+    expect($rows)->toHaveCount(2);
+    expect(array_map(fn (CsvImportRow $r): bool => $r->isValid(), $rows))->toBe([true, true]);
+    expect($rows[0]->rawName)->toBe('Ésther Müller');
+    expect($rows[0]->rawEmail)->toBe('esther@example.com');
+    expect($rows[1]->rawEmail)->toBe('ben@example.com');
+})->with('spreadsheet CSV encodings');
+
+test('normalise returns valid UTF-8 and is idempotent', function (string $csv) {
+    $once = CsvUserImporter::normalise($csv);
+
+    expect(mb_check_encoding($once, 'UTF-8'))->toBeTrue();
+    expect(str_starts_with($once, "\xEF\xBB\xBF"))->toBeFalse();
+    expect(CsvUserImporter::normalise($once))->toBe($once);
+})->with('spreadsheet CSV encodings');
+
+test('the delimiter comes from the header line, not from commas inside a data field', function () {
+    $rows = (new CsvUserImporter)->parse("name;email\n\"Bakker, Ben\";ben@example.com");
+
+    expect($rows[0]->isValid())->toBeTrue();
+    expect($rows[0]->rawName)->toBe('Bakker, Ben');
+});
+
+test('an unreadable header says which delimiter it tried', function () {
+    $rows = (new CsvUserImporter)->parse("foo;bar\nAda;ada@example.com");
+
+    expect($rows[0]->errors[0])->toContain('header row')->toContain('semicolons');
+    expect((new CsvUserImporter)->parse("foo,bar\nAda,ada@example.com")[0]->errors[0])->toContain('commas');
+});
+
+test('a header with no delimiter at all still reports the header error, read as commas', function () {
+    $rows = (new CsvUserImporter)->parse("name\nAda");
+
+    expect($rows)->toHaveCount(1);
+    expect($rows[0]->errors[0])->toContain('header row')->toContain('commas');
+});
+
+test('a tie between delimiters in the header is read as commas', function () {
+    $rows = (new CsvUserImporter)->parse("name,email;admin\nAda,ada@example.com;true");
+
+    expect($rows[0]->errors[0])->toContain('header row')->toContain('commas');
+});
+
+test('the admin column is read under a semicolon delimiter too', function () {
+    $rows = (new CsvUserImporter)->parse("name;email;admin\nAda;ada@example.com;yes\nAlan;alan@example.com;no");
+
+    expect($rows[0]->admin)->toBeTrue();
+    expect($rows[1]->admin)->toBeFalse();
+});

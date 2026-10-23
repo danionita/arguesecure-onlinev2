@@ -20,13 +20,13 @@ use App\Models\Node;
  */
 class DeleteNodeApplier implements CommandApplier
 {
-    public function apply(array $command): array
+    public function apply(array $command, int $assessmentId): array
     {
         /** @var list<string> $uuids */
         $uuids = $command['node_uuids'] ?? [];
 
         foreach ($uuids as $uuid) {
-            $node = Node::withTrashed()->where('uuid', $uuid)->first();
+            $node = Node::withTrashed()->where('assessment_id', $assessmentId)->where('uuid', $uuid)->first();
 
             if ($node === null) {
                 throw new UndoConflictException('Cannot undo: a node in this change no longer exists.');

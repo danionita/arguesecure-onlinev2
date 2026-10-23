@@ -94,13 +94,19 @@ test('the report page query count does not grow with the number of nodes', funct
  * badge showing the wrong number. `notifications_unread_index` is what keeps
  * it a seek.
  *
+ * **Raised from 13 to 15 by W107** (D71): sessions now live in the database,
+ * so every authenticated request reads and writes its own `sessions` row, a
+ * `select` and an `update`. Both are a primary-key lookup and flat in the
+ * size of the assessment; the alternative is the Redis driver under which no
+ * session could be revoked.
+ *
  * This file belongs to W24. It is edited here because a budget that cannot be
  * raised for a deliberate addition stops being a budget and starts being an
  * obstacle people route around — and this is the second time it has caught a
  * real cost (W44's lazy-loaded root title, which was removed rather than
  * budgeted for).
  */
-test('the report page issues no more than 13 queries for a small assessment', function () {
+test('the report page issues no more than 15 queries for a small assessment', function () {
     $assessment = Assessment::factory()->create();
     $risk = Risk::factory()->create(['assessment_id' => $assessment->id]);
     $attack = Attack::factory()->create(['assessment_id' => $assessment->id]);
@@ -118,5 +124,5 @@ test('the report page issues no more than 13 queries for a small assessment', fu
 
     $this->actingAs($assessment->owner)->get(route('assessments.report.show', $assessment))->assertOk();
 
-    expect(count($queries))->toBeLessThanOrEqual(13, implode("\n", $queries));
+    expect(count($queries))->toBeLessThanOrEqual(15, implode("\n", $queries));
 });

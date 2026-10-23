@@ -63,7 +63,7 @@ const generatedDate = new Date(props.cover.generatedAt).toLocaleDateString(
 
         <div class="mt-6">
             <div class="text-text-muted text-xs font-medium uppercase">
-                Completeness
+                Current known risk
             </div>
             <ReportTotal
                 :block="cover.completeness"
@@ -73,9 +73,7 @@ const generatedDate = new Date(props.cover.generatedAt).toLocaleDateString(
         </div>
 
         <div class="mt-6">
-            <h2 class="text-text-primary text-sm font-semibold">
-                Scale calibration used
-            </h2>
+            <h2 class="text-text-primary text-sm font-semibold">Scales used</h2>
             <div class="mt-2 grid gap-3 sm:grid-cols-3">
                 <div
                     v-for="scale in cover.scaleCalibration"
@@ -91,7 +89,7 @@ const generatedDate = new Date(props.cover.generatedAt).toLocaleDateString(
                             class="text-status-todo-text inline-flex items-center gap-1"
                         >
                             <Icon name="alert-circle" :size="11" />
-                            uncalibrated
+                            shared bands
                         </span>
                     </div>
                     <ul class="text-text-secondary mt-1.5 space-y-0.5">

@@ -120,6 +120,7 @@ function childEdge(childUuid: string): AttackDefenceLink | undefined {
             :edge="edge"
             :expanded="expanded"
             :has-children="childUuids.length > 0"
+            :child-count="childUuids.length"
             :drag-payload="dragPayload"
             @toggle="toggle"
         />

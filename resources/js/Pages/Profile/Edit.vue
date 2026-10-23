@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import TwoFactorPanel, {
+    type TwoFactorState,
+} from '@/Components/Profile/TwoFactorPanel.vue';
 import Button from '@/Components/UI/Button.vue';
 import ConfirmDialog from '@/Components/UI/ConfirmDialog.vue';
 import Input from '@/Components/UI/Input.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -19,6 +23,8 @@ defineProps<{
     status?: string;
     sessions: SessionRow[];
     ownedAssessmentCount: number;
+    twoFactor: TwoFactorState;
+    recoveryCodes?: string[] | null;
 }>();
 
 const page = usePage();
@@ -37,6 +43,10 @@ function submitProfile() {
     profileForm.patch(route('profile.update'), {
         preserveScroll: true,
         onSuccess: () => {
+            // The server may normalise what was typed (case, spaces); the
+            // saved value is the new baseline for the unsaved-changes guard.
+            profileForm.name = user.value.name;
+            profileForm.email = user.value.email;
             profileForm.reset('current_password');
         },
     });
@@ -48,6 +58,16 @@ const passwordForm = useForm({
     password: '',
     password_confirmation: '',
 });
+
+// Password managers fill the current-password boxes without the user typing,
+// so those alone never count as an edit.
+useUnsavedChanges(
+    () =>
+        profileForm.name !== user.value.name ||
+        profileForm.email !== user.value.email ||
+        passwordForm.password !== '' ||
+        passwordForm.password_confirmation !== '',
+);
 
 function submitPassword() {
     passwordForm.put(route('password.update'), {
@@ -191,6 +211,11 @@ function submitDelete() {
                     </div>
                 </form>
             </section>
+
+            <TwoFactorPanel
+                :two-factor="twoFactor"
+                :recovery-codes="recoveryCodes"
+            />
 
             <!-- Sessions -->
             <section

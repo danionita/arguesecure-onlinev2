@@ -1,12 +1,13 @@
 # Templates
 
 A template is an assessment set aside as a starting point. **Templates** in
-the sidebar lists them; choosing one shows what it contains, and using it
-creates a copy you own. The template itself never changes.
+the sidebar lists them, and using one creates a copy you own. The template
+itself never changes.
 
-Every account can use templates. Only administrators can publish an
-assessment as a template (from its **Share** dialog), because a template is
-offered to everyone on the instance.
+Every account can use templates. Only administrators manage them on the Templates page
+(**New template**, **Edit**, **Delete**), or by choosing **Publish as template**
+in an assessment's **Share** dialog, which adds an unlinked copy; a template is
+removed only by deleting it.
 
 ## The bundled templates
 

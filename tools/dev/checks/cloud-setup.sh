@@ -22,6 +22,8 @@ need=()
 for pair in pdo_mysql:mysql redis:redis intl:intl bcmath:bcmath zip:zip mbstring:mbstring xml:xml curl:curl gd:gd; do
     php -m | grep -qix "${pair%%:*}" || need+=("php8.3-${pair#*:}")
 done
+# pcov is the coverage driver for `checks.sh coverage` (W119).
+php -m | grep -qix pcov || need+=(php8.3-pcov)
 command -v shellcheck >/dev/null || need+=(shellcheck)
 if [ ${#need[@]} -gt 0 ]; then
     apt-get update -qq

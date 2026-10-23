@@ -4,6 +4,7 @@ namespace App\Domain\Reporting\Export;
 
 use App\Domain\Reporting\Money;
 use App\Domain\Reporting\ReportOptions;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -31,6 +32,10 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  * unpriced controls are counted and never folded in — are not decoration
  * around the figures; they are the conditions under which the figures mean
  * anything, and a workbook read six months later has nothing else to say so.
+ *
+ * **Text is written as text.** `setCellValue()`'s default binder reads a
+ * string starting with `=` as a formula, so every string — prose, header,
+ * text cell, the dash — goes in through `text()` with its type stated (W106).
  */
 final class ExcelExporter
 {
@@ -70,7 +75,7 @@ final class ExcelExporter
         $row = 1;
 
         foreach ($section->prose as $paragraph) {
-            $sheet->setCellValue([1, $row], $paragraph);
+            $this->text($sheet, 1, $row, $paragraph);
             $sheet->getStyle([1, $row])->getAlignment()->setWrapText(false);
             $row++;
         }
@@ -85,7 +90,7 @@ final class ExcelExporter
 
         $headerRow = $row;
         foreach ($section->headers as $index => $header) {
-            $sheet->setCellValue([$index + 1, $headerRow], $header);
+            $this->text($sheet, $index + 1, $headerRow, $header);
         }
         $sheet->getStyle([1, $headerRow, count($section->headers), $headerRow])
             ->getFont()->setBold(true);
@@ -112,7 +117,7 @@ final class ExcelExporter
     private function writeCell(Worksheet $sheet, int $column, int $row, Cell $cell, Money $money): void
     {
         if (! $cell->isNumeric()) {
-            $sheet->setCellValue([$column, $row], $cell->display($money));
+            $this->text($sheet, $column, $row, $cell->display($money));
 
             return;
         }
@@ -121,6 +126,11 @@ final class ExcelExporter
         $sheet->getStyle([$column, $row])
             ->getNumberFormat()
             ->setFormatCode($this->formatCode($cell, $money));
+    }
+
+    private function text(Worksheet $sheet, int $column, int $row, string $value): void
+    {
+        $sheet->setCellValueExplicit([$column, $row], $value, DataType::TYPE_STRING);
     }
 
     private function formatCode(Cell $cell, Money $money): string

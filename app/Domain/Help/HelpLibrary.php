@@ -37,6 +37,7 @@ final class HelpLibrary
         'history' => 'History and versions',
         'reading-a-report' => 'How to read a report',
         'keyboard' => 'Keyboard map',
+        'signing-in' => 'Signing in',
         'administration' => 'Administration',
     ];
 

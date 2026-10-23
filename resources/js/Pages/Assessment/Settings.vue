@@ -32,11 +32,12 @@
  * now `prohibited`s both fields at the request level, not just here — a
  * removed input is not a removed endpoint.
  */
-import type { ScaleDetail } from '@/Components/Scales/bands';
-import ScaleCards from '@/Components/Scales/ScaleCards.vue';
+import AssessmentScales from '@/Components/Scales/AssessmentScales.vue';
+import type { ScaleDetail, ScaleSetDetail } from '@/Components/Scales/bands';
 import Button from '@/Components/UI/Button.vue';
 import Input from '@/Components/UI/Input.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -57,9 +58,12 @@ const props = defineProps<{
      * a consolidation.
      */
     scales: Record<string, ScaleDetail | null>;
+    /** Every admin-defined scale, in full (W126), and the one these bands were last set to. */
+    scaleSets: ScaleSetDetail[];
+    scaleSetKey: string | null;
     topBandMultiplier: number;
     /**
-     * What the last scale save or reset did, including how many stored values
+     * What the last scales save did, including how many stored values
      * a removed band emptied. A prop rather than a shared flash: the flash bag
      * is not shared to Inertia, so `->with('success', …)` alone would never
      * reach this page.
@@ -80,39 +84,14 @@ const form = useForm({
             : String(props.assessment.risk_tolerance),
 });
 
+useUnsavedChanges(() => form.isDirty);
+
 const currencyOptions = computed(() =>
     Object.entries(props.currencies).map(([code, name]) => ({ code, name })),
 );
 
-const KINDS = ['impact', 'likelihood', 'strength'] as const;
-
-/**
- * Built here rather than inside `ScaleCards` so the component takes plain
- * strings and can be mounted by the admin Defaults tab, which points at
- * entirely different routes.
- */
-const saveUrls = computed(() =>
-    Object.fromEntries(
-        KINDS.map((kind) => [
-            kind,
-            route('assessments.scales.update', {
-                assessment: props.assessment.uuid,
-                kind,
-            }),
-        ]),
-    ),
-);
-
-const resetUrls = computed(() =>
-    Object.fromEntries(
-        KINDS.map((kind) => [
-            kind,
-            route('assessments.scales.reset', {
-                assessment: props.assessment.uuid,
-                kind,
-            }),
-        ]),
-    ),
+const scalesUrl = computed(() =>
+    route('assessments.scales.update', { assessment: props.assessment.uuid }),
 );
 
 function submit() {
@@ -244,28 +223,24 @@ function submit() {
             </form>
 
             <!--
-                Outside the form above, and deliberately: each scale saves on
-                its own request (three separate conversations produce them), so
-                nesting them in the settings form would tie a calibration to a
-                currency change.
+                Outside the form above, and deliberately: the scales save on
+                their own request, so nesting them in the settings form would
+                tie a change of bands to a currency change.
             -->
             <section class="mt-10">
                 <h2 class="text-text-primary mb-1 text-sm font-semibold">
                     Scales
                 </h2>
                 <p class="text-text-muted mb-4 text-xs">
-                    The bands this assessment's qualitative values resolve
-                    against. A scale still on the instance default is shared
-                    with every other assessment that has not calibrated — saving
-                    here gives this assessment its own copy first, so nobody
-                    else's figures move.
+                    The ranges that your impact, likelihood and strength choices
+                    stand for. Pick a scale from the list to load it, or change
+                    any band yourself and the list switches to Custom. Nothing
+                    is stored until you press Save.
                 </p>
 
                 <!--
-                    What the last save did. It carries two things a user has
-                    to be told rather than left to notice: that this
-                    assessment now has its own copy of a scale and no longer
-                    follows the instance default, and how many stored values a
+                    What the last save did. It carries what a user has to be
+                    told rather than left to notice: how many stored values a
                     removed band emptied — someone spent a workshop arriving
                     at those.
                 -->
@@ -277,14 +252,14 @@ function submit() {
                     {{ flashSuccess }}
                 </p>
 
-                <ScaleCards
+                <AssessmentScales
                     :scales="scales"
+                    :scale-sets="scaleSets"
+                    :scale-set-key="scaleSetKey"
+                    :save-url="scalesUrl"
                     :currency="assessment.currency"
                     :top-band-multiplier="topBandMultiplier"
-                    :save-urls="saveUrls"
-                    :reset-urls="resetUrls"
                     :errors="errors"
-                    show-origin
                 />
             </section>
         </div>

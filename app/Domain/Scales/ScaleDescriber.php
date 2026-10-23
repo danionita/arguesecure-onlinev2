@@ -87,6 +87,31 @@ final class ScaleDescriber
     }
 
     /**
+     * Every admin scale with its three kinds in full, in list order (W126).
+     *
+     * One payload for both screens that need the bands of every scale: the
+     * admin list edits them, and Assessment settings loads one into its
+     * editors when it is picked from the dropdown.
+     *
+     * @return list<array{key: string, name: string, is_builtin: bool, scales: array<string, array<string, mixed>|null>}>
+     */
+    public static function allSets(): array
+    {
+        $sets = [];
+
+        foreach (ScaleSets::catalogue() as $set) {
+            $sets[] = [
+                'key' => $set['key'],
+                'name' => $set['name'],
+                'is_builtin' => $set['is_builtin'],
+                'scales' => self::forSystemSet($set['key']),
+            ];
+        }
+
+        return $sets;
+    }
+
+    /**
      * The multiplier the open top band's representative is derived with.
      *
      * Sent from the server rather than hardcoded in the editor: it is

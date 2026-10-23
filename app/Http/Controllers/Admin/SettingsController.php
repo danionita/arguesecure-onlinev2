@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Domain\Accounts\InstanceSettings;
+use App\Domain\Audit\SecurityEvent;
+use App\Domain\Audit\SecurityLog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateSettingsRequest;
 use Illuminate\Http\RedirectResponse;
@@ -26,7 +28,10 @@ class SettingsController extends Controller
 
     public function update(UpdateSettingsRequest $request): RedirectResponse
     {
-        InstanceSettings::update($request->validated());
+        $validated = $request->validated();
+        InstanceSettings::update($validated);
+
+        SecurityLog::record(SecurityEvent::SettingsUpdated, $request->user(), null, ['settings' => $validated]);
 
         return redirect()->route('admin.settings.edit');
     }

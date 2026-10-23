@@ -18,6 +18,9 @@ use Illuminate\Validation\Rules\Password;
  */
 class PasswordPolicy
 {
+    /** Seconds the breach lookup may take before the password is accepted unchecked (D84). */
+    public const BREACH_CHECK_TIMEOUT = 3;
+
     public static function rule(): Password
     {
         // Length + HIBP only, matching security.md §4 exactly — it does not

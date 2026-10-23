@@ -35,5 +35,17 @@ deleting versions need edit access.
 - A single field edit is reverted from the **History** tab of that node's
   pop-up.
 
+## Deleted assessments
+
+A deleted assessment moves to **Deleted**, at the bottom of **My assessments**,
+and is erased for good after 30 days (your administrator may set another
+period); each row shows the date. Until then:
+
+- **Restore** brings it back as it was. The owner, a manager or an
+  administrator can restore it.
+- **Erase permanently** removes it now, with its history, versions, comments
+  and notifications. Only the owner or an administrator can; it cannot be
+  undone.
+
 Versions protect against mistakes made inside ArgueSecure. They are not a
 backup of the server; that is the administrator's job.

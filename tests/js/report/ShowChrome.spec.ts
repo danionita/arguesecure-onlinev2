@@ -20,7 +20,6 @@
  */
 import { mount } from '@vue/test-utils';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import type { ReportData } from '../../../resources/js/Components/Report/types';
 import Toolbar from '../../../resources/js/Components/Toolbar/Toolbar.vue';
 import {
     createEditorView,
@@ -28,6 +27,7 @@ import {
 } from '../../../resources/js/composables/useEditorView';
 import ReportShow from '../../../resources/js/Pages/Report/Show.vue';
 import { makeFixtureStore } from '../composables/support/fixture';
+import { report } from './support/reportFixture';
 
 vi.mock('@inertiajs/vue3', async () => {
     const { defineComponent, h } = await import('vue');
@@ -64,85 +64,14 @@ beforeAll(() => {
     window.print = () => {};
 });
 
-function report(): ReportData {
-    const total = {
-        baseline: 'current' as const,
-        total: 0,
-        isPartial: false,
-        pairsValued: 0,
-        pairsTotal: 0,
-        coverage: 1,
-    };
+function mountReport(options: Record<string, unknown> = {}) {
+    const base = report();
 
-    return {
-        assessment: {
-            uuid: 'u',
-            currency: 'EUR',
-            amortizationYears: 3,
-            riskTolerance: null,
-            isPublic: false,
-        },
-        options: {
-            baseline: 'both',
-            includeShelved: false,
-            includeComments: false,
-            includeMethodology: true,
-            showAssignees: false,
-            download: false,
-        },
-        writtenSummary: { text: null, generated: false },
-        cover: {
-            title: 'Payment platform',
-            description: null,
-            owner: null,
-            generatedAt: '2026-01-01T00:00:00+00:00',
-            scaleCalibration: [],
-            completeness: total,
-        },
-        executiveSummary: {
-            inherent: { ...total, baseline: 'inherent' },
-            current: total,
-            target: { ...total, baseline: 'target' },
-            reductionCurrent: null,
-            reductionTarget: null,
-            annualCostOfControls: {
-                priced: 0,
-                free: 0,
-                unpricedCount: 0,
-                implementedCount: 0,
-            },
-        },
-        programme: {
-            planned: {
-                annualisedCost: 0,
-                oneOffCost: 0,
-                recurringCost: 0,
-                count: 0,
-                freeCount: 0,
-                unpricedCount: 0,
-            },
-            totals: { inherent: 0, current: 0, target: 0 },
-            riskReduced: {
-                inherentToCurrent: 0,
-                currentToTarget: 0,
-                inherentToTarget: 0,
-            },
-            returnOnPlanned: null,
-        },
-        riskRegister: [],
-        defencesByImportance: { priced: [], free: [], unpriced: [] },
-        defencesByOpportunity: { priced: [], free: [], unpriced: [] },
-        shelvedOpportunity: { priced: [], free: [], unpriced: [] },
-        transfers: [],
-        controlCoverage: { frameworks: [], hiddenShelved: 0 },
-        tree: { risks: [], orphanAttacks: [], orphanDefences: [] },
-        appendices: { references: [], comments: [], warnings: [] },
-    };
-}
-
-function mountReport() {
     return mount(ReportShow, {
-        props: { assessment: { uuid: 'u' }, report: report() },
+        props: {
+            assessment: { uuid: 'u' },
+            report: { ...base, options: { ...base.options, ...options } },
+        },
         global: {
             config: { globalProperties: { route } },
             stubs: { SummaryNarrative: true, teleport: true },
@@ -247,46 +176,84 @@ describe('the report chrome', () => {
         expect(editor.get('.ml-auto').text()).toContain('100%');
 
         // Neither zoom group is last — the switcher is, in both rows.
-        expect(last(report).textContent).toContain('View');
+        expect(last(report).getAttribute('aria-label')).toBe('View');
         expect(last(report).textContent).not.toContain('100%');
-        expect(last(editor).textContent).toContain('View');
+        expect(last(editor).getAttribute('aria-label')).toBe('View');
         expect(last(editor).textContent).not.toContain('100%');
     });
 
-    it('groups the choices on one row and the inclusions separately', () => {
+    /*
+     * W136, D106. Every report setting sits behind one of two buttons,
+     * Content (what the numbers are computed from) and Sections (what is added
+     * to the document), each group under a heading. Nothing is inline, and
+     * there is no Filters button on the report.
+     */
+    it('puts every setting behind a Content or a Sections button, under headings', async () => {
         const wrapper = mountReport();
+
+        expect(wrapper.text()).not.toContain('Filters');
+        expect(
+            wrapper.find('[data-testid="report-option-choices"]').exists(),
+        ).toBe(false);
+        expect(
+            wrapper.find('[data-testid="report-option-inclusions"]').exists(),
+        ).toBe(false);
+
+        await wrapper
+            .get('[data-testid="report-content-button"]')
+            .trigger('click');
+        await wrapper
+            .get('[data-testid="report-sections-button"]')
+            .trigger('click');
 
         const choices = wrapper.get('[data-testid="report-option-choices"]');
         const inclusions = wrapper.get(
             '[data-testid="report-option-inclusions"]',
         );
 
-        // Two radio groups inline — baseline and shelved, the latter a
-        // choice between two accounts of the programme rather than an
-        // inclusion.
-        //
-        // Three until W80 removed the figures control from between them.
-        // The count is asserted exactly rather than as "at least two",
-        // because a reintroduced dead option would land in this row and a
-        // loose assertion would not notice: the panel offers a choice only
-        // where one exists.
-        expect(choices.findAll('[role="radiogroup"]')).toHaveLength(2);
-        expect(choices.text()).toContain('Both');
-        expect(choices.text()).toContain('Include shelved');
+        // Defences: one group, three rows, each saying it is about defences.
+        expect(choices.text()).toContain('Which defences the report covers');
+        expect(choices.text()).toContain('Implemented defences');
+        expect(choices.text()).toContain('Planned defences');
+        expect(choices.text()).toContain('Shelved defences');
+        expect(choices.findAll('[role="radiogroup"]')).toHaveLength(0);
+        expect(wrapper.text()).not.toContain('Which state to report');
 
         // W80: no figures control anywhere on the page, under either label
         // it ever wore.
         expect(wrapper.text()).not.toContain('Full figures');
         expect(wrapper.text()).not.toContain('Qualitative only');
 
-        // ...and the inclusions, which each add or remove a section, in
-        // their own group. One flow-wrapping list made these look like the
-        // same kind of decision as the radios above.
-        expect(choices.text()).not.toContain('Include comments');
+        // Sections: the inclusions, each of which adds or removes a section.
+        expect(inclusions.text()).toContain('Report body');
         expect(inclusions.text()).toContain('Include comments');
         expect(inclusions.text()).toContain('Include methodology');
+        expect(inclusions.text()).toContain('Include model-quality warnings');
         expect(inclusions.text()).toContain('Show assignees');
         expect(inclusions.findAll('[role="radiogroup"]')).toHaveLength(0);
+        expect(choices.text()).not.toContain('Include comments');
+    });
+
+    it('shows no count on either button, and the optional appendices start off', () => {
+        const defaults = mountReport();
+        for (const id of ['report-content-button', 'report-sections-button']) {
+            expect(defaults.get(`[data-testid="${id}"]`).text()).not.toMatch(
+                /\d/,
+            );
+        }
+
+        const changed = mountReport({
+            baseline: 'current',
+            includeShelved: true,
+            includeComments: true,
+            showAssignees: true,
+            omittedSections: ['cover', 'tree'],
+        });
+        for (const id of ['report-content-button', 'report-sections-button']) {
+            expect(changed.get(`[data-testid="${id}"]`).text()).not.toMatch(
+                /\d/,
+            );
+        }
     });
 
     it('carries one Export menu and no separate download or per-format buttons (D34, D35)', () => {

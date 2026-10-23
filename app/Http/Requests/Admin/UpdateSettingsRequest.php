@@ -27,6 +27,8 @@ class UpdateSettingsRequest extends FormRequest
             // this hands it, so an unruled key is simply never written.
             'public_assessments_allowed' => ['required', 'boolean'],
             'session_lifetime_minutes' => ['required', 'integer', 'min:5', 'max:43200'],
+            // `require_two_factor` and `sso_only` moved to the Authentication
+            // tab (W133, D105), which has its own request.
         ];
     }
 }

@@ -1,0 +1,4 @@
+{
+    "php": { "statements": 93.5 },
+    "js": { "lines": 79, "branches": 68, "functions": 70, "statements": 77 }
+}

@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Domain\Dashboard\AssessmentListRows;
 use App\Domain\Dashboard\DashboardData;
+use App\Domain\Retention\AssessmentEraser;
+use App\Domain\Retention\DeletedAssessments;
+use App\Domain\Retention\TrashPurger;
+use App\Domain\Scales\ScaleSets;
 use App\Domain\Structure\AssessmentCloner;
 use App\Domain\Structure\AssessmentCreator;
 use App\Http\Requests\Assessment\StoreAssessmentRequest;
@@ -17,11 +21,11 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Listing, creating and deleting assessments — the entry point the
- * application shipped without. Kept separate from AssessmentController,
- * which owns the tree editor's read route and belongs to W12: this is a
- * different concern (the lifecycle around an assessment rather than the
- * rendering of one) and a different package.
+ * Listing, creating, deleting, restoring and erasing assessments — the
+ * entry point the application shipped without. Kept separate from
+ * AssessmentController, which owns the tree editor's read route and belongs
+ * to W12: this is a different concern (the lifecycle around an assessment
+ * rather than the rendering of one) and a different package.
  *
  * **The index deliberately does not list public assessments.** `is_public`
  * grants read to anyone holding the link (AssessmentPolicy::view(), and
@@ -46,7 +50,12 @@ class AssessmentLifecycleController extends Controller
         return Inertia::render('Dashboard', $dashboard->for($request->user()));
     }
 
-    public function index(Request $request, AssessmentListRows $rows): Response
+    /**
+     * Also carries the *Deleted* tab (W113): small by construction, since the
+     * purge empties it after `trash_retention_days`, so it rides along rather
+     * than costing a route of its own. `?show=deleted` opens on it.
+     */
+    public function index(Request $request, AssessmentListRows $rows, DeletedAssessments $deleted): Response
     {
         $user = $request->user();
 
@@ -62,6 +71,10 @@ class AssessmentLifecycleController extends Controller
 
         return Inertia::render('Assessment/Index', [
             'assessments' => $rows->for($assessments, $user),
+            'deleted' => $deleted->for($user),
+            'retentionDays' => TrashPurger::retentionDays(),
+            'scaleOptions' => ScaleSets::options(),
+            'show' => $request->query('show') === 'deleted' ? 'deleted' : 'active',
         ]);
     }
 
@@ -69,11 +82,17 @@ class AssessmentLifecycleController extends Controller
     {
         $validated = $request->validated();
 
-        $assessment = $creator->create(
-            $request->user(),
-            $validated['title'],
-            $validated['description'] ?? null,
-        );
+        try {
+            $assessment = $creator->create(
+                $request->user(),
+                $validated['title'],
+                $validated['description'] ?? null,
+                $validated['scale_set_key'] ?? null,
+            );
+        } catch (\InvalidArgumentException) {
+            // The scale was deleted between the form opening and being sent.
+            return back()->withErrors(['scale_set_key' => 'That scale no longer exists. Pick another.'])->withInput();
+        }
 
         return redirect()->route('assessments.show', $assessment);
     }
@@ -129,15 +148,68 @@ class AssessmentLifecycleController extends Controller
 
     public function destroy(Request $request, Assessment $assessment): RedirectResponse
     {
+        // A template is deleted on the Templates page (W141), which erases it;
+        // soft-deleting it here would hide it from the library and leave it in a
+        // trash it cannot be restored from.
+        abort_if($assessment->is_template, 404);
+
         if (Gate::forUser($request->user())->denies('delete', $assessment)) {
             abort(403);
         }
 
         // Soft delete: the nodes stay, so a restore is possible and an
         // audit trail survives. Deleting the assessment is what removes it
-        // from every list, since every query scopes through it.
+        // from every list, since every query scopes through it. It stays
+        // under *Deleted* until restored, erased, or purged (W113).
         $assessment->delete();
 
         return redirect()->route('assessments.index');
+    }
+
+    /**
+     * Back from *Deleted* (W113). The `delete` ability, the one that put it
+     * there: whoever could delete it can take the decision back.
+     *
+     * The route binds trashed rows too (`withTrashed()`), so a live assessment
+     * reaches here and is answered 404 — there is nothing to restore — after
+     * the policy, so the answer says nothing to someone without the ability.
+     */
+    public function restore(Request $request, Assessment $assessment): RedirectResponse
+    {
+        if (Gate::forUser($request->user())->denies('delete', $assessment)) {
+            abort(403);
+        }
+
+        if (! $assessment->trashed()) {
+            abort(404);
+        }
+
+        $assessment->restore();
+
+        return redirect()->route('assessments.show', $assessment);
+    }
+
+    /**
+     * *Erase permanently* (W113): `forceDelete`, owner and admin only
+     * (security.md §3.1, schema.md §3.7) — a manager can delete and restore
+     * but cannot destroy the owner's work. Only from *Deleted*: erasing is two
+     * deliberate steps, never one click on a live assessment.
+     */
+    public function erase(Request $request, Assessment $assessment, AssessmentEraser $eraser): RedirectResponse
+    {
+        if (Gate::forUser($request->user())->denies('forceDelete', $assessment)) {
+            abort(403);
+        }
+
+        if (! $assessment->trashed()) {
+            abort(404);
+        }
+
+        // False means a restore got there first.
+        if (! $eraser->erase($assessment)) {
+            abort(404);
+        }
+
+        return redirect()->route('assessments.index', ['show' => 'deleted']);
     }
 }

@@ -50,8 +50,27 @@ class AssessmentCloner
     /**
      * Clones an entire assessment: its own scales (if custom), tags, every
      * node, and both edge tables. System scales are shared, not cloned.
+     *
+     * `cloneAsTemplate()` makes the copy a template (W141): ownerless, with
+     * `is_template` set, which the database CHECK requires to go together.
+     * Nothing else about the copy differs, so "use a template" and "publish
+     * as a template" share one tested path.
      */
     public function cloneAssessment(Assessment $source, User $newOwner): Assessment
+    {
+        return $this->cloneFor($source, $newOwner);
+    }
+
+    /**
+     * The same copy as an ownerless template (W141). A separate entry point, so
+     * a caller holding a nullable user cannot publish by accident.
+     */
+    public function cloneAsTemplate(Assessment $source): Assessment
+    {
+        return $this->cloneFor($source, null);
+    }
+
+    private function cloneFor(Assessment $source, ?User $newOwner): Assessment
     {
         return DB::transaction(function () use ($source, $newOwner): Assessment {
             // Scale FKs are NOT NULL, so the assessment is first created
@@ -60,15 +79,16 @@ class AssessmentCloner
             // has an id of its own to own them.
             $clone = new Assessment;
             $clone->uuid = (string) Str::uuid();
-            $clone->owner_user_id = $newOwner->id;
+            $clone->owner_user_id = $newOwner?->id;
             $clone->currency = $source->currency;
             $clone->display_mode = $source->display_mode;
             $clone->impact_scale_id = $source->impact_scale_id;
             $clone->likelihood_scale_id = $source->likelihood_scale_id;
             $clone->strength_scale_id = $source->strength_scale_id;
+            $clone->scale_set_key = $source->scale_set_key;
             $clone->amortization_years = $source->amortization_years;
             $clone->is_public = false;
-            $clone->is_template = false;
+            $clone->is_template = $newOwner === null;
             $clone->calc_version = 0;
             $clone->save();
 

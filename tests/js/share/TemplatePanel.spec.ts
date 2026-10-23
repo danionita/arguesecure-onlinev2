@@ -1,33 +1,26 @@
 /**
- * The Save-as-template panel (W45, item 14).
+ * The Publish-as-template panel (W45, item 14; reshaped by W141).
  *
  * The thing worth testing here is not that a button exists. It is that
- * nothing is published on one click, and that the sentence telling the user
- * what publishing exposes is on screen before the click that does it. That
- * copy is the security content of this package as far as the person using it
- * is concerned.
+ * nothing is published on one click, and that the sentences telling the user
+ * what publishing exposes, and that it cannot be undone from the assessment,
+ * are on screen before the click that does it.
  */
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import TemplatePanel from '../../../resources/js/Components/Share/TemplatePanel.vue';
-import type { TemplateStatus } from '../../../resources/js/Components/Share/types';
 
-function render(status: Partial<TemplateStatus> = {}, busy = false) {
+function render(props: { busy?: boolean; published?: boolean } = {}) {
     return mount(TemplatePanel, {
-        props: {
-            busy,
-            status: {
-                is_template: false,
-                is_public: false,
-                canSaveAsTemplate: true,
-                ...status,
-            },
+        props: { busy: false, published: false, ...props },
+        global: {
+            mocks: { route: (name: string) => `/${name}` },
+            stubs: { Link: { template: '<a><slot /></a>' } },
         },
     });
 }
 
 const CONFIRM = '[data-testid="template-confirm-publish"]';
-const UNCONFIRM = '[data-testid="template-confirm-unpublish"]';
 
 describe('TemplatePanel', () => {
     it('does not publish on the first click', async () => {
@@ -39,7 +32,7 @@ describe('TemplatePanel', () => {
         expect(wrapper.find(CONFIRM).exists()).toBe(true);
     });
 
-    it('says what publishing exposes before it happens', async () => {
+    it('says what publishing exposes, and that it is a one-way copy, before it happens', async () => {
         const wrapper = render();
 
         await wrapper.find('button').trigger('click');
@@ -47,9 +40,9 @@ describe('TemplatePanel', () => {
 
         expect(text).toContain('everyone with an account');
         expect(text).toContain('risks, attacks, defences and values');
-        // 2.5.1: publishing no longer makes the assessment itself public.
-        expect(text).toContain('does not make this assessment itself public');
-        expect(text).toContain('unpublish it at any time');
+        expect(text).toContain('editing one never changes the other');
+        expect(text).toContain('cannot be unpublished');
+        expect(text).toContain('delete it from the Templates page');
     });
 
     it('publishes on the second, deliberate click', async () => {
@@ -60,6 +53,7 @@ describe('TemplatePanel', () => {
         await buttons[buttons.length - 1].trigger('click');
 
         expect(wrapper.emitted('publish')).toHaveLength(1);
+        expect(wrapper.find(CONFIRM).exists()).toBe(false);
     });
 
     it('cancels without emitting anything', async () => {
@@ -72,41 +66,19 @@ describe('TemplatePanel', () => {
         expect(wrapper.find(CONFIRM).exists()).toBe(false);
     });
 
-    it('asks before unpublishing, and says existing copies are unaffected', async () => {
-        const wrapper = render({ is_template: true });
+    it('has no unpublish: after publishing it only points at the Templates page', () => {
+        const wrapper = render({ published: true });
 
-        await wrapper.find('button').trigger('click');
-
-        expect(wrapper.find(UNCONFIRM).text()).toContain('not affected');
-        expect(wrapper.emitted('unpublish')).toBeUndefined();
+        expect(wrapper.text()).toContain('Templates page');
+        expect(wrapper.text().toLowerCase()).not.toContain('unpublish ');
+        expect(wrapper.findAll('button').map((b) => b.text())).toEqual([
+            'Publish another copy',
+        ]);
     });
 
-    it('offers no control to someone who may not publish', () => {
-        const wrapper = render({ canSaveAsTemplate: false });
+    it('is disabled while a request is in flight', () => {
+        const wrapper = render({ busy: true });
 
-        expect(wrapper.find('button').exists()).toBe(false);
-    });
-
-    it('tells a non-admin why there is no control (2.5.1: admins only)', () => {
-        const wrapper = render({ canSaveAsTemplate: false });
-
-        expect(wrapper.text()).toContain('Only an administrator');
-    });
-
-    it('retires the prompt once the state has actually changed', async () => {
-        const wrapper = render();
-
-        await wrapper.find('button').trigger('click');
-        expect(wrapper.find(CONFIRM).exists()).toBe(true);
-
-        await wrapper.setProps({
-            status: {
-                is_template: true,
-                is_public: false,
-                canSaveAsTemplate: true,
-            },
-        });
-
-        expect(wrapper.find(CONFIRM).exists()).toBe(false);
+        expect(wrapper.find('button').attributes('disabled')).toBeDefined();
     });
 });

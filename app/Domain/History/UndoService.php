@@ -60,16 +60,29 @@ class UndoService
             throw new \InvalidArgumentException("Unknown operation kind: {$kind}");
         }
 
-        return AssessmentOperation::create([
-            'assessment_id' => $assessment->id,
-            'user_id' => $user?->id,
-            'kind' => $kind,
-            'summary' => $summary,
-            'inverse' => $inverse,
-            // The model has $timestamps = false (it has no updated_at), so
-            // Eloquent will not populate this NOT NULL column on its own.
-            'created_at' => now(),
-        ]);
+        return DB::transaction(function () use ($assessment, $user, $kind, $summary, $inverse): AssessmentOperation {
+            // D83: new work ends the redo stack. redo() pushes its row through
+            // create() directly, so a redo does not clear what is left of it.
+            // One transaction, so a failed create() cannot leave the stack
+            // ended with no new operation to show for it.
+            AssessmentOperation::query()
+                ->where('assessment_id', $assessment->id)
+                ->whereNotNull('undone_at')
+                ->whereNull('redone_at')
+                ->whereNull('superseded_at')
+                ->update(['superseded_at' => now()]);
+
+            return AssessmentOperation::create([
+                'assessment_id' => $assessment->id,
+                'user_id' => $user?->id,
+                'kind' => $kind,
+                'summary' => $summary,
+                'inverse' => $inverse,
+                // The model has $timestamps = false (it has no updated_at), so
+                // Eloquent will not populate this NOT NULL column on its own.
+                'created_at' => now(),
+            ]);
+        });
     }
 
     /**
@@ -119,7 +132,7 @@ class UndoService
             // May itself throw UndoConflictException, which propagates out
             // of the transaction and rolls back any partial writes the
             // Applier made first.
-            $redoCommand = $this->dispatcher->apply($this->inverseOf($locked));
+            $redoCommand = $this->dispatcher->apply($this->inverseOf($locked), $locked->assessment_id);
 
             $locked->undone_at = now();
             $locked->undone_by = $user?->id;
@@ -142,14 +155,13 @@ class UndoService
      * undoable" simple: after a redo, the pushed row is what Ctrl+Z targets
      * next, exactly like any other structural change.
      *
-     * Known simplification: `assessment_operations` has no `redone_at`
-     * column (schema.md §3.10 fixes that table's shape, and this package
-     * does not own migrations), so the consumed row's `undone_at` is
-     * cleared rather than flagged "redone" — it stops matching "most
-     * recently undone" without a dedicated marker. This means the
-     * historical stack can show two rows for one logical change after a
-     * redo; a future `redone_at`/`redone_by` column would remove the need
-     * for this.
+     * The consumed row keeps its `undone_at` and gains a `redone_at` (W108),
+     * which takes it off both stacks: `latestUndoable()` already skips it
+     * because it is undone, and the query below skips it because it is
+     * redone. Clearing `undone_at` instead, as this did before W108, made the
+     * row undoable again while its `inverse` still held the redo command, so
+     * undo, redo, undo, undo re-applied the change instead of undoing the
+     * operation before it.
      *
      * @throws NothingToUndoException nothing has been undone
      * @throws UndoConflictException the redo cannot be applied cleanly against current state
@@ -159,6 +171,10 @@ class UndoService
         $undone = AssessmentOperation::query()
             ->where('assessment_id', $assessment->id)
             ->whereNotNull('undone_at')
+            ->whereNull('redone_at')
+            ->whereNull('superseded_at')
+            // Microseconds since W108, so two undos in one second (an
+            // ordinary Ctrl+Z, Ctrl+Z) no longer tie on the timestamp.
             ->orderByDesc('undone_at')
             ->orderByDesc('id')
             ->first();
@@ -171,14 +187,20 @@ class UndoService
             /** @var AssessmentOperation $locked */
             $locked = AssessmentOperation::query()->whereKey($undone->id)->lockForUpdate()->firstOrFail();
 
-            if ($locked->undone_at === null) {
+            if ($locked->undone_at === null || $locked->redone_at !== null) {
                 throw new NothingToUndoException('Nothing to redo.');
             }
 
-            $undoCommand = $this->dispatcher->apply($this->inverseOf($locked));
+            // A new operation can stamp the row between the select above and
+            // this lock. Its own message, so a test can tell this re-check
+            // from the query's `superseded_at` filter, which answers first.
+            if ($locked->superseded_at !== null) {
+                throw new NothingToUndoException('This change can no longer be redone.');
+            }
 
-            $locked->undone_at = null;
-            $locked->undone_by = null;
+            $undoCommand = $this->dispatcher->apply($this->inverseOf($locked), $locked->assessment_id);
+
+            $locked->redone_at = now();
             $locked->save();
 
             return AssessmentOperation::create([

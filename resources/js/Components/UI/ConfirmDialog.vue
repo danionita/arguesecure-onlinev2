@@ -17,6 +17,8 @@ withDefaults(
         cancelLabel?: string;
         danger?: boolean;
         loading?: boolean;
+        /** Initial focus on Cancel, for prompts where Enter must not discard. */
+        focusCancel?: boolean;
     }>(),
     {
         message: undefined,
@@ -24,6 +26,7 @@ withDefaults(
         cancelLabel: 'Cancel',
         danger: false,
         loading: false,
+        focusCancel: false,
     },
 );
 
@@ -38,13 +41,16 @@ const emit = defineEmits<{ confirm: []; cancel: [] }>();
         </div>
         <template #footer>
             <div class="flex justify-end gap-2">
-                <Button variant="ghost" @click="emit('cancel')">{{
-                    cancelLabel
-                }}</Button>
+                <Button
+                    variant="ghost"
+                    :autofocus="focusCancel"
+                    @click="emit('cancel')"
+                    >{{ cancelLabel }}</Button
+                >
                 <Button
                     :variant="danger ? 'danger' : 'primary'"
                     :loading="loading"
-                    autofocus
+                    :autofocus="!focusCancel"
                     @click="emit('confirm')"
                 >
                     {{ confirmLabel }}

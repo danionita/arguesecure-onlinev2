@@ -2,9 +2,12 @@
 
 namespace App\Domain\Sharing;
 
+use App\Domain\Audit\SecurityEvent;
+use App\Domain\Audit\SecurityLog;
 use App\Models\Assessment;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -42,7 +45,7 @@ class OwnershipTransferService
             throw new \InvalidArgumentException('Ownership can only be transferred to an existing collaborator.');
         }
 
-        DB::transaction(function () use ($assessment, $newOwner) {
+        $previousOwnerId = DB::transaction(function () use ($assessment, $newOwner) {
             $previousOwnerId = $assessment->owner_user_id;
 
             // The incoming owner is no longer an ordinary collaborator —
@@ -69,6 +72,14 @@ class OwnershipTransferService
                     'accepted_at' => Carbon::now(),
                 ]);
             }
+
+            return $previousOwnerId;
         });
+
+        // After the commit: a rolled-back transfer must not be in the log.
+        SecurityLog::record(SecurityEvent::OwnershipTransferred, Auth::user(), SecurityLog::assessment($assessment), [
+            'from_user_id' => $previousOwnerId,
+            'to_user_id' => $newOwner->id,
+        ]);
     }
 }

@@ -106,7 +106,7 @@ test('a valid share-link session flag grants anonymous read access to the report
     $assessment = Assessment::factory()->create(['is_public' => false]);
     $token = ShareTokenService::generate($assessment);
 
-    $this->get('/s/'.$token)->assertRedirect(route('dashboard'));
+    $this->get('/s/'.$token)->assertRedirect(route('assessments.show', $assessment));
 
     $this->get(route('assessments.report.show', $assessment))->assertOk();
 });

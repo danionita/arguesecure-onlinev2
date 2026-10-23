@@ -2,24 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Accounts\InstanceSettings;
 use App\Domain\Accounts\SessionRegistry;
+use App\Domain\Identity\TwoFactor\Enrolment;
+use App\Http\Controllers\Auth\OidcController;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request, Enrolment $enrolment): Response
     {
         $user = $request->user();
 
@@ -28,13 +33,17 @@ class ProfileController extends Controller
             'status' => session('status'),
             'sessions' => SessionRegistry::forUser($user->id, $request->session()->getId()),
             'ownedAssessmentCount' => $user->ownedAssessments()->count(),
+            // W116: the two-factor panel. `recoveryCodes` is flashed by the
+            // action that made them and is on the page exactly once.
+            'twoFactor' => $enrolment->panel($user, $request->session()),
+            'recoveryCodes' => session('recoveryCodes'),
         ]);
     }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request): RedirectResponse|SymfonyResponse
     {
         $user = $request->user();
         $emailChanging = $request->validated()['email'] !== $user->email;
@@ -46,7 +55,18 @@ class ProfileController extends Controller
         // the bare app/Http/Requests/ path it lives in), so the extra
         // check is added here inline rather than in that request class —
         // reported as a gap in the W8 report.
-        if ($emailChanging) {
+        // W117 (D79): in SSO-only mode a non-admin has no password to give, so
+        // an email change asks for a provider sign-in within the last five
+        // minutes instead, sending them to the provider if there is none.
+        if ($emailChanging && InstanceSettings::ssoOnly() && ! $user->is_admin) {
+            $at = (int) $request->session()->get(OidcController::SESSION_REAUTH, 0);
+
+            if (Carbon::now()->getTimestamp() - $at > OidcController::REAUTH_WINDOW_SECONDS) {
+                return Inertia::location(route('oidc.redirect', ['reauth' => 1]));
+            }
+
+            $request->session()->forget(OidcController::SESSION_REAUTH);
+        } elseif ($emailChanging) {
             $validator = Validator::make($request->only('current_password'), [
                 'current_password' => ['required', 'current_password'],
             ]);

@@ -43,27 +43,45 @@ use RuntimeException;
  */
 final class AssessmentCreator
 {
-    public function create(User $owner, string $title, ?string $description = null): Assessment
+    public function create(User $owner, string $title, ?string $description = null, ?string $scaleSetKey = null): Assessment
     {
-        $scales = $this->systemScales();
+        return $this->build($owner, $owner, $title, $description, $scaleSetKey);
+    }
 
-        return DB::transaction(function () use ($owner, $title, $description, $scales): Assessment {
+    /**
+     * A template, from nothing (W141): ownerless, with the admin who made it
+     * recorded as the author of its root node only. Everything else about it
+     * is `create()`'s, which is the point: the same editor opens it.
+     */
+    public function createTemplate(User $author, string $title, ?string $description = null, ?string $scaleSetKey = null): Assessment
+    {
+        return $this->build(null, $author, $title, $description, $scaleSetKey);
+    }
+
+    private function build(?User $owner, User $author, string $title, ?string $description, ?string $scaleSetKey): Assessment
+    {
+        $key = $scaleSetKey ?? ScaleSets::DEFAULT_KEY;
+        $scales = $this->systemScales($key);
+
+        return DB::transaction(function () use ($owner, $author, $title, $description, $scales, $key): Assessment {
             $assessment = new Assessment;
             // Identity and configuration columns are deliberately absent
             // from Assessment::$fillable, so they are assigned rather than
             // mass-assigned — see CLAUDE.md's "never mass-assign an identity
             // column", which has broken three packages here already.
-            $assessment->owner_user_id = $owner->id;
+            $assessment->owner_user_id = $owner?->id;
+            $assessment->is_template = $owner === null;
             $assessment->impact_scale_id = $scales['impact'];
             $assessment->likelihood_scale_id = $scales['likelihood'];
             $assessment->strength_scale_id = $scales['strength'];
+            $assessment->scale_set_key = $key;
             $assessment->save();
 
             $root = new RootNode(['title' => $title, 'description' => $description]);
             $root->assessment_id = $assessment->id;
             $root->position = 0;
-            $root->created_by = $owner->id;
-            $root->updated_by = $owner->id;
+            $root->created_by = $author->id;
+            $root->updated_by = $author->id;
             $root->save();
 
             return $assessment;
@@ -82,15 +100,21 @@ final class AssessmentCreator
      * suite: no test failed while assessment creation was picking at random.
      * Selection is by **set**, and only by set.
      *
-     * Always the default set since 2.5.1. `default_scale_calibration`, which
-     * chose between seeded sets, was removed: the admin Defaults tab edits
-     * the default set's bands directly, and it is the only default there is.
+     * The set the person chose in the New assessment pop-up (W126), Standard
+     * unless they chose another.
      *
      * @return array{impact: int, likelihood: int, strength: int}
      */
-    private function systemScales(): array
+    private function systemScales(string $key): array
     {
-        $scales = ScaleSets::resolve(ScaleSets::DEFAULT_KEY);
+        $scales = ScaleSets::resolve($key);
+
+        if ($scales === null && $key !== ScaleSets::DEFAULT_KEY) {
+            // A named scale that is not there is a request the form should
+            // have refused (StoreAssessmentRequest); substituting Standard
+            // would give the person a calibration they did not choose.
+            throw new \InvalidArgumentException("No complete scale '{$key}' exists.");
+        }
 
         if ($scales === null) {
             // Names the missing row rather than the missing set. "No complete

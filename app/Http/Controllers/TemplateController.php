@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Audit\SecurityEvent;
+use App\Domain\Audit\SecurityLog;
+use App\Domain\Retention\AssessmentEraser;
 use App\Domain\Structure\AssessmentCloner;
+use App\Domain\Structure\AssessmentCreator;
 use App\Domain\Templates\TemplateNodes;
 use App\Models\Assessment;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Templates (schema.md §3.14, PLAN.md Phase 8 item 4): mark an assessment
- * as a template, and create a new assessment from one. Creation reuses
+ * Templates (schema.md §3.14, PLAN.md Phase 8 item 4): publish an assessment
+ * as a template, manage templates, and create a new assessment from one. Creation reuses
  * Structure\AssessmentCloner::cloneAssessment() unmodified (W6) — it
  * already produces exactly the required behaviour, a genuine copy that
  * remaps every uuid, so later edits to the template can never propagate
@@ -24,10 +29,14 @@ use Inertia\Response;
  * tests/Feature/Catalog/TemplateTest.php — see that file's own note on
  * the AssessmentCloner defect this package found and does not own).
  *
- * Since 2.5.1: marking/unmarking a template is an admin's decision
+ * Since 2.5.1: publishing a template is an admin's decision
  * (`saveAsTemplate`), and every signed-in account can list the templates
  * and build its own private copy of one (`useAsTemplate`). The template
  * library is instance-wide reference material, like the catalogue.
+ *
+ * Since W141 (2.7.0) a template is not anyone's assessment: it has no owner,
+ * admins create, edit (in the ordinary editor) and delete it from the
+ * Templates page, and publishing copies an assessment into one.
  *
  * No FormRequest class here — this package owns only this controller, not
  * app/Http/Requests/**, matching SnapshotController's own documented
@@ -44,7 +53,7 @@ class TemplateController extends Controller
         // everyone but the admin who owned them, because they are not public.
         $templates = Assessment::query()
             ->where('is_template', true)
-            ->with(['rootNode:id,assessment_id,title,description', 'owner:id,name'])
+            ->with(['rootNode:id,assessment_id,title,description'])
             ->get()
             ->filter(fn (Assessment $assessment): bool => Gate::forUser($user)->allows('useAsTemplate', $assessment))
             ->map(fn (Assessment $assessment): array => $this->templateSummary($assessment))
@@ -52,6 +61,9 @@ class TemplateController extends Controller
 
         return Inertia::render('Catalog/Templates', [
             'templates' => $templates,
+            // Presentation only; every route behind the controls refuses a
+            // non-admin on its own.
+            'canManage' => (bool) $user?->is_admin,
         ]);
     }
 
@@ -97,58 +109,90 @@ class TemplateController extends Controller
     }
 
     /**
-     * What the Share dialog needs to render its template panel (W45).
+     * Publishes an assessment as a template (W141; PLAN-2.7-admin-templates.md T3).
      *
-     * `view`, not `saveAsTemplate`: this reports state, and someone who can
-     * read the assessment can already see it is a template by finding it in
-     * the template list. `canSaveAsTemplate` is what gates the controls, and
-     * it is presentation only — `update()` refuses independently, which is
-     * asserted as its own test.
-     */
-    public function show(Request $request, Assessment $assessment): JsonResponse
-    {
-        if (Gate::forUser($request->user())->denies('view', $assessment)) {
-            abort(403);
-        }
-
-        return response()->json($this->status($assessment, $request));
-    }
-
-    /**
-     * Publishes or unpublishes a template (W45; PLAN-2.2.md D12).
+     * A copy, never a flag: the template is a separate, ownerless assessment
+     * made by AssessmentCloner, and nothing is written to the original or
+     * remembered about it. Editing either afterwards changes only itself,
+     * and there is nothing to unpublish — a template is removed by deleting
+     * it on the Templates page. Through 2.6 this moved `is_template` on the
+     * assessment itself, so the template and its source were one row.
      *
-     * Admins only since 2.5.1 (see AssessmentPolicy::saveAsTemplate), and it
-     * moves `is_template` alone. Through 2.5 publishing also set `is_public`,
-     * because using a template needed `view`; `useAsTemplate` replaced that,
-     * so a template no longer has to be readable by the whole instance to be
-     * usable by it — and the instance's "no public assessments" setting no
-     * longer stands between an admin and the template library.
+     * Admins only (`saveAsTemplate`): the copy is offered to every account on
+     * the instance and cannot be withdrawn from whoever has used it. A
+     * template cannot be published again — it already is one (404).
      */
-    public function update(Request $request, Assessment $assessment): RedirectResponse|JsonResponse
+    public function publish(Request $request, Assessment $assessment, AssessmentCloner $cloner): JsonResponse
     {
         if (Gate::forUser($request->user())->denies('saveAsTemplate', $assessment)) {
             abort(403);
         }
 
-        $validated = $request->validate([
-            'is_template' => ['required', 'boolean'],
-        ]);
+        abort_if($assessment->is_template, 404);
 
-        $publishing = (bool) $validated['is_template'];
+        $template = $cloner->cloneAsTemplate($assessment);
 
-        $assessment->update(['is_template' => $publishing]);
+        SecurityLog::record(
+            SecurityEvent::TemplatePublished,
+            $request->user(),
+            SecurityLog::assessment($template),
+            ['source' => $assessment->uuid],
+        );
 
-        // Two callers, two shapes. The Share dialog is an axios panel inside
-        // a modal and must stay open, so it gets the new state as JSON; an
-        // ordinary form post still gets the redirect it has had since W20,
-        // which is what the existing feature tests assert.
-        if ($request->wantsJson()) {
-            return response()->json($this->status($assessment->fresh(), $request));
+        return response()->json(['template' => ['uuid' => $template->uuid]], 201);
+    }
+
+    /**
+     * A new, empty template (W141, T4). It opens in the ordinary editor, where
+     * its title and everything else are set, so this asks for nothing.
+     */
+    public function create(Request $request, AssessmentCreator $creator): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if (Gate::forUser($user)->denies('createTemplate', Assessment::class)) {
+            abort(403);
         }
 
-        return redirect()
-            ->route('assessments.show', $assessment)
-            ->with('success', $publishing ? 'Saved as a template.' : 'No longer a template.');
+        $template = $creator->createTemplate($user, 'Untitled template');
+
+        SecurityLog::record(SecurityEvent::TemplateCreated, $user, SecurityLog::assessment($template));
+
+        return redirect()->route('assessments.show', $template);
+    }
+
+    /**
+     * Deletes a template for good (W141, T5): there is no owner to restore it
+     * for and nothing depends on it, because every assessment made from it is
+     * an independent copy. Soft-deleted first so AssessmentEraser, the one
+     * place that knows how to take an assessment's scales and nodes apart,
+     * does the work.
+     */
+    public function destroy(Request $request, Assessment $assessment, AssessmentEraser $eraser): RedirectResponse
+    {
+        abort_unless($assessment->is_template, 404);
+
+        if (Gate::forUser($request->user())->denies('delete', $assessment)) {
+            abort(403);
+        }
+
+        // One transaction: a failure part-way must not leave the template
+        // soft-deleted, which would hide it from the library without erasing it.
+        // Read before the row goes: the uuid is the only thing the log keeps.
+        $target = SecurityLog::assessment($assessment);
+
+        DB::transaction(function () use ($assessment, $eraser): void {
+            $assessment->delete();
+
+            if (! $eraser->erase($assessment)) {
+                throw new \RuntimeException('The template could not be erased.');
+            }
+        });
+
+        SecurityLog::record(SecurityEvent::TemplateDeleted, $request->user(), $target);
+
+        return redirect()->route('templates.index')->with('success', 'Template deleted.');
     }
 
     /**
@@ -179,16 +223,6 @@ class TemplateController extends Controller
         return response()->json(['assessment' => ['uuid' => $clone->uuid]], 201);
     }
 
-    /** @return array{is_template: bool, is_public: bool, canSaveAsTemplate: bool} */
-    private function status(Assessment $assessment, Request $request): array
-    {
-        return [
-            'is_template' => (bool) $assessment->is_template,
-            'is_public' => (bool) $assessment->is_public,
-            'canSaveAsTemplate' => Gate::forUser($request->user())->allows('saveAsTemplate', $assessment),
-        ];
-    }
-
     /** @return array<string, mixed> */
     private function templateSummary(Assessment $assessment): array
     {
@@ -196,7 +230,6 @@ class TemplateController extends Controller
             'uuid' => $assessment->uuid,
             'title' => $assessment->rootNode?->title,
             'description' => $assessment->rootNode?->description,
-            'owner' => $assessment->owner?->name,
             'currency' => $assessment->currency,
             'updatedAt' => $assessment->updated_at?->toJSON(),
         ];

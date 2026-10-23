@@ -47,6 +47,7 @@
 import type { ScaleDetail } from '@/Components/Scales/bands';
 import Button from '@/Components/UI/Button.vue';
 import Input from '@/Components/UI/Input.vue';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import type { AssessmentStore } from '@/stores/assessmentStore';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
@@ -113,6 +114,24 @@ const form = ref({
     risk_tolerance: '',
 });
 
+// Unsaved while the draft differs from the last loaded or saved values,
+// compared as numbers so "5000.0" saved as 5000 is not still pending, and
+// kept off the live store so a collaborator's update does not make an
+// untouched tab look edited.
+function normalised() {
+    const tolerance = String(form.value.risk_tolerance).trim();
+    return JSON.stringify([
+        form.value.currency,
+        Number(form.value.amortization_years),
+        tolerance === '' ? null : Number(tolerance),
+    ]);
+}
+const baseline = ref<string | null>(null);
+useUnsavedChanges(
+    () => baseline.value !== null && normalised() !== baseline.value,
+    'node-modal',
+);
+
 async function load(): Promise<void> {
     loading.value = true;
     loadFailed.value = false;
@@ -136,6 +155,7 @@ async function load(): Promise<void> {
                     ? ''
                     : String(response.data.props.assessment.risk_tolerance),
         };
+        baseline.value = normalised();
     } catch {
         // 403 for someone who may read but not manage, 409 if the asset
         // version moved under a long-open tab. Neither is worth three
@@ -219,6 +239,7 @@ async function save(): Promise<void> {
         if (changedAmortization) store.recomputeLocally();
 
         saved.value = true;
+        baseline.value = normalised();
     } catch (error) {
         const response = (
             error as {
@@ -331,14 +352,13 @@ async function save(): Promise<void> {
                     Scales
                 </h3>
                 <p class="text-text-muted mb-3 text-xs">
-                    The bands this assessment's qualitative values resolve
-                    against.
+                    The ranges this assessment's qualitative values stand for.
                     <Link
                         :href="
                             route('assessments.settings.edit', assessmentUuid)
                         "
                         class="hover:text-text-primary underline"
-                        >Calibrate them</Link
+                        >Change them</Link
                     >.
                 </p>
 

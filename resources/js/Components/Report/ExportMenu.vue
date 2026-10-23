@@ -58,7 +58,9 @@ const optionsQuery = computed(() => {
         include_shelved: o.includeShelved ? '1' : '0',
         include_comments: o.includeComments ? '1' : '0',
         include_methodology: o.includeMethodology ? '1' : '0',
+        include_warnings: o.includeWarnings ? '1' : '0',
         show_assignees: o.showAssignees ? '1' : '0',
+        omit_sections: o.omittedSections.join(','),
     }).toString();
 });
 

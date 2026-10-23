@@ -2,8 +2,10 @@
 
 namespace App\Policies;
 
+use App\Models\Assessment;
 use App\Models\Comment;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * A thin delegate to AssessmentPolicy (schema.md §5). Comment authoring
@@ -14,16 +16,24 @@ use App\Models\User;
  */
 class CommentPolicy
 {
-    public function __construct(private readonly AssessmentPolicy $assessments) {}
+    /**
+     * Goes through the Gate rather than calling AssessmentPolicy's methods, so
+     * its `before()` hook (the template rule, W141) applies here too: a direct
+     * method call skips it, which let a stray collaborator row edit a template.
+     */
+    private function assessment(?User $user, string $ability, Assessment $assessment): bool
+    {
+        return Gate::forUser($user)->allows($ability, $assessment);
+    }
 
     public function view(?User $user, Comment $comment): bool
     {
-        return $this->assessments->view($user, $comment->assessment);
+        return $this->assessment($user, 'view', $comment->assessment);
     }
 
     public function create(?User $user, Comment $comment): bool
     {
-        return $this->assessments->comment($user, $comment->assessment);
+        return $this->assessment($user, 'comment', $comment->assessment);
     }
 
     public function update(?User $user, Comment $comment): bool
@@ -32,7 +42,7 @@ class CommentPolicy
             return false;
         }
 
-        return $user->id === $comment->user_id || $this->assessments->manage($user, $comment->assessment);
+        return $user->id === $comment->user_id || $this->assessment($user, 'manage', $comment->assessment);
     }
 
     public function delete(?User $user, Comment $comment): bool

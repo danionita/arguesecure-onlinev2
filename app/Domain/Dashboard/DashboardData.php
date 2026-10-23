@@ -64,6 +64,23 @@ class DashboardData
             'mentions' => $this->mentions($user),
             'myAssessments' => $this->myAssessments($user),
             'sharedWithMe' => $this->sharedWithMe($user),
+            'counts' => $this->counts($user),
+        ];
+    }
+
+    /**
+     * The tab and section counts (D91, W125): the real totals, not the length
+     * of the excerpt above. Same scopes as the lists — owned for *Mine*
+     * (`/assessments`), membership for *Shared with me* (`/assessments/shared`)
+     * — and `SoftDeletes` already leaves a trashed assessment out of both.
+     *
+     * @return array{mine: int, shared: int}
+     */
+    private function counts(User $user): array
+    {
+        return [
+            'mine' => Assessment::query()->where('owner_user_id', $user->id)->count(),
+            'shared' => $this->sharedQuery($user)->count(),
         ];
     }
 

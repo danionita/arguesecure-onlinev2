@@ -64,6 +64,25 @@ final readonly class ReportOptions
 {
     public const BASELINES = ['current', 'target', 'both'];
 
+    /**
+     * Sections `omit_sections` can switch off (W139, D118), in document order,
+     * id => heading. The page's `reportSections.ts` carries the same list; a
+     * test compares the two.
+     */
+    public const SECTIONS = [
+        'cover' => 'Cover',
+        'written-summary' => 'Written summary',
+        'executive-summary' => 'Executive summary',
+        'programme' => 'Programme',
+        'risk-register' => 'Risk register',
+        'defences-importance' => 'Defences ranked by cost benefit',
+        'defences-opportunity' => 'Defences ranked by opportunity',
+        'transfers' => 'Transfers',
+        'control-coverage' => 'Control coverage',
+        'tree' => 'Full assessment',
+        'references' => 'Appendix: references',
+    ];
+
     public function __construct(
         public string $baseline,
         public bool $includeShelved,
@@ -83,7 +102,29 @@ final readonly class ReportOptions
          * careful to avoid.
          */
         public bool $showAssignees = false,
+        /**
+         * The model-quality warnings appendix (W136, D105). Default **off**
+         * since W153 (all four optional appendices and details start off), and
+         * on for `download=1`: a report with no warnings section reads as "the
+         * model raised none", so a report that leaves it out says how many
+         * warnings it left out.
+         */
+        public bool $includeWarnings = false,
+        /**
+         * Section ids (keys of `SECTIONS`) left out of the report (W139,
+         * D118). Default none, and none for `download=1`; the figures in the
+         * sections that remain are not recomputed, so hiding one never moves
+         * another.
+         *
+         * @var list<string>
+         */
+        public array $omittedSections = [],
     ) {}
+
+    public function includes(string $section): bool
+    {
+        return ! in_array($section, $this->omittedSections, true);
+    }
 
     /** Everything expanded, both states — see the class docblock. */
     public static function forDownload(): self
@@ -94,6 +135,7 @@ final readonly class ReportOptions
             includeComments: true,
             includeMethodology: true,
             download: true,
+            includeWarnings: true,
         );
     }
 
@@ -115,12 +157,40 @@ final readonly class ReportOptions
             baseline: $baseline,
             includeShelved: self::truthy($query['include_shelved'] ?? false),
             includeComments: self::truthy($query['include_comments'] ?? false),
-            // Methodology defaults ON (ui.md §9: "Include the methodology
-            // appendix by default, stating the independence assumption and
-            // the per-occurrence definition of impact").
-            includeMethodology: self::truthy($query['include_methodology'] ?? true),
+            // Comments, methodology, warnings and assignees all default OFF
+            // (W153, D120, reopening D105 and ui.md §9's "methodology by
+            // default"): the report opens as the body alone, and the exporter
+            // adds an appendix. `download=1` still includes all but assignees.
+            includeMethodology: self::truthy($query['include_methodology'] ?? false),
+            includeWarnings: self::truthy($query['include_warnings'] ?? false),
             showAssignees: self::truthy($query['show_assignees'] ?? false),
+            omittedSections: self::omitted($query['omit_sections'] ?? ''),
         );
+    }
+
+    /**
+     * Unknown ids are dropped, duplicates collapse, and the order is the
+     * document's, so the "left out" line reads the same however the link
+     * was written.
+     *
+     * @return list<string>
+     */
+    private static function omitted(mixed $value): array
+    {
+        // `omit_sections[]=cover` reaches PHP as an array; a hand-built link in
+        // that form must omit the section too, not silently print it.
+        $asked = array_map(
+            fn (string $part): string => trim($part),
+            array_merge(...array_map(
+                fn (mixed $part): array => explode(',', is_string($part) ? $part : ''),
+                is_array($value) ? array_values($value) : [$value],
+            )),
+        );
+
+        return array_values(array_filter(
+            array_keys(self::SECTIONS),
+            fn (string $id): bool => in_array($id, $asked, true),
+        ));
     }
 
     private static function truthy(mixed $value): bool
@@ -140,8 +210,10 @@ final readonly class ReportOptions
             'includeShelved' => $this->includeShelved,
             'includeComments' => $this->includeComments,
             'includeMethodology' => $this->includeMethodology,
+            'includeWarnings' => $this->includeWarnings,
             'download' => $this->download,
             'showAssignees' => $this->showAssignees,
+            'omittedSections' => $this->omittedSections,
         ];
     }
 

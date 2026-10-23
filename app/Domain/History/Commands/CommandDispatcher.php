@@ -28,7 +28,7 @@ final class CommandDispatcher
      * @param  array<string, mixed>  $command
      * @return array<string, mixed> the command that reverses what was just applied
      */
-    public function apply(array $command): array
+    public function apply(array $command, int $assessmentId): array
     {
         $action = (string) ($command['action'] ?? '');
         $applierClass = self::APPLIERS[$action] ?? null;
@@ -39,6 +39,6 @@ final class CommandDispatcher
 
         $applier = new $applierClass;
 
-        return $applier->apply($command);
+        return $applier->apply($command, $assessmentId);
     }
 }

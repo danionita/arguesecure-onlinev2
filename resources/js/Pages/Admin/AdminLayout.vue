@@ -19,11 +19,15 @@ defineProps<{
 const tabs = [
     { label: 'Users', href: () => route('admin.users.index') },
     { label: 'Instance settings', href: () => route('admin.settings.edit') },
+    // W133: how people sign in: SSO, SSO only, required two-factor.
+    { label: 'Authentication', href: () => route('admin.authentication.edit') },
     // W87, D47. Separate from Instance settings because it answers a different
     // question: that tab is about the deployment, this one about the content a
     // new assessment starts with.
     { label: 'Defaults', href: () => route('admin.defaults.edit') },
     { label: 'AI assistant', href: () => route('admin.assistant.edit') },
+    // W128: the stored security event log and its download.
+    { label: 'Security log', href: () => route('admin.security-log.index') },
 ];
 </script>
 

@@ -327,7 +327,7 @@ it('FIXED: the rate limiters are named, so §9\'s groups are independent buckets
     // And every name a route references must actually be registered, or
     // Laravel throws at request time rather than at boot — a limiter typo
     // is a 500 on exactly the route you were trying to protect.
-    foreach (['authenticated', 'mutations', 'credentials', 'search', 'reports', 'setup', 'share-token'] as $name) {
+    foreach (['authenticated', 'mutations', 'credentials', 'search', 'reports', 'report-views', 'setup', 'share-token'] as $name) {
         expect(app(RateLimiter::class)->limiter($name))
             ->not->toBeNull("rate limiter '{$name}' is referenced by a route but never registered");
     }

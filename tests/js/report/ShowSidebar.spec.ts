@@ -79,6 +79,8 @@ function report(): ReportData {
             includeShelved: false,
             includeComments: false,
             includeMethodology: true,
+            includeWarnings: true,
+            omittedSections: [],
             showAssignees: false,
             download: false,
         },

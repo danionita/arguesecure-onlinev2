@@ -34,18 +34,6 @@ export const SHARE_ROLE_LABELS: Record<ShareRole, string> = {
     manager: 'Manager — can also share and delete',
 };
 
-/**
- * Mirrors TemplateController::status() (W45). Fetched separately from the
- * share payload because ShareController is not this package's to change —
- * and because the two answer different questions to different audiences.
- */
-export interface TemplateStatus {
-    is_template: boolean;
-    is_public: boolean;
-    /** Admins only (2.5.1). Presentation only — the route refuses on its own. */
-    canSaveAsTemplate: boolean;
-}
-
 export interface SharePayload {
     owner: ShareUserSummary;
     collaborators: ShareCollaborator[];

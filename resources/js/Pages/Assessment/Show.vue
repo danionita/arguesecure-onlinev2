@@ -24,6 +24,7 @@ import { createEditorView, EDITOR_VIEW_KEY } from '@/composables/useEditorView';
 import { useKeyboardOutline } from '@/composables/useKeyboardOutline';
 import { LOCKS_KEY, useLocks } from '@/composables/useLocks';
 import { PRESENCE_KEY, usePresence } from '@/composables/usePresence';
+import { usePrintOnArrival } from '@/composables/usePrintOnArrival';
 import {
     applyRealtimeUpdatesToStore,
     REALTIME_KEY,
@@ -43,7 +44,7 @@ import {
     type ScaleLevelRecord,
     type ScaleRecord,
 } from '@/stores/assessmentStore';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, provide, ref } from 'vue';
 
 const props = defineProps<{
@@ -61,6 +62,9 @@ const props = defineProps<{
     /** W52: whether to offer the assistant actions. See AssessmentController. */
     assistantAvailable: boolean;
 }>();
+
+// W138: the Print menu's other-view items arrive here with a one-shot token.
+usePrintOnArrival();
 
 const store = createAssessmentStore({
     assessment: props.assessment,
@@ -313,6 +317,7 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
                     :assessment="assessment"
                     :abilities="store.abilities"
                     :view-mode="view.viewMode.mode.value"
+                    :set-view-mode="view.viewMode.set"
                     @share="shareDialogOpen = true"
                 />
                 <div
@@ -342,6 +347,26 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
                 </div>
             </ChromeTitleRow>
         </template>
+
+        <!-- W141: a template opens in this editor. Said once, above everything,
+             because the one thing that differs is what editing it means. -->
+        <div
+            v-if="assessment.is_template"
+            data-testid="template-banner"
+            class="border-border-default bg-surface-2 text-text-secondary mx-3 mt-3 flex items-center justify-between gap-4 rounded-md border px-4 py-2 text-sm"
+        >
+            <span>
+                You are editing a template. Changes apply to assessments started
+                from it from now on; assessments already created from it are
+                copies and do not change.
+            </span>
+            <Link
+                :href="route('templates.index')"
+                class="text-accent shrink-0 underline"
+            >
+                Back to templates
+            </Link>
+        </div>
 
         <!-- ui.md §3.5: never silently clobber, never silently discard the
              user's typing. Above the toolbar, where it was through W80: a
@@ -489,6 +514,7 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
             :show="shareDialogOpen"
             :assessment-uuid="assessment.uuid"
             :can-transfer="store.abilities.transfer"
+            :can-publish-template="store.abilities.publishTemplate ?? false"
             @close="shareDialogOpen = false"
         />
     </AuthenticatedLayout>

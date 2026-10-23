@@ -49,7 +49,7 @@ test('resolving a valid share token establishes read access via the session flag
 
     $response = $this->get('/s/'.$token);
 
-    $response->assertRedirect(route('dashboard'));
+    $response->assertRedirect(route('assessments.show', $assessment));
 
     $flag = session("share_token.{$assessment->id}");
     expect($flag)->not->toBeNull()
@@ -67,7 +67,7 @@ test('a revoked token immediately stops granting access even with a live session
     $assessment = Assessment::factory()->create(['is_public' => false]);
     $token = ShareTokenService::generate($assessment);
 
-    $this->get('/s/'.$token)->assertRedirect(route('dashboard'));
+    $this->get('/s/'.$token)->assertRedirect(route('assessments.show', $assessment));
     expect(Gate::forUser(null)->allows('view', $assessment))->toBeTrue();
 
     ShareTokenService::revoke($assessment->fresh());
@@ -84,7 +84,7 @@ test('a token-only session cannot reach any mutation endpoint', function () {
     $assessment = Assessment::factory()->create(['is_public' => false]);
     $token = ShareTokenService::generate($assessment);
 
-    $this->get('/s/'.$token)->assertRedirect(route('dashboard'));
+    $this->get('/s/'.$token)->assertRedirect(route('assessments.show', $assessment));
 
     // No auth session was ever established — token-only access is
     // anonymous — so every share route (all auth-gated) rejects it exactly

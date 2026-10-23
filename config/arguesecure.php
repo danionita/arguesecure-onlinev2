@@ -15,6 +15,33 @@
 // outbound API call is ever made — every link is a pure string built from
 // the stored identifier, nothing is fetched or enriched.
 return [
+    // The running build (W124, W129, D90). An image built from a release tag
+    // gets `ARGUESECURE_BUILD_VERSION` from the build; anything else (a source
+    // build, `npm run dev`) falls back to the repository's `VERSION` file, the
+    // last release, which the `release` skill rewrites with the tag; `dev` only
+    // if that file is missing. App\Domain\Release\ReleaseInfo validates the
+    // result before it is shown or put in a link. Not ARGUESECURE_VERSION:
+    // that is the image tag a deployment pins in docker-compose.yml.
+    'version' => env('ARGUESECURE_BUILD_VERSION')
+        ?: (is_readable(base_path('VERSION')) ? trim((string) file_get_contents(base_path('VERSION'))) : 'dev'),
+
+    // Single sign-on with OpenID Connect (W117, D74-D76): one provider. These
+    // are the environment's values; the admin Authentication tab can store the
+    // same fields in the database (W133, D106), and a field set here wins over
+    // a stored one (App\Domain\Identity\Oidc\OidcConfig). Unset means null
+    // or empty, which is how OidcConfig tells "not set" from "set to false".
+    // Empty issuer everywhere = no SSO, and the two routes answer 404.
+    'oidc' => [
+        'issuer' => env('OIDC_ISSUER'),
+        'client_id' => env('OIDC_CLIENT_ID'),
+        'client_secret' => env('OIDC_CLIENT_SECRET'),
+        'button_label' => env('OIDC_BUTTON_LABEL'),
+        // Comma-separated, exact and case-insensitive; empty creates no account.
+        'allowed_domains' => env('OIDC_ALLOWED_DOMAINS', ''),
+        // For a single-tenant provider that does not send email_verified.
+        'trust_email' => in_array(env('OIDC_TRUST_EMAIL'), [null, ''], true) ? null : filter_var(env('OIDC_TRUST_EMAIL'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
+    ],
+
     // Scale calibration (W65, schema.md §3.2.1). The one number in the
     // default-representative rule that the spec itself marks configurable.
     'scales' => [
@@ -192,4 +219,29 @@ return [
      * nobody can check.
      */
     'max_amortization_years' => 10,
+
+    /*
+     * Days a deleted assessment stays restorable before the daily purge
+     * erases it for good (W113, security.md §12). At least one: a value of
+     * zero would let the purge erase an assessment the moment it was
+     * deleted, which is not "retention", and the help promises a period.
+     */
+    'trash_retention_days' => (static function (): int {
+        $days = filter_var(env('TRASH_RETENTION_DAYS', 30), FILTER_VALIDATE_INT);
+
+        // A blank or non-numeric value is a mistake, and the purge is
+        // irreversible: fall back to the default, not to the floor.
+        return $days === false ? 30 : max(1, $days);
+    })(),
+
+    /*
+     * Days a stored security event is kept before the daily purge removes it
+     * (W128, D98). At least one; a blank or non-numeric value falls back to
+     * the default rather than the floor, as the trash retention does.
+     */
+    'security_log_retention_days' => (static function (): int {
+        $days = filter_var(env('SECURITY_LOG_RETENTION_DAYS', 90), FILTER_VALIDATE_INT);
+
+        return $days === false ? 90 : max(1, $days);
+    })(),
 ];
