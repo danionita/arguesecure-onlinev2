@@ -1,6 +1,6 @@
 # ArgueSecure 2.7.0 — sign-in, scales, the trash and a security pass
 
-> **Draft, written before the cut.** Follows [`RELEASE-2.6.3.md`](RELEASE-2.6.3.md).
+> Follows [`RELEASE-2.6.3.md`](RELEASE-2.6.3.md).
 > Plan: [`PLAN-2.7.md`](PLAN-2.7.md) and its companions
 > ([identity](PLAN-2.7-identity.md), [scales](PLAN-2.7-scales.md),
 > [logs](PLAN-2.7-logs.md), [dependencies](PLAN-2.7-dependencies.md),
@@ -11,10 +11,8 @@
 > [print choice](PLAN-2.7-print-choice.md),
 > [report warnings](PLAN-2.7-report-warnings.md),
 > [admin templates](PLAN-2.7-admin-templates.md)). Packages W104–W153 (those the plan
-> marks as built), decisions D70–D109. The release is a minor, not a
-> patch, because it adds eight migrations and several features. Tagged on the
-> `master` commit that carries it; the base commit and the verification
-> numbers are filled in when it is cut.
+> marks as built), decisions D70–D120. The release is a minor, not a
+> patch, because it adds eight migrations and several features.
 
 ---
 
