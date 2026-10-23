@@ -1,0 +1,66 @@
+name: Release
+
+# Publishes the release that VERSION names, from one click or one API call:
+# tags the commit this is run on, creates the GitHub release with
+# docs/RELEASE-<version>.md as its notes, then starts the Image workflow on
+# the tag so the GHCR images are built and published. It exists because a tag
+# pushed from a cloud session is refused and `gh release create` on a
+# developer machine needs a permission prompt; a workflow needs neither.
+#
+# Run it from the Actions tab (Run workflow, branch main), or with
+# `gh workflow run release.yml --ref main`. It publishes nothing unless
+# VERSION, docs/RELEASE-<version>.md and the tag all agree, and it refuses to
+# touch a version that is already tagged.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Tag, release, build images
+    runs-on: ubuntu-latest
+    # Public repository only, like image.yml's Publish step: the private
+    # repository never tags or publishes.
+    if: github.repository == 'danionita/arguesecure-onlinev2' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check the version, the notes and the tag agree
+        id: v
+        run: |
+          version=$(tr -d '[:space:]' < VERSION)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "VERSION '$version' is not x.y.z" >&2; exit 1; }
+          [ -f "docs/RELEASE-$version.md" ] || { echo "docs/RELEASE-$version.md is missing" >&2; exit 1; }
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
+            echo "v$version is already tagged" >&2; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Create the tag and the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          flags=()
+          [[ "$VERSION" == *-* ]] && flags+=(--prerelease)
+          gh release create "v$VERSION" "${flags[@]}" \
+            --target "$GITHUB_SHA" \
+            --title "ArgueSecure $VERSION" \
+            --notes-file "docs/RELEASE-$VERSION.md"
+
+      - name: Build and publish the images
+        # A tag created with the workflow token does not start other
+        # workflows, so start Image on the tag by hand.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.v.outputs.version }}
+        run: gh workflow run image.yml --ref "v$VERSION"
