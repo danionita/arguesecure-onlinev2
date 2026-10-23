@@ -177,8 +177,8 @@ test.describe('reordering and re-parenting', () => {
         // The restore goes over HTTP rather than by dragging, and has to:
         // the move just emptied SQL injection of defences, so there is no
         // longer a card under it to drop onto. Re-parenting onto an empty
-        // parent is a real gap in the gesture, noted in
-        // docs/RELEASE-2.0.0.md; it is not what this test is asserting.
+        // parent is a real gap in the gesture (listed under Known limits in
+        // docs/RELEASE-2.0.0.md); it is not what this test is asserting.
         await apiRequest(page, 'post', `/assessments/${uuid}/move`, {
             edge: 'attack_defence',
             from_parent_uuid: phishing,

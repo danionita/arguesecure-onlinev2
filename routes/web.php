@@ -1176,7 +1176,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // and putting a poll in that bucket would make it impossible to watch a
 // four-minute job for longer than its first thirty seconds. Assert the rate
 // these carry rather than that they carry one: a presence check would not
-// notice the difference (RELEASE-2.0.1.md, and CLAUDE.md's rule about it).
+// notice the difference.
 //
 // Still behind `assistant`: a deployment with no runtime has no generation to
 // report on, and D25's "no assistant route exists at all" holds for these too.

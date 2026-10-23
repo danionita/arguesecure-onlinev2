@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
 /*
- * FIXED (2.5.1) — RELEASE-2.5.0.md item 22b, the server half.
+ * FIXED (2.5.1) — a user's own edits echoed back, the server half.
  *
  * NodeCreated and NodeUpdated used to go to every connection on the
  * assessment's channel, the author's included, and the author's client

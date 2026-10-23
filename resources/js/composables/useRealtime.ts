@@ -160,7 +160,7 @@ export function useRealtime(
      * Laravel's `dontBroadcastToCurrentUser()` reads this header to leave the
      * originating connection out of a broadcast (NodeCreated/NodeUpdated).
      * Without it every write echoed back to its author a second later and
-     * overwrote what they had typed since — RELEASE-2.5.0.md's item 22b, and
+     * overwrote what they had typed since, and caused
      * the "Details tab goes blank after adding a node" report. It names *this
      * connection*, not the user, so the same person's other tabs still hear
      * their edits.

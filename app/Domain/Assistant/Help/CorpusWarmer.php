@@ -37,7 +37,7 @@ use App\Domain\Assistant\Client;
  * the slow one, as it was before 2.6. The runtime reports nothing that would
  * tell "has the help corpus been read since start" apart from "has anything
  * run since start", and guessing wrong in the other direction would read the
- * corpus on every tick. Recorded in RELEASE-2.6.0.md's "Still open".
+ * corpus on every tick. A known limit of this approach.
  */
 class CorpusWarmer
 {

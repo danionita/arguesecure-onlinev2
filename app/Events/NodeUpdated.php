@@ -50,7 +50,7 @@ class NodeUpdated implements ShouldBroadcast, ShouldDispatchAfterCommit
         // response. Echoing it back a second later wrote the row *as saved*
         // over whatever they had typed since — and for a create, replaced the
         // record the open modal was bound to with one that had no `tags`,
-        // which blanked the Details tab (RELEASE-2.5.0.md item 22b). Only the
+        // which blanked the Details tab. Only the
         // originating socket is excluded (X-Socket-ID, set by useRealtime.ts),
         // so the same user's other tabs still receive it. Outside a request —
         // a queued job, a console command — there is no socket id and the

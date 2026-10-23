@@ -320,6 +320,6 @@ test('the restore route carries the authenticated rate limit', function () {
 
     // The specified value, not "it has a throttle": an enclosing group's
     // looser limit would satisfy a presence check and leave the hole open
-    // (RELEASE-2.0.1.md, and CLAUDE.md's rule about it).
+    // (CLAUDE.md's rule about presence assertions).
     expect($route->gatherMiddleware())->toContain('throttle:authenticated');
 });

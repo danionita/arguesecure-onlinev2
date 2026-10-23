@@ -157,8 +157,8 @@ test.describe('the parent popover', () => {
         // is that a single-parent attack has no keyboard route to a second
         // link; the W38 drag gesture is the only one, which scenario 3 drives.
         //
-        // This is a decision, recorded in RELEASE-2.4.0.md §7, not an
-        // oversight — so it is asserted rather than left to be rediscovered as
+        // This is a decision (a shared attack's other parents are managed from
+        // its parent counter), not an oversight — so it is asserted rather than left to be rediscovered as
         // a missing affordance.
         await expect(
             cardsFor(page, SQLI).first().getByTestId('appears-under-trigger'),

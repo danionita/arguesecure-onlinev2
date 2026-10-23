@@ -87,8 +87,8 @@ describe('npm audit gate (CLI)', () => {
     it('exits 1 on an unlisted high advisory and 0 on a clean report', () => {
         expect(run(JSON.stringify(audit)).status).toBe(1);
         const clean = JSON.stringify({ vulnerabilities: {} });
-        // The committed allowlist's entry is stale against an empty report, so that also fails.
-        expect(run(clean).status).toBe(1);
+        // The committed allowlist is empty, so nothing is stale against an empty report.
+        expect(run(clean).status).toBe(0);
     });
 
     it('keeps the highest severity and does not merge advisories without a url', () => {

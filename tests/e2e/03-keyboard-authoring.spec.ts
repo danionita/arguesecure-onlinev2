@@ -146,7 +146,7 @@ test.describe('keyboard-driven authoring', () => {
         // a node appears in more than one place, so for an attack under a
         // single risk there is no longer a keyboard path to a second link:
         // the drag gesture W38 added is the only one, which is a deliberate
-        // decision recorded in RELEASE-2.4.0.md and not an oversight.
+        // decision, not an oversight.
         //
         // The step stays here rather than moving to scenario 8, because
         // scenario 7's duplicate highlighting needs Phishing to appear under
