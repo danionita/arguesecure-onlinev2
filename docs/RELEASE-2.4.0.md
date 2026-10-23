@@ -22,7 +22,7 @@ covers what moved since.
 specification**, and that shows in its shape: twenty-four items, almost all
 small, almost all about a surface that was *present and wrong* rather than
 absent. Nothing here changes the calculation, the schema's shape, or any closed
-decision. The plan is [`PLAN-2.4.md`](PLAN-2.4.md); its decision table runs
+decision. The plan is `PLAN-2.4.md`; its decision table runs
 D26–D38.
 
 ---

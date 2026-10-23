@@ -1,6 +1,6 @@
 # ArgueSecure 2.6.1 — the first published images
 
-> What [`PLAN-2.7.md`](PLAN-2.7.md)'s W101 (decisions D62–D63) shipped, ahead
+> What `PLAN-2.7.md`'s W101 (decisions D62–D63) shipped, ahead
 > of the rest of 2.7. Follows [`RELEASE-2.6.0.md`](RELEASE-2.6.0.md).
 >
 > Branch: `claude/project-thread-kr71ty`, merged to `master` as `33ee785`

@@ -1,7 +1,7 @@
 # ArgueSecure 2.6.3 — two more standards, and a chart fix
 
 > Follows [`RELEASE-2.6.2.md`](RELEASE-2.6.2.md). Tagged on the `master`
-> commit that merged [`PLAN-2.7.md`](PLAN-2.7.md)'s **W103** and **W105**. Like
+> commit that merged `PLAN-2.7.md`'s **W103** and **W105**. Like
 > W102 before it, W103 was planned for 2.7.0 and ships in a patch: it adds two
 > template files and no migration, so a 2.6.x instance upgrades by pulling.
 

@@ -1,6 +1,6 @@
 # Deployment Specification
 
-> Implements Phase 1 of [`docs/PLAN.md`](../PLAN.md). Work package **W3**, with the entrypoint and CI touching **W2**.
+> Implements Phase 1 of `docs/PLAN.md`. Work package **W3**, with the entrypoint and CI touching **W2**.
 >
 > Related: [security.md](security.md) for TLS, cookies, CSP and the websocket exposure decision.
 
@@ -334,7 +334,7 @@ Keep `used_memory_peak` under half of `maxmemory`, so a backlog of queued work d
 
 ## 9. The assistant (optional)
 
-The local inference runtime for the 2.3 assistant ([`PLAN-2.3-ai.md`](../PLAN-2.3-ai.md), measurements in [`docs/spikes/2.3-inference.md`](../spikes/2.3-inference.md)). **Optional, off by default, and a fully supported absence** — most deployments will not run it, and an installation without it shows no assistant controls, no disabled buttons and no warnings.
+The local inference runtime for the 2.3 assistant (`PLAN-2.3-ai.md`, measurements in `docs/spikes/2.3-inference.md`). **Optional, off by default, and a fully supported absence** — most deployments will not run it, and an installation without it shows no assistant controls, no disabled buttons and no warnings.
 
 ### 9.1 Turning it on is two decisions, not one
 
@@ -414,7 +414,7 @@ The llama.cpp image is pinned by tag **and digest** (`ghcr.io/ggml-org/llama.cpp
 | Resident | `small`: ~3 GiB (plus up to 2 GiB for the bounded host-RAM prompt cache, `--cache-ram`, D56). `large`: ~24 GiB, plus up to 4 GiB of prompt cache — budget 28 |
 | Threads | `ASSISTANT_THREADS`, default **4** since 2.6 (was 8) — the container's CPU quota is set to the same number, and a host with fewer CPUs than this must lower it or the container will not start |
 
-**Set `ASSISTANT_THREADS` to the number of cores you are willing to give it; the container's quota follows it automatically.** Setting `-t` higher than the cores the container may actually use makes it slower, not faster, and an unconstrained runtime will contend with the database it shares a host with. The table below, measured on 4, 6 and 8 cores of a 2018 developer workstation (an i9-9900K) in [`spikes/2.3-threads.md`](../spikes/2.3-threads.md), is still valid as a shape — past four to six cores generation barely improves — even though the 2.6 numbers below it were measured on newer hardware at 4 cores only:
+**Set `ASSISTANT_THREADS` to the number of cores you are willing to give it; the container's quota follows it automatically.** Setting `-t` higher than the cores the container may actually use makes it slower, not faster, and an unconstrained runtime will contend with the database it shares a host with. The table below, measured on 4, 6 and 8 cores of a 2018 developer workstation (an i9-9900K) in `spikes/2.3-threads.md`, is still valid as a shape — past four to six cores generation barely improves — even though the 2.6 numbers below it were measured on newer hardware at 4 cores only:
 
 | | 4 cores | 6 cores | 8 cores |
 |---|---|---|---|
@@ -424,7 +424,7 @@ The llama.cpp image is pinned by tag **and digest** (`ghcr.io/ggml-org/llama.cpp
 
 **Past about six cores there is very little to gain.** Generation is memory-bandwidth bound. Prompt processing scales more usefully, so a long fixed prompt — the help corpus, a whole assessment — is what more cores actually help with. Those cores are generally worth more to MariaDB.
 
-**CPU inference is slow in a way that changes designs, not just timings.** Measured on the current deployment host (Intel i9-14900K, 4 cores given to the container, [`spikes/2.6-models.md`](../spikes/2.6-models.md)) — the help corpus has grown to ~6,500 tokens since 2.3's figures were taken, so these are not directly comparable to the old ones:
+**CPU inference is slow in a way that changes designs, not just timings.** Measured on the current deployment host (Intel i9-14900K, 4 cores given to the container, `spikes/2.6-models.md`) — the help corpus has grown to ~6,500 tokens since 2.3's figures were taken, so these are not directly comparable to the old ones:
 
 | Job | `small` | `large` | 2.5's default, for comparison |
 |---|---|---|---|

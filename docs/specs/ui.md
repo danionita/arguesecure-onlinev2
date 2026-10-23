@@ -1,6 +1,6 @@
 # UI Specification
 
-> Implements Phases 3, 5, 7 and 8 of [`docs/PLAN.md`](../PLAN.md). Work packages **W8**, **W10**, **W12–W15**, **W17–W21**.
+> Implements Phases 3, 5, 7 and 8 of `docs/PLAN.md`. Work packages **W8**, **W10**, **W12–W15**, **W17–W21**.
 >
 > Reads numbers from [calculation-engine.md](calculation-engine.md) and entities from [schema.md](schema.md).
 
@@ -1174,7 +1174,7 @@ The honest half of what the option gestured at **already happens, per node rathe
 
 The false-precision worry behind the option is real, and §8.4 pitfalls 3 and 4 already answer it — an order-of-magnitude range beside the figure, and a persistent advisory on an uncalibrated scale — rather than by withholding the numbers a report exists to deliver. A stale `figures=` URL is ignored, as any unknown parameter is.
 
-Sections are specified in [`docs/PLAN.md`](../PLAN.md) Phase 7, plus **the plan: cost and benefit** (W33) — what the todo controls cost, annualised and broken into one-off and recurring, against the risk they remove in currency, and the return that ratio implies. Controls with no cost recorded are counted beside those totals and never folded into them: an unpriced control is not a free one. Charts are **inline SVG** — no canvas, no chart library that renders to bitmap — so they survive printing at full resolution.
+Sections are specified in `docs/PLAN.md` Phase 7, plus **the plan: cost and benefit** (W33) — what the todo controls cost, annualised and broken into one-off and recurring, against the risk they remove in currency, and the return that ratio implies. Controls with no cost recorded are counted beside those totals and never folded into them: an unpriced control is not a free one. Charts are **inline SVG** — no canvas, no chart library that renders to bitmap — so they survive printing at full resolution.
 
 **The full-assessment section is the list view on paper (W33)**: every node with the values a person entered _and_ the ones the engine computed, under inherent, current and target, down to each defence's strength on that link, its reduction target, its rationale and all three cost figures. A missing value prints as a dash.
 

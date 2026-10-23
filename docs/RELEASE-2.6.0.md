@@ -1,6 +1,6 @@
 # ArgueSecure 2.6.0 — two assistant models, installed in one command
 
-> What [`PLAN-2.6.md`](PLAN-2.6.md) asked for (W92–W97, decisions D52–D58),
+> What `PLAN-2.6.md` asked for (W92–W97, decisions D52–D58),
 > what shipped, what changed along the way, and what is still open. Follows
 > [`RELEASE-2.5.0.md`](RELEASE-2.5.0.md).
 >

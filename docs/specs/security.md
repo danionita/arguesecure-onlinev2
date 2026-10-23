@@ -1,6 +1,6 @@
 # Security Specification
 
-> Implements Phase 0 and Phase 10 item 2 of [`docs/PLAN.md`](../PLAN.md). Work packages **W4** (legacy remediation) and **W24** (hardening), with authorization rules binding on **W6** and every package that adds a route.
+> Implements Phase 0 and Phase 10 item 2 of `docs/PLAN.md`. Work packages **W4** (legacy remediation) and **W24** (hardening), with authorization rules binding on **W6** and every package that adds a route.
 >
 > Related: [schema.md §5](schema.md#5-authorization), [deployment.md](deployment.md).
 

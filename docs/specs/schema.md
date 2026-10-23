@@ -1,6 +1,6 @@
 # Schema Specification
 
-> Implements Phase 2 of [`docs/PLAN.md`](../PLAN.md). Work packages **W5** (migrations) and **W6** (models, policies, structural services).
+> Implements Phase 2 of `docs/PLAN.md`. Work packages **W5** (migrations) and **W6** (models, policies, structural services).
 >
 > Related: [calculation-engine.md](calculation-engine.md) consumes this schema; [security.md](security.md) specifies the authorization rules the policies enforce.
 
@@ -594,7 +594,7 @@ Inserting is a **copy**. Later edits to a catalogue entry do not propagate into 
 
 ### 3.15 Locking — deliberately no table
 
-Field-level pessimistic locks live only in Redis. See [`docs/PLAN.md`](../PLAN.md) Phase 6 and the summary here:
+Field-level pessimistic locks live only in Redis. See `docs/PLAN.md` Phase 6 and the summary here:
 
 - Key `lock:{assessment_id}:{node_uuid}:{field}` where field ∈ `title`, `description`, `values`, `link:{pivot_id}`.
 - Value: JSON `{"user_id":…, "name":…, "session":…, "at":…}`.

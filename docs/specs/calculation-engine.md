@@ -1,6 +1,6 @@
 # Calculation Engine Specification
 
-> Implements Phase 4 of [`docs/PLAN.md`](../PLAN.md). Work packages **W7** (PHP) and **W11** (TypeScript mirror).
+> Implements Phase 4 of `docs/PLAN.md`. Work packages **W7** (PHP) and **W11** (TypeScript mirror).
 >
 > Reads the schema in [schema.md](schema.md). Consumed by the reports in [ui.md](ui.md).
 >

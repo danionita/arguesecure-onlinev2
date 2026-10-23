@@ -1,6 +1,6 @@
 # ArgueSecure 2.5.0 — the second workshop pass
 
-> What [`PLAN-2.5.md`](PLAN-2.5.md) asked for (W82–W88, items 1–23,
+> What `PLAN-2.5.md` asked for (W82–W88, items 1–23,
 > decisions D39–D51), what shipped, what changed along the way, and what is
 > still open. Follows [`RELEASE-2.4.0.md`](RELEASE-2.4.0.md).
 >

@@ -11,12 +11,19 @@ name: Release
 # `gh workflow run release.yml --ref main`. It publishes nothing unless
 # VERSION, docs/RELEASE-<version>.md and the tag all agree, and it refuses to
 # touch a version that is already tagged, except to rewrite that release's
-# notes when started with refresh_notes (the tag and the images stay put).
+# notes when started with refresh_notes (the tag and the images stay put), or
+# to move the tag to the commit it is run on when started with move_tag (the
+# release is deleted and made again, and the images are rebuilt: use it only
+# for a release whose tag was cut from the wrong commit).
 on:
   workflow_dispatch:
     inputs:
       refresh_notes:
         description: Rewrite the notes of the release VERSION names, which must already exist
+        type: boolean
+        default: false
+      move_tag:
+        description: Delete the release and tag VERSION names and publish them again from this commit
         type: boolean
         default: false
 
@@ -44,20 +51,25 @@ jobs:
         id: v
         env:
           REFRESH: ${{ inputs.refresh_notes }}
+          MOVE: ${{ inputs.move_tag }}
         run: |
           version=$(tr -d '[:space:]' < VERSION)
           [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "VERSION '$version' is not x.y.z" >&2; exit 1; }
           [ -f "docs/RELEASE-$version.md" ] || { echo "docs/RELEASE-$version.md is missing" >&2; exit 1; }
           tagged=false
           git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null && tagged=true
-          if [ "$tagged" = true ] && [ "$REFRESH" != true ]; then
+          if [ "$REFRESH" = true ] && [ "$MOVE" = true ]; then
+            echo "refresh_notes and move_tag are separate runs" >&2; exit 1
+          fi
+          if [ "$tagged" = true ] && [ "$REFRESH" != true ] && [ "$MOVE" != true ]; then
             echo "v$version is already tagged" >&2; exit 1
           fi
-          if [ "$tagged" = false ] && [ "$REFRESH" = true ]; then
-            echo "v$version is not tagged, so there are no notes to refresh" >&2; exit 1
+          if [ "$tagged" = false ] && { [ "$REFRESH" = true ] || [ "$MOVE" = true ]; }; then
+            echo "v$version is not tagged, so there is nothing to refresh or move" >&2; exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "refresh=$REFRESH" >> "$GITHUB_OUTPUT"
+          echo "move=$MOVE" >> "$GITHUB_OUTPUT"
 
       - name: Rewrite the notes of the existing release
         if: steps.v.outputs.refresh == 'true'
@@ -65,6 +77,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.v.outputs.version }}
         run: gh release edit "v$VERSION" --notes-file "docs/RELEASE-$VERSION.md"
+
+      - name: Remove the old release and tag
+        if: steps.v.outputs.move == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.v.outputs.version }}
+        run: gh release delete "v$VERSION" --cleanup-tag --yes
 
       - name: Create the tag and the release
         if: steps.v.outputs.refresh != 'true'

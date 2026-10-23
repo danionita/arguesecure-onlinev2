@@ -3,7 +3,7 @@
 > Follows [`RELEASE-2.6.1.md`](RELEASE-2.6.1.md). Tagged on `34e512d`,
 > `master` after pull request #5, so it carries the reverse-proxy fix found by
 > 2.6.1's first real deployment, two security updates, and
-> [`PLAN-2.7.md`](PLAN-2.7.md)'s **W102** (control citations), which was
+> `PLAN-2.7.md`'s **W102** (control citations), which was
 > merged to `master` after 2.6.1 was cut. W102 was planned for 2.7.0 and ships
 > here instead; it adds one migration, which only adds.
 
@@ -53,7 +53,7 @@ paths), but the audit gate is right to refuse them.
 
 ## 3. Control citations and a coverage view (W102, D64–D66)
 
-The details, and why, are in [`PLAN-2.7.md`](PLAN-2.7.md)'s W102.
+The details, and why, are in `PLAN-2.7.md`'s W102.
 
 - **A `control` reference kind** on defences: `FRAMEWORK:CONTROL` for
   ISO 27001:2022, ISO 42001:2023, the EU AI Act, GDPR, NIS2, SOC 2 and CIS v8.

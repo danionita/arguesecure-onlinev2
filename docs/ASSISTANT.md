@@ -4,7 +4,7 @@ ArgueSecure ships an optional **local** inference assistant. It is off by defaul
 
 This document exists because of a specific failure: an admin looked for the feature and reported "I could not find any trace of it". That is what a correctly-behaving unconfigured install looks like — nothing renders, no routes exist — and it is indistinguishable from a build that never had the feature at all. So: here is what it is, how to turn it on, what it costs, and what it is not allowed to do.
 
-The operational detail (fetching weights, the compose profile, resource limits, thread counts) lives in [`specs/deployment.md` §9](specs/deployment.md). The decisions and their measurements live in [`PLAN-2.3-ai.md`](PLAN-2.3-ai.md) D17–D25 and [`spikes/2.3-inference.md`](spikes/2.3-inference.md). This document is the map between them.
+The operational detail (fetching weights, the compose profile, resource limits, thread counts) lives in [`specs/deployment.md` §9](specs/deployment.md). The decisions and their measurements live in `PLAN-2.3-ai.md` D17–D25 and `spikes/2.3-inference.md`. This document is the map between them.
 
 ---
 
@@ -133,9 +133,9 @@ Below that, the tab lists both presets with the memory and download size each ne
 
 ## 5. What it costs
 
-**Why 2.6 changed the default.** Asked *why doesn’t my total change when I set a reduction target?* — which the help pages answer directly — the model 2.5 shipped, `gemma-3-4b-it`, was right once in four samples: twice it answered a different question, once it quoted the formula without answering. `small` and `large` were right four times in four. In drafted executive summaries it invented figures that are not in the assessment once in four (one of them ten times the real amount); `small` and `large` did so never. On the red-team cases the presets behaved exactly as the old default did (§6). The measurements are in [`docs/spikes/2.6-models.md`](spikes/2.6-models.md).
+**Why 2.6 changed the default.** Asked *why doesn’t my total change when I set a reduction target?* — which the help pages answer directly — the model 2.5 shipped, `gemma-3-4b-it`, was right once in four samples: twice it answered a different question, once it quoted the formula without answering. `small` and `large` were right four times in four. In drafted executive summaries it invented figures that are not in the assessment once in four (one of them ten times the real amount); `small` and `large` did so never. On the red-team cases the presets behaved exactly as the old default did (§6). The measurements are in `docs/spikes/2.6-models.md`.
 
-**CPU inference is slow in a way that changes designs, not just timings.** Measured on the deployment host (Intel i9-14900K, 4 cores given to the container — see [`spikes/2.6-models.md`](spikes/2.6-models.md); the help corpus is now ~6,500 tokens, a third larger than when 2.3 first measured this):
+**CPU inference is slow in a way that changes designs, not just timings.** Measured on the deployment host (Intel i9-14900K, 4 cores given to the container — see `spikes/2.6-models.md`; the help corpus is now ~6,500 tokens, a third larger than when 2.3 first measured this):
 
 | Job | `small` | `large` | 2.5's default, for comparison |
 |---|---|---|---|

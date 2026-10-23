@@ -14,9 +14,9 @@ Read [`RELEASE-2.0.0.md`](RELEASE-2.0.0.md) first if you are new to 2.x, and
 only covers what moved since.
 
 **Why the version jumps from 2.0.1 to 2.3.0.** The plans are numbered by the
-body of work rather than by release: [`PLAN-2.1.md`](PLAN-2.1.md) (W29–W33),
-[`PLAN-2.2.md`](PLAN-2.2.md) (W34–W49) and
-[`PLAN-2.3-ai.md`](PLAN-2.3-ai.md) (W50–W54) were written and executed back to
+body of work rather than by release: `PLAN-2.1.md` (W29–W33),
+`PLAN-2.2.md` (W34–W49) and
+`PLAN-2.3-ai.md` (W50–W54) were written and executed back to
 back with no release cut between them. Naming this 2.1.0 would leave the plan
 numbers permanently one release ahead of the tags they describe. It is one
 release covering three plans, and the version says which plans.
@@ -262,7 +262,7 @@ shows no disabled buttons, and raises no warning. No other feature depends on
 it and every one of them works without it.
 
 It was preceded by a **spike, not a package** —
-[`spikes/2.3-inference.md`](spikes/2.3-inference.md) — which stood the runtime
+`spikes/2.3-inference.md` — which stood the runtime
 up, benchmarked model families against a real assessment, red-teamed them, and
 turned a sketch into a buildable plan. Every decision D17–D25 is a measurement,
 not a preference. Two of them contradicted the sketch.

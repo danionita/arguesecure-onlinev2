@@ -316,7 +316,7 @@ Versions on an assessment's History page protect against mistakes inside the
 application, not against losing the server, so they are not a backup. A
 single assessment can also be exported as JSON from its **Export** menu, a
 portable copy of all its data. A scheduled export of every assessment is
-planned (see [`docs/PLAN.md`](docs/PLAN.md) Phase 10) but not built. Until
+planned (see `docs/PLAN.md` Phase 10) but not built. Until
 then, the database dump is the backup.
 
 ## Development
@@ -351,7 +351,6 @@ running it.
 
 | Document | Covers |
 |---|---|
-| [`docs/PLAN.md`](docs/PLAN.md) | The rewrite plan, its decisions and its work packages |
 | [`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md) | The latest release notes |
 | [`docs/specs/schema.md`](docs/specs/schema.md) | Database, models and authorization |
 | [`docs/specs/calculation-engine.md`](docs/specs/calculation-engine.md) | The quantification model (normative) |

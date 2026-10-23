@@ -1,13 +1,13 @@
 # 2.3 assistant spike — the harness
 
 Throwaway measurement code for the spike that
-[`docs/PLAN-2.3-ai.md`](../../../docs/PLAN-2.3-ai.md) asks for before its
+`docs/PLAN-2.3-ai.md` asks for before its
 packages can be written. **It is not application code.** Nothing in `app/`,
 `resources/js/` or `routes/` imports it, it is excluded from Pint, PHPStan,
 ESLint and both test runners, and it ships no feature.
 
 It lives in the repository rather than in a scratch directory for one reason:
-the numbers in [`docs/spikes/2.3-inference.md`](../../../docs/spikes/2.3-inference.md)
+the numbers in `docs/spikes/2.3-inference.md`
 were measured on a developer workstation, and the machine whose numbers
 actually decide the design is the deployment host. Re-running this there is the
 only way to find that out, and a benchmark you cannot re-run is an anecdote.
@@ -66,7 +66,7 @@ Other models, and other ways of running the shipped one, measured through
 `/v1/chat/completions` the way `App\Domain\Assistant\Client` calls it. Needs
 only `bash`, `curl` and `docker` on the host — Node runs in a container — so
 it runs as-is on a Linux server such as Unraid. Results:
-[`docs/spikes/2.6-models.md`](../../../docs/spikes/2.6-models.md).
+`docs/spikes/2.6-models.md`.
 
 ```bash
 # 1. Resolve and pin every weight file (already done; re-run to re-pin).
