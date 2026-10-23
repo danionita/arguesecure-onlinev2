@@ -145,6 +145,9 @@ group mapping are not supported.
 To serve ArgueSecure through SWAG, nginx, Traefik or similar, set `APP_URL`
 in `.env` to the public HTTPS address. The proxy-trust configuration this
 relies on is in [`docs/specs/deployment.md`](docs/specs/deployment.md) §4.
+Raise the proxy's header buffers (nginx/SWAG: `proxy_buffer_size 32k;` and
+`proxy_busy_buffers_size 64k;`): responses can carry large headers, and
+without them full page loads fail with 502 "upstream sent too big header".
 
 Nothing in the repository hardcodes a host, domain or path. `DATA_PATH` in
 `.env` sets where persistent data (`storage/`, the database, Redis) is
@@ -349,7 +352,7 @@ running it.
 | Document | Covers |
 |---|---|
 | [`docs/PLAN.md`](docs/PLAN.md) | The rewrite plan, its decisions and its work packages |
-| [`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md) | The latest release notes, and what is still open |
+| [`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md) | The latest release notes |
 | [`docs/specs/schema.md`](docs/specs/schema.md) | Database, models and authorization |
 | [`docs/specs/calculation-engine.md`](docs/specs/calculation-engine.md) | The quantification model (normative) |
 | [`docs/specs/ui.md`](docs/specs/ui.md) | The editor, the keyboard map and reports |

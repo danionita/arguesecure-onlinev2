@@ -4,8 +4,7 @@ ArgueSecure 2 is a rewrite on Laravel 12, Inertia and Vue 3, replacing the
 1.x application entirely. Start with
 [`docs/PLAN.md`](docs/PLAN.md) — the master plan, the settled decisions and
 the work-package table — then the latest release notes
-([`docs/RELEASE-2.6.2.md`](docs/RELEASE-2.6.2.md), whose "Still open" is the
-list to read before proposing anything), and the relevant file under
+([`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md)), and the relevant file under
 [`docs/specs/`](docs/specs) for whatever area you're touching. If the specs
 and this file disagree, the specs win.
 
