@@ -338,6 +338,7 @@ test('an assessment with no scales of its own is erased even where no system sca
 });
 
 test('a blank or non-numeric retention setting falls back to 30 days, not to the floor', function () {
+    $before = [getenv('TRASH_RETENTION_DAYS'), $_ENV['TRASH_RETENTION_DAYS'] ?? null, $_SERVER['TRASH_RETENTION_DAYS'] ?? null];
     foreach (['' => 30, 'thirty' => 30, '0' => 1, '-5' => 1, '7' => 7] as $value => $expected) {
         // A .env that defines the key (CI copies .env.example) loads it into $_SERVER too,
         // and env() reads that copy before the others.
@@ -346,6 +347,13 @@ test('a blank or non-numeric retention setting falls back to 30 days, not to the
         $config = require config_path('arguesecure.php');
         expect($config['trash_retention_days'])->toBe($expected, "TRASH_RETENTION_DAYS={$value}");
     }
-    putenv('TRASH_RETENTION_DAYS');
+    [$env, $envArray, $server] = $before;
+    putenv($env === false ? 'TRASH_RETENTION_DAYS' : 'TRASH_RETENTION_DAYS='.$env);
     unset($_ENV['TRASH_RETENTION_DAYS'], $_SERVER['TRASH_RETENTION_DAYS']);
+    if ($envArray !== null) {
+        $_ENV['TRASH_RETENTION_DAYS'] = $envArray;
+    }
+    if ($server !== null) {
+        $_SERVER['TRASH_RETENTION_DAYS'] = $server;
+    }
 });
