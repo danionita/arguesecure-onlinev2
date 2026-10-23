@@ -14,7 +14,10 @@ name: Release
 # notes when started with refresh_notes (the tag and the images stay put), or
 # to move the tag to the commit it is run on when started with move_tag (the
 # release is deleted and made again, and the images are rebuilt: use it only
-# for a release whose tag was cut from the wrong commit).
+# for a release whose tag was cut from the wrong commit), or, started with
+# repoint_tag and repoint_sha, to point an existing tag at another commit of
+# main without a rebuild (after the history was rewritten), or, started with
+# notes_version, to rewrite the notes of an existing release. One mode per run.
 on:
   workflow_dispatch:
     inputs:
@@ -22,6 +25,18 @@ on:
         description: Rewrite the notes of the release VERSION names, which must already exist
         type: boolean
         default: false
+      repoint_tag:
+        description: Only point this existing tag (say v2.6.3) at repoint_sha, forced; no release, no build
+        type: string
+        default: ""
+      repoint_sha:
+        description: The full commit id repoint_tag should point at; it must be on main
+        type: string
+        default: ""
+      notes_version:
+        description: Only rewrite the notes of this existing release (say 2.6.3) from docs/RELEASE-<version>.md on main
+        type: string
+        default: ""
       move_tag:
         description: Delete the release and tag VERSION names and publish them again from this commit
         type: boolean
@@ -40,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     # Public repository only, like image.yml's Publish step: the private
     # repository never tags or publishes.
-    if: github.repository == 'danionita/arguesecure-onlinev2' && github.ref == 'refs/heads/main'
+    if: github.repository == 'danionita/arguesecure-onlinev2' && github.ref == 'refs/heads/main' && inputs.repoint_tag == '' && inputs.notes_version == ''
     permissions:
       contents: write
       actions: write
@@ -52,7 +67,9 @@ jobs:
         env:
           REFRESH: ${{ inputs.refresh_notes }}
           MOVE: ${{ inputs.move_tag }}
+          REPOINT_SHA: ${{ inputs.repoint_sha }}
         run: |
+          [ -z "$REPOINT_SHA" ] || { echo "repoint_sha needs repoint_tag" >&2; exit 1; }
           version=$(tr -d '[:space:]' < VERSION)
           [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "VERSION '$version' is not x.y.z" >&2; exit 1; }
           [ -f "docs/RELEASE-$version.md" ] || { echo "docs/RELEASE-$version.md is missing" >&2; exit 1; }
@@ -106,3 +123,53 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.v.outputs.version }}
         run: gh workflow run image.yml --ref "v$VERSION"
+
+  repoint:
+    name: Point an existing tag at another commit
+    # For after the public history is rewritten: the tag keeps its release,
+    # its images are not rebuilt, and nothing is published.
+    if: github.repository == 'danionita/arguesecure-onlinev2' && github.ref == 'refs/heads/main' && inputs.repoint_tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Move the tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.repoint_tag }}
+          SHA: ${{ inputs.repoint_sha }}
+          NOTES: ${{ inputs.notes_version }}
+          REFRESH: ${{ inputs.refresh_notes }}
+          MOVE: ${{ inputs.move_tag }}
+        run: |
+          [ -z "$NOTES" ] && [ "$REFRESH" != true ] && [ "$MOVE" != true ] || { echo "one mode per run" >&2; exit 1; }
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "'$TAG' is not vX.Y.Z" >&2; exit 1; }
+          [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "repoint_sha must be a full commit id" >&2; exit 1; }
+          git merge-base --is-ancestor "$SHA" origin/main || { echo "$SHA is not on main" >&2; exit 1; }
+          [ "$(git show "$SHA:VERSION" | tr -d '[:space:]')" = "${TAG#v}" ] || { echo "VERSION at $SHA is not ${TAG#v}" >&2; exit 1; }
+          echo "$TAG: $(git rev-parse "refs/tags/$TAG^{commit}") -> $SHA"
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG" -f sha="$SHA" -F force=true
+
+  notes:
+    name: Rewrite the notes of an existing release
+    if: github.repository == 'danionita/arguesecure-onlinev2' && github.ref == 'refs/heads/main' && inputs.notes_version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Edit the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.notes_version }}
+          REPOINT_TAG: ${{ inputs.repoint_tag }}
+          REFRESH: ${{ inputs.refresh_notes }}
+          MOVE: ${{ inputs.move_tag }}
+        run: |
+          [ -z "$REPOINT_TAG" ] && [ "$REFRESH" != true ] && [ "$MOVE" != true ] || { echo "one mode per run" >&2; exit 1; }
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "'$VERSION' is not x.y.z" >&2; exit 1; }
+          [ -f "docs/RELEASE-$VERSION.md" ] || { echo "docs/RELEASE-$VERSION.md is missing" >&2; exit 1; }
+          gh release edit "v$VERSION" --notes-file "docs/RELEASE-$VERSION.md"
