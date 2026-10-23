@@ -1,9 +1,5 @@
 # ArgueSecure 2.0.0
 
-> Version history: this version predates the releases published here, and
-> its note is kept to show what changed. To install, follow the README for the
-> current release.
-
 A complete rewrite: collaborative security risk assessment with real numbers,
 live editing and reports you can hand to a client.
 
@@ -62,15 +58,18 @@ out and invalidates encrypted cookies. Set `APP_URL`, `DB_PASSWORD`,
 `DB_ROOT_PASSWORD` and `DATA_PATH` in `.env`. On first open there is a setup
 screen where you create the first administrator.
 
-## Coming from 1.x
+## Upgrading from 1.x
 
-There is no data migration. 1.x had no quantification, so an imported
-assessment would arrive with every value missing and every total zero. Install
-2.0 alongside 1.x on a different port and data directory, re-enter the
-assessments still in use (adding impact and likelihood figures as you go), then
-switch your reverse proxy over. Keep the 1.x data until nobody needs it.
-Treat any 1.x password and application key as compromised and do not reuse
-them.
+There is no data migration: 1.x had no quantification, so an imported
+assessment would arrive with every value missing and every total zero.
+
+1. **Run 2.0 alongside 1.x** on a different port and data directory (see the
+   README of the current release for installing).
+2. **Create the accounts and re-enter the assessments still in use,** adding
+   impact and likelihood figures as you go.
+3. **Switch your reverse proxy over.** Keep the 1.x data until nobody needs it.
+4. **Do not reuse any 1.x password or application key.** Treat them as
+   compromised.
 
 ## Known limits
 

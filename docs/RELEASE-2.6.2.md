@@ -1,9 +1,5 @@
 # ArgueSecure 2.6.2
 
-> Version history: this version predates the releases published here, and
-> its note is kept to show what changed. To install, follow the README for the
-> current release.
-
 A fix for pages that came up blank behind a reverse proxy, two security
 updates, and a way to cite the standard a defence implements.
 
@@ -34,10 +30,14 @@ correctly configured deployment (`APP_DEBUG=false`):
   and Excel exports) lists, for each framework, every cited control, the
   defences citing it and whether they are in place.
 
-## Changes for operators
+## Upgrading from 2.6.1
 
-A database change runs on start. Templates already loaded stay as they were,
-without control citations; defences you add can cite controls straight away,
-and a fresh install gets the citations. If you worked around the blank-page bug
-in your proxy, for example by not forwarding `X-Forwarded-For` or by fixing
-`X-Forwarded-Proto` by hand, restore the standard configuration.
+1. **Take a database dump.** A database change runs on start.
+2. **Pull the new images and restart.**
+3. **If you worked around the blank-page bug in your proxy,** for example by not
+   forwarding `X-Forwarded-For` or by fixing `X-Forwarded-Proto` by hand,
+   restore the standard configuration.
+
+Templates already loaded stay as they were, without control citations.
+Defences you add can cite controls straight away, and a fresh install gets the
+citations.

@@ -1,9 +1,5 @@
 # ArgueSecure 2.3.0
 
-> Version history: this version predates the releases published here, and
-> its note is kept to show what changed. To install, follow the README for the
-> current release.
-
 Three views of every assessment, the tools a team needs to work in one
 together, and an optional AI assistant that runs on your own hardware.
 
@@ -74,13 +70,13 @@ assessment takes minutes. [`ASSISTANT.md`](ASSISTANT.md) has the measurements.
 - The scale calibration screen is clearer.
 - Several smaller fixes to how the editor reacts to updates from other people.
 
-## Changes for operators since 2.0.1
+## Upgrading from 2.0.1
 
 1. **Back up your database.** This release removes the separate "notes" field
    from items and the catalogue; its role is covered by the description. Copy
    anything you need from it first. Other database changes only add to what
    exists, and run when the application starts.
-2. **Rebuild and restart:** `docker compose up --build -d`.
+2. **Update the images and restart.**
 3. **The assistant is unchanged by default.** To turn it on, set
    `ASSISTANT_ENABLED=true`, provide a model file and enable it under the admin
    settings; see `docs/ASSISTANT.md`. It needs the queue worker running.

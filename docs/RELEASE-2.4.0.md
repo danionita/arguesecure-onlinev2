@@ -1,12 +1,9 @@
 # ArgueSecure 2.4.0
 
-> Version history: 2.4.0 was never released on its own. Its changes shipped
-> as part of 2.5.0, whose note covers the operator changes. This note is kept
-> to show what 2.4 added. To install, follow the README for the current
-> release.
-
 Chart cards that show a figure instead of chrome, a tidier editor, and reports
 you can download as HTML, CSV, JSON, Excel or Word.
+
+2.4 was never released on its own: its changes shipped as part of 2.5.0.
 
 ## The chart and the list
 
@@ -43,13 +40,11 @@ you can download as HTML, CSV, JSON, Excel or Word.
 
 One report, five renderings:
 
-| Format | Notes |
-|---|---|
-| HTML | Self-contained, no outside resources |
-| CSV | Now covers the whole report, not just defences |
-| JSON | Stable shape, the same one snapshots use |
-| Excel | One sheet per section, with numbers kept as numbers |
-| Word | The prose sections in order, with tables |
+- **HTML** is self-contained, with no outside resources.
+- **CSV** now covers the whole report, not just defences.
+- **JSON** keeps a stable shape, the same one snapshots use.
+- **Excel** has one sheet per section, with numbers kept as numbers.
+- **Word** has the prose sections in order, with tables.
 
 PDF remains your browser's print dialog. The long **Download report** button is
 replaced by the **Export** menu, and **Print** prints what you see. The unused
@@ -69,12 +64,7 @@ replaced by the **Export** menu, and **Print** prints what you see. The unused
 - **The AI assistant is easier to find.** The admin settings page explains what
   it is, that it runs on your own server, and what has to be switched on.
 
-## Changes for operators since 2.3.1
+## Upgrading
 
-- **Rebuild the image** (`docker compose up --build -d`). The Excel and Word
-  exports need the image's graphics extension, so an old image will not run
-  the new code.
-- A small database change runs on start and needs no action.
-- **Templates already loaded keep their old content.** To get the template
-  fixes, reload the template; see the README's section on templates.
-- The assistant is unchanged: off unless you turned it on.
+See the upgrade steps in [`RELEASE-2.5.0.md`](RELEASE-2.5.0.md), which includes
+this release.

@@ -1,9 +1,5 @@
 # ArgueSecure 2.0.1
 
-> Version history: this version predates the releases published here, and
-> its note is kept to show what changed. To install, follow the README for the
-> current release.
-
 Live collaboration that actually connects, and tighter sign-in and rate limits.
 No new features and nothing to configure.
 
@@ -29,6 +25,6 @@ No new features and nothing to configure.
   the health check.
 - **The sign-in page no longer shows framework or PHP versions.**
 
-## Changes for operators since 2.0.0
+## Upgrading from 2.0.0
 
-There were no database or configuration changes.
+Nothing to do: there are no database or configuration changes.

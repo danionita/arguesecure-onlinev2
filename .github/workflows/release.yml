@@ -126,8 +126,8 @@ jobs:
 
   repoint:
     name: Point an existing tag at another commit
-    # For after the public history is rewritten: the tag keeps its release,
-    # its images are not rebuilt, and nothing is published.
+    # For after the public history is rewritten: the release is made again on
+    # the new commit with its current notes, and no image is rebuilt.
     if: github.repository == 'danionita/arguesecure-onlinev2' && github.ref == 'refs/heads/main' && inputs.repoint_tag != ''
     runs-on: ubuntu-latest
     permissions:
@@ -149,9 +149,33 @@ jobs:
           [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "'$TAG' is not vX.Y.Z" >&2; exit 1; }
           [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "repoint_sha must be a full commit id" >&2; exit 1; }
           git merge-base --is-ancestor "$SHA" origin/main || { echo "$SHA is not on main" >&2; exit 1; }
-          [ "$(git show "$SHA:VERSION" | tr -d '[:space:]')" = "${TAG#v}" ] || { echo "VERSION at $SHA is not ${TAG#v}" >&2; exit 1; }
-          echo "$TAG: $(git rev-parse "refs/tags/$TAG^{commit}") -> $SHA"
-          gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG" -f sha="$SHA" -F force=true
+          # VERSION first appeared in 2.7.0: from then on it must equal the tag,
+          # and only an older tag may be checked by its notes file instead.
+          if git cat-file -e "$SHA:VERSION" 2>/dev/null; then
+            [ "$(git show "$SHA:VERSION" | tr -d '[:space:]')" = "${TAG#v}" ] || { echo "VERSION at $SHA is not ${TAG#v}" >&2; exit 1; }
+          elif [ "$TAG" != v2.7.0 ] && [ "$(printf 'v2.7.0\n%s\n' "$TAG" | sort -V | head -n1)" = "$TAG" ]; then
+            git cat-file -e "$SHA:docs/RELEASE-${TAG#v}.md" || { echo "no docs/RELEASE-${TAG#v}.md at $SHA" >&2; exit 1; }
+          else
+            echo "$TAG needs a VERSION file at $SHA" >&2; exit 1
+          fi
+          echo "$TAG: $(git rev-parse -q --verify "refs/tags/$TAG^{commit}" || echo 'no tag') -> $SHA"
+          # The ref API refuses to move a tag onto a commit that carries workflow
+          # files (the workflow token cannot hold that scope), while a release
+          # may create its tag there. So the release is made again, with the
+          # same notes, and the images (built from the old commit) stay as they are.
+          version="${TAG#v}"
+          [ -f "docs/RELEASE-$version.md" ] || { echo "docs/RELEASE-$version.md is missing on main" >&2; exit 1; }
+          # TAG is in the list too: after a failed run it may no longer be a tag.
+          latest=--latest=false
+          [ "$( { git tag -l 'v[0-9]*.[0-9]*.[0-9]*'; echo "$TAG"; } | sort -Vu | tail -n1)" = "$TAG" ] && latest=--latest
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release delete "$TAG" --cleanup-tag --yes
+          fi
+          # A tag left without a release (a rerun after a failed create) would keep its commit.
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG"
+          fi
+          gh release create "$TAG" --target "$SHA" --title "ArgueSecure $version" --notes-file "docs/RELEASE-$version.md" "$latest"
 
   notes:
     name: Rewrite the notes of an existing release

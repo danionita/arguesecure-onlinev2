@@ -1,9 +1,5 @@
 # ArgueSecure 2.5.0
 
-> Version history: this version predates the releases published here, and
-> its note is kept to show what changed. To install, follow the README for the
-> current release.
-
 One set of actions everywhere, the report as a proper third view, simpler
 scales and an assistant you can actually reach from the chart.
 
@@ -54,8 +50,12 @@ scales and an assistant you can actually reach from the chart.
 - **A printed report no longer carries the editor's running header,** and the
   view switcher no longer sits lower on the report than in the list.
 
-## Changes for operators since 2.3
+## Upgrading from 2.3.1
 
+- **Update the images and restart.** The Excel and Word exports need the
+  image's graphics extension, so an old image will not run the new code.
+- **Templates already loaded keep their old content.** To get the reference and
+  template fixes, reload the template; see the README's section on templates.
 - A database change adds three switches for the assistant's features. All
   default to on, but the assistant itself stays off until you turn it on, so
   nothing changes at upgrade.
@@ -67,5 +67,4 @@ scales and an assistant you can actually reach from the chart.
 
 ## Known limits
 
-- Whether report zoom should scale type or page width is still to be decided
-  from a printed page; type size is used for now.
+- Zoom in the report scales the type size, not the page width.

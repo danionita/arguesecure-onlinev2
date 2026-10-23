@@ -1,9 +1,5 @@
 # ArgueSecure 2.6.0
 
-> Version history: this version predates the releases published here, and
-> its note is kept to show what changed. To install, follow the README for the
-> current release.
-
 Two better models for the optional AI assistant, installed with one command,
 plus standards templates and a rewritten help centre.
 
@@ -49,7 +45,7 @@ model writes reaches an assessment until a person accepts it.
   echo back from the live connection and could overwrite what you had just
   typed, or blank the Details tab on a new item.
 
-## Changes for operators since 2.5.x
+## Upgrading from 2.5.x
 
 - **A 2.5 assistant keeps running without changes.** Whatever model your
   settings named, or the old default, still resolves to the same file.

@@ -1,9 +1,5 @@
 # ArgueSecure 2.6.1
 
-> Version history: this version predates the releases published here, and
-> its note is kept to show what changed. To install, follow the README for the
-> current release.
-
 Prebuilt images: run ArgueSecure from two files, and upgrade with a pull.
 
 Until now, running ArgueSecure meant building the images on your own host.
@@ -17,10 +13,14 @@ a restart. On Unraid that is the Update button in Compose Manager.
   `ARGUESECURE_VERSION` in `.env` to pin a version or follow a line.
 - **The compose file pulls by default.** Building from source still works.
 
-## Changes for operators
+## Upgrading from 2.6.0
 
-The compose file now pulls images by default, and building from source still
-works. `DATA_PATH`, the keys and the database carry over unchanged.
+1. **Take a database dump** first (see *Backups* in the README).
+2. **Use the current compose file.** It pulls images by default; building from
+   source still works.
+3. **Pin a version if you like** with `ARGUESECURE_VERSION` in `.env`.
+
+Your data directory, keys and database carry over unchanged.
 
 ## Known limits
 
