@@ -7,7 +7,7 @@
  * The editor gets this band from `AuthenticatedLayout`; the report cannot —
  * a share-link guest has no `{name, email}` user for that layout to render,
  * so the report is deliberately not wrapped in it (see Pages/Report/Show.vue's
- * file header). W74 therefore reproduced the band by hand, and the copy drifted
+ * file header). The report therefore reproduced the band by hand, and the copy drifted
  * from the original before it shipped: the report's toolbar sat 6px above the
  * editor's because only one of the editor's *two* paddings had been copied.
  *
@@ -20,7 +20,7 @@
  * property that lets the report render it: the account chrome stays in
  * `AuthenticatedLayout` and only the geometry is shared.
  *
- * ## `no-print` (W82, D42)
+ * ## `no-print`
  *
  * This band now carries `AssessmentActions` — Settings, History, Share,
  * Export, Print — through whichever page's `header` slot fills it, and every

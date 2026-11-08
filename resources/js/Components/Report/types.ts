@@ -1,23 +1,21 @@
 /**
  * TypeScript mirror of the payload App\Domain\Reporting\ReportAssembler
- * builds server-side (PLAN.md Phase 7). Plain, serializable shapes only —
+ * builds server-side (ui.md §9). Plain, serializable shapes only —
  * this is Inertia page-prop data, not the calculation engine, so it does
  * not need to satisfy calc/types.ts's "no classes, mirrors the PHP DTO"
  * rule for its own sake, but it follows the same camelCase convention for
  * consistency with the rest of the frontend.
  *
  * Kept inside Components/Report/ rather than the shared resources/js/types/
- * directory: this package's file ownership is Pages/Report/** and
- * Components/Report/** only (W17 task brief) — resources/js/types/** is not
- * listed, so a type module other packages might also want to touch stays
- * out of scope here.
+ * directory, so a type module other parts of the app might also want to touch
+ * stays out of scope here.
  */
 
 export type ReportBaseline = 'current' | 'target' | 'both';
 export type CostBucketKey = 'priced' | 'free' | 'unpriced';
 
 /**
- * W80 removed `figures`, which was a `'full' | 'qualitative'` that no
+ * `figures` was removed; it was a `'full' | 'qualitative'` that no
  * renderer read on either side of the wire. See `ReportOptions`' PHP
  * docblock: computed results are rendered as currency and never band-mapped
  * (calculation-engine.md §8.3), so the option could not have meant what its
@@ -28,17 +26,17 @@ export interface ReportOptions {
     includeShelved: boolean;
     includeComments: boolean;
     includeMethodology: boolean;
-    /** The model-quality warnings appendix (W136). Default on, and on for `download`. */
+    /** The model-quality warnings appendix. Default on, and on for `download`. */
     includeWarnings: boolean;
-    /** Section ids left out of the report (W139); see `reportSections.ts`. Default none, and `download` clears it. */
+    /** Section ids left out of the report; see `reportSections.ts`. Default none, and `download` clears it. */
     omittedSections: string[];
-    /** Names on nodes in the full-assessment section (W46). Default off, and `download` does not turn it on. */
+    /** Names on nodes in the full-assessment section. Default off, and `download` does not turn it on. */
     showAssignees: boolean;
     /** Requested through the Download button: everything expanded, both states, no options panel. */
     download: boolean;
 }
 
-/** What the plan costs and what it buys (W33). */
+/** What the plan costs and what it buys. */
 export interface ProgrammeSummary {
     planned: {
         /** opex + capex / amortization years — already amortised. */
@@ -240,7 +238,7 @@ export interface ReportTree {
 }
 
 /**
- * PLAN-2.7 D65: a control is `implemented` when any citing defence is,
+ * A control is `implemented` when any citing defence is,
  * `planned` when none is but one is todo, `shelved` otherwise.
  */
 export type ControlStatus = 'implemented' | 'planned' | 'shelved';
@@ -273,7 +271,7 @@ export interface CoverageFramework {
 export interface ControlCoverage {
     /** Only frameworks with at least one control to list. */
     frameworks: CoverageFramework[];
-    /** Controls cited only by shelved defences, left out unless shelved defences are included (D66). */
+    /** Controls cited only by shelved defences, left out unless shelved defences are included. */
     hiddenShelved: number;
 }
 
@@ -313,7 +311,7 @@ export interface ReportAppendices {
     references: ReferenceRow[];
     comments: CommentRow[];
     warnings: WarningRow[];
-    /** How many warnings a report with `includeWarnings` off left out (W136); 0 otherwise. */
+    /** How many warnings a report with `includeWarnings` off left out; 0 otherwise. */
     warningsOmitted: number;
 }
 
@@ -323,7 +321,7 @@ export interface ReportData {
         currency: string;
         amortizationYears: number;
         /**
-         * Display only (W44, PLAN-2.2.md D14): BaselineBarChart draws a
+         * Display only: BaselineBarChart draws a
          * threshold line against it. No figure in this report is computed
          * from it. Null means none is set, which is not zero.
          */
@@ -332,11 +330,11 @@ export interface ReportData {
     };
     options: ReportOptions;
     /**
-     * The author's own words and the disclosure that goes with them (W54),
-     * added to the assembled report in W74 so the HTML and Word exports have
+     * The author's own words and the disclosure that goes with them,
+     * added to the assembled report so the HTML and Word exports have
      * one source for the prose sections rather than reading the model again.
      * The *draft* is deliberately not here: it is un-reviewed model output
-     * the server withholds from anyone who could not accept it (D24), and an
+     * the server withholds from anyone who could not accept it (nothing a model generates reaches another user unseen), and an
      * export is exactly the path by which it would reach them.
      */
     writtenSummary: { text: string | null; generated: boolean };

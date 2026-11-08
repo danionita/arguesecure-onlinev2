@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * One tabbed dashboard section (W73 item 21, D32).
+ * One tabbed dashboard section (ui.md §8).
  *
  * The dashboard was four stacked sections. The two that answer *what needs
  * me* — Assigned to me, Mentions — and the two that answer *where do I go* —
  * Mine, Shared with me — were half a screen apart, and neither pair fit above
- * the fold. D32 pairs them instead: two sections, two tabs each.
+ * the fold. Pairing them instead gives two sections, two tabs each.
  *
  * ## The counts are on the labels, deliberately
  *
@@ -23,8 +23,8 @@
  * `aria-controls`, no `aria-labelledby` on its panels and no keyboard
  * handling — good enough inside a modal that manages its own focus, not good
  * enough for the arrival page, where the tablist is the first interactive
- * thing after the heading. It also belongs to another package. This is the
- * `DashboardTabs` wrapper W73 was given the choice of building.
+ * thing after the heading. That is why this wrapper exists rather than
+ * reusing it.
  *
  * Roving tabindex and arrow keys per the APG tabs pattern: exactly one tab is
  * in the tab order, and Left/Right/Home/End move between them. Manual

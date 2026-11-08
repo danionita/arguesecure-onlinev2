@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# CLAUDE.md's seven checks, on any machine with Docker and bash (Git Bash on
+# The project's seven checks (pint, phpstan, pest, lint, format, type-check,
+# unit tests), on any machine with Docker and bash (Git Bash on
 # Windows is fine) — including a fresh clone, such as a Claude Code cloud
 # thread's.
 #
@@ -9,6 +10,7 @@
 #   tools/dev/checks/checks.sh pint phpstan pest      # some
 #   tools/dev/checks/checks.sh pest --filter=Assistant
 #   tools/dev/checks/checks.sh fix app/X.php resources/js/Y.vue   # pint/prettier --write
+#   tools/dev/checks/checks.sh e2e [playwright args]  # Playwright scenarios, via e2e.sh (needs Docker + a browser; 25-30 min)
 #   tools/dev/checks/checks.sh teardown               # remove everything it created
 #
 # Two modes, chosen by CHECKS_MODE (default: native when php, composer and
@@ -24,7 +26,7 @@
 #               volume copy. Every run starts with an rsync of the checkout
 #               into the volume, and `fix` copies formatted files back.
 #   native      the machine's own PHP 8.3 and Node, in the checkout — what CI
-#               does, and what a cloud thread's VM has (W100). `setup` first
+#               does, and what a cloud thread's VM has. `setup` first
 #               checks the PHP extensions the suite needs and names the
 #               packages if one is missing (tools/dev/checks/cloud-setup.sh
 #               installs them).
@@ -168,11 +170,116 @@ EOF
     echo "wrote .env.testing (gitignored)"
 }
 
+# A Claude Code cloud VM has dockerd installed but not running, and passwordless
+# sudo; start it there rather than fail. Any other Linux machine with both gets
+# the same; anywhere else (Docker Desktop, a machine without passwordless sudo)
+# this does nothing and setup fails as before.
+start_docker() {
+    command -v dockerd >/dev/null 2>&1 && sudo -n true 2>/dev/null || return 1
+    echo "Docker is not running; starting dockerd"
+    sudo -n sh -c 'nohup dockerd >/var/log/dockerd.log 2>&1 &'
+    local _
+    for _ in $(seq 1 30); do docker info >/dev/null 2>&1 && return 0; sleep 1; done
+    return 1
+}
+
+# Composer fetches package archives through api.github.com and
+# codeload.github.com. Where they are refused, composer fails after minutes
+# with an authentication error that names no cause, and phpstan/phpstan has no
+# source to fall back to, so no PHP check can run.
+#
+# Prints why GitHub cannot serve the packages, or nothing when it can. The
+# status says which, so no caller reads the wording: 10 the session's repository
+# scope refuses, 11 the host is unreachable, 1 GitHub serves them. A proxy that refuses answers itself; whatever GitHub answers, a
+# rate-limit 403 included, carries its request id. A Claude Code cloud session
+# has two separate gates: its network access, and its GitHub repository scope,
+# which refuses every repository not attached to the session, whatever the
+# network allows. The API root can be open while repositories are not, so ask
+# for the package with no source fallback. The scope is recognised by the
+# proxy's wording ("GitHub access to this repository is not enabled for this
+# session ... Use add_repo"); either phrase is enough, and if both change the
+# message falls back to the network one, which still says GitHub refused.
+github_refusal() {
+    local url head
+    for url in https://api.github.com/repos/phpstan/phpstan \
+        https://codeload.github.com/phpstan/phpstan/zip/refs/heads/2.1.x; do
+        head="$(curl -si --max-time 15 "$url" 2>/dev/null | head -c 4096)"
+        printf '%s' "$head" | grep -qi '^x-github-request-id:' && continue
+        if printf '%s' "$head" | grep -qiE 'not enabled for this session|add_repo'; then
+            echo "this session's GitHub access does not cover the repositories composer downloads from (phpstan/phpstan among them); network settings do not change that"
+            return 10
+        fi
+        echo "${url#https://} is unreachable from here (network access, or a proxy refusing it)"
+        return 11
+    done
+    return 1
+}
+
+# Installs the PHP dependencies from git where github_refusal says archives
+# cannot be had. composer.lock gives phpstan/phpstan an archive and no git
+# source (its repository carries the phar, so a full clone is many GB and runs
+# a session out of disk), so this fetches only the locked commit into a scratch
+# repository and points the lock at it for the one install, then puts the
+# lock back. Everything else installs from its own git source: slow (about ten
+# minutes) and about 8 GB in vendor/, but it needs nothing from the GitHub API.
+# Native mode only; the containers mode keeps the refusal message.
+#
+# The lock is restored by an EXIT trap, which also runs when a signal makes the
+# script exit, so a killed setup leaves no file:// source in the committed
+# lock (SIGKILL cannot be trapped; tests/Unit/Deployment/ComposerLockSourceTest
+# fails if one is ever committed). Globals, not locals: the trap can fire after
+# this function has returned.
+PHP_GIT_SCRATCH=""
+PHP_GIT_LOCK=""
+restore_php_git_lock() {
+    [ -n "$PHP_GIT_SCRATCH" ] || return 0
+    cp "$PHP_GIT_SCRATCH/composer.lock.orig" "$PHP_GIT_LOCK"
+    rm -rf "$PHP_GIT_SCRATCH"
+    PHP_GIT_SCRATCH=""
+    # The git caches duplicate vendor/ (several GB) and a fresh VM never reuses them.
+    composer clear-cache --quiet >/dev/null 2>&1
+}
+
+install_php_from_git() {
+    local status
+    PHP_GIT_LOCK="$ROOT/composer.lock"
+    PHP_GIT_SCRATCH="$(mktemp -d)" || return 1
+    cp "$PHP_GIT_LOCK" "$PHP_GIT_SCRATCH/composer.lock.orig"
+    trap restore_php_git_lock EXIT
+    trap 'exit 130' INT TERM HUP
+    if ! (
+        set -e
+        scratch="$PHP_GIT_SCRATCH"
+        # shellcheck disable=SC2016 # PHP's variables, not the shell's
+        ref="$(php -r '$l = json_decode(file_get_contents($argv[1]), true);
+            foreach (array_merge($l["packages"], $l["packages-dev"]) as $p) {
+                if ($p["name"] === "phpstan/phpstan") { echo $p["dist"]["reference"]; }
+            }' "$PHP_GIT_LOCK")"
+        [ -n "$ref" ]
+        git init -q "$scratch/phpstan"
+        git -C "$scratch/phpstan" remote add origin https://github.com/phpstan/phpstan.git
+        GIT_LFS_SKIP_SMUDGE=1 git -C "$scratch/phpstan" fetch -q --depth 1 origin "$ref"
+        git -C "$scratch/phpstan" checkout -q -b locked FETCH_HEAD
+        # shellcheck disable=SC2016 # PHP's variables, not the shell's
+        php -r '$l = json_decode(file_get_contents($argv[1]), true);
+            foreach ($l["packages-dev"] as &$p) {
+                if ($p["name"] === "phpstan/phpstan") {
+                    $p["source"] = ["type" => "git", "url" => "file://" . $argv[2], "reference" => $p["dist"]["reference"]];
+                }
+            }
+            file_put_contents($argv[1], json_encode($l, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");' "$PHP_GIT_LOCK" "$scratch/phpstan"
+        COMPOSER_PROCESS_TIMEOUT=0 composer install --no-interaction --prefer-source --quiet
+    ); then status=1; else status=0; fi
+    restore_php_git_lock
+    trap - EXIT INT TERM HUP
+    return "$status"
+}
+
 setup() {
     local started=$SECONDS password
     echo "mode: $CHECKS_MODE"
     [ "$CHECKS_MODE" = native ] && native_preflight
-    docker info >/dev/null 2>&1 || { echo "Docker is not running (the test database runs in it)" >&2; exit 1; }
+    docker info >/dev/null 2>&1 || start_docker || { echo "Docker is not running (the test database runs in it)" >&2; exit 1; }
     if [ "$CHECKS_MODE" = containers ]; then
         docker build -q -t "$PHP_IMAGE" -f "$(host_path "$HERE/Dockerfile.php")" "$(host_path "$HERE")" >/dev/null || exit 1
         docker build -q -t "$SYNC_IMAGE" -f "$(host_path "$HERE/Dockerfile.sync")" "$(host_path "$HERE")" >/dev/null || exit 1
@@ -190,7 +297,7 @@ setup() {
             -e MARIADB_USER=arguesecure -e MARIADB_PASSWORD="$password" mariadb:11 >/dev/null
     fi
     docker start "$DB" >/dev/null
-    # A database container from before W100 publishes no port, and the
+    # A database container from before the native mode publishes no port, and the
     # native side could not reach it.
     if [ "$CHECKS_MODE" = native ] && [ -z "$(docker port "$DB" 3306 2>/dev/null)" ]; then
         echo "$DB publishes no port; run '$0 teardown' once, then setup again" >&2
@@ -201,8 +308,20 @@ setup() {
     docker start "$REDIS" >/dev/null
 
     sync
-    php_run composer install --no-interaction --prefer-dist --quiet
-    record install-php $?
+    # With vendor/ already installed, composer needs no download.
+    local refusal="" kind=1
+    if [ ! -f "$ROOT/vendor/autoload.php" ]; then refusal="$(github_refusal)"; kind=$?; fi
+    if [ "$kind" -eq 10 ] && [ "$CHECKS_MODE" = native ]; then
+        echo "GitHub archives are refused here ($refusal); installing from git sources instead, which takes about ten minutes and 8 GB" >&2
+        install_php_from_git
+        record install-php $?
+    elif [ -n "$refusal" ]; then
+        echo "composer cannot install phpstan/phpstan: $refusal. No PHP check (pint, phpstan, pest) can run here; run them on a machine that reaches GitHub" >&2
+        record install-php 1
+    else
+        php_run composer install --no-interaction --prefer-dist --quiet
+        record install-php $?
+    fi
     node_run npm ci --no-audit --no-fund --loglevel=error
     record install-node $?
 
@@ -227,7 +346,7 @@ teardown() {
 }
 
 # Pest under pcov and Vitest under v8, then the floors in coverage-floors.json
-# (D88). Reports go to the git-ignored coverage/ directory; the gate runs where
+# (the coverage gate). Reports go to the git-ignored coverage/ directory; the gate runs where
 # the reports are, so container mode needs no copy back.
 coverage() {
     php_run php -m | grep -qix pcov || { echo "pcov is not loaded: install php8.3-pcov (cloud-setup.sh), or use CHECKS_MODE=containers" >&2; return 1; }
@@ -254,6 +373,9 @@ case "${1:-}" in
     setup) setup ;;
     teardown) teardown; exit 0 ;;
     fix) shift; fix "$@"; exit $? ;;
+    # Not one of the seven: it boots its own stack and cleans up after itself,
+    # so it needs none of this script's services. CI runs the same file.
+    e2e) shift; exec "$HERE/e2e.sh" "$@" ;;
     *)
         CHECKS=() PEST_ARGS=()
         for arg in "$@"; do
@@ -265,7 +387,7 @@ case "${1:-}" in
         done
         [ ${#CHECKS[@]} -gt 0 ] || CHECKS=(pint phpstan pest lint format types vitest)
         # `coverage` is not one of the seven: it reruns both suites under a
-        # coverage driver (W119), so it is asked for by name.
+        # coverage driver, so it is asked for by name.
         if [ "$CHECKS_MODE" = native ] && { [ ! -d "$ROOT/vendor" ] || [ ! -d "$ROOT/node_modules" ]; }; then
             echo "no vendor/ or node_modules/ yet: run '$0 setup' first" >&2
             exit 1

@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/** A new name for a custom scale (W126). */
+/** A new name for a custom scale. */
 class RenameScaleRequest extends FormRequest
 {
     public function authorize(): bool

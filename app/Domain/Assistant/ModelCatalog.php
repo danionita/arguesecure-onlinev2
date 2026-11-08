@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 use RuntimeException;
 
 /**
- * The assistant's model presets (PLAN-2.6.md D52), read from
+ * The assistant's model presets, read from
  * `docker/assistant/models.conf`.
  *
  * **The same file the installer reads.** `docker/assistant/assistant.sh`

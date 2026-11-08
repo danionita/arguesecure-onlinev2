@@ -17,9 +17,8 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
- * PLAN.md Phase 6 item 4 — "a queued RecalculateAssessment job debounced
- * 250ms per assessment, so dragging a slider produces one broadcast rather
- * than forty."
+ * A queued RecalculateAssessment job is debounced 250ms per assessment, so
+ * dragging a slider produces one broadcast rather than forty.
  *
  * The debounce is TriggersRecalculation::debounce()'s job, not this job's:
  * every mutating observer calls it, and it is the Redis `SET NX EX`
@@ -55,13 +54,14 @@ class RecalculateAssessment implements ShouldQueue
         }
 
         // Best-effort, not authoritative: a node delete deliberately leaves
-        // its edges in place for undo (NodeController's own docblock,
-        // outside this package's ownership — "a soft delete leaves the
+        // its edges in place for undo (NodeController's own docblock —
+        // "a soft delete leaves the
         // edge rows in place... which is what makes the inverse a
         // links-intact restore"), which is a real window in which
         // AssessmentGraphLoader can be asked to resolve an edge pointing
         // at a node that query excludes. That window is a pre-existing
-        // property of the delete/undo design this job did not create, but
+        // property of soft-delete-with-undo (the edges stay so the undo can
+        // restore them intact) that this job did not create, but
         // it is now the first caller able to observe it asynchronously
         // (every other current call site only ever loads the graph for a
         // live page render, never in the moment right after a delete). A

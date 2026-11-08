@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * "Search existing users and add one with a role" (PLAN.md Phase 3 item
- * 5). Searching hits ShareController::searchUsers, which is itself
+ * "Search existing users and add one with a role" (the share dialog).
+ * Searching hits ShareController::searchUsers, which is itself
  * restricted to callers who already hold `manage` on this assessment and
  * returns only id/name/email (security.md §7) — this component just
  * renders whatever comes back.

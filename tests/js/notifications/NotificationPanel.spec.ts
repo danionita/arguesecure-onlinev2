@@ -1,5 +1,5 @@
 /**
- * The notification panel (W47, item 15).
+ * The notification panel.
  *
  * What is worth pinning: the feed is fetched on **open**, never on mount. This
  * component lives in the authenticated layout, so a fetch on mount would pull
@@ -50,7 +50,7 @@ function row(overrides: Record<string, unknown> = {}) {
 function mountPanel(show = false) {
     // `Modal` teleports to body, which `wrapper.text()` cannot see. Stubbing
     // the teleport renders it inline instead — the panel's own markup is
-    // unchanged either way, and the teleport is W10's concern, not this
+    // unchanged either way, and the teleport is the modal's concern, not this
     // component's.
     return mount(NotificationPanel, {
         props: { show },

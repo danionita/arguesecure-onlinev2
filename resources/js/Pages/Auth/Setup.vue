@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * First-run setup (PLAN.md Phase 3 item 2). Only ever reachable once —
+ * First-run setup (accounts are admin-created; see security.md). Only ever reachable once —
  * SetupController redirects to /login the instant a user row exists, and
  * this cannot be reopened by deactivating every account (that check is
  * "does any user row exist", not "does any active user exist").
  */
+import BrandMark from '@/Components/UI/BrandMark.vue';
 import Button from '@/Components/UI/Button.vue';
-import Icon from '@/Components/UI/Icon.vue';
 import Input from '@/Components/UI/Input.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -28,11 +28,7 @@ const submit = () => {
         <Head title="Set up ArgueSecure" />
 
         <div class="mb-4 flex items-start gap-2">
-            <Icon
-                name="shield"
-                :size="20"
-                class="text-node-root-text mt-0.5 shrink-0"
-            />
+            <BrandMark :size="20" class="mt-0.5 shrink-0" />
             <p class="text-text-secondary text-sm">
                 No account exists yet. Create the first administrator to start
                 using ArgueSecure — this screen will not be reachable again once

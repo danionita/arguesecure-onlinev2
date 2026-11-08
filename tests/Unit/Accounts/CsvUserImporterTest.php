@@ -102,7 +102,7 @@ test('commit ignores invalid rows even if passed in', function () {
     expect($created[0]['user']->email)->toBe('ada@example.com');
 });
 
-// W123 (D90): the three ways a spreadsheet saves a CSV. Each case imports
+// The three ways a spreadsheet saves a CSV. Each case imports
 // the same two people, so "same as the plain file" is the assertion.
 dataset('spreadsheet CSV encodings', [
     'plain comma' => fn () => "name,email\nÉsther Müller,esther@example.com\nBen Bakker,ben@example.com",

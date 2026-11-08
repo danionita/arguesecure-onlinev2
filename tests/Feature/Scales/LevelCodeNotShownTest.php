@@ -1,14 +1,14 @@
 <?php
 
 /**
- * No rendered surface and no export column contains a level code (W87, D44).
+ * No rendered surface and no export column contains a level code.
  *
- * The other half of D44. `scale_levels.code` stays in the database, in the
+ * The other half of that rule: `scale_levels.code` stays in the database, in the
  * catalogue's resolution path and in calculation-engine.md §8.3's payload —
  * `LevelCodeTest` is where that is asserted — and it is shown to the user
  * **nowhere**.
  *
- * Four surfaces were showing one before W87, and only the first was obvious:
+ * Four surfaces were showing one before the codes were hidden, and only the first was obvious:
  *
  * 1. The scale editor asked for it in a **Code** column.
  * 2. The exported methodology appendix printed it as a **Code** column, which
@@ -164,7 +164,7 @@ test('the settings page sends the code but the scale summary no longer renders o
     // a code across a rename — and never drawn, which is the Vue half of this
     // assertion (tests/js/scales/BandTable.spec.ts).
     expect($band)->toHaveKey('code')
-        // …and absent is `color`, which D45 stopped being editable. A value
+        // …and absent is `color`, which stopped being editable. A value
         // the editor cannot change and does not draw is one it should not be
         // handed.
         ->and($band)->not->toHaveKey('color');

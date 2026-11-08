@@ -14,7 +14,7 @@ const props = withDefaults(
         tone?: 1 | 2 | 3 | 4 | 5 | 'implemented' | 'todo' | 'shelved';
         size?: 'sm' | 'md';
         /**
-         * W29: a bar with no number attached is a decoration. When present,
+         * A bar with no number attached is a decoration. When present,
          * the bar itself becomes the hover/focus target — wrapping it at each
          * call site instead would make the label hoverable and the bar not,
          * which is backwards.

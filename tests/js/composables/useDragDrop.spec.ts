@@ -56,6 +56,7 @@ function makeInit(): AssessmentStoreInit {
             strength_fraction: null,
             strength_level_id: null,
             reduction_target: null,
+            rationale: null,
         },
     ];
 
@@ -124,7 +125,7 @@ function fakeDragEvent() {
 }
 
 beforeEach(() => {
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         post: vi.fn().mockResolvedValue({ data: {} }),
@@ -167,7 +168,7 @@ describe('useDragDrop: same-parent reorder', () => {
 });
 
 /**
- * W38 / PLAN-2.2.md D11. A cross-parent drop is an ambiguous gesture — the
+ * A cross-parent drop is an ambiguous gesture — the
  * user may mean "it belongs here instead" or "it belongs here too" — and the
  * two are different mutations, one of which destroys an edge. The composable
  * now stops and asks rather than guessing, so every test in this block first

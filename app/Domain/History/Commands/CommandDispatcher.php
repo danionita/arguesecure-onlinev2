@@ -6,9 +6,9 @@ use App\Domain\History\Exceptions\UndoConflictException;
 
 /**
  * Resolves a command's `action` to its Applier through a fixed whitelist —
- * never a class name built from stored input (CLAUDE.md, security.md §7
- * defect #7). An operation's `inverse` JSON is written only by this
- * package's own code (never by request input directly), but the same
+ * never a class name built from stored input (security.md §7,
+ * defect #7). An operation's `inverse` JSON is written only by the
+ * history code (never by request input directly), but the same
  * discipline applies regardless of where a string ends up stored.
  */
 final class CommandDispatcher

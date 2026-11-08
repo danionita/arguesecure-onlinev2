@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * The report page (PLAN.md Phase 7, ui.md §9): route
+ * The report page (ui.md §9): route
  * `GET /assessments/{assessment}/report`.
  *
- * ## D39 — two chromes, chosen on whether `auth()->user()` exists
+ * ## Two chromes, chosen on whether `auth()->user()` exists
  *
  * The report is visible to the same audience as the tree editor's read
  * route (AssessmentPolicy::view: owner, any collaborator role, admin, a
@@ -19,19 +19,19 @@
  * this controller's), and it decides which of two branches in the template
  * mounts. An authenticated viewer — owner, collaborator, admin, or an
  * authenticated reader of a public assessment — gets the sidebar shell
- * every other authenticated page has (W41). A share-link guest gets the
+ * every other authenticated page has. A share-link guest gets the
  * bare page this route always rendered.
  *
  * Both branches mount `Components/Report/ReportDocument.vue` and
  * `Components/Report/ReportOptionsRow.vue` once each — the report content
  * and the search/options/zoom row are identical either way and each lives
- * in exactly one file, so the two branches cannot drift the way W74's
+ * in exactly one file, so the two branches cannot drift the way the
  * hand-copied toolbar geometry once did (see `Components/Chrome/*`'s own
  * docblocks: mounting the same component twice does not risk that; hand-
  * copying markup twice is exactly what did). What differs between the
  * branches is only the surrounding chrome.
  *
- * ## AssessmentActions — mounted for an authenticated viewer only (D40)
+ * ## AssessmentActions — mounted for an authenticated viewer only
  *
  * `Components/Toolbar/AssessmentActions.vue` bundles Settings, History,
  * Share, Export and Print. Its own docblock says it renders nothing
@@ -44,14 +44,14 @@
  * middleware (routes/web.php) — a guest who clicked History would be
  * bounced to a login page for an assessment they were never asked to sign
  * in to see. Rather than editing AssessmentActions.vue to add a gate it has
- * never needed anywhere else (it is not this package's file — W82 owns it),
+ * never needed anywhere else (the editor uses it too),
  * the bar is simply not mounted for a guest. Export and Print stay
  * reachable for a guest exactly as they always were, through this page's
  * own controls in the bare branch below — both routes carry no `auth`
  * middleware (`ReportController`'s docblock: "every action here is a
  * read", gated only on `AssessmentPolicy::view`), so neither breaks.
  *
- * ## Search, options, zoom (W83)
+ * ## Search, options, zoom
  *
  * `useReportSearch.ts` — not `useSearch.ts` — backs the reused
  * `SearchBox.vue`: see that composable's file header for why the report
@@ -62,14 +62,13 @@
  * chrome is showing.
  *
  * The options row is now always visible beside the search box — there is no
- * open/close state any more (contrast this file's git history through
- * W80). Changing one still re-requests the page with a new query string:
+ * open/close state any more (it used to open and close). Changing one still re-requests the page with a new query string:
  * `updateOptions()` is unchanged, and the assembled report is still
  * produced exactly once, server-side, by `ReportBuilder` — nothing on this
  * page recomputes a figure from it
  * (`tests/js/report/noClientSideFigures.spec.ts`).
  *
- * Zoom (D43) applies to the report body only, via `ReportDocument.vue`'s
+ * Zoom applies to the report body only, via `ReportDocument.vue`'s
  * `zoomStyle` prop — the chrome above it and the print output are both
  * untouched. `useCanvas.ts` (Integration 2.5) widened its own `view` option
  * to a `CanvasView` (`EditorViewMode | 'report'`) precisely so this page
@@ -79,15 +78,14 @@
  * `assessmentUuid` argument.
  *
  * **Zoom scales type size, not page width** — the same primitive the list
- * view uses (CSS `zoom`, D9), applied to `ReportDocument`'s `max-w-4xl`
- * container. This is the half of the brief flagged "decide by measurement,
+ * view uses (CSS `zoom`), applied to `ReportDocument`'s `max-w-4xl`
+ * container. This is a choice to "decide by measurement,
  * not by argument, against a printed page," and it is not settled by this
  * comment: it is the defensible default, recorded honestly as a guess. The
  * report already has a fixed reading measure, and a reader asking to see
  * "more" of a document that is already word-wrapped almost always means
  * "bigger," not "wider" — stretching the measure would fight a cap chosen
- * for readability (the same reasoning W70 gives for the list view's own
- * cap) for no reason a print reader has asked for. What would change this:
+ * for readability (the same reasoning that caps the list view) for no reason a print reader has asked for. What would change this:
  * printing a zoomed report at several zoom levels and checking whether the
  * flex/tabular-nums rows in `AssessmentTreeSection`/`RiskRegisterSection`
  * (not `<table>`s) visibly stop agreeing in size with the reflowing prose —
@@ -95,6 +93,7 @@
  * the fix most likely belongs in those rows' own markup, not in a switch
  * away from `zoom`.
  */
+import DeploymentNotice from '@/Components/Chrome/DeploymentNotice.vue';
 import AssessmentActions from '@/Components/Toolbar/AssessmentActions.vue';
 import Button from '@/Components/UI/Button.vue';
 import { useTheme } from '@/Components/UI/useTheme';
@@ -115,7 +114,7 @@ import ShareDialog from '../../Components/Share/ShareDialog.vue';
 
 const props = defineProps<{
     /**
-     * W54 adds the written executive summary to this prop. `summaryDraft` is
+     * The written executive summary is part of this prop. `summaryDraft` is
      * null for anyone who cannot accept it — the server withholds it rather
      * than the template hiding it, because un-reviewed model text should not
      * reach a public reader's page source at all.
@@ -137,13 +136,13 @@ useTheme();
 
 const page = usePage();
 
-/** D39. Present on every request (HandleInertiaRequests::share()); this is the only branch this file needs. */
+/** Present on every request (HandleInertiaRequests::share()); this is the only branch this file needs. */
 const isGuest = computed(() => !page.props.auth?.user);
 const currentUserId = computed(() => page.props.auth?.user?.id ?? null);
 const abilities = computed(() => props.abilities ?? { manage: false });
 
 /**
- * W110 (D70). Options changed in quick succession become one request: each
+ * Options changed in quick succession become one request: each
  * click shows at once in the options row (`shownOptions`), and the page is
  * re-requested once the clicks stop for `OPTIONS_SETTLE_MS`. Before this,
  * every click was its own request against the report's rate limit, so a few
@@ -217,8 +216,8 @@ onBeforeUnmount(() => {
 });
 
 /**
- * Download mode (W33): `?download=1`. Reached from the export menu's
- * **Everything expanded** item since W74 (D35) and from each row of the
+ * Download mode: `?download=1`. Reached from the export menu's
+ * **Everything expanded** item and from each row of the
  * assessment list; the button it was named after is gone, the URL is not.
  * Everything is expanded and both states are shown — ReportOptions forces
  * that server-side and ignores the rest of the query string, so a stale link
@@ -267,7 +266,7 @@ function showPrintHintOnce() {
  * `@print` handler is `showPrintHintOnce` alone, so the hint is not shown
  * twice.
  */
-// W138: Chart/List/Report menu items from the editor arrive with a token.
+// Chart/List/Report menu items from the editor arrive with a token.
 usePrintOnArrival(showPrintHintOnce);
 
 function onPrint() {
@@ -295,7 +294,7 @@ onMounted(() => {
 });
 
 /**
- * The switcher's other two positions (W35). A share-link guest has no
+ * The switcher's other two positions. A share-link guest has no
  * `auth.user`, which is exactly the `'anon'` case the storage key already
  * handles — so the switcher works for them too, and lands them in the editor's
  * read-only view rather than nowhere.
@@ -307,16 +306,16 @@ const editorHref = computed(() =>
 /*
  * The three export links that used to live here — Download report, Defences
  * CSV, Export JSON — are now items in Components/Report/ExportMenu.vue
- * (D34, D35). The forced-full URL W33 defined has not gone anywhere: it is
+ * (ui.md §9). The forced-full URL has not gone anywhere: it is
  * the menu's "Everything expanded" item, and `?download=1` still overrides
  * every other parameter server-side on every export route.
  */
 
-/** W83. One search instance, shared by both branches. See file header. */
+/** One search instance, shared by both branches. See file header. */
 const search = useReportSearch(() => props.report);
 
 /**
- * W83, D43, rewired for Integration 2.5. `useCanvas.ts` now accepts
+ * Zoom for the report. `useCanvas.ts` now accepts
  * `view: 'report'` (a `CanvasView`, not an `EditorViewMode` — the report is
  * not a selectable editor view) and keys and scales this instance's zoom
  * for that view on its own, the same way the chart and list already do. No
@@ -415,9 +414,10 @@ const shareDialogOpen = ref(false);
     </AuthenticatedLayout>
 
     <div v-else class="bg-surface-0 min-h-screen">
+        <DeploymentNotice v-if="!isDownload" />
         <div v-if="!isDownload" class="no-print">
             <!--
-                W74 item 15, rebuilt in W81 — the chrome above the report is
+                The chrome above the report is
                 the editor's, not a copy of it. See `Components/Chrome/*` for
                 why: the report cannot use `AuthenticatedLayout` for a guest
                 (this file's header docblock), so it renders the same shared
@@ -426,7 +426,7 @@ const shareDialogOpen = ref(false);
                 A guest gets no `AssessmentActions` (this file's header
                 docblock explains why: History has no ability gate and sits
                 behind `auth` middleware) — Export and Print stay here as
-                their own controls, exactly as before W83.
+                their own controls, exactly as they always were.
             -->
             <ChromeHeaderBand>
                 <ChromeTitleRow :title="report.cover.title ?? 'Report'">
@@ -436,7 +436,7 @@ const shareDialogOpen = ref(false);
                             :options="shownOptions"
                         />
                         <!--
-                            D35: "Print as configured" is just "Print". The
+                            "Print as configured" is just "Print". The
                             aria-label matches AssessmentActions.vue's own
                             `printLabel` for view-mode "report" — one action,
                             one accessible name, whichever chrome renders it.

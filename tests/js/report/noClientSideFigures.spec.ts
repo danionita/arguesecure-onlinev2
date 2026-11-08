@@ -4,12 +4,12 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vitest';
 
 /**
- * W83 — extends `tests/js/calc/purity.spec.ts`'s spirit ("no calc source
+ * Extends `tests/js/calc/purity.spec.ts`'s spirit ("no calc source
  * file calls a clock, randomness, DOM, or I/O function") to the search
- * feature this package adds: **no report figure is computed in the client.**
+ * feature: **no report figure is computed in the client.**
  *
- * CLAUDE.md: "the report is server-computed and nothing here may re-derive
- * an engine figure client-side" — `ReportBuilder` assembles every ALE, ARO,
+ * The report is server-computed and nothing here may re-derive
+ * an engine figure client-side: `ReportBuilder` assembles every ALE, ARO,
  * CBR, ROSI, net-benefit, attribution and coverage figure once, server-side,
  * and hands it down as `ReportData`. `useReportSearch.ts` exists so
  * `SearchBox.vue` has something to bind to on a page with no
@@ -32,8 +32,9 @@ import { describe, expect, test } from 'vitest';
  * fraction of the total width — a presentational proportion of numbers
  * already computed server-side, not a new figure. That distinction is real
  * but too fine for a token scan to draw safely across every file in
- * `Components/Report/**`, so this test targets exactly what W83 added
- * rather than re-litigating what W33 shipped.
+ * `Components/Report/**`, so this test targets exactly what the search
+ * feature added rather than re-litigating the report components that
+ * preceded it.
  */
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -68,7 +69,7 @@ const figureFields = [
     'targetAle',
 ];
 
-describe('no report figure is computed in the client (W83, spirit of §15 item 14)', () => {
+describe('no report figure is computed in the client (spirit of calculation-engine.md §15 item 14)', () => {
     test('the report search composable exists', () => {
         expect(() => readFileSync(searchComposable, 'utf-8')).not.toThrow();
     });

@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * One switch per assistant feature (W87, item 20, PLAN-2.5.md D48).
+     * One switch per assistant feature (docs/ASSISTANT.md).
      *
-     * `assistant_enabled` is one answer to three different questions. D25's
+     * `assistant_enabled` is one answer to three different questions. The
      * three features cost wildly different amounts — help is a corpus read,
      * a suggestion is roughly 30 seconds of CPU, a summary roughly 250 — so an
      * admin may reasonably want the cheap one and not the expensive one, and
@@ -24,7 +24,7 @@ return new class extends Migration
      * the three: no value written here can make a feature work on a deployment
      * that runs no inference container. `UpdateSettingsRequest` enforces that
      * at the edge with `declined`, the same rule `assistant_enabled` has had
-     * since W50, and `Availability::isAvailable($feature)` enforces it at
+     * since the assistant arrived, and `Availability::isAvailable($feature)` enforces it at
      * every call site.
      *
      * ## Default true, unlike `assistant_enabled`

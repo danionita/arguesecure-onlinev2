@@ -94,7 +94,7 @@ test('an admin password reset is logged as a reset by the admin, without the pas
     expect(array_column(securityLines($log), 'event'))->not->toContain('auth.password_changed');
 
     // The generated password is shown to the admin once: in the session flash
-    // until W115, in Inertia's flash on the next page load after it. Take it
+    // in older code, in Inertia's flash on the next page load after it. Take it
     // from wherever it is, and prove it is the account's real password, so the
     // absence check below is not an empty-string check.
     $password = session('generatedPassword')

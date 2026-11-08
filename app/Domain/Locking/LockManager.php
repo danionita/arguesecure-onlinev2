@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Redis;
 
 /**
  * Field-level pessimistic locking, entirely in Redis, no table, no polling
- * (PLAN.md Phase 6 item 3, calculation-engine.md's sibling doc on the
- * legacy `HeartbeatController` this replaces). Key
+ * (replacing the legacy
+ * `HeartbeatController`). Key
  * `lock:{assessment}:{node_uuid}:{field}`, acquired with `SET NX PX 45000`.
  * **The TTL is the sweep** — there is deliberately no cleanup job, no
  * cron, no table row to go stale. A holder who never comes back (closed
@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Redis;
 final class LockManager
 {
     /**
-     * ui.md §6 / PLAN.md Phase 6 item 3: acquired for 45s, refreshed by a
+     * ui.md §6: acquired for 45s, refreshed by a
      * client heartbeat every 15s — three refreshes' margin before a lock
      * a user is actively holding could expire out from under them.
      */

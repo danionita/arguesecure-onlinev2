@@ -1,6 +1,6 @@
 /**
  * The node card is the screen the tool lives or dies by (ui.md §3), and until
- * W29 nothing tested what it renders — `tests/js` covered composables, the
+ * this file existed nothing tested what it renders — `tests/js` covered composables, the
  * store and the engine, all of which can be perfectly correct while the card
  * shows the reader three unlabelled numbers from two different baselines.
  *
@@ -92,12 +92,13 @@ const edge: AttackDefenceLink = {
     strength_fraction: 0.4,
     strength_level_id: null,
     reduction_target: 'likelihood',
+    rationale: null,
 };
 
 /**
  * One risk, one attack under it, one *planned* defence under that attack —
  * the shape where current and target genuinely differ, which is the whole
- * point of the selector this package adds.
+ * point of the selector under test.
  */
 function makeInit(): AssessmentStoreInit {
     return {
@@ -137,7 +138,7 @@ function makeInit(): AssessmentStoreInit {
         ],
         attackDefenceLinks: [edge],
         results: {
-            // W36: inherent was 25,000 here too, identical to current. Three
+            // Inherent was 25,000 here too, identical to current. Three
             // totals now render side by side, and a fixture where two of them
             // match would let a swapped pair pass unnoticed. Distinct values,
             // descending, as a real assessment's would be.
@@ -283,7 +284,7 @@ function tooltipFor(
 
 beforeEach(() => {
     localStorage.clear();
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get: vi.fn().mockResolvedValue({ data: {} }),
@@ -294,11 +295,11 @@ beforeEach(() => {
 });
 
 /**
- * W36 — the list card carries what a person entered, and the engine's output
+ * The list card carries what a person entered, and the engine's output
  * only at the root.
  *
  * These are exact-equality assertions on the whole labelled set rather than
- * "does not contain 'Annual loss'". The package's content is a *removal*, and
+ * "does not contain 'Annual loss'". The change under test is a *removal*, and
  * a containment check would stay green if a figure came back under a new
  * label, which is precisely how one would come back.
  */
@@ -331,7 +332,7 @@ describe('the card shows the values a human entered', () => {
             edge,
         });
 
-        // W70: the last row that rendered a bare sentence chip instead of a
+        // The last row that rendered a bare sentence chip instead of a
         // labelled value. Exact equality, like every other assertion in this
         // describe: a containment check would stay green if the cost or the
         // saving came back beside it.
@@ -356,7 +357,7 @@ describe('the root card, which is the exception', () => {
         const { wrapper } = mountCard(store, { uuid: 'root' });
 
         // The comparison the removed selector kept asking people to make one
-        // baseline at a time (PLAN-2.2.md D8).
+        // baseline at a time (the baseline moved onto the cards).
         expect(labelledValues(wrapper)).toEqual([
             'Base: €50,000',
             'Current: €25,000(50% lower)',
@@ -365,12 +366,12 @@ describe('the root card, which is the exception', () => {
     });
 
     /**
-     * CLAUDE.md: computed results "render as currency with a reduction
-     * percentage". W36 moved these three figures off the docked panel onto
+     * Computed results "render as currency with a reduction
+     * percentage". Moving these three figures off the docked panel onto
      * this card and dropped the percentage on the way — nothing here noticed,
      * because the assertion above pinned the currency and the currency was
      * still right. Scenario 6 caught it the first time the e2e suite was run
-     * afterwards, which was eight packages later.
+     * afterwards, which was several changes later.
      */
     it('says how far below the baseline each figure is, not only what it is', () => {
         const store = createAssessmentStore(makeInit());
@@ -421,7 +422,7 @@ describe('the root card, which is the exception', () => {
     });
 
     /**
-     * W70, item 22. The completeness bar lived here from W29 to W68.
+     * The completeness bar that used to live here is gone.
      *
      * A bar states a fraction of a whole, and the whole it stated a fraction
      * of — the number of risk/attack pairs in the assessment — was never on
@@ -460,10 +461,10 @@ describe('the root card, which is the exception', () => {
 
 describe('nothing on the card reads a baseline selection', () => {
     /**
-     * W36 asserted this by moving the selector and watching the card not
-     * change. W37 deleted `useBaseline` outright, so the stronger statement is
+     * This used to be asserted by moving the selector and watching the card not
+     * change. `useBaseline` has since been deleted outright, so the stronger statement is
      * available and is the one worth pinning: the editor view has no baseline
-     * to read. A future package re-adding one would have to pass this test
+     * to read. A later change re-adding one would have to pass this test
      * deliberately rather than by accident.
      */
     it('the editor view exposes no baseline at all', () => {
@@ -567,9 +568,9 @@ describe('missing values say which kind of missing they are', () => {
 
 describe('the defence row', () => {
     /**
-     * W29 merged strength and reduction target into one phrase because as two
+     * Strength and reduction target into one phrase because as two
      * bare chips ("40%" beside "Reduces likelihood") the reader had to infer
-     * that the number belonged to the words. W70 keeps them one fact and gives
+     * that the number belonged to the words. They are kept one fact and given
      * them the label-colon-value shape the rest of the row uses: the target is
      * the label, the strength is the value, and the colon does the joining.
      */
@@ -644,7 +645,7 @@ describe('the defence row', () => {
 
     /**
      * The status pill is the whole of what this row knows about whether the
-     * control counts. W29 dimmed the reduction chip and explained "not applied
+     * control counts. It used to dim the reduction chip and explained "not applied
      * in this baseline"; that answered *is this counting in what I am looking
      * at?*, and the card no longer shows a figure it could be counted into.
      * The consequence lives in the Statistics tab and the report, against all
@@ -854,7 +855,7 @@ describe('mounted without an editor view', () => {
 });
 
 /**
- * The risk tolerance badge (W44, item 12).
+ * The risk tolerance badge.
  *
  * The fixture's current total is 25,000 against an inherent 50,000, so a
  * tolerance either side of 25,000 exercises both readings.
@@ -918,11 +919,11 @@ describe('the risk tolerance badge on the root card', () => {
 });
 
 /**
- * W85 item 1 / D31: The occurrence tag — the attack counter in
+ * The occurrence tag — the attack counter in
  * AppearsUnderPopover now renders as an icon + number chip, matching the
  * defence counter's appearance on both ChartCard and NodeCard.
  */
-describe('NodeCard: occurrence tag (W85 item 1)', () => {
+describe('NodeCard: occurrence tag', () => {
     /**
      * Create a test fixture with attack(s) linked to multiple risks so we can
      * verify the AppearsUnderPopover trigger appears with the correct appearance.
@@ -1145,11 +1146,11 @@ describe('add from a template (2.5.1)', () => {
 });
 
 /**
- * W127/D95: a collapsed card says how many children it hides. Asserted as the
+ * A collapsed card says how many children it hides. Asserted as the
  * exact number and the exact accessible name; presence alone would stay green
  * if the badge showed on expanded cards or counted the wrong thing.
  */
-describe('a collapsed card shows how many children it hides (W127)', () => {
+describe('a collapsed card shows how many children it hides', () => {
     const ancestors = ['root'];
 
     it('shows the count while collapsed, named for a screen reader', () => {

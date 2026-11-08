@@ -1,4 +1,4 @@
-// The coverage floor (W119, D88): reads the two reports `checks.sh coverage`
+// The coverage floor: reads the two reports `checks.sh coverage`
 // writes, prints one line per side, and exits non-zero when a side is below
 // the floor recorded in coverage-floors.json. A floor is the measured value
 // minus one point, raised by hand when a package raises coverage — it

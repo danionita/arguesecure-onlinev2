@@ -6,10 +6,10 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W12-W15 integration: NodeController::store()/destroy() push onto the undo
+ * Node CRUD integration: NodeController::store()/destroy() push onto the undo
  * stack, so create and delete are undoable end-to-end from the editor.
  *
- * W14 built the stack and its own reorder/move routes recorded onto it, but
+ * The stack was built with reorder/move routes that recorded onto it, but
  * NodeController did not — so the two most common structural changes a user
  * makes, adding and deleting a node, produced nothing to undo. Ctrl+Z after
  * deleting a risk silently did nothing, which is worse than not offering undo.

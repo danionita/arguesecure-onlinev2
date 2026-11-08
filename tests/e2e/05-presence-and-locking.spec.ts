@@ -19,17 +19,18 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 3 of PLAN.md's end-to-end list: "User A shares it with User B as
+ * Scenario 3 of the end-to-end scenario list: "User A shares it with User B as
  * an editor. User B opens it in a second browser: presence avatars appear,
  * B's edits appear live in A's window, and a field A is editing shows as
  * locked for B."
  *
  * Two describe blocks: the share itself, and then the three real-time
- * properties across two live browsers. Until W27 the second block asserted
- * that none of them worked, pinned as a defect — see its own docblock.
+ * properties across two live browsers. Until real-time worked in Docker the
+ * second block asserted that none of them worked, pinned as a defect — see
+ * its own docblock.
  *
- * The share is still driven over HTTP rather than through the dialog W27
- * mounted. That is deliberate: this block's job is to establish the
+ * The share is still driven over HTTP rather than through the sharing
+ * dialog. That is deliberate: this block's job is to establish the
  * collaborator every later scenario depends on, and doing it over HTTP keeps
  * it independent of the dialog's markup. Scenario 13 exercises the dialog.
  */
@@ -161,7 +162,7 @@ test.describe('sharing with a second user', () => {
 /**
  * The real-time half of scenario 3, against two live browsers.
  *
- * Until W27 these three tests asserted the exact opposite, pinned as a
+ * Until real-time worked in Docker these three tests asserted the exact opposite, pinned as a
  * defect: real-time collaboration was inert in every Docker deployment.
  * `useRealtime.ts` read `import.meta.env.VITE_REVERB_APP_KEY`, which Vite
  * substitutes when the image is **built**, while `docker/entrypoint.sh`
@@ -169,7 +170,7 @@ test.describe('sharing with a second user', () => {
  * the shipped bundle carried no key, `connect()` returned immediately, and
  * no WebSocket was ever opened. Separately, nginx proxied `/app` to
  * `127.0.0.1:8080`, which is inside the app container; Reverb is its own
- * compose service. Everything W16 built was present, correct and
+ * compose service. Everything the real-time layer built was present, correct and
  * unreachable, and two people editing one assessment overwrote each other
  * with no avatar, no lock badge and no toast.
  *

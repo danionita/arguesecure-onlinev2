@@ -51,7 +51,7 @@ class AssessmentCloner
      * Clones an entire assessment: its own scales (if custom), tags, every
      * node, and both edge tables. System scales are shared, not cloned.
      *
-     * `cloneAsTemplate()` makes the copy a template (W141): ownerless, with
+     * `cloneAsTemplate()` makes the copy a template: ownerless, with
      * `is_template` set, which the database CHECK requires to go together.
      * Nothing else about the copy differs, so "use a template" and "publish
      * as a template" share one tested path.
@@ -62,7 +62,7 @@ class AssessmentCloner
     }
 
     /**
-     * The same copy as an ownerless template (W141). A separate entry point, so
+     * The same copy as an ownerless template. A separate entry point, so
      * a caller holding a nullable user cannot publish by accident.
      */
     public function cloneAsTemplate(Assessment $source): Assessment
@@ -141,7 +141,7 @@ class AssessmentCloner
                     $clonedLink->position = $attack->pivot->position;
                     // Both endpoints are already in hand; handing them to the
                     // edge saves the observer layer three lazy loads per link
-                    // (W68, LinkService::carryEndpoints()).
+                    // (LinkService::carryEndpoints()).
                     $clonedLink->setRelation('risk', $clonedRoot);
                     $clonedLink->setRelation('attack', $clonedAttack);
                     $clonedLink->save();
@@ -152,7 +152,7 @@ class AssessmentCloner
             }
 
             // Same omission as cloneAssessment() had, reached from the editor's
-            // duplicate affordance instead of from a template (W78). One
+            // duplicate affordance instead of from a template. One
             // SELECT and one INSERT covering every node the subtree touched,
             // which is why it runs here rather than inside cloneSingleNode().
             $this->cloneNodeReferences($uuidMap);
@@ -168,12 +168,12 @@ class AssessmentCloner
      * scales; an unresolvable code is left unset rather than guessed.
      *
      * No `node_references` copy here, unlike cloneAssessment() and
-     * cloneSubtree() (W78): the source is a `CatalogEntry`, and catalogue
+     * cloneSubtree(): the source is a `CatalogEntry`, and catalogue
      * entries carry no references at all — `catalog_entries` has kind, title,
      * description and `defaults`, and CatalogEntry has no references relation
      * (schema.md §3.14). There is nothing to drop on this path, so there is
-     * nothing to fix. Stated rather than left to be rediscovered, because W76's
-     * pin listed this method alongside the two that really did drop them.
+     * nothing to fix. Stated rather than left to be rediscovered, because an earlier
+     * pinned test listed this method alongside the two that really did drop them.
      */
     public function insertCatalogEntry(CatalogEntry $entry, Assessment $target): Node
     {
@@ -235,7 +235,7 @@ class AssessmentCloner
             return $scale->id;
         }
 
-        // Direct property assignment, not ::create() (W78). Both identity
+        // Direct property assignment, not ::create(). Both identity
         // columns here were mass-assigned: `assessment_id` on Scale and
         // `scale_id` on ScaleLevel are deliberately absent from their
         // `$fillable`s, and both models' docblocks say so in as many words.
@@ -249,7 +249,7 @@ class AssessmentCloner
         // above without ever reaching this code.
         //
         // This is the third and fourth time this trap has been sprung in this
-        // file (W6 twice, then here); LinkService's docblock is the reference
+        // file (twice earlier, then here); LinkService's docblock is the reference
         // example of doing it right.
         $clone = new Scale([
             'kind' => $scale->kind,
@@ -259,7 +259,7 @@ class AssessmentCloner
         ]);
         $clone->assessment_id = $target->id;
 
-        // `set_key` (W77's grouping column for system scale sets) is
+        // `set_key` (the grouping column for system scale sets) is
         // deliberately *not* carried across, and needs no line here to stay
         // NULL: the clone is built field by field rather than replicate()d,
         // so anything not named above is left at its column default. That is
@@ -316,20 +316,20 @@ class AssessmentCloner
     }
 
     /**
-     * The `node_tag` rows (W43).
+     * The `node_tag` rows.
      *
-     * `cloneTags()` above has copied the assessment's vocabulary since W6,
+     * `cloneTags()` above has always copied the assessment's vocabulary,
      * but nothing copied which nodes carried which label — so a clone
      * arrived with every label defined and none of them applied. That was
-     * unreachable until W43, because until then no route could attach a tag
-     * to a node at all; it becomes a real, silent data loss the moment one
+     * unreachable until labels could be attached, because until then no route
+     * could attach a tag to a node at all; it becomes a real, silent data loss the moment one
      * can, which is why it is fixed here rather than pinned.
      *
      * One insert for the whole assessment, not one per node: a template with
      * two hundred labelled nodes is exactly the case this service exists to
-     * make fast. (`CatalogInserter` was pinned for the same mistake until W64
-     * batched its lookups; W78 closed its remaining pin, the duplicate node per
-     * DAG edge, so that cross-reference no longer points at an open defect.)
+     * make fast. (`CatalogInserter` was pinned for the same mistake until it
+     * batched its lookups, and its remaining pin, the duplicate node per DAG
+     * edge, is closed, so that cross-reference no longer points at an open defect.)
      *
      * @param  array<int, Node>  $uuidMap  old node id => cloned Node
      * @param  array<int, int>  $tagMap  old tag id => cloned tag id
@@ -363,7 +363,7 @@ class AssessmentCloner
 
     /**
      * The `node_references` rows — CVE, CWE, CAPEC, ATT&CK technique and free
-     * URLs (schema.md §3.12) — W78.
+     * URLs (schema.md §3.12).
      *
      * Nothing copied these until now, and nothing errored, because the table is
      * a plain child of `nodes` with no NOT NULL pointing back at the clone. So
@@ -376,11 +376,11 @@ class AssessmentCloner
      * One SELECT and one INSERT for the whole assessment, like cloneNodeTags()
      * above and for the same reason: a template with two hundred cited nodes is
      * exactly the case this service exists to make fast, and adding a per-node
-     * query here would have reintroduced the N+1 W68 spent a package removing.
+     * query here would have reintroduced the N+1 that was already removed from the observers.
      *
      * The bulk insert also sidesteps `$fillable` entirely rather than tiptoeing
      * around it. `node_id` is an identity column deliberately absent from
-     * NodeReference's `$fillable` (CLAUDE.md), so an Eloquent create() carrying
+     * NodeReference's `$fillable`, so an Eloquent create() carrying
      * one drops it silently and then dies on the NOT NULL constraint; the query
      * builder never consults `$fillable` at all. Timestamps are therefore set
      * by hand, because the builder does not manage them either.
@@ -537,8 +537,8 @@ class AssessmentCloner
 
     /**
      * The map holds the cloned `Node`, not its uuid, so that it is the same
-     * shape cloneNodes() returns and cloneNodeReferences() can consume either
-     * (W78). Nothing ever read the uuid it used to store — it was a write-only
+     * shape cloneNodes() returns and cloneNodeReferences() can consume either.
+     * Nothing ever read the uuid it used to store — it was a write-only
      * accumulator — so this narrows two maps to one rather than changing what
      * any caller sees.
      *

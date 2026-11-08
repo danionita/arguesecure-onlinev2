@@ -9,8 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
- * An admin removes another account's second factor — a lost phone (W116,
- * D78). The account signs in with its password again and enrols afresh.
+ * An admin removes another account's second factor — a lost phone
+ * (security.md §4). The account signs in with its password again and enrols afresh.
  * Behind the `admin` middleware on the route group, and checked here too.
  */
 class UserTwoFactorController extends Controller

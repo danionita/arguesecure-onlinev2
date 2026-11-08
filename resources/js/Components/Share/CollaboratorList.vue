@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Renders the current collaborator list with roles and who invited whom
- * (PLAN.md Phase 3 item 5). Role changes and revokes are emitted upward
+ * Renders the current collaborator list with roles and who invited whom.
+ * Role changes and revokes are emitted upward
  * rather than making their own requests — ShareDialog owns the single
  * fetch/refresh cycle so the whole dialog stays in sync after any change.
  */

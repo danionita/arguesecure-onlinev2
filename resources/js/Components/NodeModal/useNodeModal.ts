@@ -3,22 +3,21 @@
  * the convention Components/UI/useToast.ts already sets for shared UI
  * state. "Opened by Space, the edit action, or clicking an indicator icon"
  * (ui.md §7): every one of those triggers lives on a node-card occurrence
- * this package does not own (Components/Tree/**), so open()/close() are
- * exported here for that package to wire the pencil IconButton and the
- * Space/Enter key handlers to — see the W13 report for the exact
- * integration points still needed in NodeCard.vue/TreeNode.vue.
+ * the tree owns (Components/Tree/**), so open()/close() are exported here
+ * for NodeCard.vue/TreeNode.vue to wire the pencil IconButton and the
+ * Space/Enter key handlers to.
  *
  * "It never becomes a route; deep-linking to a node uses a query parameter
  * so back/forward behave" (ui.md §7) is handled entirely inside this
  * module via the History API (replaceState, not a full Inertia
  * navigation), so it works the moment <NodeModal /> is mounted anywhere in
- * the tree, without help from a page component this package does not own.
+ * the tree, without help from a page component.
  */
 import { ref } from 'vue';
 import type { LockHolder } from '../../composables/useLocks';
 
 /**
- * Tab *keys*, not tab labels. W39 renamed almost every label — Values became
+ * Tab *keys*, not tab labels. Almost every label was renamed — Values became
  * Impact, Likelihood or Cost depending on the node's type, and Links became
  * Strength on the only type that still has it — while deliberately leaving
  * these identifiers alone.
@@ -37,7 +36,7 @@ export type NodeModalTab =
     | 'assignees'
     | 'comments'
     | 'history'
-    // W72 item 10. New key, so nothing above it had to move: the root's
+    // New key, so nothing above it had to move: the root's
     // settings had no tab at all before, only a page at a different URL.
     | 'scales';
 

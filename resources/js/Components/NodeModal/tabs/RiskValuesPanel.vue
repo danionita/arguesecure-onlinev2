@@ -58,7 +58,7 @@ function setAmount(value: string) {
 
     props.store.updateNode(props.uuid, {
         impact_amount: amount,
-        // W25: the mode must travel with the number — see the identical
+        // The mode must travel with the number — see the identical
         // note in AttackValuesPanel.vue's setAro() for the full reasoning.
         // In short: the control above displays `impact_mode ??
         // 'quantitative'`, so nobody clicks it, so setMode() never fired and

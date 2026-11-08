@@ -6,7 +6,7 @@ import type {
 import { useReportSearch } from '../../../resources/js/composables/useReportSearch';
 
 /**
- * W83. Mirrors tests/js/composables/useSearch.spec.ts's shape — this
+ * Mirrors tests/js/composables/useSearch.spec.ts's shape — this
  * composable exists so SearchBox.vue (reused unmodified) has something
  * `UseSearchReturn`-compatible to bind to on a page with no AssessmentStore.
  * See useReportSearch.ts's file header for why a store is not built just to
@@ -183,12 +183,17 @@ function report(): ReportData {
         transfers: [],
         controlCoverage: { frameworks: [], hiddenShelved: 0 },
         tree: tree(),
-        appendices: { references: [], comments: [], warnings: [] },
+        appendices: {
+            references: [],
+            comments: [],
+            warnings: [],
+            warningsOmitted: 0,
+        },
     };
 }
 
 describe('useReportSearch', () => {
-    it('finds nothing in a tree the report omits (W139)', () => {
+    it('finds nothing in a tree the report omits', () => {
         const omitted = () => {
             const r = report();
             r.options.omittedSections = ['tree'];

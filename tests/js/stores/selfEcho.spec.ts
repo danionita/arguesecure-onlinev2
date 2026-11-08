@@ -10,9 +10,9 @@ import {
 } from '../../../resources/js/stores/assessmentStore';
 
 /**
- * FIXED (2.5.1): the **second** cause of W88 item 22 ("the Details tab blanks
- * after a second"), pinned by W88 as a DEFECT because it lived in files W88
- * did not own.
+ * FIXED (2.5.1): the **second** cause of the Details tab reverting under the user
+ * ("the Details tab blanks after a second"), first pinned as a DEFECT because
+ * it lived in files outside the change being made.
  *
  * `NodeUpdated` and `NodeCreated` were dispatched to everyone, including the
  * author, and `applyRealtimeUpdatesToStore` applied node payloads without
@@ -158,7 +158,7 @@ describe('FIXED: a user no longer has their own echo overwrite what they are typ
             uuid: 'newRisk',
             type: 'risk',
             title: 'Phishing',
-            tags: [{ id: 3, name: 'web' }],
+            tags: [{ id: 3, name: 'web' } as never],
         });
         const record = store.nodes['newRisk'];
 

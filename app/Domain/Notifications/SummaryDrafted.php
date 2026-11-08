@@ -7,9 +7,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
 /**
- * "Your executive summary draft is ready" — or "it failed" (W54).
+ * "Your executive summary draft is ready" — or "it failed".
  *
- * Database channel only, like the feed's other two sources.
+ * Database channel only, like the feed's other two sources (email is a listener, not a channel).
  *
  * ## Both outcomes are notified, and that is the point of the class
  *

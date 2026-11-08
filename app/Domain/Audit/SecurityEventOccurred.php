@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Foundation\Events\Dispatchable;
 
 /**
- * How a package that is not the security log reports an event to it
- * (PLAN-2.7-identity.md: W116 and W117 dispatch, W111 records), so the line's
+ * How code that is not the security log reports an event to it (two-factor
+ * and single sign-on dispatch, the security log records), so the line's
  * shape and its redaction stay in one place:
  *
  *     SecurityEventOccurred::dispatch(SecurityEvent::MfaEnabled, $user, SecurityLog::user($user));

@@ -4,7 +4,7 @@ ArgueSecure ships an optional **local** inference assistant. It is off by defaul
 
 This document exists because of a specific failure: an admin looked for the feature and reported "I could not find any trace of it". That is what a correctly-behaving unconfigured install looks like — nothing renders, no routes exist — and it is indistinguishable from a build that never had the feature at all. So: here is what it is, how to turn it on, what it costs, and what it is not allowed to do.
 
-The operational detail (fetching weights, the compose profile, resource limits, thread counts) lives in [`specs/deployment.md` §9](specs/deployment.md). The decisions and their measurements live in `PLAN-2.3-ai.md` D17–D25 and `spikes/2.3-inference.md`. This document is the map between them.
+The operational detail (fetching weights, the compose profile, resource limits, thread counts) lives in [`specs/deployment.md` §9](specs/deployment.md). The measurements behind the design live in `spikes/2.3-inference.md`. This document is the map between them.
 
 ---
 
@@ -14,7 +14,7 @@ The operational detail (fetching weights, the compose profile, resource limits, 
 
 | | Switch | Who throws it | If it is off |
 |---|---|---|---|
-| 1 | `ASSISTANT_ENABLED=true` in `.env` | whoever runs the stack | Every assistant route is **unregistered**. `/assistant/status` returns **404, not 403** — the feature is not here, and saying "this exists and you may not have it" would be false and would invite someone to go looking for a way in (D25). The admin **AI assistant** tab says "AI service not installed" (§4). |
+| 1 | `ASSISTANT_ENABLED=true` in `.env` | whoever runs the stack | Every assistant route is **unregistered**. `/assistant/status` returns **404, not 403** — the feature is not here, and saying "this exists and you may not have it" would be false and would invite someone to go looking for a way in. The admin **AI assistant** tab says "AI service not installed" (§4). |
 | 2 | `docker compose --profile assistant up -d`, with a GGUF mounted from the host | whoever runs the stack | The routes exist and the runtime does not answer. The admin page reports the runtime as not responding; user-facing actions render disabled with the reason. |
 | 3 | **Admin → AI assistant → Enable the assistant** | an admin | Nothing generative is offered to anyone. This toggle **does not render at all** unless switches 1 and 2 are in place, because a control that cannot work is worse than no control. |
 
@@ -99,7 +99,7 @@ Three generation jobs, and **the assistant appears as one action in the place wh
 
 | | Job | Where it appears | What it may see |
 |---|---|---|---|
-| **A** | **Help answers** — a question answered from the help pages | *Ask a question about ArgueSecure*, at the top of the help index (`/help`) | The help corpus, whole. Nothing from any assessment. `docs/` is deliberately excluded from the corpus |
+| **A** | **Help answers** — a question answered from the help pages | *Ask a question about ArgueSecure*, at the top of the help index (`/help`) | The help corpus, whole. Nothing from any assessment. `docs/` is deliberately excluded from the corpus, and so are the administrators' help pages (`resources/markdown/admin-help/`): the assistant does not answer questions about administration |
 | **B** | **Child suggestions** — proposed risks, attacks or defences under a node | *Suggest risks* / *Suggest attacks* / *Suggest defences*, an icon button on the node card in the chart and the list, opening a panel of five proposals. Also **AI suggestion** in the new-node pop-up, before a title is typed, which asks for **one** (2.5.1) | The target of assessment, the parent node, and the titles already recorded under it. **Not the numbers** — impacts, likelihoods and strengths are the user's own judgement, and a model that has seen them will echo them back as corroboration |
 | **B** | **Node drafting** — a proposal's title and description becoming a real node | On the card: the **Add** button on a single proposal in that panel; nothing is pre-selected and nothing is accepted in bulk. In the pop-up: the one proposal fills the Title and Description fields with a note that a model wrote it, and the node exists only once the person presses **Add**. A proposal that arrives after they have started typing is discarded | — |
 | **C** | **Summary narrative** — a drafted executive summary | *Draft with the assistant*, beside the report's written summary; runs as a queued job and notifies on completion | A digest of the whole assessment |
@@ -121,13 +121,13 @@ Since 2.5.1 the switches have a tab of their own, **Admin → AI assistant**, in
 | **Configured, switched on, healthy** | The toggle, the model, and that the AI service is responding |
 | **Configured, switched on, unreachable** | The toggle, and that the AI service is not responding. Something is genuinely wrong here and somebody should fix it — check the `assistant` container |
 
-Since 2.6 (D55) the model line is **what the runtime reports it loaded**, not what `.env` claims — it asks llama.cpp's own `/props` for the file it has open and matches that against `docker/assistant/models.conf`, so the page cannot say one thing while the container runs another. It reads:
+Since 2.6 the model line is **what the runtime reports it loaded**, not what `.env` claims — it asks llama.cpp's own `/props` for the file it has open and matches that against `docker/assistant/models.conf`, so the page cannot say one thing while the container runs another. It reads:
 
 - **"Installed model: Gemma 4 E4B (4-bit, quantization-aware) (the small preset)"** — a recognised preset;
 - **"Installed model: `some-file.gguf` (a custom model file, not one of the presets)"** — anything running under `ASSISTANT_MODEL_FILE`;
 - **"Installed model: not known until the AI service responds"** — before the runtime has answered.
 
-Below that, the tab lists both presets with the memory and download size each needs, so an admin can see what switching to `large` would cost without leaving the page. `/assistant/status`, the endpoint everything else on the availability check reads, does not carry a `model` field — only this tab probes for it, and only on this page (D25).
+Below that, the tab lists both presets with the memory and download size each needs, so an admin can see what switching to `large` would cost without leaving the page. `/assistant/status`, the endpoint everything else on the availability check reads, does not carry a `model` field — only this tab probes for it, and only on this page.
 
 ---
 
@@ -146,7 +146,7 @@ Below that, the tab lists both presets with the memory and download size each ne
 
 What those make each job is unchanged from 2.3: a help answer and a suggestion are buttons, with a spinner, elapsed time and a cancel; a summary is a queued job with a notification, not a button. The **AI suggestion** in the new-node pop-up asks for one proposal with its budget scaled to match (`Suggester::budgetFor()`: 192 tokens rather than the configured 512), and was not measured separately.
 
-The first row is what a restart looks like without the warm-up (D57); with it, the first real question after a restart is the "every question after that" row instead, because the scheduler has already read the help pages into the cache once, before anyone asks. A question asked in the minute or two while that is happening still waits for it, and the help page says so.
+The first row is what a restart looks like without the warm-up; with it, the first real question after a restart is the "every question after that" row instead, because the scheduler has already read the help pages into the cache once, before anyone asks. A question asked in the minute or two while that is happening still waits for it, and the help page says so.
 
 Underlying rates: generation ~13 tok/s (`small`), ~11 tok/s (`large`); prompt processing ~71 tok/s (`small`), ~60 tok/s (`large`). Prompt tokens are roughly a tenth the cost of output tokens, which is why the per-job token budgets in `config/assistant.php` are very nearly the only latency dial — and why lowering them makes the feature quicker only in the knowledge that the answers get worse.
 
@@ -160,11 +160,11 @@ Underlying rates: generation ~13 tok/s (`small`), ~11 tok/s (`large`); prompt pr
 
 ## 6. Nothing generated reaches anyone without a person accepting it
 
-**D24, and it is not a formality.**
+**This is not a formality.**
 
 Nothing a model generates reaches the graph, the report or another user without a person seeing it first. Job B's proposals are accepted one at a time, with nothing pre-selected and no bulk accept, and the panel says plainly where the text came from. Job C's draft sits beside the summary field as a draft, and becomes the document only when someone puts it there. Job A's answer is displayed and nothing else.
 
-**The accept step is the guardrail, not a safety net behind one.** That distinction is measured, not assumed. The 2.3 spike red-teamed three models across two jobs and found the pattern that decides this design, and 2.6 (W96) measured it again on the two presets that replaced the default — through the chat endpoint the application calls, on the deployment host:
+**The accept step is the guardrail, not a safety net behind one.** That distinction is measured, not assumed. The 2.3 spike red-teamed three models across two jobs and found the pattern that decides this design, and 2.6 measured it again on the two presets that replaced the default — through the chat endpoint the application calls, on the deployment host:
 
 | Case | gemma3:4b (2.3) | qwen2.5:7b (2.3) | llama3.1:8b (2.3) | `small` (2.6) | `large` (2.6) |
 |---|---|---|---|---|---|
@@ -180,7 +180,7 @@ Delimiters hold the *task* boundary and do not hold the *content* boundary — o
 
 Two consequences, both already built:
 
-- The suggestion parser reads `title` and `description` and **discards every other key** (D23). A model that invents an `execute` field is not obeyed, it is ignored.
+- The suggestion parser reads `title` and `description` and **discards every other key**. A model that invents an `execute` field is not obeyed, it is ignored.
 - A human accepts each item, individually, before it becomes a node.
 
 `tests/Feature/Assistant/GuardrailTest.php` pins those measurements with the `MEASURED:` marker — a model behaviour that was measured and lost, distinct from a `DEFECT:` this repository owns. **Do not "fix" one of those pins with a prompt change and a plausible story.** The fix is the accept step, and it is already there.

@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\DB;
  * §3.6). Only structural changes are recorded — create, delete, move,
  * link, unlink, clone, catalogue insert. Field edits never enter this
  * stack; they are recovered through `node_revisions` "revert this field"
- * instead (W18), which is a normal edit, not an undo.
+ * instead, which is a normal edit, not an undo.
  *
  * `AssessmentOperation`'s own docblock names this class as the only writer
  * of that table, matching `NodeRevision`'s equivalent note about
- * `History\RevisionRecorder` (a separate, later package).
+ * `History\RevisionRecorder` (the recorder for field edits).
  */
 class UndoService
 {
@@ -32,7 +32,7 @@ class UndoService
         'link.delete',
         'subtree.clone',
         'catalog.insert',
-        // W61. The only kind whose inverse replaces the whole graph rather
+        // The only kind whose inverse replaces the whole graph rather
         // than one part of it — see Commands\RestoreSnapshotApplier.
         'snapshot.restore',
     ];
@@ -42,8 +42,8 @@ class UndoService
     /**
      * Pushes a structural change onto the stack. Called immediately after
      * the change that produced it commits — by NodeController, LinkService,
-     * ReorderService or AssessmentCloner callers, or by this package's own
-     * reorder/link routes (routes/web.php's W14 block).
+     * ReorderService or AssessmentCloner callers, or by the history
+     * code's own reorder/link routes (routes/web.php's undo block).
      *
      * @param  array<string, mixed>  $inverse
      */
@@ -56,12 +56,12 @@ class UndoService
     ): AssessmentOperation {
         if (! in_array($kind, self::KNOWN_KINDS, true)) {
             // Whitelisted, fixed set — never a kind string built from
-            // request input (CLAUDE.md, security.md §7 defect #7).
+            // request input (security.md §7, defect #7).
             throw new \InvalidArgumentException("Unknown operation kind: {$kind}");
         }
 
         return DB::transaction(function () use ($assessment, $user, $kind, $summary, $inverse): AssessmentOperation {
-            // D83: new work ends the redo stack. redo() pushes its row through
+            // New work ends the redo stack. redo() pushes its row through
             // create() directly, so a redo does not clear what is left of it.
             // One transaction, so a failed create() cannot leave the stack
             // ended with no new operation to show for it.
@@ -155,10 +155,10 @@ class UndoService
      * undoable" simple: after a redo, the pushed row is what Ctrl+Z targets
      * next, exactly like any other structural change.
      *
-     * The consumed row keeps its `undone_at` and gains a `redone_at` (W108),
+     * The consumed row keeps its `undone_at` and gains a `redone_at`,
      * which takes it off both stacks: `latestUndoable()` already skips it
      * because it is undone, and the query below skips it because it is
-     * redone. Clearing `undone_at` instead, as this did before W108, made the
+     * redone. Clearing `undone_at` instead, as it once did, made the
      * row undoable again while its `inverse` still held the redo command, so
      * undo, redo, undo, undo re-applied the change instead of undoing the
      * operation before it.
@@ -173,7 +173,7 @@ class UndoService
             ->whereNotNull('undone_at')
             ->whereNull('redone_at')
             ->whereNull('superseded_at')
-            // Microseconds since W108, so two undos in one second (an
+            // Microseconds, so two undos in one second (an
             // ordinary Ctrl+Z, Ctrl+Z) no longer tie on the timestamp.
             ->orderByDesc('undone_at')
             ->orderByDesc('id')
@@ -220,7 +220,7 @@ class UndoService
      * isn't picked up by static analysis here, so ->inverse reads as
      * `string` to PHPStan even though it is already an array at runtime.
      * getAttribute() (untyped) plus this cast sidesteps that without
-     * touching app/Models/** (outside this package's ownership).
+     * touching app/Models/**.
      *
      * @return array<string, mixed>
      */

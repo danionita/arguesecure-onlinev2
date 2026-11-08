@@ -2,8 +2,8 @@
 /**
  * The node card's value-chip line is built entirely from these
  * (docs/specs/ui.md §3.2 "Value chips"). `tone="missing"` is the
- * grey `?` chip a missing value must render as — CLAUDE.md is explicit
- * that missing is never coerced to zero and never left blank.
+ * grey `?` chip a missing value must render as: missing is never
+ * coerced to zero and never left blank.
  *
  * Colour is never the only channel: every non-neutral tone pairs with an
  * icon by default (see `defaultIcon`) so status/type also reads without

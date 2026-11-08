@@ -12,7 +12,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * ui.md §6 / PLAN.md Phase 6 item 4. Only identity is needed to remove a
+ * ui.md §6. Only identity is needed to remove a
  * node client-side (assessmentStore.ts's deleteNode() also only needs the
  * uuid to prune `nodes` and both edge arrays) — unlike NodeCreated/
  * NodeUpdated there is no row left to serialize once this fires.
@@ -35,7 +35,7 @@ class NodeDeleted implements ShouldBroadcast, ShouldDispatchAfterCommit
     public function __construct(Node $node, ?int $actorId, ?string $actorName)
     {
         // See NodeCreated: resolved once per request rather than once per
-        // broadcast (W68). Also the one event that can fire while the
+        // broadcast. Also the one event that can fire while the
         // assessment itself is being deleted, which is why the resolver
         // answers a missing assessment with '' instead of fatalling.
         $this->assessmentUuid = app(AssessmentUuids::class)->forNode($node);

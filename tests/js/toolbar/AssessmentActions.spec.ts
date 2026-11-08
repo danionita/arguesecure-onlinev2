@@ -1,5 +1,5 @@
 /**
- * The one action bar every assessment view renders (W82, D40).
+ * The one action bar every assessment view renders.
  *
  * jsdom has no layout engine, so nothing here is about pixels — that stays
  * in `tests/e2e/16-toolbar-one-row.spec.ts`. What is asserted here is the
@@ -7,13 +7,14 @@
  * rather than four arrangements that happen to agree, that a viewer sees
  * fewer of them than a manager does, and that the bar hides itself from
  * print by the *specific* rule `print.css` defines rather than by a class
- * merely being present somewhere (CLAUDE.md's W68 write-up on that trap).
+ * merely being present somewhere (the pinned-tests rule on presence assertions describes that trap).
  */
 import { mount } from '@vue/test-utils';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import AssessmentActions, {
     type AssessmentActionsAbilities,
 } from '../../../resources/js/Components/Toolbar/AssessmentActions.vue';
+import { routeProperties } from '../support/routeProperties';
 
 vi.mock('@inertiajs/vue3', async () => {
     const { defineComponent, h } = await import('vue');
@@ -51,7 +52,7 @@ function mountActions(
             viewMode: over.viewMode,
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
         },
     });
 }
@@ -67,7 +68,7 @@ describe('a manager sees all five, in order', () => {
         expect(bar.text()).toContain('Export');
         expect(bar.text()).toContain('Print');
 
-        // D40's order, literally: the five in the bar's own DOM order.
+        // The specified order, literally: the five in the bar's own DOM order.
         const labels = ['Settings', 'History', 'Share', 'Export', 'Print'];
         const positions = labels.map((label) => bar.text().indexOf(label));
         expect(positions).toEqual([...positions].sort((a, b) => a - b));
@@ -97,7 +98,7 @@ describe('a viewer sees the subset their abilities allow', () => {
      * and Share off a viewer's screen. Neutering it (see the note below the
      * test) turns this red, which is the whole point of writing it as an
      * absence assertion on the *specific* labels rather than a shrinking
-     * count — CLAUDE.md's rule for exactly this kind of test.
+     * count — the rule for exactly this kind of test.
      */
     it('hides Settings and Share, and keeps History, Export and Print', () => {
         const wrapper = mountActions({ abilities: { manage: false } });
@@ -119,7 +120,7 @@ describe('a viewer sees the subset their abilities allow', () => {
     });
 });
 
-describe('a template has no Share (W141)', () => {
+describe('a template has no Share', () => {
     it('keeps Settings but not Share, even for someone who may manage it', () => {
         const wrapper = mountActions({
             abilities: { manage: true },
@@ -132,7 +133,7 @@ describe('a template has no Share (W141)', () => {
     });
 });
 
-describe('Share and Print, as they were (D40: "move as they are")', () => {
+describe('Share and Print, as they were ("move as they are")', () => {
     it('emits share rather than navigating, so a page-level dialog can open', async () => {
         const wrapper = mountActions({ abilities: { manage: true } });
 
@@ -144,7 +145,7 @@ describe('Share and Print, as they were (D40: "move as they are")', () => {
         expect(wrapper.emitted('share')).toHaveLength(1);
     });
 
-    it('does not print on the Print click itself: it asks which view first (W138)', async () => {
+    it('does not print on the Print click itself: it asks which view first', async () => {
         const printSpy = vi.fn();
         window.print = printSpy;
 
@@ -161,7 +162,7 @@ describe('Share and Print, as they were (D40: "move as they are")', () => {
 });
 
 /**
- * D42, and the trap the brief names by name: asserting "the bar has
+ * The print rule, and the classic trap: asserting "the bar has
  * `no-print`" is a presence assertion, and presence assertions pass for the
  * wrong reason the moment `print.css`'s actual rule changes shape. This
  * checks both halves — the class this component's root carries, and that
@@ -171,10 +172,10 @@ describe('Share and Print, as they were (D40: "move as they are")', () => {
  * Mutation-tested by hand: removing `no-print` from this component's root
  * `<div>` turns the first assertion red; commenting out `.no-print {
  * display: none !important; }` in `resources/css/print.css` turns the
- * second one red. Both were confirmed and both are restored — see the W82
- * report.
+ * second one red. Both were confirmed and both are restored — see the report
+ * of that change.
  */
-describe('print (D42)', () => {
+describe('print', () => {
     it('carries the specific class print.css hides, not just any class', () => {
         const bar = mountActions().get('[data-testid="assessment-actions"]');
         expect(bar.classes()).toContain('no-print');

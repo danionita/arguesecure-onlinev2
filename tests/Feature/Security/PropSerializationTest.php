@@ -1,7 +1,7 @@
 <?php
 
 /**
- * W24 — Inertia over-serialization.
+ * Inertia over-serialization.
  *
  * Inertia ships the **entire** prop bag in the page's `data-page`
  * attribute. Anything a controller puts in a prop is readable with View
@@ -9,7 +9,7 @@
  * component ever renders it. A prop is not hidden by not being displayed.
  *
  * That is not hypothetical here: an owner-email leak of exactly this kind
- * was found and fixed in W17 (see App\Domain\Reporting\ReportAssembler's
+ * was found and fixed in the report assembler (see App\Domain\Reporting\ReportAssembler's
  * own comment, "...into a harvestable email address for no rendered
  * benefit"), and again in CommentController's serializeComment(). Both
  * fixes were made without a test that would catch the next one.
@@ -126,9 +126,9 @@ it('never serializes a password hash anywhere a guest can reach', function () {
 });
 
 it('exposes a comment author as id and name only', function () {
-    // The precise shape CLAUDE.md's W18 brief mandates: "Comment authors
-    // must expose id and name only — never email, never the password
-    // hash". Asserted positively so a future refactor that starts
+    // The precise shape the comments feature requires: comment authors
+    // expose id and name only — never email, never the password
+    // hash. Asserted positively so a future refactor that starts
     // serializing the whole User model fails here.
     [$assessment, $risk] = publicAssessmentWithOtherPeoplesData();
 

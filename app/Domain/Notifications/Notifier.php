@@ -9,7 +9,7 @@ use App\Models\Node;
 use App\Models\User;
 
 /**
- * The one place a notification is sent (W47, item 15).
+ * The one place a notification is sent.
  *
  * Both sources go through here so the rules that apply to both — never notify
  * yourself, never notify twice for the same thing — are written once instead

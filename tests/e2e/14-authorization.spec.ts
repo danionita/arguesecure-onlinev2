@@ -5,7 +5,7 @@ import { adminEmail, adminPassword } from './support/env';
 import { openAssessment, readGraph, totalsPanel } from './support/tree';
 
 /**
- * Scenario 12 of PLAN.md's end-to-end list: "As User C with no share,
+ * Scenario 12 of the end-to-end list: "As User C with no share,
  * attempt to open the assessment, its individual nodes, and its report by
  * direct URL — all must 403. Re-run against the node-render and node-update
  * endpoints specifically, since those were unprotected in v1."
@@ -14,9 +14,9 @@ import { openAssessment, readGraph, totalsPanel } from './support/tree';
  * the legacy application the `show` actions on risks, attacks and defences
  * had **no authorization at all**, and neither did the AJAX node-render
  * endpoint — a straightforward read of another organisation's private risk
- * assessment by anyone who could guess a URL. CLAUDE.md's response is
- * absolute: "every route touching an assessment goes through
- * AssessmentPolicy. No exceptions."
+ * assessment by anyone who could guess a URL. The rule now is absolute:
+ * every route touching an assessment goes through AssessmentPolicy, with no
+ * exceptions (security.md §3.1).
  *
  * So this tests the routes, not the buttons, and it tests them as a real
  * authenticated user who simply has no relationship to this assessment —
@@ -199,7 +199,7 @@ test.describe('a user with no share', () => {
         expect(graph.nodes.some((n) => n.title === 'Should never exist')).toBe(
             false,
         );
-        // Through `totalsPanel()` since W36: the docked panel is gone, and
+        // Through `totalsPanel()`: the docked panel is gone, and
         // with it the word "Totals" this filtered on.
         await expect(totalsPanel(page)).toContainText('€135,000');
     });
@@ -215,7 +215,7 @@ test.describe('a user with no share', () => {
         // leaked titles would disclose plenty on its own.
         //
         // Deliberately *not* scoped to `main` like the other list assertions
-        // W41 rewrote. The sidebar lists assessments too, from a different
+        // that were scoped to the page content. The sidebar lists assessments too, from a different
         // query in HandleInertiaRequests, and "User C sees nothing that is
         // not theirs" has to hold in both places. Narrowing this to the page
         // body would leave the sidebar's scoping untested on every route in

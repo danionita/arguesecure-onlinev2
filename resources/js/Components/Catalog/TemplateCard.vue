@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * One row in the template list (schema.md §3.14, PLAN.md Phase 8 item 4).
+ * One row in the template list (schema.md §3.14).
  * "Use this template" creates a copy owned by the current user — editing
  * the template afterwards never reaches an assessment already created
  * from it (TemplateController::store()'s own docblock).
  *
- * Administrators also get Edit and Delete (W141). Presentation only: the
+ * Administrators also get Edit and Delete (ui.md §3.3, The Templates page). Presentation only: the
  * routes behind them refuse everyone else on their own.
  */
 import Button from '@/Components/UI/Button.vue';

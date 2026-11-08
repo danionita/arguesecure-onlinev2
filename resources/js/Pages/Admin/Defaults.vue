@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * The admin **Defaults** tab (W87, item 10, PLAN-2.5.md D47).
+ * The admin **Defaults** tab.
  *
- * What a new assessment starts with: the currency and the scales (W126). A
+ * What a new assessment starts with: the currency and the scales. A
  * scale is a named set of impact, likelihood and strength bands; each is a
  * card with its own Save (`AdminScaleCard`), and the built-in two can be edited
  * but not renamed or deleted. Separate from Instance settings, which is about

@@ -18,7 +18,7 @@ class UpdateSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // No `default_currency` (it moved to the Defaults tab, W87 D47),
+            // No `default_currency` (it moved to the Defaults tab),
             // no `default_scale_calibration` (removed in 2.5.1 — there is one
             // default set, edited on the Defaults tab) and no assistant
             // switches (their own tab and request since 2.5.1,
@@ -28,7 +28,7 @@ class UpdateSettingsRequest extends FormRequest
             'public_assessments_allowed' => ['required', 'boolean'],
             'session_lifetime_minutes' => ['required', 'integer', 'min:5', 'max:43200'],
             // `require_two_factor` and `sso_only` moved to the Authentication
-            // tab (W133, D105), which has its own request.
+            // tab, which has its own request.
         ];
     }
 }

@@ -12,7 +12,7 @@ use App\Models\Risk;
 use App\Models\RiskAttack;
 
 /*
- * W121 (D82). The `inverse` of an operation is written only by server code,
+ * The `inverse` of an operation is written only by server code,
  * so no request reaches an applier with a foreign uuid today. These tests
  * hand each applier the command a corrupted or restored row could hold, with
  * every uuid belonging to *another* assessment, and assert that the applier

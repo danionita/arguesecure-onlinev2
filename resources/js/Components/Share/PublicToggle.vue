@@ -6,6 +6,12 @@
  */
 import Toggle from '@/Components/UI/Toggle.vue';
 
+// Shown as the hover text of the whole row and as a line under the copy, so it
+// is read at the moment of deciding, not only found by hovering. The live
+// channel is for the people an assessment is shared with (security.md §8).
+const LIVE_UPDATES_NOTE =
+    'Readers of a public assessment do not get live updates or see who else is here. They reload the page to see changes.';
+
 defineProps<{
     modelValue: boolean;
     busy: boolean;
@@ -15,7 +21,11 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
 </script>
 
 <template>
-    <div class="flex items-start justify-between gap-4">
+    <div
+        class="flex items-start justify-between gap-4"
+        :title="LIVE_UPDATES_NOTE"
+        data-testid="public-toggle"
+    >
         <div>
             <p class="text-text-primary text-sm font-medium">
                 Public (view only)
@@ -31,6 +41,9 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
                 Anyone with the link can view this assessment, including people
                 who are not signed in. Only listed collaborators can comment or
                 edit.
+            </p>
+            <p class="text-text-muted text-xs" data-testid="public-live-note">
+                {{ LIVE_UPDATES_NOTE }}
             </p>
         </div>
         <Toggle

@@ -1,0 +1,187 @@
+# The deploy-only compose file: everything a running instance needs and
+# nothing a source checkout needs. Save it as `docker-compose.yml` in an empty
+# directory beside a `.env`. There is no Dockerfile to build from, so a failed
+# pull is an error rather than a silent source build, and no build-time secret
+# is declared. It is `docker-compose.yml` with the `build:` keys and the
+# `composer_auth` secret removed, and a test keeps the two from drifting.
+#
+# ARGUESECURE_VERSION pins a release (`2.7.1`, or `2.7` for its patches);
+# `latest` follows the newest release. Upgrade with
+# `docker compose pull && docker compose up -d`.
+x-arguesecure-image: &arguesecure-image ${ARGUESECURE_IMAGE:-ghcr.io/danionita/arguesecure}:${ARGUESECURE_VERSION:-latest}
+
+services:
+  app:
+    image: *arguesecure-image
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"
+    env_file: .env
+    environment:
+      RUN_MIGRATIONS: "true"
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  reverb:
+    image: *arguesecure-image
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    # The image's HEALTHCHECK probes nginx on port 80, which only the app
+    # service runs. Reverb serves websockets on 8080 instead, so check that
+    # the port accepts a connection - the same probe entrypoint.sh uses to
+    # wait for db and redis.
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 8080) ? 0 : 1);"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  queue:
+    image: *arguesecure-image
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "artisan", "queue:work", "--tries=3", "--max-time=3600"]
+    # A queue worker serves no port, so the image's nginx HEALTHCHECK can never
+    # pass here and would report this container unhealthy forever. Liveness is
+    # already covered: if the worker exits, so does the container, and
+    # restart: unless-stopped brings it back.
+    healthcheck:
+      disable: true
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  scheduler:
+    image: *arguesecure-image
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "artisan", "schedule:work"]
+    # Serves no port either; same reasoning as the queue service above.
+    healthcheck:
+      disable: true
+    volumes:
+      - ${DATA_PATH:-./data}/storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [arguesecure]
+
+  # The inference runtime for the optional assistant. Behind a profile, so
+  # `docker compose up -d` does not start it: it needs a model file and 6 GiB
+  # of RAM (small) or 28 GiB (large). Install a model, then start it
+  # deliberately:
+  #
+  #   docker compose run --rm assistant-install small     # or: large
+  #   docker compose --profile assistant up -d
+  #
+  # The model is mounted, never downloaded at run time; `assistant-install`
+  # checks size and sha256 before a file becomes usable. The context window
+  # (`-c`) is ASSISTANT_CONTEXT_TOKENS on both sides, because the runtime
+  # silently truncates a longer prompt. Not published to the host: an
+  # inference endpoint with no authentication should not be exposed.
+  assistant:
+    image: &assistant-image ${ARGUESECURE_IMAGE:-ghcr.io/danionita/arguesecure}-assistant:${ARGUESECURE_VERSION:-latest}
+    profiles: ["assistant"]
+    restart: unless-stopped
+    entrypoint: ["bash", "/opt/arguesecure/assistant.sh"]
+    command: ["serve"]
+    environment:
+      ASSISTANT_MODEL: "${ASSISTANT_MODEL:-}"
+      ASSISTANT_MODEL_FILE: "${ASSISTANT_MODEL_FILE:-}"
+      ASSISTANT_CONTEXT_TOKENS: "${ASSISTANT_CONTEXT_TOKENS:-12288}"
+      ASSISTANT_THREADS: "${ASSISTANT_THREADS:-4}"
+    # The same number as the runtime's threads: `-t` above the
+    # quota is slower, not faster, and without a quota inference takes every
+    # core the host has — including the database's.
+    cpus: "${ASSISTANT_THREADS:-4}"
+    volumes:
+      - ${ASSISTANT_MODEL_PATH:-./models}:/models:ro
+    healthcheck:
+      # /health returns 503 while the model is still loading and 200 once it
+      # is ready, so this is a genuine readiness probe. start_period is
+      # generous because loading several gigabytes from disk is not fast.
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 180s
+      retries: 3
+    networks: [arguesecure]
+
+  # Downloads and verifies a model, then exits. Its own profile, so no
+  # `up` ever starts it; `docker compose run` starts it by name:
+  #
+  #   docker compose run --rm assistant-install small     # or: large, list
+  #
+  # The same image as the runtime — it already has curl and sha256sum — with
+  # the models directory writable, which the runtime's mount deliberately is
+  # not.
+  assistant-install:
+    image: *assistant-image
+    profiles: ["assistant-install"]
+    entrypoint: ["bash", "/opt/arguesecure/assistant.sh", "install"]
+    environment:
+      ASSISTANT_MODEL: "${ASSISTANT_MODEL:-}"
+      ASSISTANT_MODEL_FILE: "${ASSISTANT_MODEL_FILE:-}"
+    volumes:
+      - ${ASSISTANT_MODEL_PATH:-./models}:/models
+
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MARIADB_DATABASE: "${DB_DATABASE}"
+      MARIADB_USER: "${DB_USERNAME}"
+      MARIADB_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - ${DATA_PATH:-./data}/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [arguesecure]
+
+  # Never evicts. This one Redis holds the queue and the
+  # edit locks, and an evicting policy may drop either under memory pressure
+  # without telling anyone. Full, it refuses writes instead, loudly; what that
+  # looks like and how to size it is in docs/specs/deployment.md.
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - ${DATA_PATH:-./data}/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [arguesecure]
+
+networks:
+  arguesecure:
+    driver: bridge

@@ -1,5 +1,5 @@
 /**
- * The suggestion composable, on its own (W40).
+ * The suggestion composable, on its own (link, don't duplicate: ui.md §3.3).
  *
  * Three of these are about failure modes rather than features, because the
  * failure modes are what make a type-ahead feel broken: a stale response
@@ -99,7 +99,7 @@ let get: ReturnType<typeof vi.fn>;
 beforeEach(() => {
     vi.useFakeTimers();
     get = vi.fn().mockResolvedValue({ data: { nodes: [] } });
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get,

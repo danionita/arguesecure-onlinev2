@@ -18,22 +18,22 @@ use Illuminate\Support\Facades\DB;
 /**
  * Inserts a catalogue entry — and, if it is a bundle, every entry linked
  * to it through `catalog_entry_links` — into a target assessment
- * (schema.md §3.14, PLAN.md Phase 8 item 4).
+ * (schema.md §3.14).
  *
  * Deliberately independent of
- * Structure\AssessmentCloner::insertCatalogEntry(): that method (built in
- * W6) resolves a single entry's level codes but silently leaves an
+ * Structure\AssessmentCloner::insertCatalogEntry(): that method (built with the
+ * structure code) resolves a single entry's level codes but silently leaves an
  * unresolvable code unset rather than failing, and has no bundle support
  * at all — it never reads catalog_entry_links. Both behaviours conflict
- * with this package's spec ("fail loudly... never silently fall back to
- * a default or to null", "entries may be bundles"). This package does not
- * own AssessmentCloner (W6), so rather than edit it, catalogue insertion
+ * with the catalogue spec ("fail loudly... never silently fall back to
+ * a default or to null", "entries may be bundles"). Rather than
+ * change AssessmentCloner, catalogue insertion
  * is implemented here from the same primitives it already uses: the Node
  * STI subclasses and Structure\LinkService. AssessmentCloner itself is
  * untouched and remains in use, unmodified, for template cloning
  * (see Http\Controllers\TemplateController).
  *
- * **The single most important correctness property in this package**: a
+ * **The single most important correctness property of catalogue insertion**: a
  * catalogue entry's `defaults` stores scale level *codes*, never ids
  * (CatalogEntry's own docblock, schema.md §3.14), specifically so the same
  * entry inserts correctly into any assessment regardless of that
@@ -65,8 +65,8 @@ class CatalogInserter
     public function insert(CatalogEntry $entry, Assessment $target, ?Node $parent = null, ?int $userId = null): array
     {
         return DB::transaction(fn (): array => TriggersRecalculation::coalesce(function () use ($entry, $target, $parent, $userId): array {
-            // Everything the recursion used to fetch per node, fetched once
-            // (W64). See CatalogInsertRun for the measurement that prompted it.
+            // Everything the recursion used to fetch per node, fetched once.
+            // See CatalogInsertRun for the measurement that prompted it.
             //
             // The coalesce() wrapper is the other half, and the larger one.
             // Without it every node and every edge bumps the assessment's
@@ -91,8 +91,7 @@ class CatalogInserter
     }
 
     /**
-     * The target assessment's own calibration, as `[scale id][code] => level id`
-     * (W64).
+     * The target assessment's own calibration, as `[scale id][code] => level id`.
      *
      * One query for all three scales instead of one per level code in the
      * bundle. The resolution *rule* is unchanged and is still the single most
@@ -131,7 +130,7 @@ class CatalogInserter
 
     /**
      * Where each type's numbering picks up, as one grouped query rather than a
-     * `MAX(position)` per inserted node (W64).
+     * `MAX(position)` per inserted node.
      *
      * Only `risk` and `defence`: attack order lives on `risk_attack.position`
      * and is set by LinkService, which is why instantiate() leaves an attack at
@@ -161,7 +160,7 @@ class CatalogInserter
     }
 
     /**
-     * The whole bundle's `catalog_entry_links` tree, read breadth-first (W64).
+     * The whole bundle's `catalog_entry_links` tree, read breadth-first.
      *
      * Two queries per level instead of one per entry — and the depth is not the
      * bundle's size but the DAG's, which schema.md fixes at risk → attack →
@@ -257,7 +256,7 @@ class CatalogInserter
     ): Node {
         $this->assertValidShape($entry, $parent);
 
-        // One entry is one node per run, however many parents reach it (W78).
+        // One entry is one node per run, however many parents reach it.
         // `catalog_entry_links` is a DAG — loadBundle() already guards against
         // re-expanding a parent — and until this map existed the recursion
         // below made a fresh node for every edge it walked, so a control shared
@@ -273,7 +272,7 @@ class CatalogInserter
         }
 
         // The edge is made for every occurrence, reused node or not: strength,
-        // reduction target and rationale live on the pivot (CLAUDE.md), which
+        // reduction target and rationale live on the pivot (schema.md §3.6), which
         // is the whole reason one control can be 80% effective against one
         // attack and 20% against another. Only the *node* defaults — status,
         // capex, opex from `catalog_entries.defaults` — are the first
@@ -295,10 +294,10 @@ class CatalogInserter
         // child_entry_id)` stops that root linking the same attack twice,
         // and assertValidShape() allows only risk → attack → defence — so
         // the only entry two parents can share is a defence, which is a
-        // leaf, and re-walking a leaf changes nothing. W78 mutation-tested
-        // it, saw it survive, and kept it rather than pretending otherwise:
-        // it costs nothing and it is what stops this being silently wrong
-        // again if the DAG ever gains a tier.
+        // leaf, and re-walking a leaf changes nothing. Mutation testing saw this
+        // guard survive, so it is kept rather than pretending otherwise: it
+        // costs nothing and it is what stops this being silently wrong again
+        // if the DAG ever gains a tier.
         if ($existing !== null) {
             return $node;
         }
@@ -392,8 +391,8 @@ class CatalogInserter
             // catalog_entries.kind is a database ENUM restricted to the
             // three cases above (schema.md §3.14); this arm only exists so
             // the match is provably exhaustive to the type checker, never a
-            // dynamic class lookup built from request input (CLAUDE.md,
-            // security.md defect #7).
+            // dynamic class lookup built from request input (security.md §7,
+            // defect #7).
             default => throw new CatalogInsertionException("Unknown catalog entry kind: {$kind}"),
         };
     }
@@ -433,7 +432,7 @@ class CatalogInserter
 
     /**
      * Resolves a scale-level *code* to the target assessment's own level
-     * id. This is the load-bearing method in the package: given the same
+     * id. This is the load-bearing method here: given the same
      * $defaults, two assessments with differently-calibrated scales must
      * resolve the same code to two different ids, each valid against its
      * own scale (see tests/Feature/Catalog/CatalogCodeResolutionTest.php).
@@ -469,7 +468,7 @@ class CatalogInserter
                 );
             }
 
-            // From the map built once per run (W64), not a query per code.
+            // From the map built once per run, not a query per code.
             $levelId = $run->levels[$scaleId][$code] ?? null;
 
             if ($levelId === null) {

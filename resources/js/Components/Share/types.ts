@@ -1,7 +1,7 @@
 /**
  * Mirrors ShareController::payload() (app/Http/Controllers/ShareController.php).
  * Kept as a single hand-written source of truth here rather than generated,
- * matching the rest of the W10 component library's approach to prop types.
+ * matching the rest of the component library's approach to prop types.
  */
 export interface ShareUserSummary {
     id: number;

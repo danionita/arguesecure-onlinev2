@@ -10,7 +10,7 @@ use Database\Seeders\Support\AssessmentFixtureValidator;
 use Database\Seeders\Support\SeederFixtureException;
 
 /*
- * W102 (PLAN-2.7 D64): every defence in a standards template whose title
+ * Every defence in a standards template whose title
  * names a control cites it as a structured `control` reference, and one that
  * names none cites nothing. The expectation is read off the title here,
  * independently of the references in the file, so a citation that drifts

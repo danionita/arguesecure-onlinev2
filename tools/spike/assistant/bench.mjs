@@ -1,7 +1,7 @@
 /**
  * The 2.3 spike benchmark.
  *
- * Answers open questions 2 and 3 of PLAN-2.3-ai.md with numbers from this
+ * Answers open questions 2 and 3 of the assistant design with numbers from this
  * machine: tokens per second, resident size at load, and time-to-full-response
  * for each of the three jobs — including job C, whose prompt is the whole
  * assessment and therefore the largest the assistant will ever build.
@@ -179,7 +179,7 @@ async function streamGenerate(body) {
  *
  * Streaming sends headers immediately, so the timeout that matters becomes the
  * gap between tokens rather than the length of the answer. The application
- * client W50 builds has the same problem waiting for it — Guzzle's own
+ * client has the same problem waiting for it — Guzzle's own
  * timeouts are shorter still — which is why this is written up rather than
  * merely fixed.
  */

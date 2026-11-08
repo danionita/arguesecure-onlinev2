@@ -1,8 +1,8 @@
 /**
- * Labels in the store, and the filter gap they close (W43).
+ * Labels in the store, and the filter gap they close.
  *
  * `useFilters.ts` has carried a fully implemented, fully tested tag filter
- * since W15 with nothing to filter: `NodeRecord` had no tag data and the
+ * since the first release of the editor with nothing to filter: `NodeRecord` had no tag data and the
  * lookup was injected with a default of "no node has any tags". These assert
  * the two halves of the fix — the store carries the labels, and the editor
  * view hands the real accessor to the filter — because either one alone
@@ -193,7 +193,7 @@ describe('detaching', () => {
     });
 });
 
-describe('the filter, which has had nothing to filter since W15', () => {
+describe('the filter, which has had nothing to filter since it was written', () => {
     it('dims the occurrences that do not carry the chosen label', () => {
         const store = createAssessmentStore(makeInit());
         const view = createEditorView(store, {

@@ -23,20 +23,20 @@ use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 /**
- * The report (PLAN.md Phase 7, ui.md §9) and the five exports behind its one
- * menu (W74, D34): HTML, CSV, JSON, Excel and Word. PDF is not among them
- * and is not missing — it is the browser's print pipeline (D6), which is why
+ * The report (ui.md §9) and the five exports behind its one
+ * menu: HTML, CSV, JSON, Excel and Word. PDF is not among them
+ * and is not missing — it is the browser's print pipeline, which is why
  * `dompdf` stays gone.
  *
  * Every action here is a read — same authorization shape as
- * AssessmentController::show (ui.md §3, CLAUDE.md "Every route touching an
- * assessment goes through AssessmentPolicy. No exceptions"): `view` covers
+ * AssessmentController::show (ui.md §3, security.md §3.1: every route touching an
+ * assessment goes through AssessmentPolicy, no exceptions): `view` covers
  * the owner, a collaborator of any role, an admin, a public assessment
  * (**read only** — `is_public` never granted write, and security.md defect
  * #4 is the record of what happened when the legacy app thought otherwise)
  * and a valid share-link session, matching app/Policies/AssessmentPolicy.php
- * exactly. This package owns no app/Http/Requests/** path, so the check is
- * inline via Gate::forUser() rather than a dedicated FormRequest — same
+ * exactly. The check is inline via Gate::forUser() rather than a
+ * dedicated FormRequest — same
  * reasoning ShowAssessmentRequest documents: Gate::forUser() (not
  * `$request->user()?->can(...)`) so a null/guest user still reaches
  * AssessmentPolicy::view()'s is_public and share-token branches instead of
@@ -52,7 +52,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
  * **ReportOptions binds all five.** Each export resolves its options from
  * the query string through the same `ReportOptions::fromQuery()` the page
  * uses, so "include shelved" means the same thing on a spreadsheet as on
- * screen — the failure W33 named for the download button — and `download=1`
+ * screen — the failure the download button once had — and `download=1`
  * still forces the whole report on any of them. The whole input surface here
  * is `$request->query()`, and `ReportOptions` validates every value it reads
  * out of it against a fixed list — nothing reaches a query, a column name or
@@ -70,7 +70,7 @@ class ReportController extends Controller
         $options = ReportOptions::fromQuery($request->query());
         $report = $builder->build($assessment, $options);
 
-        // W54. The written executive summary, and — only for someone who could
+        // The written executive summary, and — only for someone who could
         // accept it — the draft waiting to become one.
         //
         // The draft is withheld from everyone else on purpose. It is
@@ -82,7 +82,7 @@ class ReportController extends Controller
         // the disclosure, and a disclosure shown only to insiders is not one.
         $canEdit = Gate::forUser($request->user())->allows('update', $assessment);
 
-        // W83, D40/D41. `AssessmentActions` gates Settings and Share on
+        // `AssessmentActions` gates Settings and Share on
         // `abilities.manage` — the same `AssessmentPolicy::manage()` the
         // editor's own mount of that component reads off `store.abilities`.
         // The report has no store, so this is the one place to resolve it.
@@ -100,7 +100,7 @@ class ReportController extends Controller
                 'summaryNarrativeGenerated' => (bool) $assessment->summary_narrative_generated,
                 'summaryDraft' => $canEdit ? $assessment->summary_draft : null,
                 'canEditSummary' => $canEdit,
-                // The summary switch by name (W87, D48). The only assistant
+                // The summary switch by name. The only assistant
                 // control on the report drafts the executive summary, which is
                 // the ~250s job an admin is most likely to decline.
                 'assistantAvailable' => $canEdit
@@ -116,9 +116,9 @@ class ReportController extends Controller
 
     /**
      * The whole report as one self-contained HTML file. Rendered from the
-     * same forced-full URL W33 defined when `download=1` is present, which is
+     * same forced-full URL the download button used when `download=1` is present, which is
      * why that query-parameter contract does not go away with the button
-     * (D35) — it is now one of five formats rather than a button of its own.
+     * — it is now one of five formats rather than a button of its own.
      */
     public function exportHtml(Request $request, Assessment $assessment, ReportBuilder $builder, HtmlExporter $exporter): HttpResponse
     {
@@ -128,9 +128,8 @@ class ReportController extends Controller
     /**
      * The route is still `defences.csv` and the name still
      * `assessments.report.defences-csv`. The file it returns is the whole
-     * report now (item 25), but the URL is in e2e coverage this package does
-     * not own and in whatever bookmarks and scripts have accumulated since
-     * W17 — renaming it would break those for a cosmetic gain.
+     * report now, but the URL is in e2e coverage and in whatever bookmarks and scripts have accumulated since
+     * the first report — renaming it would break those for a cosmetic gain.
      */
     public function defencesCsv(Request $request, Assessment $assessment, ReportBuilder $builder, AssessmentCsvExporter $exporter): HttpResponse
     {
@@ -150,7 +149,7 @@ class ReportController extends Controller
     /**
      * The interchange format, and the one export whose shape is a promise:
      * it is what snapshot/restore reads, so it keeps the shape it has had
-     * since W17 rather than being re-cut to match the other four.
+     * since the first report rather than being re-cut to match the other four.
      */
     public function exportJson(
         Request $request,

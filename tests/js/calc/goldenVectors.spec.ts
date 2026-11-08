@@ -17,7 +17,7 @@ import {
 } from './support/goldenVectorGraphAdapter';
 
 /**
- * W11 mirror of tests/Unit/Calculation/GoldenVectorTest.php: runs every
+ * Mirror of tests/Unit/Calculation/GoldenVectorTest.php: runs every
  * vector in tests/fixtures/calculation-vectors.json — derived independently
  * from docs/specs/calculation-engine.md — against the TypeScript
  * RiskCalculator.
@@ -25,8 +25,8 @@ import {
  * THIS FILE MUST NOT BE TUNED TO MAKE THE ENGINE AND THE FIXTURE AGREE. A
  * failing vector means the engine and an independent reading of the spec
  * disagree, and that disagreement needs a human to adjudicate, not a quiet
- * edit (see the W11 report for the resolution of any failure at the time
- * this file was written).
+ * edit (any failure when this file was written was resolved with the spec's
+ * author).
  *
  * Two vectors don't fit the generic "build a graph, run RiskCalculator,
  * check `expected`" shape and get dedicated tests below, mirroring the PHP

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Browsing a frozen version in the editor's own views (W63).
+ * Browsing a frozen version in the editor's own views.
  *
  * The route serves `Assessment/Show`'s prop shape, built from `snapshots.graph`
  * instead of from the database, so the live `ChartView` and `TreeNode` can be

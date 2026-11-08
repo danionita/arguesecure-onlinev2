@@ -5,11 +5,11 @@ namespace App\Domain\Scales;
 use App\Models\Scale;
 
 /**
- * Turns a band's label into its `scale_levels.code` (W87, PLAN-2.5.md D44).
+ * Turns a band's label into its `scale_levels.code`.
  *
  * ## Why a code still exists at all
  *
- * `code` left the interface in W87 and stayed in the machinery, and those are
+ * `code` left the interface and stayed in the machinery, and those are
  * two different things. It is the `(scale_id, code)` unique key; it is
  * `impact_level_code`/`aro_level_code` in calculation-engine.md §8.3's
  * normative payload; `AssessmentCloner::resolveLevelDefault()` and

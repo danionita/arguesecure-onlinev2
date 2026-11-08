@@ -5,16 +5,16 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-// tests/Pest.php (outside this package's ownership) only binds
+// tests/Pest.php only binds
 // Tests\TestCase to the Feature directory; LockManager needs the app
 // booted for the Redis facade and config, so this file binds it locally
 // rather than editing that shared file — a real Redis connection (not a
-// mock), matching the W16 brief's "Redis is also running" environment
-// note, is the point of keeping this a thin wrapper in the first place.
+// mock), matching the environment the real-time tests run in where Redis is
+// also running, is the point of keeping this a thin wrapper in the first place.
 uses(TestCase::class);
 
 /*
- * PLAN.md Phase 6 item 3: key `lock:{assessment}:{node_uuid}:{field}`,
+ * Locking (schema.md §3.15): key `lock:{assessment}:{node_uuid}:{field}`,
  * `SET NX PX 45000`, compare-and-extend refresh, compare-and-delete
  * release. Exercised directly against Redis (config/database.php's
  * `redis` connection, not `cache`) rather than through LockController, to

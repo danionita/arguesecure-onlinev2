@@ -8,8 +8,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
 /**
- * Bands for one to three kinds of a scale, from the admin Scales screen (W87,
- * D47; W126) and, through `UpdateAssessmentScalesRequest`, from Assessment
+ * Bands for one to three kinds of a scale, from the admin Scales screen
+ * and, through `UpdateAssessmentScalesRequest`, from Assessment
  * settings. The two post the same payload from the same component, so a
  * difference between their rules would be a difference in what a band may be
  * depending on who is editing it.
@@ -38,14 +38,14 @@ class UpdateScaleBandsRequest extends FormRequest
             $rules[$p] = ['sometimes', 'array', 'required_array_keys:bands'];
             $rules["{$p}.bands"] = ['sometimes', 'required', 'array', 'min:1', 'max:12'];
             /*
-             * Nullable and never rendered (D44). An existing band carries back
+             * Nullable and never rendered. An existing band carries back
              * the code it was sent, which freezes a code across a rename; a
              * band the editor created sends null, for `LevelCodeDeriver` to
              * name from the label. The regex still constrains a carried code.
              */
             $rules["{$p}.bands.*.code"] = ['nullable', 'string', 'max:32', 'regex:/^[a-z][a-z0-9_]*$/'];
             $rules["{$p}.bands.*.label"] = ['required', 'string', 'max:64'];
-            // No `color`: there is no colour input (D45).
+            // No `color`: there is no colour input.
             $rules["{$p}.bands.*.lower_bound"] = ['required', 'numeric', 'min:0'];
             $rules["{$p}.bands.*.upper_bound"] = ['nullable', 'numeric', 'min:0'];
             $rules["{$p}.bands.*.representative"] = ['required', 'numeric', 'min:0'];

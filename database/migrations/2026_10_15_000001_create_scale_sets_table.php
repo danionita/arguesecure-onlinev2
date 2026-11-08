@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * W126, D93.
-     *
      * A "set" (the code's word for what the interface now calls a scale) was
      * never a row, so a name an admin chooses had nowhere to live.
      * `scales.set_key` stays a plain string and gains no foreign key: the 2.4
@@ -23,7 +21,7 @@ return new class extends Migration
      * The two sets inserted are the built-in ones, and only when their system
      * rows exist: a migrated-but-unseeded instance gets `default` alone, which
      * is what `ScaleSets::selectableKeys()` already assumes. The literals are
-     * deliberate, as in the W77 migration: a constant renamed later must not
+     * deliberate, as in the set_key migration: a constant renamed later must not
      * change what this migration did.
      */
     public function up(): void

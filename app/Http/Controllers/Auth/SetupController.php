@@ -4,26 +4,25 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SetupRequest;
+use App\Jobs\SeedReferenceContent;
 use App\Models\User;
-use Database\Seeders\SampleContentSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
 
 /**
- * First-run setup (PLAN.md Phase 3 item 2). Replaces the legacy hardcoded
+ * First-run setup (security.md §4). Replaces the legacy hardcoded
  * `admin` / `XDARSEC` bootstrap entirely — this is the only place in the
  * rewrite a credential is ever created without an existing admin acting.
  *
  * Reachability is guarded on *any* row existing in `users`, not on any
  * *active* row: deactivating every account must not reopen this screen,
- * per the package brief. That is deliberately a stronger check than
+ * by design. That is deliberately a stronger check than
  * "no admin exists" — a single deactivated non-admin user still closes
  * setup for good, which is correct: the intended recovery path from that
  * state is a database operation by whoever runs the deployment, not a
@@ -64,24 +63,23 @@ class SetupController extends Controller
             return $user;
         });
 
-        // W27: the earliest moment the bundled templates and catalogue
+        // The earliest moment the bundled templates and catalogue
         // libraries have an owner to attach to. Before this, a fresh
         // deployment reached the dashboard with none: the entrypoint seeds
         // the system scales but deliberately not content, and
         // TemplateAssessmentSeeder needs an existing admin (never a seeded
-        // credential — CLAUDE.md). Reference content only; the demo web
-        // shop still needs a deliberate `db:seed`.
+        // credential). Reference content only; the demo web shop still
+        // needs a deliberate `db:seed`.
         //
-        // Failure here must not cost the administrator their account —
-        // the user is already committed and this is convenience content —
-        // so it is logged and swallowed rather than allowed to 500 a
-        // one-time screen that cannot be revisited.
+        // Queued, not run here: it takes seconds to minutes depending on the
+        // database's disk, and this is a request the person is watching. See
+        // the job for the failure rule.
+        // A queue that is down must not cost the administrator their
+        // sign-in: the account is committed and this screen is closed now.
         try {
-            (new SampleContentSeeder)->seedReferenceContent($user);
+            SeedReferenceContent::dispatch($user->id);
         } catch (Throwable $e) {
-            Log::warning('First-run template seeding failed; the instance is usable without it.', [
-                'exception' => $e,
-            ]);
+            report($e);
         }
 
         Auth::login($user);

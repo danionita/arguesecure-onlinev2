@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Transfers section (PLAN.md Phase 7 §6): what is transferred, to whom, and
+ * Transfers section (ui.md §9): what is transferred, to whom, and
  * the retained impact. The schema carries no separate "counterparty"
  * column (schema.md — a Transfer is a Defence row with is_transfer=1, a
  * presentation variant, not a distinct type with its own fields), so "to

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * Comments tab content (PLAN.md Phase 8 item 1, ui.md §7's "Comments —
- * Threaded, resolvable (W18)" row). Self-contained: takes only the
+ * Comments tab content (ui.md §7's "Comments — Threaded, resolvable"
+ * row). Self-contained: takes only the
  * identifiers and ability flag it needs, matching NodeModal/
  * useLinkMutations.ts's own "no store dependency" pattern, so wiring this
- * in from CommentsTab.vue (W13, not owned by this package) is a single
+ * in from CommentsTab.vue is a single
  * `<CommentThread :assessment-uuid="..." :node-uuid="..." :can-comment="..." />`
- * — see the W18 report for the exact prop values that shell needs to pass.
+ * with the prop values that shell passes.
  */
 import EmptyState from '@/Components/UI/EmptyState.vue';
 import Skeleton from '@/Components/UI/Skeleton.vue';

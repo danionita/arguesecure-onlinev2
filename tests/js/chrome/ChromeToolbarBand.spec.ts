@@ -2,7 +2,7 @@
  * The toolbar row's wrapping (2.5 integration review, Finding 1).
  *
  * `ChromeToolbarBand.vue` is shared by the editor's `Toolbar.vue` and the
- * report's `ReportOptionsRow.vue` (W81). The report puts far more into the
+ * report's `ReportOptionsRow.vue`. The report puts far more into the
  * row — a search box, two radio groups and three toggles, on top of zoom and
  * the switcher — and until this fix the outer row had no `flex-wrap`, so a
  * narrow report window overflowed rather than wrapping. `Toolbar.spec.ts`

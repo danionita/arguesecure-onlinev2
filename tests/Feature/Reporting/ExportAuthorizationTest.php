@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Route;
 use Tests\Feature\Reporting\ExportFixture;
 
 /*
- * Authorization for the five export routes (W74, D34).
+ * Authorization for the five export routes.
  *
- * CLAUDE.md: "Every route touching an assessment goes through
- * AssessmentPolicy. No exceptions." An export is the highest-consequence
+ * Every route touching an assessment goes through
+ * AssessmentPolicy, no exceptions (security.md). An export is the highest-consequence
  * read in the application — it produces a file that leaves the server, is
  * attached to an email and is opened somewhere this deployment will never
- * see — so the five new URLs get the same coverage the report page got in
- * W17, over AssessmentPolicy::view()'s full resolution order (is_admin ->
+ * see — so the five new URLs get the same coverage the report page got,
+ * over AssessmentPolicy::view()'s full resolution order (is_admin ->
  * owner -> assessment_user.role -> is_public -> share token). This is the
  * class of route legacy defect #4 lived in (security.md).
  *
@@ -92,7 +92,7 @@ test('an admin can take every export of any assessment', function () {
 
 /*
  * `is_public` grants read only. In v1 it meant world-writable, which was a
- * defect and not a feature (CLAUDE.md, security.md defect #4). Exports are
+ * defect and not a feature (security.md defect #4). Exports are
  * reads, so a public assessment exports for anyone — and the pair of
  * assertions below is the whole point: the same anonymous session that may
  * download the file may not use a mutating route on the same assessment.
@@ -138,9 +138,8 @@ test('a valid share-link session grants anonymous access to every export', funct
  * security.md §9 sets report generation at 10/min per user, and an export is
  * a report generation — five formats of a large assessment is the most
  * expensive thing an unauthenticated public reader can ask this server to
- * do. W68 found a budget test that stayed green while the thing it guarded
- * was removed, and the pinned-defect note in CLAUDE.md is explicit about the
- * shape of that mistake: assert the *specified value*, not that something is
+ * do. An earlier audit found a budget test that stayed green while the thing it guarded
+ * was removed, and the lesson is the same: assert the *specified value*, not that something is
  * present. `throttle:reports` would still match a `str_contains($m,
  * 'throttle')` check after being loosened to 10,000/min.
  */

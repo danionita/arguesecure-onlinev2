@@ -1,13 +1,13 @@
 <script setup lang="ts">
 /**
- * The pop-up shell behind the toolbar's "Filters" button (W137): the
+ * The pop-up shell behind the toolbar's "Filters" button: the
  * trigger, its count of what is on, and the panel. It knows nothing about
  * what goes inside — `FilterBar.vue` fills it with the editor's dimming
- * filters, and the report's Sections button (W136) fills a second one — so
- * the two look and behave alike without sharing state (D101: the editor's
+ * filters, and the report's Sections button fills a second one — so
+ * the two look and behave alike without sharing state (the editor's
  * filters are client state, the report's options are server inputs).
  *
- * Categories are `FilterCategory.vue`s in the default slot (W132).
+ * Categories are `FilterCategory.vue`s in the default slot.
  */
 import Dropdown from '@/Components/UI/Dropdown.vue';
 import Icon from '@/Components/UI/Icon.vue';

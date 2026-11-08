@@ -1,5 +1,5 @@
 /**
- * Code-review finding, W83 fix round: the authenticated branch's options
+ * Code-review finding: the authenticated branch's options
  * row (search, baseline/shelved, comments/methodology/assignees, zoom) was
  * hidden at print time only through `data-print-hide`, which `print.css`
  * scopes as `.editor-print [data-print-hide]` — a class
@@ -22,6 +22,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import type { ReportData } from '../../../resources/js/Components/Report/types';
+import { routeProperties } from '../support/routeProperties';
 
 let mockUser: { id: number; name: string; email: string } | null = {
     id: 1,
@@ -135,7 +136,12 @@ function report(): ReportData {
         transfers: [],
         controlCoverage: { frameworks: [], hiddenShelved: 0 },
         tree: { risks: [], orphanAttacks: [], orphanDefences: [] },
-        appendices: { references: [], comments: [], warnings: [] },
+        appendices: {
+            references: [],
+            comments: [],
+            warnings: [],
+            warningsOmitted: 0,
+        },
     };
 }
 
@@ -150,7 +156,7 @@ async function mountReport() {
             report: report(),
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { SummaryNarrative: true, teleport: true },
         },
     });

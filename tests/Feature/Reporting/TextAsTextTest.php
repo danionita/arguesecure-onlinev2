@@ -7,11 +7,11 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
 use Tests\Feature\Reporting\ExportFixture;
 
 /*
- * W106: the Word, Excel and CSV exports write a title or a description as
+ * The Word, Excel and CSV exports write a title or a description as
  * text, whatever characters it holds.
  *
  * A node's text is whatever a collaborator typed, or what a model drafted and
- * a person accepted (D24). Each format has its own way of reading text as
+ * a person accepted. Each format has its own way of reading text as
  * something else — WordML in the `.docx`, a formula in a workbook cell, a
  * formula again when a spreadsheet opens the CSV — and each test below
  * asserts the text came out as the same text.
@@ -26,7 +26,7 @@ const W106_AT = '@SUM(1+1)';
 const W106_TAB = "\t=1+1";
 const W106_SPACED = '  =1+1';
 
-function w106Assessment(): Assessment
+function textAsTextAssessment(): Assessment
 {
     $assessment = ExportFixture::assessment();
 
@@ -51,7 +51,7 @@ function w106Assessment(): Assessment
 }
 
 test('the Word export writes titles and descriptions as escaped text', function () {
-    $assessment = w106Assessment();
+    $assessment = textAsTextAssessment();
 
     $docx = $this->actingAs($assessment->owner)
         ->get(route('assessments.report.export-word', $assessment))->getContent();
@@ -86,7 +86,7 @@ test('the Word export writes titles and descriptions as escaped text', function 
 });
 
 test('the Excel export writes every title as a string cell, never a formula', function () {
-    $assessment = w106Assessment();
+    $assessment = textAsTextAssessment();
 
     $xlsx = $this->actingAs($assessment->owner)
         ->get(route('assessments.report.export-excel', $assessment))->getContent();
@@ -120,7 +120,7 @@ test('the Excel export writes every title as a string cell, never a formula', fu
 });
 
 test('the CSV export quotes every text cell a spreadsheet would read as a formula', function () {
-    $assessment = w106Assessment();
+    $assessment = textAsTextAssessment();
 
     $csv = $this->actingAs($assessment->owner)
         ->get(route('assessments.report.defences-csv', $assessment))->getContent();

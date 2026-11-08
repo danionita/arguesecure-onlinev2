@@ -10,15 +10,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Field-level locking (PLAN.md Phase 6 item 3, security.md). No FormRequest
- * class here (this package owns only this controller, not
- * app/Http/Requests/**) — authorization and the same cross-assessment IDOR
+ * Field-level locking (ui.md §6, security.md). No FormRequest
+ * class here — authorization and the same cross-assessment IDOR
  * check NodeController's own docblock describes are done inline instead,
- * matching the pattern the W12/W14 `reorder`/`move` closures in
+ * matching the pattern the `reorder`/`move` closures in
  * routes/web.php already use for the same reason.
  *
  * Every ability check here is `update`, never `view`: is_public and a
- * share-token session both grant `view` only (CLAUDE.md, AssessmentPolicy),
+ * share-token session both grant `view` only (security.md §3.1),
  * and a lock is a write-intent signal — a viewer or a read-only share-link
  * guest may watch a field light up as locked, but must never be able to
  * acquire one themselves.
@@ -70,8 +69,8 @@ class LockController extends Controller
     }
 
     /**
-     * The 15s client heartbeat (ui.md §6, PLAN.md Phase 6 item 3). Despite
-     * PLAN.md calling this a "whisper", it is a normal authenticated HTTP
+     * The 15s client heartbeat (ui.md §6). Though it could
+     * be called a "whisper", it is a normal authenticated HTTP
      * request through this controller, not a Pusher/Reverb client event —
      * see resources/js/composables/useRealtime.ts's docblock for why a real
      * client event (relayed peer-to-peer by Reverb, never touching this
@@ -88,7 +87,7 @@ class LockController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    /** Blur/save/navigate (ui.md §6, PLAN.md Phase 6 item 3). A no-op, not an error, if the lock already expired or was never this user's. */
+    /** Blur/save/navigate (ui.md §6). A no-op, not an error, if the lock already expired or was never this user's. */
     public function destroy(Request $request, Assessment $assessment, Node $node, string $field, LockManager $locks): JsonResponse
     {
         $user = $this->authorizeField($request, $assessment, $node, $field);

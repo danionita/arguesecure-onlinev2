@@ -1,8 +1,8 @@
 /**
  * Credentials for the end-to-end run come from the environment, never from
- * a file. CLAUDE.md is absolute about this — "never write a secret, key,
- * password, or credential into any file, including seeders, factories,
- * tests, fixtures, and documentation" — and deleting the legacy app's
+ * a file. The rule is absolute: no secret, key, password or credential goes
+ * into any file, including seeders, factories, tests, fixtures and
+ * documentation — and deleting the legacy app's
  * documented default admin password is one of the reasons this rewrite
  * exists. A fixture password committed here would put it straight back.
  *

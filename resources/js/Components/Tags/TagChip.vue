@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One label (W43, item 18).
+ * One label.
  *
  * A plain neutral chip, deliberately. `tags.color` exists in the schema and
  * is not read here: the node card's colours already mean something specific

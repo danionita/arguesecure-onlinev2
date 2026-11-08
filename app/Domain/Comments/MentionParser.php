@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
- * Finds `@name` mentions in a comment body (W47, item 15).
+ * Finds `@name` mentions in a comment body.
  *
- * ## Only collaborators, and that is the security content of this package
+ * ## Only collaborators, and that is the security content of mentions
  *
  * The candidate set is the assessment's owner and its collaborators, never
  * `users`. Matching against every account would turn any comment box into an

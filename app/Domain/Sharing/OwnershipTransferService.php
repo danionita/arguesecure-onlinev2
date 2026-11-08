@@ -17,12 +17,12 @@ use Illuminate\Support\Facades\DB;
  * `TransferOwnershipRequest`, never re-derived here).
  *
  * Judgement call: the transfer target must already be a collaborator
- * (any role) on the assessment. The brief only says "transfer
+ * (any role) on the assessment. The requirement says only "transfer
  * ownership," not who may receive it, but allowing a transfer to an
  * arbitrary searched-up user would hand full control of a confidential
  * assessment (security.md §12) to someone who has never seen it and may
  * not know the transfer happened — there is no notification system
- * (CLAUDE.md: no SMTP dependency) to tell them. Requiring prior
+ * (there is no SMTP dependency) to tell them. Requiring prior
  * membership means the recipient already has a relationship to the
  * assessment and the transferring owner already made a deliberate
  * decision to share with them.

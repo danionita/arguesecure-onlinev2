@@ -1,6 +1,6 @@
 /**
- * The band-editing rules the calibration screen enforces as you type (W65,
- * ui.md §8, schema.md §3.2).
+ * The band-editing rules the calibration screen enforces as you type (ui.md §8,
+ * schema.md §3.2).
  *
  * ui.md's instruction is the design: "editing a bound auto-adjusts the
  * neighbour so bands stay contiguous — the invariants are non-negotiable, so
@@ -21,14 +21,14 @@
 /**
  * A band as the scale editor holds it while being edited.
  *
- * `code` is an opaque round-trip token and is rendered nowhere (W87, D44). An
+ * `code` is an opaque round-trip token and is rendered nowhere. An
  * existing band carries back the code it was sent, which is what freezes a
  * code across a rename; a band this module creates carries `null`, and the
  * server derives one from the label. Nothing here ever invents a code: a
  * client-side collision fix could not see the codes of bands it is not
  * editing, and `(scale_id, code)` is the database's index to defend.
  *
- * There is no `color`. D45 stopped it being editable; the column stays with
+ * There is no `color`: it is not editable; the column stays with
  * its `#9CA3AF` default and nothing outside `ScaleCalibrator` ever read it.
  */
 export interface EditableBand {
@@ -75,7 +75,7 @@ export type Kind = (typeof KINDS)[number];
 export type ScaleDraft = Record<Kind, EditableBand[]>;
 
 /**
- * One admin scale as `ScaleDescriber::allSets()` sends it (W126): a named
+ * One admin scale as `ScaleDescriber::allSets()` sends it: a named
  * calibration of all three kinds.
  */
 export interface ScaleSetDetail {
@@ -90,7 +90,7 @@ export interface ScaleSetDetail {
  * array with its source, so editing the draft cannot change the props it
  * came from.
  *
- * `code` is carried and never rendered (D44); it is what freezes a code
+ * `code` is carried and never rendered; it is what freezes a code
  * across a rename.
  */
 export function draftFrom(

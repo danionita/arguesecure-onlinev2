@@ -7,7 +7,7 @@ use App\Domain\Reporting\ReportOptions;
 use Tests\Feature\Reporting\ExportFixture;
 
 /**
- * FIXED (W80): `ReportOptions::$figures` is gone.
+ * FIXED: `ReportOptions::$figures` is gone.
  *
  * ## What was pinned
  *
@@ -18,15 +18,15 @@ use Tests\Feature\Reporting\ExportFixture;
  * report page, and forwarded by the export menu to all five formats — and
  * honoured by no renderer. Choosing "Qualitative only" changed the URL,
  * re-requested the page, and produced a byte-identical document. It was that
- * way from W17 to W79. W74 found it while binding the other five options
+ * way from the report's first release until it was removed. The export work found it while binding the other five options
  * into the exports and pinned rather than fixed it, because binding it in
  * the exports alone would have made a downloaded file disagree with the page
- * it came from — the exact divergence that package existed to prevent.
+ * it came from — the exact divergence the report's shared options exist to prevent.
  *
  * ## Why it was removed rather than built
  *
  * The pin's original docblock proposed building the qualitative rendering.
- * W80 worked through what that document would be and found no reading that
+ * Removing it meant working through what that document would be and found no reading that
  * both said something true and did not already happen.
  *
  * 1. **The currency cannot leave.** calculation-engine.md §8.3 fixes which
@@ -39,13 +39,13 @@ use Tests\Feature\Reporting\ExportFixture;
  *    labelled "Qualitative only" on such a document is a false statement
  *    about it. The report's own methodology appendix has printed "Computed
  *    loss figures are shown as currency, never mapped to a low/medium/high
- *    band" to the reader since W17, directly under the control claiming
+ *    band" to the reader since the first report, directly under the control claiming
  *    otherwise.
  * 2. **The honest half already happens, and is per node.** A value renders
  *    as the level its author chose when `impact_mode` / `likelihood_mode` is
  *    `qualitative`, and as the amount they typed when it is `quantitative` —
- *    see `RiskRegisterSection.vue`, and PLAN-2.4 item 23 for the same rule
- *    on the cards ("the chips are the *typed* values, not computed ones;
+ *    see `RiskRegisterSection.vue`, and the node cards for the same rule
+ *    (ui.md §3.2) ("the chips are the *typed* values, not computed ones;
  *    computed figures keep their existing treatment"). A per-report switch
  *    was never needed for it.
  * 3. **What is left is dishonest in both directions.** Forcing `qualitative`
@@ -69,13 +69,13 @@ use Tests\Feature\Reporting\ExportFixture;
  * one** — which is what would regress if someone reintroduced the option as
  * a dead control, the shape it had for four releases.
  */
-test('FIXED (W80): no report surface offers a figures choice', function () {
+test('FIXED: no report surface offers a figures choice', function () {
     // The option is gone from the type, so a stale query string carrying it
     // is ignored the way any unknown parameter is — not parsed, not
     // validated, not echoed. Asserting the *absence of the key* rather than
     // a resolved value is deliberate: a reintroduced `figures` defaulting to
     // 'full' would satisfy "the document is unchanged" while being exactly
-    // the dead control this package removed.
+    // the dead control that was removed.
     $options = ReportOptions::fromQuery(['figures' => 'qualitative']);
 
     expect(property_exists($options, 'figures'))->toBeFalse()
@@ -91,13 +91,13 @@ test('FIXED (W80): no report surface offers a figures choice', function () {
     expect($report['options'])->not->toHaveKey('figures');
 });
 
-test('FIXED (W80): a stale figures= URL still renders the one report there is', function () {
+test('FIXED: a stale figures= URL still renders the one report there is', function () {
     $assessment = ExportFixture::assessment();
 
     // The pinned test asserted these two were identical as evidence of the
     // defect. They are still identical — but now because a report has one
     // rendering, not because a live control was being ignored. A bookmarked
-    // link from before W80 keeps working rather than 404ing or erroring.
+    // link from before the option was removed keeps working rather than 404ing or erroring.
     $stale = $this->actingAs($assessment->owner)
         ->get(route('assessments.report.export-html', $assessment).'?figures=qualitative')
         ->getContent();
@@ -118,7 +118,7 @@ test('FIXED (W80): a stale figures= URL still renders the one report there is', 
     expect($stale)->toContain('€187,000');
 });
 
-test('FIXED (W80): the section builder and the exporters take no figures option', function () {
+test('FIXED: the section builder and the exporters take no figures option', function () {
     $assessment = ExportFixture::assessment();
     $report = app(ReportBuilder::class)->build($assessment, ReportOptions::fromQuery([]));
     $options = ReportOptions::fromQuery(['include_methodology' => '1']);

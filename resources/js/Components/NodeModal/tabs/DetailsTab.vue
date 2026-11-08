@@ -6,32 +6,31 @@
  * surfaces via the same toolbar indicator and Show.vue's existing
  * "Keep mine / Take theirs / Cancel" banner (ui.md §3.5).
  *
- * W30 removed the notes field, and with it `notesPreview.ts` — the
+ * The notes field is gone, and with it `notesPreview.ts` — the
  * client-side markdown renderer that existed only to preview it. Nothing on
  * this screen renders user-authored HTML any more, which is why deleting
  * that module (it carried a documented sanitisation fix) is safe rather
  * than a regression: comments still render markdown, but server-side
  * through MarkdownRenderer, which the source audit test pins.
  *
- * W43 added the labels row that ui.md §7 has listed since W13 and that W13
- * could not build: `tags`/`node_tag` existed with no owning controller, and
- * that package owned no path that could add one, so the field was left out
- * rather than built against nothing.
+ * The labels row (ui.md §7, Labels) lives here too: it was left out at first
+ * because `tags`/`node_tag` had no owning controller, rather than built
+ * against nothing.
  *
- * W72 changed what else lives here, in both directions:
+ * What else lives here has changed, in both directions:
  *
- * - **A defence's status and transfer flag arrived** from the Cost tab (item
- *   9). Neither is a cost, and a tab called Cost that opened on a segmented
+ * - **A defence's status and transfer flag arrived** from the Cost tab.
+ *   Neither is a cost, and a tab called Cost that opened on a segmented
  *   control was answering a different question from the one its label asks.
  *   Both are statements about what this defence *is* and where it has got to
  *   — which is what Details holds for every other type.
- * - **"Appears under" left** (item 12, D31). It is not gone: it is the panel
+ * - **"Appears under" left**. It is not gone: it is the panel
  *   `AppearsUnderPopover` opens from the parent counter on the chart card and
- *   the list card. W72 kept it rendering from here in the meantime, for the
- *   reason W36 recorded — an affordance may not leave one surface in one
- *   commit and arrive on another in the next. Integration mounted it on both
- *   counters and removed it from here in the same commit, which closes that
- *   window rather than widening it.
+ *   the list card. It rendered from here in the meantime, because an
+ *   affordance may not leave one surface in one change and arrive on
+ *   another in the next. It was mounted on both counters and removed from
+ *   here in the same change, which closes that window rather than widening
+ *   it.
  */
 import TagEditor from '@/Components/Tags/TagEditor.vue';
 import Input from '@/Components/UI/Input.vue';
@@ -47,7 +46,7 @@ const props = defineProps<{
 }>();
 
 const node = computed(() => props.store.nodes[props.uuid]);
-// False while someone else has this node open (2.5.1, useNodeModal).
+// False while someone else has this node open (useNodeModal).
 const { lockedBy } = useNodeModal();
 const canEdit = computed(
     () => props.store.abilities.update && lockedBy.value === null,
@@ -69,12 +68,12 @@ function commitTitle(value: string) {
 }
 
 /**
- * 2.5.1: this tab no longer offers W79's "link, don't duplicate" list or
- * W88's "AI suggestion" button. Both existed only for a *placeholder* — an
+ * This tab no longer offers the "link, don't duplicate" list or the
+ * "AI suggestion" button. Both existed only for a *placeholder* — an
  * untitled node the add-child gesture had already created — and there are no
  * placeholders any more: a node being added is a draft, and both offers moved
  * with it to NewNodeForm.vue. On an existing node, typing here is a rename,
- * which is exactly where W40 refused to offer either.
+ * which is exactly where neither is offered.
  */
 
 function commitDescription() {
@@ -87,7 +86,7 @@ function commitDescription() {
 }
 
 /**
- * Defence status and the transfer flag (W72 item 9, moved off the Cost tab).
+ * Defence status and the transfer flag (moved off the Cost tab).
  */
 const statusOptions: { value: DefenceStatus; label: string }[] = [
     { value: 'implemented', label: 'Implemented' },
@@ -109,7 +108,7 @@ function setTransfer(value: boolean) {
 }
 
 /**
- * Labels (W43). Read straight off the node rather than kept in a local
+ * Labels. Read straight off the node rather than kept in a local
  * draft: unlike the title and description below, there is no half-typed
  * state to protect — a label is committed the moment it is added, and the
  * store is the only copy.
@@ -179,14 +178,14 @@ async function removeLabel(name: string) {
         />
 
         <!--
-            W72 item 12 / D31: "Appears under" is gone from this tab. It is not
+            "Appears under" is gone from this tab. It is not
             deleted — it is the popover behind the parent counter on the chart
             card and the list card, which is where a reader asks the question.
-            W72 mounted it here temporarily because both cards were outside its
-            ownership; integration moved it to them, which is the whole point
-            of the item. Detaching an attack from one of several risks is still
-            reachable, and still the only place in the application that can do
-            it, so nothing was removed by taking it off this tab.
+            It was mounted here temporarily until both cards carried it; it now
+            lives on them, which is the whole point. Detaching an attack from
+            one of several risks is still reachable, and still the only place
+            in the application that can do it, so nothing was removed by
+            taking it off this tab.
         -->
     </div>
 </template>

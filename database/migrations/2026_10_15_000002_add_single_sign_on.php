@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Single sign-on with OpenID Connect (W117, D74, D76, D79).
+     * Single sign-on with OpenID Connect (security.md §4).
      *
      * `user_identities` links an account to the provider's stable identifier,
      * `(issuer, subject)`; an email address is only how the link is first made.
      * An account has at most one identity per issuer (one provider per
      * instance), and an identity belongs to one account, so both are unique.
      *
-     * `instance_settings.sso_only` is D79's switch. Off by default: turning
+     * `instance_settings.sso_only` is the sign-in-only switch. Off by default: turning
      * SSO on must not stop anyone signing in.
      */
     public function up(): void

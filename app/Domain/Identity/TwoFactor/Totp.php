@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use PragmaRX\Google2FA\Google2FA;
 
 /**
- * RFC 6238 time-based codes (D77), a thin wrapper over `pragmarx/google2fa`.
+ * RFC 6238 time-based codes, a thin wrapper over `pragmarx/google2fa`.
  *
  * The step is computed here from Laravel's clock rather than left to the
  * library's `time()`, so a test that fixes the clock with

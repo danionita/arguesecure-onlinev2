@@ -7,7 +7,7 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * Per-row actions on the assessment lists (W42 item 20).
+ * Per-row actions on the assessment lists (ui.md §8, List).
  *
  * 2.5.1: "My assessments" lists owned rows only, so rows someone else owns —
  * the only ones where a role, rather than ownership, decides the actions —
@@ -70,7 +70,7 @@ test('a manager is offered Share', function () {
 
 test('the abilities come from the policy, not from ownership', function () {
     // A manager who is not the owner can share. Inferring `can_manage` from
-    // `is_owner` — the shape this page had before W42 — gets that wrong, and
+    // `is_owner` — the shape this page had before the dashboard work — gets that wrong, and
     // gets an admin's delete wrong in the other direction.
     $assessment = Assessment::factory()->create();
     $manager = User::factory()->create();
@@ -121,7 +121,7 @@ test('neither list issues a permission query per row', function () {
 
     // AssessmentPolicy resolves a role through the members relation, so an
     // un-eager-loaded list costs a query per row for `can_manage` and
-    // another for `can_delete` — the N+1 CLAUDE.md names as the legacy tree
+    // another for `can_delete` — the N+1 that was the legacy tree
     // render's defining defect, rebuilt on a different page.
     expect($count)->toBeLessThan(20);
 });
@@ -190,7 +190,7 @@ test('the copy is independent: whole graph, new uuids, new owner', function () {
     // And the value that lives on the pivot rather than on either node —
     // exactly the kind of column a mass-assigned identity mistake drops
     // silently, leaving a copy that looks complete and computes wrongly
-    // (CLAUDE.md: AssessmentCloner has broken this way twice).
+    // (AssessmentCloner has broken this way twice).
     $clonedAttack = $clone->nodes()->where('title', 'Phishing')->firstOrFail();
     expect(
         DB::table('attack_defence')->where('attack_node_id', $clonedAttack->id)->value('strength_fraction')

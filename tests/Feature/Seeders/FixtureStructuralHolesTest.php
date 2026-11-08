@@ -5,11 +5,11 @@ use Database\Seeders\Support\CatalogFixtureValidator;
 use Database\Seeders\Support\SeederFixtureException;
 
 /*
- * W76 — the assertions the validators gained, and the holes they close.
+ * The assertions the validators gained, and the holes they close.
  *
- * The package's brief: "a fixture that passes validation and seeds an
- * empty tree means the validator is not checking the thing that matters".
- * Each test below builds a fixture that is *valid under the W22 schema*
+ * The requirement: a fixture that passes validation and seeds an empty tree
+ * means the validator is not checking the thing that matters.
+ * Each test below builds a fixture that is *valid under the original schema*
  * and would seed something a reader would call empty, and asserts that it
  * is now rejected. The positive control at the top proves the base fixture
  * these are mutated from passes, so a test cannot go green because the
@@ -22,7 +22,7 @@ use Database\Seeders\Support\SeederFixtureException;
  *
  * @return array<string, mixed>
  */
-function w76ValidAssessmentFixture(): array
+function validAssessmentFixture(): array
 {
     return [
         'schema_version' => 1,
@@ -66,7 +66,7 @@ function w76ValidAssessmentFixture(): array
  *
  * @return array<string, mixed>
  */
-function w76ValidCatalogFixture(): array
+function validCatalogFixture(): array
 {
     return [
         'schema_version' => 1,
@@ -97,16 +97,16 @@ function w76ValidCatalogFixture(): array
 }
 
 test('the probe fixtures both validate as they stand', function () {
-    expect((new AssessmentFixtureValidator)->validate(w76ValidAssessmentFixture(), 'inline-test'))->toBeArray();
-    expect((new CatalogFixtureValidator)->validate(w76ValidCatalogFixture(), 'inline-test'))->toBeArray();
+    expect((new AssessmentFixtureValidator)->validate(validAssessmentFixture(), 'inline-test'))->toBeArray();
+    expect((new CatalogFixtureValidator)->validate(validCatalogFixture(), 'inline-test'))->toBeArray();
 });
 
 // --- assessment fixtures --------------------------------------------------
 
 test('an attack no risk lists is rejected instead of seeding an unreachable node', function () {
-    $fixture = w76ValidAssessmentFixture();
+    $fixture = validAssessmentFixture();
 
-    // Declared, valued, defended — and named by nothing. Under the W22
+    // Declared, valued, defended — and named by nothing. Under the original
     // rules this passed: every downward reference resolves. It seeds a
     // `nodes` row with no `risk_attack` edge, so the assessment's node
     // count includes it and the tree the reader walks does not.
@@ -130,16 +130,16 @@ test('an attack no risk lists is rejected instead of seeding an unreachable node
  * The defence side of the same question, asserted as behaviour and
  * labelled with the rule that actually enforces it.
  *
- * W76 first added a symmetric "defence in no attack's defence_refs" loop
- * to assertNothingIsOrphaned() and mutation-testing found it dead:
+ * A symmetric "defence in no attack's defence_refs" loop
+ * was first added to assertNothingIsOrphaned() and mutation-testing found it dead:
  * neutering it left every test green, because a defence must have
- * non-empty `links` and the W22 cross-check already refuses a `links` key
+ * non-empty `links` and the original cross-check already refuses a `links` key
  * whose attack does not name the defence back. The loop was deleted; this
  * test stays, because the *behaviour* is what matters and it should keep
  * being true however it is enforced.
  */
-test('a defence no attack lists is rejected — by the W22 links cross-check, not by an orphan rule', function () {
-    $fixture = w76ValidAssessmentFixture();
+test('a defence no attack lists is rejected — by the links cross-check, not by an orphan rule', function () {
+    $fixture = validAssessmentFixture();
 
     $fixture['defences'][] = [
         'ref' => 'defence-orphan',
@@ -161,7 +161,7 @@ test('a defence no attack lists is rejected — by the W22 links cross-check, no
 });
 
 test('a risk listing the same attack twice is rejected', function () {
-    $fixture = w76ValidAssessmentFixture();
+    $fixture = validAssessmentFixture();
     $fixture['risks'][0]['attack_refs'] = ['attack-a', 'attack-a'];
 
     expect(fn () => (new AssessmentFixtureValidator)->validate($fixture, 'inline-test'))
@@ -169,7 +169,7 @@ test('a risk listing the same attack twice is rejected', function () {
 });
 
 test('an attack listing the same defence twice is rejected', function () {
-    $fixture = w76ValidAssessmentFixture();
+    $fixture = validAssessmentFixture();
     $fixture['attacks'][0]['defence_refs'] = ['defence-a', 'defence-a'];
 
     expect(fn () => (new AssessmentFixtureValidator)->validate($fixture, 'inline-test'))
@@ -201,7 +201,7 @@ test('a node with no description is rejected, at every level of the fixture', fu
     ];
 
     foreach ($cases as $level => $break) {
-        expect(fn () => (new AssessmentFixtureValidator)->validate($break(w76ValidAssessmentFixture()), 'inline-test'))
+        expect(fn () => (new AssessmentFixtureValidator)->validate($break(validAssessmentFixture()), 'inline-test'))
             ->toThrow(SeederFixtureException::class, '', "a fixture with no {$level} description was accepted");
     }
 });
@@ -212,7 +212,7 @@ test('a title or description longer than its column is rejected, not truncated m
     // 'description'". The limits are the nodes columns: 255 and 500
     // characters — characters, not bytes, so a string of multibyte
     // characters exactly at the limit must still pass.
-    $atLimit = w76ValidAssessmentFixture();
+    $atLimit = validAssessmentFixture();
     $atLimit['description'] = str_repeat('é', 500);
     $atLimit['defences'][0]['title'] = str_repeat('é', 255);
     (new AssessmentFixtureValidator)->validate($atLimit, 'inline-test');
@@ -238,7 +238,7 @@ test('a title or description longer than its column is rejected, not truncated m
     ];
 
     foreach ($cases as $field => $break) {
-        expect(fn () => (new AssessmentFixtureValidator)->validate($break(w76ValidAssessmentFixture()), 'inline-test'))
+        expect(fn () => (new AssessmentFixtureValidator)->validate($break(validAssessmentFixture()), 'inline-test'))
             ->toThrow(SeederFixtureException::class, 'the column holds', "an over-long {$field} was accepted");
     }
 });
@@ -246,7 +246,7 @@ test('a title or description longer than its column is rejected, not truncated m
 // --- catalogue fixtures ---------------------------------------------------
 
 test('a catalogue risk that bundles no attack is rejected', function () {
-    $fixture = w76ValidCatalogFixture();
+    $fixture = validCatalogFixture();
     $fixture['entries'][0]['children'] = [];
 
     expect(fn () => (new CatalogFixtureValidator)->validate($fixture, 'inline-test'))
@@ -254,7 +254,7 @@ test('a catalogue risk that bundles no attack is rejected', function () {
 });
 
 test('a catalogue attack that bundles no defence is rejected', function () {
-    $fixture = w76ValidCatalogFixture();
+    $fixture = validCatalogFixture();
     $fixture['entries'][1]['children'] = [];
 
     expect(fn () => (new CatalogFixtureValidator)->validate($fixture, 'inline-test'))
@@ -262,7 +262,7 @@ test('a catalogue attack that bundles no defence is rejected', function () {
 });
 
 test('a catalogue entry bundling the same child twice is rejected', function () {
-    $fixture = w76ValidCatalogFixture();
+    $fixture = validCatalogFixture();
     $fixture['entries'][1]['children'] = [
         ['ref' => 'defence-a', 'defaults' => ['strength_level_code' => 'moderate']],
         ['ref' => 'defence-a', 'defaults' => ['strength_level_code' => 'strong']],
@@ -274,7 +274,7 @@ test('a catalogue entry bundling the same child twice is rejected', function () 
 
 test('a catalogue entry with no description is rejected', function () {
     foreach ([0, 1, 2] as $index) {
-        $fixture = w76ValidCatalogFixture();
+        $fixture = validCatalogFixture();
         unset($fixture['entries'][$index]['description']);
 
         expect(fn () => (new CatalogFixtureValidator)->validate($fixture, 'inline-test'))
@@ -283,7 +283,7 @@ test('a catalogue entry with no description is rejected', function () {
 });
 
 test('a catalogue entry whose description is only whitespace is rejected too', function () {
-    $fixture = w76ValidCatalogFixture();
+    $fixture = validCatalogFixture();
     $fixture['entries'][2]['description'] = "  \n\t ";
 
     expect(fn () => (new CatalogFixtureValidator)->validate($fixture, 'inline-test'))
@@ -292,7 +292,7 @@ test('a catalogue entry whose description is only whitespace is rejected too', f
 
 // --- the shipped fixtures, held to the same rules -------------------------
 
-test('every shipped fixture satisfies the rules W76 added, not just the W22 ones', function () {
+test('every shipped fixture satisfies the rules added later, not just the original ones', function () {
     $assessment = new AssessmentFixtureValidator;
     $catalog = new CatalogFixtureValidator;
 

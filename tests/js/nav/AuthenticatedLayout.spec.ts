@@ -1,8 +1,8 @@
 /**
- * The layout's two jobs (W41): reserve the sidebar's gutter, and let a
+ * The layout's two jobs: reserve the sidebar's gutter, and let a
  * keyboard past it.
  *
- * The gutter assertion is the one that matters. D16's whole claim is that
+ * The gutter assertion is the one that matters. The claim is that
  * expanding the nav inside an assessment must not reflow the content, because
  * the chart lays out to the width it is given and someone is usually pointing
  * at it. jsdom has no layout engine, so this asserts the *mechanism* — the
@@ -12,6 +12,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import AuthenticatedLayout from '../../../resources/js/Layouts/AuthenticatedLayout.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const page = { props: {} as Record<string, unknown>, url: '/dashboard' };
 
@@ -44,7 +45,7 @@ beforeEach(() => {
 
 function render() {
     return mount(AuthenticatedLayout, {
-        global: { config: { globalProperties: { route } } },
+        global: { config: { globalProperties: routeProperties(route) } },
         slots: { default: '<p>page body</p>' },
     });
 }
@@ -75,7 +76,7 @@ describe('the gutter', () => {
             .trigger('click');
 
         // The panel is now on screen and the gutter has not moved. This is
-        // the assertion D16 exists for: expanding the nav must not re-lay-out
+        // the assertion this test exists for: expanding the nav must not re-lay-out
         // the chart underneath it.
         expect(gutter(wrapper).className).toContain('w-12');
         expect(gutter(wrapper).className).not.toContain('w-60');
@@ -129,5 +130,16 @@ describe('missing nav props', () => {
         page.props = {};
 
         expect(() => render()).not.toThrow();
+    });
+});
+
+describe('deployment notice', () => {
+    it('is rendered when the page carries one', () => {
+        page.props = { ...page.props, notice: 'Public demo' };
+        expect(render().get('[role="status"]').text()).toBe('Public demo');
+    });
+
+    it('is absent when it does not', () => {
+        expect(render().find('[role="status"]').exists()).toBe(false);
     });
 });

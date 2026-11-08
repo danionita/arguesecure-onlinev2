@@ -9,7 +9,7 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * The feed, the badge, and the second source (W47, item 15).
+ * The feed, the badge, and the second source (security.md §3.1c).
  *
  * Every query in NotificationController is scoped to
  * `$request->user()->notifications()`. There is no assessment in the route and
@@ -177,7 +177,7 @@ test('marking read never touches anyone else’s badge', function () {
 // --- the dashboard's other half --------------------------------------------
 
 /*
- * W42 left `mentions()` as a documented seam with a row shape. It is filled
+ * The dashboard left `mentions()` as a documented seam with a row shape. It is filled
  * from the notifications already sent, not by re-scanning comment bodies:
  * two implementations of "who was mentioned" would eventually disagree, and
  * the dashboard is the one nobody would check.

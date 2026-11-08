@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * The name of one admin-defined scale (W126, D93): a complete impact,
+ * The name of one admin-defined scale: a complete impact,
  * likelihood and strength calibration. The three `scales` rows it names are
  * found by `scales.set_key = key`; there is deliberately no foreign key.
  *

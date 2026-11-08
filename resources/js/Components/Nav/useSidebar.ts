@@ -1,6 +1,6 @@
 /**
  * Sidebar width: one persisted preference plus one contextual override
- * (W41, PLAN-2.2.md D16).
+ * (ui.md §2, Navigation).
  *
  * ## Why an assessment gets a rail
  *

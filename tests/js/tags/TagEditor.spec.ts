@@ -1,5 +1,5 @@
 /**
- * The label field on the Details tab (W43, item 18).
+ * The label field on the Details tab.
  *
  * The behaviour worth pinning is the part that is easy to get subtly wrong:
  * Enter has two meanings depending on whether the user has arrowed into the

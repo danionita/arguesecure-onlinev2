@@ -13,9 +13,8 @@ use App\Models\Scale;
 use App\Models\ScaleLevel;
 
 /*
- * The single most important correctness property in this package
- * (CLAUDE.md's W20 brief): a catalogue entry's `defaults` stores scale
- * level *codes*, never ids (schema.md §3.14), so the same entry must
+ * The single most important correctness property of the catalogue: an
+ * entry's `defaults` stores scale level *codes*, never ids (schema.md §3.14), so the same entry must
  * insert correctly into any assessment regardless of that assessment's
  * own calibration. This file proves it end to end — the same catalogue
  * entry, inserted into two assessments whose 'moderate' impact band means
@@ -27,7 +26,7 @@ use App\Models\ScaleLevel;
  * Builds an assessment whose impact scale is a single custom band with the
  * given code and representative value — deliberately not a realistic
  * multi-band calibration (ScaleValidator's §3.2 invariants are enforced on
- * save by a service this package does not own and does not call here, so
+ * save by a service that is not called here, so
  * nothing requires it), just enough for the code to resolve to a distinct,
  * assertable level id.
  *

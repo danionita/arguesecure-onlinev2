@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * Defence — **Cost**, and nothing else (W72 item 9; ui.md §7).
+ * Defence — **Cost**, and nothing else (ui.md §7).
  *
- * The tab is labelled Cost since W39 and until W72 it was not about cost. It
- * carried the status control, the transfer flag, a read-only strength summary
- * and a jump to the Strength tab; the two money fields it is named after were
- * a third of it. Three of those four have somewhere better to be:
+ * The tab is labelled Cost, but it used to be about much else. It carried
+ * the status control, the transfer flag, a read-only strength summary and a
+ * jump to the Strength tab; the two money fields it is named after were a
+ * third of it. Three of those four have somewhere better to be:
  *
  * - **Status and the transfer flag moved to Details.** Neither is a cost.
  *   They say what this defence *is* and where it has got to, which is the
@@ -15,8 +15,8 @@
  *   — and that tab is one click away on the same node. Restating it here as
  *   read-only prose plus a "go and edit it over there" link was the legacy
  *   indirection in miniature: two places showing one number, only one of them
- *   editable. W39's own ui.md text asked for that summary; W72 removes it
- *   from both the tab and the spec, deliberately and in the same commit.
+ *   editable. The spec once asked for that summary; it was removed from
+ *   both the tab and the spec, deliberately and together.
  *
  * What is left is capex, opex, and the annualised total that ties them
  * together through the assessment's amortisation period — the three things a

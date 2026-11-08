@@ -8,10 +8,9 @@ use App\Models\User;
 require_once __DIR__.'/Capture.php';
 
 /*
- * W116 (MFA) and W117 (SSO) dispatch SecurityEventOccurred and write no log
- * line of their own (PLAN-2.7-identity.md); this is the list they build
- * against, and each case is checked end to end through the dispatcher. When
- * those packages land they add a test per flow that the right event is
+ * Two-factor (MFA) and single sign-on (SSO) dispatch SecurityEventOccurred and
+ * write no log line of their own; this is the list they build against, and
+ * each case is checked end to end through the dispatcher. Those flows add a test per flow that the right event is
  * dispatched; the recording is covered here.
  */
 dataset('identity events', [

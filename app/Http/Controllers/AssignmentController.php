@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Assignees on a node (W46, item 16; PLAN-2.2.md D13).
+ * Assignees on a node (schema.md §3.11a, security.md §3.1b).
  *
  * ## Authorization is deliberately small
  *
@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Gate;
  * tests/Feature/Assignments rather than left to be inferred from the absence
  * of code.
  *
- * ## An assignee must already be a collaborator (D13)
+ * ## An assignee must already be a collaborator
  *
  * Assigning someone who cannot open the assessment produces a task nobody can
  * do and a name the team reads as a commitment. So the picker offers
@@ -115,12 +115,12 @@ class AssignmentController extends Controller
 
         $node->assignees()->syncWithoutDetaching([$target->id]);
 
-        // W47. Only on a genuine change: `syncWithoutDetaching` is a no-op for
+        // Only on a genuine change: `syncWithoutDetaching` is a no-op for
         // someone already assigned, and a no-op should not send a message.
         if (! $before) {
             app(Notifier::class)->nodeAssigned($node, $target, $request->user());
 
-            // W56, closing the third of W48's history gaps. An assignee moves
+            // Closes the third of the history page's gaps. An assignee moves
             // no figure, but "Dana was made responsible for this" is exactly
             // what a reader goes to a timeline for, and the same no-op guard
             // that stops a duplicate notification stops a duplicate row.

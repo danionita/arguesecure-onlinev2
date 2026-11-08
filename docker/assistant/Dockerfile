@@ -1,7 +1,7 @@
-# The assistant runtime (W50) with its launcher and model catalogue baked in
-# (W101, D63), so a deployment runs it from the published image alone.
+# The assistant runtime with its launcher and model catalogue baked in,
+# so a deployment runs it from the published image alone.
 #
-# The base is pinned by tag and digest (D56) and is the whole of llama.cpp
+# The base is pinned by tag and digest and is the whole of llama.cpp
 # here: this adds two files and changes no binary, flag or library, so the
 # 2.6 measurements in docs/spikes/2.6-models.md still describe what runs.
 # tools/spike/assistant/verify.sh reads the FROM line below to benchmark the

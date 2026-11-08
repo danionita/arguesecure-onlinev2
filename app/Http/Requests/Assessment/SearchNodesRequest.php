@@ -8,12 +8,12 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Suggestions for the add-a-child field (ui.md §3.3, W40).
+ * Suggestions for the add-a-child field (ui.md §3.3).
  *
  * Gated on `update`, not `view`. The endpoint exists to feed an edit, and a
  * read-only viewer — including anyone holding a share link or reading a
  * public assessment — has nothing to do with the answer. `is_public` grants
- * read only (CLAUDE.md), and "read" here would be an inventory of every node
+ * read only (security.md §3.1), and "read" here would be an inventory of every node
  * title in the assessment handed out one keystroke at a time.
  *
  * `type` is a fixed whitelist and is never used to build a class name

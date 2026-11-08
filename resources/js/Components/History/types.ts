@@ -1,6 +1,6 @@
 /**
- * Shapes returned by the W18 revision routes (routes/web.php's "W18 —
- * comments + history" block). `changes`' shape depends on `action`
+ * Shapes returned by the revision routes (routes/web.php's comments and
+ * history block). `changes`' shape depends on `action`
  * (schema.md §3.9): 'create'/'update' are field-keyed
  * `{ [field]: { from, to } }`; 'link'/'unlink'/'link_update' use
  * `{ other_uuid, other_title, pivot }`; 'move' and 'delete'/'restore' have

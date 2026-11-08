@@ -69,7 +69,7 @@ class StoreNodeReferenceRequest extends FormRequest
                 'required',
                 'string',
                 Rule::in(ReferenceValidator::kinds()),
-                // A control is what a defence implements (PLAN-2.7 D64), and
+                // A control is what a defence implements, and
                 // the coverage view reads defences only: a citation anywhere
                 // else would be one it silently never shows.
                 function (string $attribute, mixed $value, Closure $fail) use ($node): void {

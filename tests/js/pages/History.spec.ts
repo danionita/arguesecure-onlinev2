@@ -9,6 +9,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import History from '../../../resources/js/Pages/Assessment/History.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const post = vi.fn();
 const get = vi.fn();
@@ -107,7 +108,7 @@ function props(over: Record<string, unknown> = {}) {
 function render(over: Record<string, unknown> = {}) {
     return mount(History, {
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: {
                 AuthenticatedLayout: { template: '<div><slot /></div>' },
                 RestoreSnapshotDialog: {
@@ -117,7 +118,7 @@ function render(over: Record<string, unknown> = {}) {
                 },
             },
         },
-        props: props(over),
+        props: props(over) as never,
     });
 }
 

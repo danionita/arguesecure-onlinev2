@@ -1,5 +1,5 @@
 /**
- * W86 item 9: the settings page no longer edits the assessment's title or
+ * The settings page no longer edits the assessment's title or
  * description.
  *
  * They live on the root node and are edited there, in the tree — this screen
@@ -14,6 +14,7 @@ import { mount } from '@vue/test-utils';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import Settings from '../../../resources/js/Pages/Assessment/Settings.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const route = (name: string, uuid?: string | { assessment: string }) =>
     uuid
@@ -75,11 +76,11 @@ function page() {
         global: {
             stubs: {
                 AuthenticatedLayout: { template: '<div><slot /></div>' },
-                // Not under test here (W87's own territory) — stubbed so
+                // Not under test here (the scale cards are tested on their own) — stubbed so
                 // this file cannot fail on a prop shape that block owns.
                 ScaleCards: { template: '<div data-testid="scale-cards" />' },
             },
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
         },
     });
 }

@@ -8,13 +8,12 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
 /**
- * "You were mentioned in a comment" (W47, item 15).
+ * "You were mentioned in a comment".
  *
- * Database channel only. **No email** — that needs a mail configuration, a
- * digest policy and an unsubscribe path, none of which exist here, and a
- * half-built one is worse than none. Stated in PLAN-2.2.md's brief rather than
- * discovered, and repeated here because this is the class someone would add
- * `'mail'` to.
+ * Database channel only. Email is not a channel of this class: when an
+ * administrator allows it, `App\Domain\Mail\NotificationMail` listens for the
+ * sent notification and mails a coalesced, link-only digest, with the gates
+ * and the unsubscribe it needs. Do not add `'mail'` here.
  *
  * The payload is denormalised on purpose. A notification is a record of what
  * was true when it was sent: the excerpt is the comment as it read at the

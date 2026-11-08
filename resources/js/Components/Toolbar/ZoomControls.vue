@@ -4,7 +4,7 @@
  * and `Ctrl +/-/0` are the other two ways to reach the same three
  * functions — this component only supplies the button affordance; the
  * wheel handler lives on the canvas element itself (useCanvas's
- * `handleWheel`) and the keyboard shortcuts are W14's to bind.
+ * `handleWheel`) and the keyboard shortcuts are bound elsewhere (ui.md §4).
  */
 import IconButton from '@/Components/UI/IconButton.vue';
 import { CANVAS_ZOOM_MAX, CANVAS_ZOOM_MIN } from '@/composables/useCanvas';
@@ -15,7 +15,7 @@ const props = defineProps<{
     zoom: number;
     /**
      * Which view is being zoomed. The buttons are identical; what they do is
-     * not (PLAN-2.2.md D9), so the control has to say which it is or a user
+     * not, so the control has to say which it is or a user
      * who zooms in the list and then switches to the chart will think it
      * broke.
      */

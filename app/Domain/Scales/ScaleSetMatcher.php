@@ -7,7 +7,7 @@ use App\Models\Scale;
 use Illuminate\Support\Collection;
 
 /**
- * Which admin scale an assessment's bands equal, if any (W126, D93).
+ * Which admin scale an assessment's bands equal, if any.
  *
  * Compared by label, bounds and representative, in order, per kind, never by
  * id: an assessment holds its own copy, so ids never match. Run only at the

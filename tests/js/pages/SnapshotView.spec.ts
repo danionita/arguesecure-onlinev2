@@ -1,5 +1,5 @@
 /**
- * `Snapshots/View.vue` — a frozen version read in the editor's own views (W63).
+ * `Snapshots/View.vue` — a frozen version read in the editor's own views.
  *
  * The page's whole safety story is that nothing on it can be mistaken for, or
  * act on, the live assessment. These specs pin that: the banner and its
@@ -16,8 +16,12 @@ import {
     type AssessmentStore,
 } from '../../../resources/js/stores/assessmentStore';
 import { makeFixtureInit } from '../composables/support/fixture';
+import { routeProperties } from '../support/routeProperties';
+
+const inertiaPage = { props: {} as Record<string, unknown> };
 
 vi.mock('@inertiajs/vue3', () => ({
+    usePage: () => inertiaPage,
     Head: {
         name: 'Head',
         props: ['title'],
@@ -78,7 +82,7 @@ function render(over: Record<string, unknown> = {}) {
     return mount(SnapshotView, {
         props: props(over),
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: {
                 ChartView: ChartStub,
                 TreeNode: {
@@ -276,5 +280,15 @@ describe('view modes', () => {
         expect(
             localStorage.getItem('arguesecure:viewmode:anon:assessment-uuid'),
         ).toBeNull();
+    });
+});
+
+describe('deployment notice', () => {
+    it('is shown above the page when the operator sets one', () => {
+        inertiaPage.props = { notice: 'Public demo' };
+        const wrapper = render();
+        expect(wrapper.get('[role="status"]').text()).toBe('Public demo');
+        inertiaPage.props = {};
+        expect(render().find('[role="status"]').exists()).toBe(false);
     });
 });

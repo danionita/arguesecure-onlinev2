@@ -1,5 +1,5 @@
 /**
- * `Tooltip` grew a second slot in W69 (PLAN-2.4.md item 11), and the whole
+ * `Tooltip` grew a second slot (rich content beside the plain `text` prop), and the whole
  * risk of that change is regression: it is one of the most-used components in
  * this codebase, and every existing caller passes a `text` prop and nothing
  * else. So the first group here asserts the **old** behaviour is untouched,
@@ -61,7 +61,7 @@ describe('the text prop, which every existing caller uses', () => {
     });
 });
 
-describe('the content slot (W69)', () => {
+describe('the content slot', () => {
     it('renders block children, which a text prop cannot do', async () => {
         const wrapper = mountTooltip({
             props: { text: 'ignored' },

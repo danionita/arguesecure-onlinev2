@@ -1,20 +1,18 @@
 /**
  * Drag and drop: reorder siblings, re-parent across a different parent
- * (ui.md §3, PLAN.md W14). Ordering lives on the edge (schema.md
+ * (ui.md §3). Ordering lives on the edge (schema.md
  * "ordering lives on the edge"), so a drag persists as either a same-parent
  * `reorder` or a cross-parent `move` — see the two routes appended to
- * routes/web.php's W14 block for why those exist at all: W12's merged
- * NodeController has no endpoint for either, and this package cannot add a
- * new controller (only UndoController.php is in its ownership), so they
- * are implemented as small closures there that delegate to
+ * routes/web.php's undo/reorder block for why those exist at all:
+ * NodeController has no endpoint for either, so they are implemented as
+ * small closures there that delegate to
  * App\Domain\Structure\ReorderService / LinkService.
  *
- * Wiring (W27 defect 3): W14 shipped this composable with nothing importing
- * it, because binding `draggable` needs a template change in
- * TreeNode.vue/NodeCard.vue, which W14 did not own — so the product had no
- * reordering or re-parenting affordance at all. Assessment/Show.vue now
- * creates one instance and `provide()`s it under DRAG_DROP_KEY; TreeNode
- * derives each occurrence's DragPayload and NodeCard spreads
+ * Wiring: this composable once shipped with nothing importing it, because
+ * binding `draggable` needs a template change in TreeNode.vue/NodeCard.vue,
+ * so the product had no reordering or re-parenting affordance at all.
+ * Assessment/Show.vue now creates one instance and `provide()`s it under
+ * DRAG_DROP_KEY; TreeNode derives each occurrence's DragPayload and NodeCard spreads
  * `dragProps(payload)` onto its own root element, which is both the drag
  * source and the drop target.
  *
@@ -42,7 +40,7 @@ export interface DragPayload {
     /**
      * The edge scope this node can *parent*, if any — a risk accepts
      * `risk_attack`, an attack accepts `attack_defence`, a defence accepts
-     * nothing (W38).
+     * nothing.
      *
      * The list view's gesture is dropping onto a **sibling**, which says both
      * where to go and in what order. The chart has no sibling to aim at across
@@ -112,7 +110,7 @@ export function dragPayloadFor(
 
 /**
  * A cross-parent drop that has landed and is waiting on the user to say what
- * they meant (W38, PLAN-2.2.md D11).
+ * they meant.
  *
  * The gesture is ambiguous and the two readings are genuinely different
  * mutations, so the composable **stops** here rather than guessing. `Move`
@@ -316,9 +314,9 @@ export function useDragDrop(store: AssessmentStore): UseDragDrop {
     }
 
     /**
-     * The other half of D11: keep the source edge and add a second one, so the
+     * The other half of the choice: keep the source edge and add a second one, so the
      * node now belongs in both places. Appended at the destination — ordering
-     * lives on the edge (CLAUDE.md), so a node arriving under a new parent has
+     * lives on the edge (schema.md §3.5), so a node arriving under a new parent has
      * no position there to inherit.
      */
     async function link(
@@ -406,7 +404,7 @@ export function useDragDrop(store: AssessmentStore): UseDragDrop {
             },
             onDragover: (event: DragEvent) => {
                 if (!dragging) return;
-                // W38: the refusal moved here from onDrop. A cross-type drop
+                // The refusal lives here, not in onDrop. A cross-type drop
                 // (an attack onto a defence, say) used to be accepted by the
                 // cursor and then silently do nothing — the user saw a
                 // "yes, drop here" affordance and got no result and no
@@ -507,7 +505,7 @@ export function useDragDrop(store: AssessmentStore): UseDragDrop {
                     (payload.scope === 'risk_attack' ||
                         payload.scope === 'attack_defence')
                 ) {
-                    // Cross-parent drop. W38 stops here and asks (D11): the
+                    // Cross-parent drop. Stop here and ask: the
                     // gesture is ambiguous, and moving when the user meant
                     // link silently destroys an edge they wanted to keep.
                     pending.value = {

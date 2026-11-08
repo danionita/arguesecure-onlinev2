@@ -3,7 +3,7 @@
 namespace App\Domain\Snapshots;
 
 /**
- * What a restore actually did (W61).
+ * What a restore actually did.
  *
  * Returned rather than logged, because every number here is something the
  * person who pressed the button needs to see afterwards: a restore is the most
@@ -14,7 +14,7 @@ namespace App\Domain\Snapshots;
  * restore can be *incomplete* rather than wrong, and all three are surfaced on
  * the page instead of being swallowed. See SnapshotRestorer for what each one
  * means. `unlabelled` is always zero for a snapshot at schema v2 or above,
- * which is the version that started carrying labels (W62) — the field stays
+ * which is the version that started carrying labels — the field stays
  * because v1 snapshots do not stop existing when the format moves on.
  */
 final readonly class RestoreOutcome

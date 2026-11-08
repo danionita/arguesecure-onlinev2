@@ -11,27 +11,26 @@ use App\Models\NodeRevision;
 use App\Models\User;
 
 /**
- * PLAN.md Phase 2's "History\RevisionRecorder" (schema.md §3.9): an
+ * The recorder of field edits (schema.md §3.9): an
  * immutable, per-field change log written automatically whenever a node's
  * tracked fields change. All fields dirtied by one save land in a single
  * `node_revisions` row (`changes` is `{"field": {"from": x, "to": y}, …}`,
  * schema.md §3.9), which is what makes "one user action that touches
- * several fields read as one entry" (PLAN.md Phase 2) true without any
+ * several fields read as one entry" true without any
  * grouping machinery.
  *
  * Deliberately narrow: only ordinary field edits are recorded here
  * (`action = 'update'`). Node creation and deletion are NOT recorded —
  * schema.md §3.10 draws the line at "only structural changes enter [the
  * undo] stack", and node_revisions' sibling mechanism,
- * `assessment_operations` (History\UndoService, a separate, earlier
- * package), already owns create/delete/move/link as reversible structural
+ * `assessment_operations` (History\UndoService), already owns create/delete/move/link as reversible structural
  * operations with their own summaries. This class never writes to
  * `assessment_operations` and never reads from it — `operation_id` is
  * null for every ordinary edit, which is exactly what an ungrouped field
  * edit should record (NodeRevisionRevertTest's own worked case: "field
  * edits never group under a structural operation").
  *
- * **W61 added the one exception**: a caller that is already performing a
+ * **Snapshot restore is the one exception**: a caller that is already performing a
  * structural operation can wrap its work in withinOperation(), and the
  * revisions it causes are stamped with that operation's id so the timeline
  * folds them into a single entry. A snapshot restore is the only such
@@ -54,16 +53,16 @@ class RevisionRecorder
     ];
 
     /**
-     * The assessment-level settings a revision tracks (W60).
+     * The assessment-level settings a revision tracks.
      *
      * Title and description are deliberately absent, and not because they
-     * never occurred to whoever wrote this list. Through W44–2.4,
+     * never occurred to whoever wrote this list. Until 2.5,
      * `AssessmentSettingsController` also wrote both to the **root node**,
      * and that write already went through `recordUpdate()` via the ordinary
      * `NodeObserver` path — so listing them here too would have recorded one
      * edit twice, which is why this class never tracked them.
      *
-     * **W86 (item 9) removed that write entirely.** Title and description
+     * **That write has since been removed entirely.** Title and description
      * live on the root node and are edited there, in the tree; the settings
      * screen no longer carries its own copies at all, and
      * `UpdateAssessmentSettingsRequest` now `prohibited`s both fields rather
@@ -90,7 +89,7 @@ class RevisionRecorder
 
     /**
      * The structural operation every revision written right now belongs to
-     * (W61), or null for the ordinary case.
+     * (a snapshot restore), or null for the ordinary case.
      *
      * **Static on purpose, and it is the only static state in this class.**
      * The writer of `node_revisions` is NodeObserver's injected instance;
@@ -111,8 +110,8 @@ class RevisionRecorder
      * Runs $work with every revision it causes stamped with $operationId.
      *
      * `TimelineReader` has folded revisions sharing an `operation_id` into one
-     * entry since W48 — "several revisions sharing an operation_id were one
-     * user action and read as one entry" — and until W61 nothing produced any,
+     * entry since the history feed was built — "several revisions sharing an operation_id were one
+     * user action and read as one entry" — and until snapshot restore nothing produced any,
      * because ordinary field edits are already one row per save. A snapshot
      * restore is the first thing that touches fifty nodes on one click, and
      * fifty timeline entries for it would be a log file rather than a history.
@@ -141,8 +140,7 @@ class RevisionRecorder
      * that dirty set can include audit columns (`updated_by`) that changed
      * even though nothing a user would call "a field" did. Filtering to
      * trackedFields() below is what makes a true no-op save (the same
-     * title re-saved, only the acting user differs) write nothing, per
-     * this package's brief.
+     * title re-saved, only the acting user differs) write nothing.
      *
      * Must run before the model's `updated_at`/original attributes are
      * resynced — NodeObserver's `updated` hook fires from inside
@@ -182,15 +180,15 @@ class RevisionRecorder
     }
 
     /**
-     * Records a change to an attack-defence edge (W56, closing the first of
-     * W48's audit gaps).
+     * Records a change to an attack-defence edge (the first gap the audit of
+     * unrecorded changes found).
      *
      * Strength is a direct multiplicand in `ALE = ARO × Impact × Π(1 −
      * strength)` — one of the three numbers this tool computes with — so a
      * history that could not see it could not reconstruct a past total, and a
      * "revert" built on it would restore the graph's shape while leaving
      * today's strengths in place. That is why this is here and why it was
-     * blocking D15.
+     * blocking revert from being safe.
      *
      * The `changes` shape is the one schema.md §3.9 already reserved for link
      * actions: `{"other_uuid":…, "other_title":…, "pivot": {field: {from, to}}}`.
@@ -248,7 +246,7 @@ class RevisionRecorder
 
     /**
      * Records a change that is not a column on the node — a label attached, a
-     * person assigned (W56, the second and third audit gaps).
+     * person assigned (the second and third gaps the audit found).
      *
      * Written in the ordinary `{field: {from, to}}` shape under `action =
      * 'update'`, so the timeline renders it with no special case: "labels" and
@@ -282,11 +280,11 @@ class RevisionRecorder
     }
 
     /**
-     * Records a change to the assessment's own settings (W60, closing the
-     * fourth of W48's audit gaps).
+     * Records a change to the assessment's own settings (the fourth gap the
+     * audit found).
      *
      * `amortization_years` divides every capital cost in the report, which is
-     * why W44's controller bumps `calc_version` for it and for nothing else on
+     * why the settings controller bumps `calc_version` for it and for nothing else on
      * that screen. A history that could not see it would restore the nodes and
      * leave the divisor at today's value — the "looks restored and is quietly
      * wrong" failure the whole audit exists to prevent.
@@ -477,7 +475,7 @@ class RevisionRecorder
      * group the resulting flood under. Reading the model's own $fillable
      * rather than duplicating a second hardcoded field list keeps this in
      * sync with whatever UpdateNodeRequest actually allows, the same
-     * reasoning the W18 revert closure already used for its own allowlist
+     * reasoning the original revert closure used for its own allowlist
      * check (routes/web.php, now App\Domain\History\RevisionReverter).
      *
      * @return list<string>

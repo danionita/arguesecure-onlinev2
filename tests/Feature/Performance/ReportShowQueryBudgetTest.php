@@ -7,21 +7,20 @@ use App\Models\Risk;
 use Illuminate\Support\Facades\DB;
 
 /**
- * W24 (performance). CLAUDE.md: "Eager-load everything... a whole assessment
+ * Performance review. The rule is "Eager-load everything... a whole assessment
  * must load in four queries" and "the assessment page, the report,
- * snapshots, the catalogue and the dashboard all load data too" — this
- * package's brief was to verify that claim against every one of those
- * pages, not just AssessmentGraphLoader itself. The tree editor already has
- * this shape of test (tests/Feature/Assessment/AssessmentShowTest.php,
- * "the show route query count does not grow with the number of nodes"),
- * added by W12. ReportController (W17) had no equivalent — this fills that
- * gap without editing ReportController.php itself, which this package does
- * not own (W24's owned paths are docker/**, Dockerfile, vite.config.ts,
- * tests/Feature/Performance/** and non-security config — not
- * app/Http/Controllers/**).
+ * snapshots, the catalogue and the dashboard all load data too" — the review
+ * was to verify that claim against every one of those pages, not just
+ * AssessmentGraphLoader itself. The tree editor already has this shape of
+ * test (tests/Feature/Assessment/AssessmentShowTest.php, "the show route
+ * query count does not grow with the number of nodes"). The report page had
+ * no equivalent — this fills that gap without editing ReportController.php
+ * itself, which the performance review did not own (its paths were docker/**,
+ * Dockerfile, vite.config.ts, tests/Feature/Performance/** and non-security
+ * config — not app/Http/Controllers/**).
  *
  * Verified by neutering: could not be run in this sandbox (no MariaDB/Redis
- * available — see the W24 performance report), so this was not executed or
+ * available — see the performance report), so this was not executed or
  * confirmed red-then-green by temporarily removing an eager load. It
  * mirrors the already-passing AssessmentShowTest pattern closely enough
  * that the same DB::listen technique is trusted to work, but this specific
@@ -84,7 +83,7 @@ test('the report page query count does not grow with the number of nodes', funct
  * a legitimate, deliberate query addition, but will still catch an N+1
  * introduced by a careless future change.
  *
- * **Raised from 12 to 13 by W47**, deliberately and after reading the query
+ * **Raised from 12 to 13 for the sidebar's notification count**, deliberately and after reading the query
  * log rather than by nudging until green. The added query is the sidebar's
  * unread-notification count, a shared Inertia prop and therefore one indexed
  * `select count(*) from notifications` on every authenticated request in the
@@ -94,16 +93,16 @@ test('the report page query count does not grow with the number of nodes', funct
  * badge showing the wrong number. `notifications_unread_index` is what keeps
  * it a seek.
  *
- * **Raised from 13 to 15 by W107** (D71): sessions now live in the database,
+ * **Raised from 13 to 15 for database-backed sessions**: sessions now live in the database,
  * so every authenticated request reads and writes its own `sessions` row, a
  * `select` and an `update`. Both are a primary-key lookup and flat in the
  * size of the assessment; the alternative is the Redis driver under which no
  * session could be revoked.
  *
- * This file belongs to W24. It is edited here because a budget that cannot be
+ * The budget is raised here because a budget that cannot be
  * raised for a deliberate addition stops being a budget and starts being an
  * obstacle people route around — and this is the second time it has caught a
- * real cost (W44's lazy-loaded root title, which was removed rather than
+ * real cost (a lazy-loaded root title, which was removed rather than
  * budgeted for).
  */
 test('the report page issues no more than 15 queries for a small assessment', function () {

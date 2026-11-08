@@ -6,12 +6,11 @@ use App\Domain\Assistant\Availability;
 use App\Domain\Assistant\Client;
 
 /**
- * Reads the help corpus into a freshly started runtime, once
- * (PLAN-2.6.md D57).
+ * Reads the help corpus into a freshly started runtime, once.
  *
  * ## Why
  *
- * Job A sends the whole help corpus as a fixed prefix (D21), so every question
+ * Job A sends the whole help corpus as a fixed prefix, so every question
  * after the first reuses it from the runtime's cache — 6.5–17s instead of
  * 76–136s on the deployment host (docs/spikes/2.6-models.md). But the cache
  * lives in the runtime's memory, and a restart empties it: the first person to
@@ -29,7 +28,7 @@ use App\Domain\Assistant\Client;
  *
  * Other jobs do not undo it: the runtime keeps the corpus in its host-RAM
  * prompt cache when a suggestion or a summary takes the slot, and restores it
- * for the next question (measured; `--cache-ram`, D56).
+ * for the next question (measured; `--cache-ram`).
  *
  * **Known gap, accepted:** if someone asks for a suggestion or a summary
  * before the first scheduler tick after a start, the slot has an `id_task`

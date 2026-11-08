@@ -1,6 +1,5 @@
 /**
- * `UI/Tabs.vue` on its own, without the node modal around it (W71 items 1
- * and 16).
+ * `UI/Tabs.vue` on its own, without the node modal around it.
  *
  * The panel-laziness assertions that matter to the *product* live in
  * tests/js/nodeModal/shell.spec.ts, where a real modal with eight real tabs
@@ -50,7 +49,7 @@ function mountTabs() {
     return mount(Host, { attachTo: document.body });
 }
 
-describe('the strip wraps rather than scrolls (item 16, D30)', () => {
+describe('the strip wraps rather than scrolls', () => {
     it('lays the tablist out with flex-wrap and no horizontal scroller', () => {
         const wrapper = mountTabs();
         const classes = wrapper.get('[role="tablist"]').classes();

@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
  * accounts and password resets. Never persisted in plaintext anywhere —
  * the caller must hash it immediately and hand the plaintext back to the
  * admin exactly once, for on-screen display or the printable credential
- * sheet (ui.md §10, CLAUDE.md "never write a secret ... into any file").
+ * sheet (ui.md §10); no secret is ever written into a file.
  */
 class TemporaryPassword
 {

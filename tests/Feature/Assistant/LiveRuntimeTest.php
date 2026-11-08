@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The one test that talks to a real model (W59).
+ * The one test that talks to a real model.
  *
  * ## Why it exists, and why it is opt-in
  *

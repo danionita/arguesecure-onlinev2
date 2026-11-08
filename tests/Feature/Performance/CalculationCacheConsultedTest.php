@@ -9,9 +9,9 @@ use App\Models\Attack;
 use App\Models\Risk;
 
 /**
- * W24 (performance) brief, verbatim: "confirm CalculationCache is actually
- * consulted, and that the calc_version bump invalidates it. A cache that
- * never hits is worse than no cache."
+ * The requirement: confirm CalculationCache is actually consulted, and that
+ * the calc_version bump invalidates it. A cache that never hits is worse than
+ * no cache.
  *
  * It does not hold. `App\Domain\Calculation\CalculationCache::get()` has
  * exactly one caller in the whole codebase: its own test file
@@ -29,19 +29,18 @@ use App\Models\Risk;
  * overhead with no offsetting saving anywhere.
  *
  * This is a real defect, but the controllers that would need to change
- * (AssessmentController.php is W12's, ReportController.php is W17's) are
- * outside this package's owned paths (docker/**, Dockerfile,
- * vite.config.ts, tests/Feature/Performance/**, non-security config) — W24's
- * own rule is "do not fix it silently... pin it as a failing test and
- * report it." This test is that pin. It is expected to fail until a future
- * package wires AssessmentController::show (or a shared helper both it and
+ * (AssessmentController.php, ReportController.php) are outside the
+ * performance work's remit (docker/**, Dockerfile, vite.config.ts,
+ * tests/Feature/Performance/**, non-security config) — its own rule is
+ * "do not fix it silently... pin it as a failing test and report it." This test is that pin. It is expected to fail until a later
+ * change wires AssessmentController::show (or a shared helper both it and
  * ReportController call through) to check CalculationCache::get() before
  * calling RiskCalculator::compute(), and to call ->put() itself on a miss
  * so a cold cache is filled by the read path too, not only by the
  * debounced recalculation job.
  *
  * Could not be run in this sandbox — no MariaDB/Redis available (see the
- * W24 performance report) — so this has not been executed or confirmed to
+ * performance report) — so this has not been executed or confirmed to
  * fail for the reason described above rather than some incidental setup
  * error. It must be run for real (locally with the stack up, or in CI)
  * before anyone treats its outcome as evidence either way.
@@ -70,7 +69,7 @@ test('a warm CalculationCache entry is consulted by the assessment show route in
     $graph = app(AssessmentGraphLoader::class)->load($assessment);
     $results = app(RiskCalculator::class)->compute($graph);
     // fresh(): the factories above bumped calc_version in the database, and
-    // put() keeps one entry per assessment (W109), so a write under the
+    // put() keeps one entry per assessment, so a write under the
     // model's stale version would replace the entry the request reads.
     (new CalculationCache)->put($assessment->fresh(), $results);
 
@@ -104,7 +103,7 @@ test('a warm CalculationCache entry is consulted by the assessment show route in
  * without also checking calc_version is unchanged (e.g. a naive
  * `Redis::get('as:calc:'.$assessment->id)` ignoring the version segment),
  * a stale cached total would be served after an edit — silently wrong
- * numbers on a security tool, which CLAUDE.md is explicit must never
+ * numbers on a security tool, which must never
  * happen ("never coerced... because that would understate risk"). This
  * pins that the *key itself* changes on mutation (CalculationCache::key()
  * already does this correctly per

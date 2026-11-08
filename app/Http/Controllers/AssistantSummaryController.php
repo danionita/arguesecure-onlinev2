@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Job C — asking for a drafted executive summary (PLAN-2.3-ai.md W54).
+ * Job C — asking for a drafted executive summary (docs/ASSISTANT.md).
  *
  * ## It queues and returns. It writes nothing.
  *
@@ -42,7 +42,7 @@ class AssistantSummaryController extends Controller
         Availability $availability,
         GenerationMonitor $monitor,
     ): JsonResponse {
-        // The feature's own switch (W87, D48), passed by name. Availability
+        // The feature's own switch, passed by name. Availability
         // still requires the deployment runtime, the instance switch and a
         // healthy probe on top of it — this can only ever subtract.
         if (! $availability->isAvailable(Availability::FEATURE_SUMMARY)) {
@@ -65,7 +65,7 @@ class AssistantSummaryController extends Controller
             ], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
-        // W58. Cleared here rather than in the job, and that is what makes a
+        // Cleared here rather than in the job, and that is what makes a
         // queued draft cancellable before it starts: the job may not begin for
         // minutes, and a Stop pressed during that gap must survive until it
         // does. See GenerationMonitor::reset().

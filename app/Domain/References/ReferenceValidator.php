@@ -23,7 +23,7 @@ final class ReferenceValidator
     /** Kinds whose URL is derived from the identifier, never taken from input. */
     public const DERIVED_KINDS = ['cve', 'cwe', 'capec', 'attack_technique', 'control'];
 
-    /** Kinds only a defence may carry (PLAN-2.7 D64). */
+    /** Kinds only a defence may carry. */
     public const DEFENCE_ONLY_KINDS = ['control'];
 
     /** Kinds that carry their own user-supplied URL. */
@@ -64,7 +64,7 @@ final class ReferenceValidator
      */
     public static function isValidIdentifier(string $kind, string $identifier): bool
     {
-        // `control` has no single pattern: the framework picks one (D64).
+        // `control` has no single pattern: the framework picks one.
         if ($kind === 'control') {
             return ControlId::parse($identifier) !== null;
         }
@@ -118,7 +118,7 @@ final class ReferenceValidator
     }
 
     /**
-     * The framework's page, never the control's (D64). Only reached after
+     * The framework's page, never the control's. Only reached after
      * validation, so an unparseable identifier here is a caller's bug.
      */
     private static function controlUrl(string $identifier): string

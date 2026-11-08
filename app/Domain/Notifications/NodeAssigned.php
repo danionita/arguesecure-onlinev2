@@ -8,12 +8,12 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
 /**
- * "A node was assigned to you" (W47, item 15; the second of the feed's two
+ * "A node was assigned to you" (the second of the feed's two
  * sources).
  *
- * Database channel only, for the reason in MentionedInComment.
+ * Database channel only, for the reason in MentionedInComment (email is a listener, not a channel).
  *
- * Being assigned still grants nothing (W46, security.md §3.1b). This
+ * Being assigned still grants nothing (security.md §3.1b). This
  * notification tells someone a node is now theirs to look at; whether they can
  * open it is decided by their collaborator role, and the assign route already
  * refuses to name anyone who has no access at all.

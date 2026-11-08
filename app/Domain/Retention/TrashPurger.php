@@ -7,7 +7,7 @@ use Carbon\CarbonInterface;
 use Throwable;
 
 /**
- * The scheduled purge security.md §12 promised and nothing ran until W113:
+ * The scheduled purge security.md §12 promised, which nothing ran until the trash existed:
  * erases every assessment deleted longer ago than `trash_retention_days`.
  *
  * One transaction per assessment, not one for the run: a purge that fails on

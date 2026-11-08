@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Assessment settings (W44, item 12; ui.md §8).
+ * Assessment settings (ui.md §8).
  *
  * One screen for the things that were scattered or absent. The amortisation
  * period and the currency have been columns on `assessments` since the
@@ -11,7 +11,7 @@
  * ## Two of these are display-only, and the screen says so
  *
  * Currency and risk tolerance change how figures are *presented* and never
- * what they are (PLAN-2.2.md D14). That is easy to misread as "the tool will
+ * what they are. That is easy to misread as "the tool will
  * convert my numbers" or "the tool will tell me which risks are acceptable",
  * and either misreading produces a report someone acts on. So each says what
  * it does in the field's own help text rather than in documentation nobody
@@ -21,11 +21,11 @@
  * capital cost is spread over it — so it is grouped apart from the two that
  * do not, and its help text says which figures move.
  *
- * ## No title or description here (W86, item 9)
+ * ## No title or description here
  *
  * They live on the root node and are edited there, in the tree. This screen
  * used to carry its own copies, which is the two-editors-for-one-field
- * mistake CLAUDE.md's history rules warn about — and the write actually went
+ * mistake the history logs (schema.md §3.9) invite — and the write actually went
  * through `NodeObserver`/`RevisionRecorder` like any other node edit, so the
  * history page was recording this screen's title/description saves from a
  * second place on top of the tree's own. `UpdateAssessmentSettingsRequest`
@@ -52,13 +52,13 @@ const props = defineProps<{
     maxAmortizationYears: number;
     /**
      * The three scales in full, not the read-only summary this page carried
-     * until W87. They are edited here now (D46) — the calibration screen and
+     * until the scales moved here. They are edited here now — the calibration screen and
      * its route are gone, because a screen that still answers its URL after
      * its entry points are removed is how a second, divergent editor survives
      * a consolidation.
      */
     scales: Record<string, ScaleDetail | null>;
-    /** Every admin-defined scale, in full (W126), and the one these bands were last set to. */
+    /** Every admin-defined scale, in full, and the one these bands were last set to. */
     scaleSets: ScaleSetDetail[];
     scaleSetKey: string | null;
     topBandMultiplier: number;

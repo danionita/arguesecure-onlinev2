@@ -6,9 +6,9 @@ use App\Models\Tag;
 use App\Models\User;
 
 /*
- * Labels (W43, item 18).
+ * Labels.
  *
- * The `tags` and `node_tag` tables have been in the schema since W1 with
+ * The `tags` and `node_tag` tables have been in the schema from the start with
  * nothing above them — no controller, no store field, and a filter in
  * `useFilters.ts` that was fully implemented and had nothing to filter. These
  * cover the four properties that make labels safe to have: they are created
@@ -161,7 +161,7 @@ test('a viewer is refused, and a read-only share grants no labelling either', fu
     labelMember($assessment, $viewer, 'viewer');
 
     // A label is an edit to the assessment that everyone sees, not a personal
-    // bookmark — and `is_public` grants read only (CLAUDE.md).
+    // bookmark — and `is_public` grants read only (security.md §3.1).
     $this->actingAs($viewer)
         ->postJson(route('assessments.nodes.tags.store', [$assessment->uuid, $node->uuid]), ['name' => 'PCI'])
         ->assertForbidden();
@@ -207,9 +207,9 @@ test('duplicating an assessment carries the labels and which nodes wore them', f
 
     $copy = Assessment::query()->where('id', '>', $assessment->id)->latest('id')->firstOrFail();
 
-    // AssessmentCloner has copied the *vocabulary* since W6 and never the
+    // AssessmentCloner has copied the *vocabulary* since the cloner was written and never the
     // `node_tag` rows, so a copy arrived with every label defined and none
-    // of them applied. That was unreachable until this package, because
+    // of them applied. That was unreachable until labels could be attached, because
     // nothing could attach a tag to a node; it becomes silent data loss the
     // moment something can.
     expect($copy->tags)->toHaveCount(1);

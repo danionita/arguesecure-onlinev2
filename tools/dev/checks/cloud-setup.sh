@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# The setup script for ArgueSecure's Claude Code cloud environment (W100):
+# The setup script for ArgueSecure's Claude Code cloud environment:
 # paste this file's contents into Project settings → Environment → the
 # environment's **Setup script** (docs/CLAUDE-PROJECT.md, step 5).
 #
@@ -22,7 +22,7 @@ need=()
 for pair in pdo_mysql:mysql redis:redis intl:intl bcmath:bcmath zip:zip mbstring:mbstring xml:xml curl:curl gd:gd; do
     php -m | grep -qix "${pair%%:*}" || need+=("php8.3-${pair#*:}")
 done
-# pcov is the coverage driver for `checks.sh coverage` (W119).
+# pcov is the coverage driver for `checks.sh coverage`.
 php -m | grep -qix pcov || need+=(php8.3-pcov)
 command -v shellcheck >/dev/null || need+=(shellcheck)
 if [ ${#need[@]} -gt 0 ]; then

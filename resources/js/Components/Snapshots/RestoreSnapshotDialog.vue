@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The warning in front of a restore (W61).
+ * The warning in front of a restore.
  *
  * One component, used from both places a restore can be started — the version
  * list and the page for one version — because the two must not be able to
@@ -19,7 +19,7 @@
  *
  * ## The middle line depends on the snapshot, not on the app
  *
- * W62 made labels and assignees part of the frozen shape, from `schemaVersion`
+ * Labels and assignees are part of the frozen shape from `schemaVersion`
  * 2 onward. Snapshots taken before that still exist and still restore, and
  * they still cannot bring a deleted node's labels back. So this dialog reads
  * the version of the snapshot in front of it rather than stating one rule for

@@ -6,7 +6,7 @@ use App\Models\Assessment;
 use Illuminate\Support\Facades\Redis;
 
 /**
- * Redis cache around RiskCalculator, deferred from W7 to W16 because the
+ * Redis cache around RiskCalculator, kept out of the engine because the
  * engine itself must stay pure — no Eloquent, no I/O, no clock, no
  * randomness (RiskCalculator.php's own docblock, enforced by an
  * architecture test) — and a cache is I/O by definition. This class is
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Redis;
  * by App\Observers\Concerns\TriggersRecalculation on every node, pivot or
  * scale change, and that new version is part of the cache key itself, so
  * a stale entry is simply never looked up again, and put() deletes it
- * (D72, below). This is deterministic and
+ * (see put()). This is deterministic and
  * race-free: two concurrent writers bumping the version means whichever
  * request/job reads afterward asks for a *later* key than either write
  * alone would have produced, and there is no way to observe a version
@@ -60,13 +60,13 @@ final class CalculationCache
     /**
      * Writes this version's entry and deletes whichever entry the previous
      * put() wrote, so each assessment holds one entry, not one per edit
-     * (PLAN-2.7.md D72). Before this, every edit left its predecessor to
+     * (deployment.md §8, Redis memory). Before this, every edit left its predecessor to
      * linger for the full TTL, and that growth is what a Redis running
      * `noeviction` would eventually refuse writes over, the queue's
      * included.
      *
      * The previous version cannot be derived from the current one: nothing
-     * guarantees consecutive versions (W64 bumps once per coalesced block, and
+     * guarantees consecutive versions (a coalesced block of edits bumps once, and
      * the debounced job skips the versions in between), so a per-assessment
      * pointer records the key last written. One script makes the swap atomic,
      * so two concurrent writers cannot both read the same pointer and leave one

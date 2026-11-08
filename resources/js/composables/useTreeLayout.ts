@@ -1,5 +1,5 @@
 /**
- * Positions for the chart view (W32, ui.md §3.7): the assessment as an org
+ * Positions for the chart view (ui.md §3.7): the assessment as an org
  * chart — Target of Assessment across the top, then risks, attacks and
  * defences, each tier a row, siblings side by side, connectors drawn
  * downward.
@@ -20,7 +20,7 @@
  * over that span. Widths are therefore exact and siblings can never overlap,
  * which is the property the tests pin.
  *
- * **Card width is per tier** (W69, PLAN-2.4.md D27): a base unit times a
+ * **Card width is per tier**: a base unit times a
  * factor, root widest and defence narrowest, because the tiers do not carry
  * comparable amounts of text. The root holds the assessment's title and its
  * whole-graph bar; a defence holds a control's name. Giving all four the same
@@ -42,7 +42,7 @@
  * horizontal.
  *
  * A shared attack or defence appears **once per occurrence**, not once with
- * several incoming edges (PLAN-2.1.md D5). That keeps this a tiered tree
+ * several incoming edges. That keeps this a tiered tree
  * rather than a general DAG-layout problem, and it matches both the list view
  * and the existing duplicate-highlighting affordance, which exists precisely
  * to make those repeats legible.
@@ -104,7 +104,7 @@ export interface TreeLayoutOptions {
 }
 
 /**
- * ## The card height is a budget, and here is the arithmetic (W37)
+ * ## The card height is a budget, and here is the arithmetic
  *
  * ui.md §3.7 requires **two title lines and three description lines visible at
  * 1080p** without scrolling. That is a claim about the whole page, not about
@@ -132,13 +132,13 @@ export interface TreeLayoutOptions {
  * /`leading-snug` 46, gap 4, indicator row 18 — 118, with the remainder as
  * breathing room. **If a future change makes the toolbar taller, the tiers no
  * longer fit and the fix is the toolbar, not the description clamp.** That
- * ordering is the whole reason W34 came before this package.
+ * ordering is why the toolbar was settled before the chart layout.
  *
- * The **tier gutter is gone** as of W37 (it was 84px of permanent horizontal
+ * The **tier gutter is gone** (it was 84px of permanent horizontal
  * space naming four things that never change), so `x` now starts at the
  * viewport's left edge.
  *
- * ## What the tier factors cost horizontally (W69)
+ * ## What the tier factors cost horizontally
  *
  * `cardWidth` is the base unit; `tierWidthFactors[tier]` multiplies it —
  * defence 1, attack 1.25, risk 1.5, root 2. None of that touches the vertical
@@ -148,7 +148,7 @@ export interface TreeLayoutOptions {
  * upper tiers fit inside it for free; on a shallow one — a root with a single
  * risk, or an empty assessment — the widest single card sets it, and the chart
  * is that much wider. Both cases are pinned in the spec file, because the
- * promise being protected is D3's: horizontal scrolling only, never vertical,
+ * promise being protected is the chart's: horizontal scrolling only, never vertical,
  * at fit-to-width.
  */
 export const TREE_LAYOUT_DEFAULTS = {
@@ -160,7 +160,7 @@ export const TREE_LAYOUT_DEFAULTS = {
 } as const;
 
 /**
- * The width of a card on `tier`, in layout units (W69, PLAN-2.4.md D27).
+ * The width of a card on `tier`, in layout units.
  *
  * A tier out of range clamps to the last factor rather than falling back to
  * the base unit: the schema fixes the depth at four, so an out-of-range tier

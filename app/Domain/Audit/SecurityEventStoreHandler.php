@@ -10,7 +10,7 @@ use Monolog\LogRecord;
 use Throwable;
 
 /**
- * Inserts one `security_events` row per security-channel record (D97).
+ * Inserts one `security_events` row per security-channel record.
  *
  * A failed insert must never fail the request that caused the event — a
  * sign-in, a refusal — so it is caught and reported on stderr instead.

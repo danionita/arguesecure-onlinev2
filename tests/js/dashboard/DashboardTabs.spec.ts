@@ -1,5 +1,5 @@
 /**
- * `DashboardTabs` (W73 item 21, D32).
+ * `DashboardTabs` (ui.md §8).
  *
  * The tablist is the first interactive thing on the arrival page after the
  * heading, so what is asserted here is almost entirely its contract with a

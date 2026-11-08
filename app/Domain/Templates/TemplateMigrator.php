@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Takes templates that are still somebody's assessment and makes them
- * ownerless (W141, T6). Run once by the migration that adds the CHECK.
+ * ownerless. Run once by the migration that adds the CHECK.
  *
  * Two cases, because a published assessment is two things at once and only one
  * of them is the library's:

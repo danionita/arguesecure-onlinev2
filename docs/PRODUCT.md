@@ -1,8 +1,8 @@
 # ArgueSecure — what it is for, and what it is not
 
-> The product brief every plan is judged against. `CLAUDE.md` says *how* work
-> is done here; this says *what is worth doing*. A proposal that cannot say
-> which of the three jobs below it serves is not ready to be a work package.
+> The product brief every proposed change is judged against. It says *what is
+> worth doing*, not how. A proposal that cannot say which of the three jobs
+> below it serves is not ready to be built.
 
 ---
 
@@ -43,10 +43,12 @@ need to keep assessments on their own infrastructure.
 
 - **Self-hosted, free and open-source.** No paid dependencies, no telemetry,
   no cloud requirement. Runs on a home server (the reference deployment is
-  Unraid) as readily as in a data centre.
+  Unraid) as readily as in a data centre. The core is free and open-source
+  and never needs a paid component. Optional modules for organisations may
+  be sold separately.
 - **People decide; models suggest.** The optional local assistant proposes;
   nothing it writes reaches the graph, a report or another user until a
-  person accepts it (`PLAN-2.3-ai.md` D24). This holds for any future AI
+  person accepts it ([`ASSISTANT.md`](ASSISTANT.md) §6). This holds for any future AI
   feature, and for anything written *about* the product, too.
 - **Honest numbers.** A missing value is excluded, never coerced to zero;
   computed results are never band-mapped to low/medium/high.

@@ -120,7 +120,7 @@ test('the re-hash Laravel does at sign-in is not logged as a password change or 
 });
 
 /*
- * W116 parks an MFA account's sign-in after the password step, which fires
+ * Two-factor sign-in parks an MFA account's sign-in after the password step, which fires
  * Login and then Logout, under the session key `two_factor.pending`.
  */
 test('the Login and Logout of a parked two-factor sign-in are not logged', function () {

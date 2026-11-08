@@ -1,8 +1,7 @@
 <?php
 
 /**
- * W94 (PLAN-2.6.md D52, D55) — the catalogue the installer and the admin tab
- * both read.
+ * The catalogue the installer and the admin tab both read.
  *
  * `docker/assistant/assistant.sh` downloads and starts what
  * `docker/assistant/models.conf` lists; `ModelCatalog` reads the same file to
@@ -21,7 +20,7 @@ function catalogueFile(string $contents): string
     return $path;
 }
 
-test('the shipped catalogue offers exactly the two presets D52 chose', function () {
+test('the shipped catalogue offers exactly the two presets that were chosen', function () {
     $presets = app(ModelCatalog::class)->presets();
 
     expect(array_keys($presets))->toBe(['small', 'large']);
@@ -31,7 +30,7 @@ test('the shipped catalogue offers exactly the two presets D52 chose', function 
 
 test('every preset is pinned to a commit and verifiable before it is used', function () {
     foreach (app(ModelCatalog::class)->presets() as $name => $preset) {
-        // D18: a revision, never `main` — `main` moves under a pinned file.
+        // A revision, never `main` — `main` moves under a pinned file.
         expect($preset['revision'])->toMatch('/^[0-9a-f]{40}$/', $name);
         // The installer refuses a download whose sha256 differs; a
         // placeholder here would make it refuse every download instead.

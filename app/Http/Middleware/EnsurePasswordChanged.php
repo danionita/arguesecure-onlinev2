@@ -9,14 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Enforces security.md §4's "forces a change on next login" half of an
  * admin password reset: a user flagged `must_change_password` is redirected
- * to the profile page — where W8's password-change form already lives — on
+ * to the profile page — where the password-change form already lives — on
  * every request, until they set a new password (which clears the flag; see
  * User::booted()).
  *
  * Registered globally on the 'web' middleware group in bootstrap/app.php
- * rather than attached to a specific route group, because routes/web.php
- * and routes/auth.php are owned by another package mid-edit in this
- * worktree and this package must not touch them (W8b brief). That means
+ * rather than attached to a specific route group, so it covers every route
+ * in routes/web.php and routes/auth.php without editing them. That means
  * this middleware has to make its own allow/deny decision by route name
  * instead of relying on route placement — hence the explicit whitelist
  * below, which exists specifically to avoid a redirect loop: the

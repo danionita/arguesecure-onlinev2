@@ -7,7 +7,7 @@
  * writes `results/candidates-manifest.json` with the commit sha, the byte count
  * and the LFS sha256 of every file. `candidates-fetch.sh` then downloads from
  * that commit — not from `main`, which moves — and refuses to leave a file in
- * place whose size or hash disagrees with the manifest (D18: a truncated
+ * place whose size or hash disagrees with the manifest (a truncated
  * download exits 0).
  *
  *   node tools/spike/assistant/candidates-weights.mjs resolve
@@ -34,7 +34,7 @@ export const weights = [
         id: 'gemma3-4b-q4km',
         repo: 'ggml-org/gemma-3-4b-it-GGUF',
         file: 'gemma-3-4b-it-Q4_K_M.gguf',
-        why: 'The shipped default (D19), from the repo the 2.3 spike verified.',
+        why: 'The shipped default, from the repo the 2.3 spike verified.',
     },
     {
         id: 'gemma3-4b-qat-q4_0',

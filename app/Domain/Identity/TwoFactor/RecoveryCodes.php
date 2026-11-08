@@ -3,7 +3,7 @@
 namespace App\Domain\Identity\TwoFactor;
 
 /**
- * The ten single-use codes that stand in for the authenticator app (D77).
+ * The ten single-use codes that stand in for the authenticator app.
  *
  * Only a keyed hash of each code is stored (on top of the column being
  * encrypted), so a database dump yields neither the codes nor, with the app

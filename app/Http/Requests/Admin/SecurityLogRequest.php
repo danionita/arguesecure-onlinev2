@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * The filters of the admin Security log page and its download (W128, D99).
+ * The filters of the admin Security log page and its download.
  * The route is behind the `admin` middleware; `event` is checked against the
  * SecurityEvent enum so request input never reaches a query as anything but a
  * known name.

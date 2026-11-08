@@ -9,7 +9,7 @@
  *
  * ui.md §11 also requires an `aria-description` naming the other
  * positions on the node card itself — that attribute already exists on
- * NodeCard.vue's "N places" indicator icon (W12). This component is the
+ * NodeCard.vue's "N places" indicator icon. This component is the
  * larger, standalone version of the same affordance for a toolbar/detail
  * context; it is not a replacement for that inline indicator.
  */

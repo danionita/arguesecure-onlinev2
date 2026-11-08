@@ -5,7 +5,7 @@ namespace App\Domain\Scales;
 use App\Models\Scale;
 
 /**
- * What a calibration actually did (W65).
+ * What a calibration actually did.
  *
  * Returned rather than logged, for the same reason `RestoreOutcome` is: the
  * two things that can go *quietly* wrong here are invisible in the result

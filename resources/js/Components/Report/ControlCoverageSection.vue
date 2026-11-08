@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Control coverage (PLAN-2.7 D65, D66): per framework, each control the
+ * Control coverage: per framework, each control the
  * assessment's defences cite, whether a citing defence is in place, and
  * which defences those are. It reads the assessment, not a catalogue of the
  * framework, so it lists no uncited control and never says "compliant"

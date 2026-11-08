@@ -1,5 +1,5 @@
 /**
- * What a controller flashed reaches the person, once (W115).
+ * What a controller flashed reaches the person, once.
  *
  * `HandleInertiaRequests::handle()` turns the session's `success` and `error`
  * into Inertia flash data, which arrives with exactly one response and is kept
@@ -46,7 +46,7 @@ function text(value: unknown): string | null {
  *   a restore refused, and why — and a message that leaves on a timer can be
  *   missed by someone who looked away.
  * - **A page that shows the message itself keeps it.** Settings and the admin
- *   Defaults tab (W87) pass `flashSuccess` as a prop and render it beside the
+ *   Defaults tab pass `flashSuccess` as a prop and render it beside the
  *   scale card it is about. Toasting it as well would say it twice, once in
  *   the wrong place.
  */

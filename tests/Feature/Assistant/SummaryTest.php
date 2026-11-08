@@ -1,9 +1,9 @@
 <?php
 
 /**
- * W54 — job C: the drafted executive summary.
+ * Job C: the drafted executive summary.
  *
- * The package's subject is **disclosure and the accept step**, not generation.
+ * The subject here is **disclosure and the accept step**, not generation.
  * A model wrote a paragraph; what matters is that nobody reads it as the
  * author's own words without the author having put them there.
  *
@@ -16,7 +16,7 @@
  * 3. Accepting sets the generated mark, and editing afterwards does not clear
  *    it. The disclaimer is for the reader.
  * 4. Everything about the narrative works with no assistant at all — which is
- *    what nearly every deployment looks like (D25).
+ *    what nearly every deployment looks like.
  *
  * Nothing contacts a real model; `ModelStub` stands in for the runtime, and
  * the queue is faked except where the job itself is under test.
@@ -202,7 +202,7 @@ test('the draft lands in the draft column and never in the report', function () 
 
     $assessment->refresh();
 
-    // The whole shape of the package. A job that finishes four minutes after
+    // The whole shape of the feature. A job that finishes four minutes after
     // it was asked for must not overwrite what the author has typed since, and
     // must not put un-reviewed model text into a document.
     expect($assessment->summary_draft)->toBe('Three paragraphs about a storefront.');
@@ -316,7 +316,7 @@ test('a deployment with no runtime has no drafting endpoint at all', function ()
     $assessment = quantifiedAssessment($owner);
 
     // 404, not 403: a feature this deployment does not have should not be
-    // discoverable by someone who read about it (D25).
+    // discoverable by someone who read about it.
     $this->actingAs($owner)
         ->postJson(route('assessments.assistant.summary', $assessment->uuid))
         ->assertNotFound();

@@ -11,6 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import { hasUnsavedChanges } from '../../../resources/js/composables/useUnsavedChanges';
 import Edit from '../../../resources/js/Pages/Profile/Edit.vue';
+import { routeProperties } from '../support/routeProperties';
 
 type Callbacks = { onSuccess?: () => void; onError?: () => void };
 
@@ -72,9 +73,9 @@ function render(over: Record<string, unknown> = {}) {
         props: {
             sessions: [],
             ownedAssessmentCount: 0,
-            // W116 (ProfileController) sends these on every visit; the page
-            // reads twoFactor.enabled unconditionally. Harmless extra
-            // attributes on a branch without W116.
+            // ProfileController sends these on every visit; the page
+            // reads twoFactor.enabled unconditionally. Without
+            // them the page would fail to render.
             twoFactor: {
                 enabled: false,
                 recovery_codes_remaining: 0,
@@ -85,7 +86,7 @@ function render(over: Record<string, unknown> = {}) {
             ...over,
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: {
                 AuthenticatedLayout: {
                     template: '<div><slot name="header" /><slot /></div>',
@@ -116,7 +117,7 @@ beforeEach(() => {
     (globalThis as unknown as { route: typeof route }).route = route;
 });
 
-describe('unsaved changes (W142)', () => {
+describe('unsaved changes', () => {
     it('counts a changed name, but not a browser-filled current password', () => {
         const wrapper = render();
         profile().current_password = 'filled by a password manager';

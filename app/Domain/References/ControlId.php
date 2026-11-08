@@ -3,7 +3,7 @@
 namespace App\Domain\References;
 
 /**
- * A framework control cited by a defence (PLAN-2.7 D64): the identifier of a
+ * A framework control cited by a defence: the identifier of a
  * `control` reference, `FRAMEWORK:CONTROL` — `ISO27001-2022:A.5.23`,
  * `NIS2:ART.21(2)(D)`. The framework must be one configured under
  * `arguesecure.references.frameworks`, and the control part must match that
@@ -53,7 +53,7 @@ final readonly class ControlId
         return (string) (self::framework($framework)['label'] ?? $framework);
     }
 
-    /** The framework's own page; never a link to one control (D64). */
+    /** The framework's own page; never a link to one control. */
     public static function frameworkUrl(string $framework): string
     {
         return (string) (self::framework($framework)['url'] ?? '');

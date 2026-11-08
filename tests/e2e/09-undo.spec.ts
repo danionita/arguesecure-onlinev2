@@ -10,7 +10,7 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 7 of PLAN.md's end-to-end list: "Delete a node, undo it, confirm
+ * Scenario 7 of the end-to-end scenario list: "Delete a node, undo it, confirm
  * it returns with its links intact."
  *
  * The last clause is the whole test. Restoring a node is easy; restoring the
@@ -106,8 +106,8 @@ test.describe('undo', () => {
         // every value at once, so if any part of the undo were partial this
         // figure would differ. Deleting phishing removed 115,000 of the
         // 135,000 inherent total, so a wrong restore is very visible here.
-        // Through `totalsPanel()` since W36: the docked panel these figures
-        // used to live on is gone, and with it the word "Totals" this
+        // Through `totalsPanel()` since the totals panel moved: the docked
+        // panel these figures used to live on is gone, and with it the word "Totals" this
         // filtered on — so the locator matched nothing and the assertion
         // failed on a page showing exactly the right numbers. The helper is
         // the one place that boundary is written down.

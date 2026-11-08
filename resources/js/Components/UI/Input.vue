@@ -2,7 +2,7 @@
 /**
  * Text/number/currency input with a label, helper text and error slot in
  * one place. It replaced the Breeze TextInput + InputLabel + InputError
- * trio in W10; W55 deleted those three files, unreferenced since.
+ * trio; those three files are deleted.
  */
 import { computed, useId } from 'vue';
 
@@ -22,7 +22,7 @@ const props = withDefaults(
         suffix?: string;
         /**
          * Combobox ARIA, for a caller that hangs a suggestion list under this
-         * field (W79, the Details tab's placeholder title). Declared as props
+         * field (the node modal's Details tab, for the placeholder title). Declared as props
          * rather than left to attribute fallthrough because fallthrough lands
          * on the wrapper `<div>`, and a `role="combobox"` on the element that
          * is not the text box is a role no screen reader can act on.

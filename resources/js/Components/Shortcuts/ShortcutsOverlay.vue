@@ -5,8 +5,7 @@
  * to."). Self-contained: listens for `?` itself (ignoring it while the
  * user is typing in a field, and while any other key modifier is held so
  * `Shift+/` on a non-US layout doesn't fight normal typing), so the only
- * integration needed once this package's file-ownership gap is closed
- * (see useKeyboardOutline.ts's top-of-file note) is rendering
+ * integration needed (see useKeyboardOutline.ts's top-of-file note) is rendering
  * `<ShortcutsOverlay />` once, anywhere in the page — nothing needs to
  * pass it a v-model or wire a trigger.
  */

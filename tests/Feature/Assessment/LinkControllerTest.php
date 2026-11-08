@@ -10,9 +10,9 @@ use App\Models\ScaleLevel;
 use App\Models\User;
 
 /*
- * Edge-mutation authorization matrix (CLAUDE.md "every route touching an
- * assessment goes through AssessmentPolicy") for the node modal's Links tab
- * (ui.md §7, PLAN.md W13), plus the endpoint-type/same-assessment
+ * Edge-mutation authorization matrix (every route touching an
+ * assessment goes through AssessmentPolicy) for the node modal's Links tab
+ * (ui.md §7), plus the endpoint-type/same-assessment
  * validation LinkService itself only enforces at the domain layer. Follows
  * the same {guest, stranger, viewer, editor} matrix as
  * tests/Feature/Assessment/NodeControllerTest.php.

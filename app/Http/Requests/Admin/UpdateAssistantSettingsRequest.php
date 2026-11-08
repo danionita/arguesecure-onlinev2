@@ -6,11 +6,11 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * The admin **AI assistant** tab (2.5.1; the switches are W50's and W87's,
+ * The admin **AI assistant** tab (2.5.1; the feature switches,
  * moved off Instance settings unchanged).
  *
  * `declined` — not `prohibited` — where the deployment has no inference
- * runtime (PLAN-2.3-ai.md D25). Sending `false` on such an instance is
+ * runtime (docs/ASSISTANT.md). Sending `false` on such an instance is
  * harmless; what must be refused is switching a feature *on* without a
  * runtime to serve it, which would store a `true` every read path then has to
  * second-guess. `sometimes`, because the tab renders no toggles on such a
@@ -18,7 +18,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * writes only the keys it is given.
  *
  * Each feature switch is subordinate to `Availability` and can only ever
- * subtract (D48).
+ * subtract.
  */
 class UpdateAssistantSettingsRequest extends FormRequest
 {

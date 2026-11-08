@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * What the plan costs and what it buys (W33).
+ * What the plan costs and what it buys.
  *
  * The executive summary answers "what are we exposed to" and "what do the
  * controls we already run cost". The question a reader actually arrives with

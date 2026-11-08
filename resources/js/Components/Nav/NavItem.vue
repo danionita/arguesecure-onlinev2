@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One destination in the sidebar (W41).
+ * One destination in the sidebar (ui.md §2, Navigation).
  *
  * Icon-and-label in the panel, icon-only in the rail — and in the rail the
  * label does not disappear, it moves to `aria-label` and to a `title`. A rail
@@ -11,7 +11,7 @@
  * chip in this codebase pairs colour with an icon (ui.md §2): the current
  * item has to be identifiable without colour vision.
  *
- * ## The rail's visible half (W82 item 17)
+ * ## The rail's visible half
  *
  * `title` already gives the rail a *native* tooltip, but a native one is
  * whatever the browser's UA stylesheet decides — different chrome, a
@@ -23,14 +23,15 @@
  * mode — the panel already shows the label in text, and wrapping there too
  * would tool-tip a control that is not missing anything.
  *
- * ## One inner element, wrapped or not (W82 review fix)
+ * ## One inner element, wrapped or not
  *
  * A first version of this file duplicated the whole interactive element —
  * the `:is`, `:type`, `:href`, `:method`, `:as`, `:aria-current`, the class
  * list, the click guard, the icon and the badge markup — once inside a
  * `v-if="compact"` branch wrapped in `Tooltip` and once again in a `v-else`
- * that was not. That is the exact thing this package exists to remove:
- * `AssessmentActions.vue`'s own docblock argues D40 exists because five
+ * that was not. That is the exact thing the shared chrome components exist
+ * to remove:
+ * `AssessmentActions.vue`'s own docblock argues it exists because five
  * actions in four arrangements "have to agree by inspection", and a second
  * copy of one control here is the same failure at a smaller scale — a future
  * `aria-*`, a disabled state, a different click guard, would only reliably
@@ -57,7 +58,7 @@ const props = withDefaults(
         label: string;
         /**
          * Omitted for an item that opens something instead of going somewhere
-         * (W47's Notifications). It then renders a `<button>` and emits
+         * (the Notifications item). It then renders a `<button>` and emits
          * `select` — same styling, same accessible name, same rail dot, so a
          * panel-opening item cannot drift from the destinations around it.
          */

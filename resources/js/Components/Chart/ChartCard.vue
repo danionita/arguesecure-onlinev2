@@ -1,14 +1,14 @@
 <script setup lang="ts">
 /**
- * One card in the chart view (W32, ui.md §3.7): type, title, description, and
+ * One card in the chart view (ui.md §3.7): type, title, description, and
  * one indicator saying whether this node's values are set.
  *
- * ## W37 — the simplest of the three views
+ * ## The simplest of the three views
  *
  * The chart is where a room agrees **what the boxes are**. It is not where
  * anyone reads a number, so the card carries none: the completeness bar, the
  * contribution bar, the likelihood ramp and the strength ramp are all gone,
- * along with `CueRamp` itself. W32 kept them on the argument that a cue is not
+ * along with `CueRamp` itself. The first version kept them on the argument that a cue is not
  * a figure. In practice they were figures with the digits filed off — a reader
  * still had to hover each one to learn anything, and four different visual
  * languages on four tiers made the board harder to read across, which is the
@@ -31,9 +31,9 @@
  * glyph, it is structural rather than computed, and a room needs to see at a
  * glance which controls are real and which are aspirations.
  *
- * ## W69 — the indicator moved, and became the figure
+ * ## The indicator moved, and became the figure
  *
- * Two changes, both to the same control (PLAN-2.4.md D26).
+ * Two changes, both to the same control.
  *
  * It **moved to the bottom row**, which had `mt-auto` and nothing in it but
  * the status glyph and the counters. In the title row it competed for width
@@ -43,14 +43,14 @@
  * And it now renders the **figure** rather than a checkmark. A checkmark
  * answers "is this filled in", which is a question about the data-entry task;
  * the figure answers "what did we say", which is the question a room actually
- * asks of a board. This is not a return to W37's cues — those were four
+ * asks of a board. This is not a return to the earlier cues — those were four
  * different visual languages standing in for numbers nobody could read
  * without hovering. This is one short string, in one place, on every tier.
  *
  * Three constraints hold it together:
  *
  * - **A defence's figure is per occurrence.** Strength lives on the
- *   `attack_defence` pivot (CLAUDE.md), so the same defence under two attacks
+ *   `attack_defence` pivot (schema.md), so the same defence under two attacks
  *   shows two different percentages. That is correct, and it is why the edge
  *   is a prop rather than something looked up from the uuid.
  * - **A qualitative value is not a number.** Such a node carries a
@@ -59,7 +59,7 @@
  *   figure and it does that for the engine, against the assessment's own
  *   calibration — not for a card.
  * - **The space stays reserved in both states**, which is the whole reason
- *   W37 made the indicator permanent. Filling a value in must not reflow the
+ *   The indicator was made permanent for that. Filling a value in must not reflow the
  *   card.
  *
  * The ToS is the exception, and it is the one place a *computed* figure
@@ -104,7 +104,7 @@ const props = defineProps<{
     pathKey: string;
     edge?: AttackDefenceLink;
     hasChildren: boolean;
-    /** Direct children; the badge shows it while collapsed (W127). */
+    /** Direct children; the badge shows it while collapsed. */
     childCount?: number;
     collapsed: boolean;
     selected: boolean;
@@ -137,7 +137,7 @@ const nodeLockedBy = computed(
 const canOpen = computed(() => !store.frozen);
 
 /**
- * W38: the chart gets the same drag affordance the list has had since W27,
+ * The chart gets the same drag affordance the list already had,
  * and on the same element for the same reason — the card root is exactly one
  * occurrence, whereas the enclosing `<li role="treeitem">` wraps the whole
  * subtree, so a drop anywhere below a node would register on every ancestor.
@@ -208,7 +208,7 @@ const showAddChild = computed(
     () => node.value !== undefined && hasChildType(node.value.type),
 );
 
-/** D95: the count stands in for the chevron while collapsed. */
+/** The count stands in for the chevron while collapsed. */
 const showBadge = computed(
     () => props.collapsed && (props.childCount ?? 0) > 0,
 );
@@ -219,7 +219,7 @@ const showBar = computed(
         (showAddChild.value && canEdit.value),
 );
 
-// W85/D50: the same trigger and the same guardrail (D24) as the tree card
+// The same trigger and the same guardrail (docs/ASSISTANT.md §6) as the tree card
 // (NodeCard.vue), sharing useAssistantChildren.ts rather than a second copy
 // of it — see that file's docblock for why.
 const {
@@ -261,7 +261,7 @@ const {
 );
 
 /**
- * W105: both panels float below the card inside the chart's scroll container,
+ * Both panels float below the card inside the chart's scroll container,
  * which clips them. Below the bottom tier of a chart taller than the window
  * the panel would open out of sight, so it is scrolled into view when it
  * appears and again when its content changes: the picker grows when its
@@ -321,7 +321,7 @@ const shortMoney = (value: number | null) =>
  * The figure a set value renders as: an abbreviated amount, a rate, a
  * percentage, or — for a qualitative value — the chosen level's **label**.
  *
- * The label, not the code (W87, D44). `scale_levels.code` is internal: it is
+ * The label, not the code. `scale_levels.code` is internal: it is
  * derived from the label when a band is created and then frozen, so that a
  * catalogue fixture naming "moderate" keeps resolving after someone renames
  * the band. Drawing it here meant that renaming "Moderate" to "Medium" left
@@ -345,7 +345,7 @@ function figureFor(levelId: number | null, quantitative: string | null) {
  * "Its own" is the operative word, and it differs by type because the schema
  * puts the value in a different place each time: a risk owns its impact, an
  * attack owns its likelihood, and a defence's strength lives on the
- * `attack_defence` edge (CLAUDE.md), so a defence appearing under two attacks
+ * `attack_defence` edge (schema.md), so a defence appearing under two attacks
  * can legitimately be complete in one place and not the other. The indicator
  * is per occurrence for exactly that reason.
  *
@@ -560,7 +560,7 @@ const tosBar = computed(() => {
                 </span>
             </Tooltip>
 
-            <!-- W69: the figure, bottom-left, after the status glyph for a
+            <!-- The figure, bottom-left, after the status glyph for a
                  defence. Present in both states — a `?` when unset — so the
                  space is reserved and the card never reflows when a value is
                  filled in. `min-w-0` + `truncate` rather than a wider box:
@@ -609,7 +609,7 @@ const tosBar = computed(() => {
             </Tooltip>
 
             <span class="ml-auto flex items-center gap-1">
-                <!-- W69/D31, shared with the list card since 2.5.1. -->
+                <!-- Shared with the list card since 2.5.1. -->
                 <SharedCounter
                     v-if="occurrenceCount > 1"
                     :store="store"
@@ -638,7 +638,7 @@ const tosBar = computed(() => {
         </div>
 
         <!--
-            W37: the hover panel moved from the top-right to the bottom edge,
+            The hover panel moved from the top-right to the bottom edge,
             and lost two of its four actions.
 
             It used to sit over exactly where the values indicator now lives
@@ -651,7 +651,7 @@ const tosBar = computed(() => {
             small icon is the wrong thing to have there.
         -->
         <!--
-            W127 follow-up (D104): one bar on the bottom edge. A collapsed card
+            One bar on the bottom edge. A collapsed card
             shows its hidden-children count there at rest, in the bar's own
             button ground (the owner: it must read as the expand button, always
             showing, with the count on it); on hover the count
@@ -701,9 +701,9 @@ const tosBar = computed(() => {
                     data-testid="add-from-template"
                     @click="openTemplates"
                 />
-                <!-- W85 item 19 / D50: the assistant trigger, gated on the same
+                <!-- The assistant trigger, gated on the same
                      three conditions as on the tree card (NodeCard.vue), and
-                     the same label — "the same trigger" is the whole of D50. -->
+                     the same label — it is the same trigger. -->
                 <IconButton
                     v-if="showAddChild && canEdit && store.assistantAvailable"
                     icon="square-plus"
@@ -715,7 +715,7 @@ const tosBar = computed(() => {
             </div>
         </div>
 
-        <!-- W52/W58, shared with the tree card via AssistantPanel.vue: floats
+        <!-- Shared with the tree card via AssistantPanel.vue: floats
              below the card rather than pushing chart layout around, and stays
              visible while a generation runs even after the pointer leaves the
              card — the hover panel above may already be hidden by then. -->

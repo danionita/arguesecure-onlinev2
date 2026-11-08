@@ -1,5 +1,5 @@
 /**
- * The list view's reading measure (W70, item 8; ui.md §3.2).
+ * The list view's reading measure (ui.md §3.2).
  *
  * ## Why this reads the source file
  *
@@ -15,10 +15,10 @@
  * So this asserts the *specified value*, in the one place it exists. A test
  * that merely checked "some max-width is present" would stay green if the cap
  * were widened back to `max-w-7xl`, which is the change this guards against —
- * W68's lesson, where a presence assertion survived the removal of the thing
+ * the lesson of an earlier slip, where a presence assertion survived the removal of the thing
  * it guarded.
  *
- * If a later package moves the cap, this test goes red and its author reads
+ * If a later change moves the cap, this test goes red and its author reads
  * this docblock, which is the point of pinning it here rather than trusting
  * the class to survive a refactor unnoticed.
  */
@@ -57,7 +57,7 @@ describe('the list viewport is capped at a reading measure', () => {
     });
 
     it('leaves the chart view uncapped', () => {
-        // The chart is a canvas and wants the whole window (W34): the editor
+        // The chart is a canvas and wants the whole window: the editor
         // stopped being `max-w-7xl` for exactly that reason, and item 8
         // narrows the list *only*. `ChartView` is rendered as a sibling of the
         // list, so a cap placed on the shared scroll container instead of on

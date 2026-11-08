@@ -5,17 +5,18 @@ import { adminEmail, adminPassword } from './support/env';
 import { cardFor, openAssessment, readGraph, uuidOf } from './support/tree';
 
 /**
- * Scenario 6 of PLAN.md's end-to-end list: "Drag a defence to a different
+ * Scenario 6 of the end-to-end scenario list: "Drag a defence to a different
  * attack; reorder risks; reload and confirm the order persisted."
  *
- * Until W27 this spec could not perform the gesture at all:
+ * Until drag and drop was wired in, this spec could not perform the gesture
+ * at all:
  * `resources/js/composables/useDragDrop.ts` was written, unit-tested and
  * imported by nothing, no element carried `draggable`, and no other
  * affordance for reordering or re-parenting existed anywhere in the UI. It
  * therefore drove `POST .../reorder` and `POST .../move` directly and
- * pinned the gap with a `[draggable="true"]` count of zero. W27 wired the
- * composable into `Components/Tree/**`, so the gestures below are real and
- * the assertions are the ones this file always made.
+ * pinned the gap with a `[draggable="true"]` count of zero. The composable
+ * was then wired into `Components/Tree/**`, so the gestures below are real
+ * and the assertions are the ones this file always made.
  *
  * ## Where the drag actually lands
  *
@@ -73,7 +74,7 @@ async function dragCardOnto(
 
     await cardFor(page, sourceTitle).dragTo(cardFor(page, targetTitle));
 
-    // W38: a drop onto a *different* parent is ambiguous in a DAG — the node
+    // A drop onto a *different* parent is ambiguous in a DAG — the node
     // can move there or belong to both — so it now asks, and nothing is sent
     // until the question is answered. Reordering among siblings is not
     // ambiguous and still posts straight away, which is why only this arm

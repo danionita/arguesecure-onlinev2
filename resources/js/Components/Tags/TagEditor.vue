@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The label row on the Details tab (W43, item 18; ui.md §7).
+ * The label row on the Details tab (ui.md §7, Labels).
  *
  * ## Type it, do not manage it
  *

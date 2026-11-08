@@ -6,7 +6,7 @@ use App\Domain\Reporting\Money;
 
 /**
  * One value in one cell of one section table, carrying what it *is* rather
- * than what it looks like (W74 item 25).
+ * than what it looks like.
  *
  * This is the join that makes "one assembled report, five renderings" true
  * rather than aspirational. Every exporter reads the same

@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 /*
  * Replaces the flat tests/Feature/ProfileTest.php Breeze scaffold test
- * (moved here under tests/Feature/Profile/**, which this package owns,
+ * (moved here under tests/Feature/Profile/**
  * since ProfileController's behaviour changed: email changes now require
  * the current password — security.md §4 — which the old assertions did
  * not account for).

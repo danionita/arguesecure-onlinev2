@@ -6,15 +6,14 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * PLAN.md Phase 9 item 2 / W23: help is authored as markdown rendered by
+ * Help is authored as markdown rendered by
  * the app, so updating it is not a code deploy. This suite is the "help
- * route renders, and is reachable by the audience it should be" test the
- * W23 brief asks for, plus "every markdown file the help index lists
+ * route renders, and is reachable by the audience it should be" test, plus "every markdown file the help index lists
  * actually exists and parses" — a broken link in help must fail a test,
  * not surprise a user.
  *
- * Reachability decision: help sits outside the `auth` group (routes/web.php
- * W23 block) because it is general product documentation, not assessment
+ * Reachability decision: help sits outside the `auth` group (the help block in
+ * routes/web.php) because it is general product documentation, not assessment
  * data — a guest reading a public assessment or a share link, who may have
  * no account at all, should be able to reach it. These tests assert that
  * decision holds for both a guest and a logged-in user, and that a

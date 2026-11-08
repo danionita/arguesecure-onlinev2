@@ -1,7 +1,7 @@
 /**
- * The band above every view's title row (ui.md §2, §9; W82's fix for D42).
+ * The band above every view's title row (ui.md §2, §9; the fix for the band printing on the editor).
  *
- * Through W81 this band was rendered outside `AuthenticatedLayout`'s
+ * Earlier this band was rendered outside `AuthenticatedLayout`'s
  * `.editor-print`-scoped `<main>`, so nothing in `print.css` reached it on
  * the editor: printing the chart or list printed the title row's actions —
  * Share, and now Settings/History/Export/Print too — right along with them.
@@ -16,11 +16,12 @@ import { h } from 'vue';
 import ChromeHeaderBand from '../../../resources/js/Components/Chrome/ChromeHeaderBand.vue';
 import ChromeTitleRow from '../../../resources/js/Components/Chrome/ChromeTitleRow.vue';
 import AssessmentActions from '../../../resources/js/Components/Toolbar/AssessmentActions.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const route = (name: string, uuid?: string) =>
     uuid ? `/${name}/${uuid}` : `/${name}`;
 
-describe('ChromeHeaderBand print behaviour (D42)', () => {
+describe('ChromeHeaderBand print behaviour', () => {
     it('carries the specific class print.css hides, on the band itself', () => {
         const wrapper = mount(ChromeHeaderBand, {
             slots: { default: '<h2>Title</h2>' },
@@ -44,7 +45,7 @@ describe('ChromeHeaderBand print behaviour (D42)', () => {
     });
 
     /**
-     * W82 fix round: the bar is mounted now (`Pages/Assessment/Show.vue`),
+     * The bar is mounted now (`Pages/Assessment/Show.vue`),
      * so this has something real to print rather than an empty title row.
      * Mounts the actual composition — the band, the title row and
      * `AssessmentActions` together, exactly as `Show.vue` nests them inside
@@ -54,7 +55,7 @@ describe('ChromeHeaderBand print behaviour (D42)', () => {
      */
     it('the mounted action bar sits inside the band that hides it', () => {
         const wrapper = mount(ChromeHeaderBand, {
-            global: { config: { globalProperties: { route } } },
+            global: { config: { globalProperties: routeProperties(route) } },
             slots: {
                 default: () =>
                     h(ChromeTitleRow, { title: 'Payment platform' }, () =>

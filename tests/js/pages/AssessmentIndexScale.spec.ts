@@ -1,10 +1,11 @@
 /**
- * The New assessment pop-up's Scale select (W126).
+ * The New assessment pop-up's Scale select.
  */
-import { mount } from '@vue/test-utils';
+import { mount, type VueWrapper } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import Index from '../../../resources/js/Pages/Assessment/Index.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const post = vi.fn();
 let form: Record<string, unknown>;
@@ -35,19 +36,20 @@ const route = (name: string) => `/${name}`;
 function open(scaleOptions?: { value: string; label: string }[]) {
     window.history.replaceState({}, '', '/assessments?new=1');
 
-    mounted = mount(Index, {
+    const wrapper = mount(Index, {
         props: { assessments: [], ...(scaleOptions ? { scaleOptions } : {}) },
         attachTo: document.body,
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { AuthenticatedLayout: { template: '<div><slot /></div>' } },
         },
     });
 
-    return mounted;
+    mounted = wrapper;
+    return wrapper;
 }
 
-let mounted: ReturnType<typeof open> | null = null;
+let mounted: VueWrapper | null = null;
 
 beforeEach(() => {
     post.mockClear();

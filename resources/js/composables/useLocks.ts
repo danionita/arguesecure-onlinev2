@@ -1,5 +1,5 @@
 /**
- * Field-level locking, client side (PLAN.md Phase 6 item 3, ui.md §6).
+ * Field-level locking, client side (ui.md §6).
  *
  * Every state-changing call here goes through LockController over normal
  * authenticated HTTP — acquire on focus, a 15s heartbeat refresh, release
@@ -50,10 +50,7 @@ export function useLocks(realtime: RealtimeConnection, assessmentUuid: string) {
     const mine = reactive(new Set<string>());
     /** Every field known to be held by someone else (from a 409 or a whisper). */
     const holders = reactive(new Map<string, LockHolder>());
-    const refreshTimers = new Map<
-        string,
-        ReturnType<typeof window.setInterval>
-    >();
+    const refreshTimers = new Map<string, number>();
 
     function stopRefresh(key: string) {
         const timer = refreshTimers.get(key);
@@ -66,7 +63,7 @@ export function useLocks(realtime: RealtimeConnection, assessmentUuid: string) {
     function startRefresh(nodeUuid: string, field: string) {
         const key = fieldKey(nodeUuid, field);
         stopRefresh(key);
-        // PLAN.md Phase 6 item 3: "refreshed ... every 15s" against a 45s
+        // Refresh every 15s against a 45s
         // TTL — three refreshes' margin before an actively-held lock could
         // lapse under normal network jitter.
         refreshTimers.set(

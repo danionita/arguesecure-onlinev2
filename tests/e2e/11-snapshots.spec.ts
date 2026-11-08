@@ -11,13 +11,13 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 9 of PLAN.md's end-to-end list: "Create a snapshot, change
+ * Scenario 9 of the end-to-end scenario list: "Create a snapshot, change
  * several values, create a second snapshot, and diff them."
  *
  * A snapshot freezes both the graph and the computed results, with the
  * scales inlined, so that recalibrating an assessment later cannot
  * retroactively rewrite a figure that was already reported to a client
- * (PLAN.md Phase 8 item 3). That is the property this scenario is really
+ * (a snapshot is immutable). That is the property this scenario is really
  * about: the first snapshot must still show the old numbers after the
  * assessment has moved on.
  */

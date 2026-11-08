@@ -5,7 +5,7 @@
  * mechanics: reading/writing localStorage, and toggling the `.dark` /
  * `.light` class on `<html>` that the custom-variant in app.css keys off.
  *
- * ## Three states, not two (W41)
+ * ## Three states, not two
  *
  * `system` is a real choice and the default, not the absence of one: it means
  * "follow the OS", and it is the only value that keeps up when someone's
@@ -19,7 +19,7 @@
  * `system`, because a shortcut whose result depends on the time of day is not
  * a shortcut.
  *
- * ## Applied during setup, not on mount (W41)
+ * ## Applied during setup, not on mount
  *
  * It used to run in `onMounted`, which is after Vue's first paint — so a user
  * who had chosen dark against a light OS saw a white flash on every

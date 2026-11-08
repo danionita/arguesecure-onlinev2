@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Assessment settings (W44, item 12; ui.md §8).
+ * Assessment settings (ui.md §8).
  *
  * Gated on `manage`, not `update`. Everything here changes what every figure
  * in the assessment *means* — the currency they are denominated in, the
@@ -16,7 +16,7 @@ use Illuminate\Validation\Rule;
  * at — so it is an ownership-level act rather than an edit, the same
  * distinction `templates.update` already makes.
  *
- * ## `title` and `description` are `prohibited` (W86, item 9)
+ * ## `title` and `description` are `prohibited`
  *
  * They live on the root node and are edited there — two editors for one
  * field is how they diverge, which is exactly what this screen and the tree
@@ -25,8 +25,8 @@ use Illuminate\Validation\Rule;
  * scripted request cannot resurrect the second write path by posting `title`
  * or `description` directly. `prohibited` rather than just dropping the
  * rules entirely, so the field is *rejected* (422) rather than silently
- * ignored — the same "assert the specified value" standard CLAUDE.md holds
- * every guard to.
+ * ignored — the same "assert the specified value" standard every
+ * guard is held to.
  *
  * Before this, both were written to the root node inside
  * `AssessmentSettingsController::update()`, and that write went through the

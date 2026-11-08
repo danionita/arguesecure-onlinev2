@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The tree editor (ui.md §3, PLAN.md W12) — "the screen the tool lives or
+ * The tree editor (ui.md §3) — "the screen the tool lives or
  * dies by." Loads the whole DAG once via Inertia props, builds the client
  * store (resources/js/stores/assessmentStore.ts) and renders it recursively
  * from the root occurrence down (Components/Tree/TreeNode.vue).
@@ -52,18 +52,18 @@ const props = defineProps<{
     nodes: NodeRecord[];
     riskAttackLinks: RiskAttackLink[];
     attackDefenceLinks: AttackDefenceLink[];
-    // W27 defect 2: AssessmentController has always sent these; this page
+    // AssessmentController has always sent these; this page
     // never declared them, so the store recomputed against an empty
     // calibration and threw on every edit. See recomputeLocally().
     scaleLevels: ScaleLevelRecord[];
     scales: ScaleRecord[];
     results: CalculationResults;
     abilities: Abilities;
-    /** W52: whether to offer the assistant actions. See AssessmentController. */
+    /** Whether to offer the assistant actions. See AssessmentController. */
     assistantAvailable: boolean;
 }>();
 
-// W138: the Print menu's other-view items arrive here with a one-shot token.
+// The Print menu's other-view items arrive here with a one-shot token.
 usePrintOnArrival();
 
 const store = createAssessmentStore({
@@ -79,7 +79,7 @@ const store = createAssessmentStore({
 });
 provide(ASSESSMENT_STORE_KEY, store);
 
-// One shared instance of the W15 view state for the whole screen: the toolbar
+// One shared instance of the editor view state for the whole screen: the toolbar
 // sets a filter, the tree dims to match. Two instances would silently
 // disagree — see composables/useEditorView.ts.
 const page = usePage();
@@ -89,21 +89,21 @@ const view = createEditorView(store, {
 });
 provide(EDITOR_VIEW_KEY, view);
 
-// W27 defect 3: W14 wrote and unit-tested useDragDrop and then nothing ever
+// useDragDrop was once written and unit-tested and then nothing ever
 // imported it, so the product shipped with no way to reorder or re-parent
 // anything. One instance for the page — the drag handoff between a source
 // card's `dragstart` and a target card's `drop` lives inside it.
 const dragDrop = useDragDrop(store);
 provide(DRAG_DROP_KEY, dragDrop);
 
-// W16 — one Reverb connection per page visit, shared by presence, locks and
+// One Reverb connection per page visit, shared by presence, locks and
 // the store-patching listeners the same way the store and editor view above
 // are: constructing a second connection would just be a second, disagreeing
 // socket. security.md §8: a guest with no `view` on this assessment never
 // gets this far in the first place (channel auth in routes/channels.php),
 // so it is safe to always attempt the connection here.
 //
-// W27 defect 1: the credentials come from the `reverb` shared Inertia prop,
+// The credentials come from the `reverb` shared Inertia prop,
 // not from `import.meta.env`. Vite substitutes VITE_* at image build time,
 // but the entrypoint generates the Reverb credentials at container start —
 // so the built bundle never had a key and this connection was never opened
@@ -118,13 +118,13 @@ const currentUser = computed(() => {
 const presence = usePresence(realtime, currentUser.value);
 provide(PRESENCE_KEY, presence);
 
-// W16 stage 3 (PLAN.md Phase 6 item 3, ui.md §6): field-level Redis locks.
+// Field-level Redis locks (ui.md §6).
 // See useLocks.ts for why the 15s heartbeat is real authenticated HTTP
 // through LockController, not a Reverb whisper.
 const locks = useLocks(realtime, props.assessment.uuid);
 provide(LOCKS_KEY, locks);
 
-// W16 stage 5 (PLAN.md Phase 6 item 5, ui.md §6): "toasts are throttled and
+// Toasts (ui.md §6): "toasts are throttled and
 // grouped: 'Dana made 6 changes', not six toasts. Suppress toasts for one's
 // own actions." applyRealtimeUpdatesToStore() (useRealtime.ts) already
 // suppresses the actor's own changes before this callback ever fires — what
@@ -138,7 +138,7 @@ const pendingByActor = new Map<
         name: string;
         count: number;
         summary: string;
-        timer: ReturnType<typeof window.setTimeout>;
+        timer: number;
     }
 >();
 const GROUPING_WINDOW_MS = 1200;
@@ -158,7 +158,7 @@ function onRemoteChange(notice: RealtimeChangeNotice) {
         name: notice.actorName ?? 'Someone',
         count: 1,
         summary: notice.summary,
-        timer: 0 as unknown as ReturnType<typeof window.setTimeout>,
+        timer: 0,
     };
 
     pending.timer = window.setTimeout(() => {
@@ -173,11 +173,10 @@ function onRemoteChange(notice: RealtimeChangeNotice) {
     pendingByActor.set(key, pending);
 }
 
-// W16 stage 2 (PLAN.md Phase 6 item 4, ui.md §6): applies every granular
+// Live updates (ui.md §6): applies every granular
 // node/link/totals broadcast straight onto the store's own reactive
 // `nodes`/`riskAttackLinks`/`attackDefenceLinks`/`results` — no re-fetch,
-// matching CLAUDE.md's explicit "do not repeat" of the legacy
-// id-then-refetch design.
+// which avoids repeating the legacy id-then-refetch design.
 const stopRealtimePatcher = applyRealtimeUpdatesToStore(
     realtime,
     store,
@@ -192,7 +191,7 @@ onBeforeUnmount(() => {
 
 const modal = useNodeModal();
 
-// W27 defect: ShareController's routes existed with no page mounting the
+// ShareController's routes existed with no page mounting the
 // dialog that talks to them, so sharing had no reachable UI at all. Local
 // to this page rather than store state — nothing else needs to know the
 // dialog is open.
@@ -216,7 +215,7 @@ function onPointerMove(event: PointerEvent) {
     }
 }
 
-// W25: undo/redo are plain JSON endpoints, so they cannot be called with
+// Undo/redo are plain JSON endpoints, so they cannot be called with
 // `router.post`.
 //
 // UndoController returns `response()->json([...])` for success and for both
@@ -293,23 +292,21 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
 
     <AuthenticatedLayout>
         <template #header>
-            <!-- W81: the title row is `Components/Chrome/ChromeTitleRow.vue`,
+            <!-- The title row is `Components/Chrome/ChromeTitleRow.vue`,
                  which the report renders too — its height is the height of
                  everything above the view switcher, and ui.md §9 requires the
                  switcher to land on the same line in all three views. -->
             <ChromeTitleRow :title="title">
                 <!-- ui.md §6: presence avatars. Show.vue's own header, not
-                     AuthenticatedLayout's top bar — that layout is outside
-                     this package's file ownership. -->
+                     AuthenticatedLayout's top bar. -->
                 <PresenceAvatars
                     :users="presence.others.value"
                     class="ml-auto"
                 />
-                <!-- W82, D40: Settings · History · Share · Export · Print,
-                     one component, replacing what through W81 was a bare
-                     Share button here and nothing else — Settings and
-                     History lived in the sidebar, Export and Print existed
-                     only on the report page. `AssessmentActions` renders
+                <!-- Settings · History · Share · Export · Print, one component,
+                     replacing what was once a bare Share button here and
+                     nothing else — Settings and History lived in the sidebar,
+                     Export and Print existed only on the report page. `AssessmentActions` renders
                      nothing `store.abilities` does not allow; Share stays a
                      page-level dialog (below), which is why the component
                      emits rather than opening one itself. -->
@@ -348,7 +345,7 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
             </ChromeTitleRow>
         </template>
 
-        <!-- W141: a template opens in this editor. Said once, above everything,
+        <!-- A template opens in this editor. Said once, above everything,
              because the one thing that differs is what editing it means. -->
         <div
             v-if="assessment.is_template"
@@ -369,7 +366,7 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
         </div>
 
         <!-- ui.md §3.5: never silently clobber, never silently discard the
-             user's typing. Above the toolbar, where it was through W80: a
+             user's typing. Above the toolbar, where it used to be: a
              conflict is about the document, not about the view of it. -->
         <div v-if="conflictEntries.length" class="px-3 pt-3">
             <div
@@ -412,15 +409,15 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
             :available-tags="store.availableTagNames.value"
         />
 
-        <!-- W34 / brief item 1: the editor is a canvas, not a document, so it
+        <!-- The editor is a canvas, not a document, so it
              takes the whole window. `max-w-7xl` capped it at 1280px and
              letterboxed the chart on exactly the wide screens the chart view
              exists to exploit. The centred container stays on the pages that
              read as documents (the report, the lists, profile). The header
-             above is still constrained by AuthenticatedLayout, which W41
-             owns and replaces with the sidebar shell.
+             above is still constrained by AuthenticatedLayout, which is
+             now the sidebar shell.
 
-             W81: the toolbar is no longer inside this padding. Its band was
+             The toolbar is no longer inside this padding. Its band was
              `px-3 py-3` here and the row inside it `px-3 py-1.5` in
              Toolbar.vue — two paddings in two files that the report had to
              match by inspection, and did not. Both belong to
@@ -430,8 +427,8 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
             <!-- ui.md §5: both scroll axes, panning by middle-drag or
                  space-drag. Zoom is applied by whichever view is mounted —
                  `listStyle` here, `canvasStyle` inside ChartView — because
-                 after W34 the same zoom number means two different things
-                 (PLAN-2.2.md D9). -->
+                 the same zoom number means two different things in the two
+                 views (ui.md §5). -->
             <div
                 ref="treeContainer"
                 class="overflow-auto"
@@ -445,7 +442,7 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
             >
                 <ChartView v-if="view.viewMode.mode.value === 'chart'" />
                 <!--
-                    W70, item 8. The chart wants the whole window; the list
+                    The chart wants the whole window; the list
                     does not. Left full-bleed on a wide monitor a risk row put
                     its title at the far left and its chips a metre away at
                     the far right, with nothing in between — the eye has to
@@ -455,8 +452,8 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
                     its chips are in one glance. It is a cap, not a width:
                     narrow windows are unaffected. Whether the capped column
                     sits centred or flush left depends on the viewport — see
-                    the W84 paragraph below, which is the current statement
-                    of that; this paragraph is only about why there is a cap
+                    the centring paragraph below, which is the current
+                    statement of that; this paragraph is only about why there is a cap
                     at all.
 
                     Applied here rather than on the scroll container so the
@@ -466,13 +463,13 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
                     a reading zoom is for.
 
                     Print is untouched. `print.css` resets `zoom` to 1 and
-                    fixes the type at 9pt (W33), and 4xl is 64rem against an
+                    fixes the type at 9pt, and 4xl is 64rem against an
                     A4 text column of roughly 718px, so the cap never binds on
                     paper. Only the editor's list is capped: the frozen
                     snapshot reader (Pages/Snapshots/View.vue) renders its own
-                    tree and is not W70's to change.
+                    tree and is not this cap's to change.
 
-                    W84/item 11: `mx-auto` centres this column in the wider
+                    `mx-auto` centres this column in the wider
                     scroll container above a bare left-aligned cap put the
                     whole list hard against the window's left edge on any
                     screen wider than the 4xl measure, with no reason for that
@@ -497,7 +494,7 @@ const conflictEntries = computed(() => Object.entries(store.conflicts));
 
         <NodeModal />
 
-        <!-- W38: one mount for both views. The drag handle is a page
+        <!-- One mount for both views. The drag handle is a page
              singleton (the dragstart/drop handoff lives inside it), so the
              dialog that resolves a drop has to be one too. -->
         <ReparentDialog

@@ -7,12 +7,12 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * Assignees (W46, item 16; PLAN-2.2.md D13).
+ * Assignees.
  *
  * The authorization here is deliberately small, and the tests exist to keep it
  * that way. Assigning is `update` on the assessment; being assigned grants
  * **nothing**. There is no node-scoped ability anywhere in this codebase and
- * this package does not introduce the first one — which is a claim worth
+ * assignees do not introduce the first one — which is a claim worth
  * asserting rather than asserting the absence of code.
  */
 function collaborator(Assessment $assessment, string $role): User
@@ -104,7 +104,7 @@ test('assigning someone twice is a no-op rather than a duplicate-key error', fun
     expect($risk->fresh()->assignees()->count())->toBe(1);
 });
 
-// --- an assignment grants nothing (the point of the package) ---------------
+// --- an assignment grants nothing (the point of assignees) ---------------
 
 test('a viewer assignee still cannot PATCH the node they are assigned', function () {
     $assessment = Assessment::factory()->create();
@@ -143,7 +143,7 @@ test('a viewer assignee still cannot delete or comment on the node', function ()
     expect($risk->fresh()->deleted_at)->toBeNull();
 });
 
-// --- D13: an assignee must already be a collaborator ----------------------
+// --- an assignee must already be a collaborator ---------------------------
 
 test('assigning a non-collaborator is refused rather than silently sharing', function () {
     $assessment = Assessment::factory()->create();
@@ -186,7 +186,7 @@ test('the confirmed share step adds a viewer row and nothing more', function () 
 });
 
 /*
- * The escalation this package must not open. Adding a collaborator has always
+ * The escalation assignees must not open. Adding a collaborator has always
  * been a `manage` action; routing it through a route whose name says "assign"
  * must not turn it into an `update` one, or any editor could hand read access
  * to a whole assessment to anyone with an account.
@@ -242,8 +242,8 @@ test('a deactivated account cannot be shared in through the assign route', funct
 // --- removing a collaborator ---------------------------------------------
 
 /*
- * The decision the brief asked to be made explicitly. Removing a collaborator
- * removes their assignments: the alternative leaves a row saying "assigned to
+ * A decision made explicitly: removing a collaborator
+ * removes their assignments, because the alternative leaves a row saying "assigned to
  * Dana" on a node Dana can no longer open, which either shows her work she
  * cannot reach or names her to everyone else indefinitely. See the docblock on
  * AssessmentUser.

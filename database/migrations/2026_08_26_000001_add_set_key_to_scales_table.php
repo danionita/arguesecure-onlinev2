@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * A scale *set* becomes a real thing (W77, PLAN-2.4.md D36).
+     * A scale *set* becomes a real thing.
      *
      * Until now a "system scale set" was an implicit trio of `scales` rows
      * sharing `is_system = 1, assessment_id IS NULL` and nothing else. There

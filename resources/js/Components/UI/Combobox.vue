@@ -6,7 +6,7 @@
  * filtered) so it can be backed by a real search endpoint later without
  * this component changing.
  *
- * ## The listbox is teleported (W71 item 6, PLAN-2.4.md D29)
+ * ## The listbox is teleported
  *
  * It used to be `absolute` inside this component's own root. Two of the
  * comboboxes in the node modal are the *last* element of their section, and

@@ -19,6 +19,11 @@ name: Release
 # main without a rebuild (after the history was rewritten), or, started with
 # notes_version, to set the notes of an existing tag's release (made if it has none).
 # One mode per run.
+#
+# A new release or a move_tag run also needs CI to be green on the commit it is
+# run on (tools/release/ci-gate.sh): push the commit, wait for CI, then run
+# this. refresh_notes, repoint_tag and notes_version change no code and are
+# exempt.
 on:
   workflow_dispatch:
     inputs:
@@ -88,6 +93,16 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "refresh=$REFRESH" >> "$GITHUB_OUTPUT"
           echo "move=$MOVE" >> "$GITHUB_OUTPUT"
+
+      # Keep this step before 'Remove the old release and tag': a move_tag run
+      # on red CI must be refused before anything is deleted.
+      - name: Refuse unless CI is green on this commit
+        if: steps.v.outputs.refresh != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&per_page=100" \
+            | tools/release/ci-gate.sh "$GITHUB_SHA"
 
       - name: Rewrite the notes of the existing release
         if: steps.v.outputs.refresh == 'true'

@@ -6,7 +6,7 @@ import type { Page } from '@playwright/test';
  *
  * Two different scenarios need this, for opposite reasons.
  *
- * **Sharing has a UI now (W27), but scenarios 3 and 11 still drive its
+ * **Sharing has a UI now, but scenarios 3 and 11 still drive its
  * endpoints directly.** `Components/Share/ShareDialog.vue` is mounted from
  * `Pages/Assessment/Show.vue` behind a "Share" button, but exercising the
  * dialog itself is a UI test, not what these two scenarios are about — 3 is

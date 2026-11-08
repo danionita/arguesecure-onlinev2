@@ -2,7 +2,7 @@
 /**
  * Type-dispatch shell for the value tab (ui.md §7).
  *
- * The tab's *label* is per type since W39 — Impact, Likelihood or Cost — but
+ * The tab's *label* is per type — Impact, Likelihood or Cost — but
  * the dispatch was already per type, so the rename cost nothing here. The
  * root branch below is unreachable from the modal now (the root has no value
  * tab: it is quantified by its children, not by itself) and stays only as a

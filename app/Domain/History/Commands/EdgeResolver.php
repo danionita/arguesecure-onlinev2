@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * ReparentEdge don't each re-derive the risk_attack vs attack_defence
  * branching. The `edge` discriminator is matched against a fixed two-entry
  * whitelist below — never used to build a class name from stored input
- * (CLAUDE.md, security.md §7 defect #7).
+ * (security.md §7, defect #7).
  */
 final class EdgeResolver
 {
@@ -40,8 +40,8 @@ final class EdgeResolver
      * Resolves a node by uuid inside one assessment, for a lookup whose uuid
      * came from a request body or a stored command: the route's {assessment}
      * is what the policy checked, so a uuid from any other assessment must
-     * resolve to nothing, exactly as a uuid that does not exist does (W104,
-     * W121). `Node` itself carries no type scope (unlike Risk/Attack/Defence),
+     * resolve to nothing, exactly as a uuid that does not exist does.
+     * `Node` itself carries no type scope (unlike Risk/Attack/Defence),
      * so this resolves any node regardless of type. Includes trashed rows: a
      * caller decides for itself whether a soft-deleted endpoint is acceptable.
      */

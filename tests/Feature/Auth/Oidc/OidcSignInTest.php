@@ -509,7 +509,7 @@ test('the SSO-only switch needs a provider, and saves once one is configured', f
     config(['arguesecure.oidc.issuer' => '']);
     $this->actingAs($admin)->get('/admin/authentication')->assertInertia(fn (Assert $page) => $page->where('enabled', false));
 
-    // W133, D108: refused, and nothing stored, while no provider is set.
+    // Refused, and nothing stored, while no provider is set.
     $this->actingAs($admin)->put('/admin/authentication', $payload)->assertSessionHasErrors('sso_only');
     expect(InstanceSettings::all()['sso_only'])->toBeFalse();
 

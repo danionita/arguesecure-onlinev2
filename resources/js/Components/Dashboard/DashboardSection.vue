@@ -1,21 +1,21 @@
 <script setup lang="ts">
 /**
  * One dashboard section: a heading, a list, and — when the list is empty —
- * an explanation rather than a gap (W42).
+ * an explanation rather than a gap.
  *
  * The empty state is a prop rather than a slot because it is the part most
  * likely to be skipped. Making it required forces every caller to say what
  * would appear there and why, which is the difference between a dashboard
  * that reads as an invitation and one that reads as four broken boxes. A new
  * user sees all four empty on their first visit, and two of them stay empty
- * until W46 and W47 ship.
+ * until someone assigns you work or mentions you.
  *
  * A real `<section>` with `aria-labelledby`, so a screen reader can move
  * between them by landmark instead of walking every row.
  *
- * ## The `panel` variant (W73 item 21, D32)
+ * ## The `panel` variant
  *
- * D32 turned the four stacked sections into two sections of two tabs. The
+ * The four stacked sections became two sections of two tabs (ui.md §8). The
  * four empty states survive that unchanged — they are the part of this page
  * that was got right, and they are as true inside a tab panel as they were
  * under a heading. What does not survive is the heading and the landmark: in

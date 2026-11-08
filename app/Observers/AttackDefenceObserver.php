@@ -8,20 +8,19 @@ use App\Observers\Concerns\TriggersRecalculation;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * PLAN.md Phase 6 item 4 — link changed. See NodeObserver's docblock for
+ * Link changed. See NodeObserver's docblock for
  * why this lives as a pivot-model observer rather than inline in
- * LinkController (outside this package's ownership).
+ * LinkController.
  *
- * Known gap, reported rather than worked around per this package's brief:
- * App\Domain\Structure\LinkService::unlinkAttackFromDefence() (outside this
- * package's ownership) removes a link via a query-builder `->delete()`
+ * Known gap: App\Domain\Structure\LinkService::unlinkAttackFromDefence()
+ * removes a link via a query-builder `->delete()`
  * against the pivot table, not `$model->delete()` — Eloquent only fires
  * model events for the latter, so `deleted()` below never actually runs
  * through that path today. It is kept because it is the correct handler
  * for any *future* caller that deletes a retrieved AttackDefence instance,
  * and because doing anything else (parsing raw SQL, adding a DB::listen()
- * shim) would be working around a file this package does not own rather
- * than reporting it — see the W16 session's final report for the full note.
+ * shim) would be working around LinkService rather than fixing it where it
+ * lives.
  */
 class AttackDefenceObserver
 {

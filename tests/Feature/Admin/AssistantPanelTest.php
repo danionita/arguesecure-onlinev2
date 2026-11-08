@@ -1,12 +1,12 @@
 <?php
 
 /**
- * W75 item 17 (PLAN-2.4.md D37) — the admin settings page can explain the
- * assistant, and explaining it does not make it reachable.
+ * The admin settings page can explain the assistant, and explaining it does
+ * not make it reachable.
  *
- * The reported symptom was "I could not find any trace of it". W50 chose
- * silence on a deployment with no inference runtime, which was right for the
- * *control* — a toggle that cannot work is worse than no toggle — and wrong
+ * The reported symptom was "I could not find any trace of it". The original
+ * assistant gate chose silence on a deployment with no inference runtime,
+ * which was right for the *control* — a toggle that cannot work is worse than no toggle — and wrong
  * for the *explanation*: an admin cannot distinguish a build that lacks the
  * feature from an instance where it is switched off two containers away, and
  * silence answers that question wrongly.
@@ -15,14 +15,14 @@
  *
  * 1. **The page is given what a diagnosis needs**, in every one of the four
  *    Availability states, including the one where nothing is configured.
- * 2. **The gate is exactly where it was.** D25 is not reopened. Adding words
+ * 2. **The gate is exactly where it was.** It is not reopened. Adding words
  *    to a settings page is the sort of change that quietly grows a "try
  *    anyway" affordance, so the absence of one is asserted here rather than
  *    assumed — the routes still 404, and the setting still cannot be turned
  *    on without a runtime.
  *
  * The health probe is faked throughout: nothing in this suite contacts a real
- * model, per PLAN-2.3-ai.md's rule for W53's fixtures.
+ * model, as the assistant tests everywhere do.
  */
 
 use App\Domain\Assistant\Availability;
@@ -98,7 +98,7 @@ test('the settings page names the preset the runtime reports it loaded', functio
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('assistant.configured', true)
-            // From the runtime, not from .env (D55): the old label could name
+            // From the runtime, not from .env: the old label could name
             // one model while the container ran another.
             ->where('assistant.model.preset', 'small')
             ->where('assistant.model.file', 'gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf')
@@ -114,7 +114,7 @@ test('the settings page names the preset the runtime reports it loaded', functio
 
 test('the settings page reports a custom model by its file name', function () {
     // Every 2.5 deployment runs this, through ASSISTANT_MODEL_FILE, until
-    // someone installs a preset (D54). It is not an error, and it is not one
+    // someone installs a preset. It is not an error, and it is not one
     // of the presets either.
     runtimeServing('gemma-3-4b-it-Q4_K_M.gguf');
     config()->set('assistant.enabled', true);
@@ -162,7 +162,7 @@ test('the settings page reports a runtime that is switched off but present', fun
             ->assertInertia(fn (Assert $page) => $page
                 ->where('assistant.state', Availability::DISABLED)
                 // Which model is installed is worth knowing before deciding
-                // to switch it on, so it is asked even now (D55)...
+                // to switch it on, so it is asked even now...
                 ->where('assistant.model.preset', 'large')
                 ->etc()
             );
@@ -172,7 +172,7 @@ test('the settings page reports a runtime that is switched off but present', fun
     // the model probe is cached: two renders, one request, and never
     // /health. Before 2.6 this asserted that nothing at all was sent; the
     // model question is the one deliberate addition, and it is bounded to one
-    // short request per TTL on this one page (D25's render-path rule).
+    // short request per TTL on this one page (the render-path rule).
     Http::assertSentCount(1);
     Http::assertSent(fn ($request) => str_ends_with($request->url(), '/props'));
     Http::assertNotSent(fn ($request) => str_ends_with($request->url(), '/health'));
@@ -217,7 +217,7 @@ test('explaining the assistant does not register a route for it', function () {
     config()->set('assistant.enabled', false);
     $admin = User::factory()->admin()->create();
 
-    // The panel now tells this admin the feature exists. D25's whole point is
+    // The panel now tells this admin the feature exists. The whole point of the gate is
     // that reading about it must not make it reachable: 404, not 403, and not
     // a 200 carrying `available: false`.
     $this->actingAs($admin)->get('/admin/assistant')->assertOk();

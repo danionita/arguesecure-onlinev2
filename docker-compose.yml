@@ -1,5 +1,4 @@
-# W101 (D62): every PHP service runs one published image, so a deployment
-# needs only this file and a .env - no checkout, no build. `build:` stays
+# Every PHP service runs one published image, so a deployment needs only this file and a .env - no checkout, no build. `build:` stays
 # beside `image:`: Compose pulls the image when it is not already local and
 # builds it from source only when the pull fails, and `--build` always builds.
 # A source build is therefore tagged with the same name, and a later
@@ -108,13 +107,13 @@ services:
         condition: service_healthy
     networks: [arguesecure]
 
-  # W50 — the inference runtime for the assistant (PLAN-2.3-ai.md D17).
+  # The inference runtime for the assistant (docs/ASSISTANT.md).
   #
   # **Behind a profile, so `docker compose up -d` does not start it.** The
   # assistant is optional and most deployments will not run it: it needs a
   # model file and 6 GiB of RAM (small) or 28 GiB (large), against a project
   # rule that ArgueSecure must run anywhere. Install a model, then start it
-  # deliberately (PLAN-2.6.md D53):
+  # deliberately:
   #
   #   docker compose run --rm assistant-install small     # or: large
   #   docker compose --profile assistant up -d
@@ -136,7 +135,7 @@ services:
   # to serve (a preset from docker/assistant/models.conf, or
   # ASSISTANT_MODEL_FILE), refuses one that is missing or incomplete with the
   # command that installs it, and starts llama-server with the flags the 2.6
-  # spike measured (D56). The context window, `-c`, is ASSISTANT_CONTEXT_TOKENS
+  # spike measured. The context window, `-c`, is ASSISTANT_CONTEXT_TOKENS
   # on both sides: the runtime *silently truncates* a longer prompt, dropping
   # its front, so the app must know the same number to refuse one.
   #
@@ -144,7 +143,7 @@ services:
   # docker/assistant/Dockerfile: "which build is this instance running" should
   # be answerable by looking, too, and `:server` moves daily. That Dockerfile
   # only adds assistant.sh and models.conf, which were bind-mounted from the
-  # checkout until W101 (D63) - a mount is what tied a deployment to a clone.
+  # checkout until deployments ran from the published image - a mount is what tied a deployment to a clone.
   # Editing either file locally now needs `--build` to take effect.
   #
   # Not published to the host, for the same reason Reverb is not (§2.1):
@@ -179,7 +178,7 @@ services:
       retries: 3
     networks: [arguesecure]
 
-  # Downloads and verifies a model, then exits (D53). Its own profile, so no
+  # Downloads and verifies a model, then exits. Its own profile, so no
   # `up` ever starts it; `docker compose run` starts it by name:
   #
   #   docker compose run --rm assistant-install small     # or: large, list
@@ -215,7 +214,7 @@ services:
       retries: 10
     networks: [arguesecure]
 
-  # Never evicts (PLAN-2.7.md D72). This one Redis holds the queue and the
+  # Never evicts. This one Redis holds the queue and the
   # edit locks, and an evicting policy may drop either under memory pressure
   # without telling anyone. Full, it refuses writes instead, loudly; what that
   # looks like and how to size it is in docs/specs/deployment.md.

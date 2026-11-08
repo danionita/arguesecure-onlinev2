@@ -6,7 +6,7 @@ import {
 } from '../../../resources/js/Components/Comments/useComments';
 
 /**
- * W119: useComments is the only client of CommentController, and every one of
+ * useComments is the only client of CommentController, and every one of
  * its mutations edits a local copy of the thread tree by id. The risk is the
  * edit landing on the wrong comment (a reply patched as if it were a top-level
  * comment, or the reverse), so each case checks which comment changed.

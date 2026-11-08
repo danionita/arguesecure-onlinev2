@@ -1,12 +1,12 @@
 /**
- * W72 item 10 — the target of assessment gets a Scales tab.
+ * The target of assessment gets a Scales tab.
  *
- * The brief's one hard constraint is that surfacing these settings must not
+ * The one hard constraint is that surfacing these settings must not
  * create a second write path to the same columns, so the assertions that
  * matter here are about *which endpoint* is used, not about the markup: the
  * tab must read `assessments.settings.edit` and write
  * `assessments.settings.update`, the same controller and the same FormRequest
- * the settings page has used since W44. A test that only checked "a currency
+ * the settings page has always used. A test that only checked "a currency
  * select renders" would pass just as happily against a parallel endpoint,
  * which is the failure this file exists to make impossible.
  */
@@ -21,6 +21,7 @@ import {
     createAssessmentStore,
     type AssessmentStore,
 } from '../../../resources/js/stores/assessmentStore';
+import { routeProperties } from '../support/routeProperties';
 import { makeComputedStore, makeInit, SCALE_LEVELS, SCALES } from './fixture';
 
 vi.mock('@inertiajs/vue3', () => ({
@@ -49,10 +50,10 @@ const SETTINGS_PROPS = {
     currencies: { EUR: 'Euro', USD: 'US dollar' },
     maxAmortizationYears: 10,
     /*
-     * The shape `AppDomainScalesScaleDescriber` actually emits (W87).
+     * The shape `AppDomainScalesScaleDescriber` actually emits.
      *
      * This fixture declared `levels: { code, label }[]` — what the endpoint
-     * sent before W87 replaced it with `ScaleDescriber`. The server now sends
+     * sent before `ScaleDescriber` replaced it. The server now sends
      * `bands`, with the bounds and the representative, so the old fixture was
      * a fiction: the tab crashed on a live payload while every assertion here
      * passed against data no server produces. A fixture that has drifted from
@@ -141,14 +142,14 @@ beforeEach(() => {
 function mountTab(store: AssessmentStore = makeComputedStore()) {
     const wrapper = mount(ScalesTab, {
         props: { store, uuid: 'root' },
-        global: { config: { globalProperties: { route } } },
+        global: { config: { globalProperties: routeProperties(route) } },
     });
     mounted.push(wrapper);
 
     return wrapper;
 }
 
-describe('the Scales tab guards unsaved edits (W142)', () => {
+describe('the Scales tab guards unsaved edits', () => {
     it('is unsaved once a field differs from the store, and clean again after Save', async () => {
         const wrapper = mountTab();
         await flushPromises();
@@ -199,7 +200,7 @@ describe('the Scales tab reads and writes the settings controller', () => {
         await flushPromises();
 
         // From `bands`, which is what ScaleDescriber sends. Reading `levels`
-        // here — the key this endpoint sent before W87 — is not a missing row
+        // here — the key this endpoint used to send — is not a missing row
         // but a TypeError in the render function, so these assertions stand in
         // for the whole tab loading at all.
         expect(wrapper.text()).toContain('Severe');
@@ -208,7 +209,7 @@ describe('the Scales tab reads and writes the settings controller', () => {
         expect(wrapper.text()).toContain('Not configured.');
 
         // `code` is in the payload — it is the round-trip token that freezes a
-        // code across a rename (D44) — and is drawn nowhere.
+        // code across a rename — and is drawn nowhere.
         expect(wrapper.text()).not.toContain('sev');
         expect(wrapper.text()).not.toContain('partial');
     });
@@ -217,7 +218,7 @@ describe('the Scales tab reads and writes the settings controller', () => {
         const wrapper = mountTab();
         await flushPromises();
 
-        // W87/D46 deleted `assessments.scales.edit`. A link left pointing at
+        // The separate scales page was removed along with `assessments.scales.edit`. A link left pointing at
         // it does not degrade — `route()` throws on an unknown name, so the
         // whole tab would fail to render.
         expect(
@@ -328,7 +329,7 @@ describe('the tab appears on the root, and only for someone who may manage', () 
             global: {
                 provide: { [ASSESSMENT_STORE_KEY as symbol]: store },
                 stubs: { CommentThread: true, RevisionList: true },
-                config: { globalProperties: { route } },
+                config: { globalProperties: routeProperties(route) },
             },
         });
         mounted.push(wrapper);

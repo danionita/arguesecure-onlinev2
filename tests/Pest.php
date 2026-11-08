@@ -51,7 +51,7 @@ expect()->extend('toBeOne', function () {
  * Build a user whose password this test knows.
  *
  * UserFactory deliberately assigns an unknowable random password, because
- * CLAUDE.md forbids a credential literal in any file, factories included.
+ * no credential literal is ever committed, factories included.
  * Tests that must authenticate need the plaintext, so it is generated per
  * call and returned alongside the user rather than written down anywhere.
  *

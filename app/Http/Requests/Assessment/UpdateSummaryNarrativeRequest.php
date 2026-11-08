@@ -7,11 +7,11 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Writing the report's executive summary (W54).
+ * Writing the report's executive summary.
  *
  * **Deliberately not gated on the assistant.** The narrative is a field of the
  * assessment that a person may type themselves and most will; a deployment
- * with no inference runtime — which is the overwhelming majority (D25) — still
+ * with no inference runtime — which is the overwhelming majority — still
  * writes, edits and clears it. Only the *drafting* route sits behind the
  * assistant middleware.
  */

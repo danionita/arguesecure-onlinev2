@@ -1,11 +1,11 @@
 <?php
 
 /**
- * W52 — job B: suggesting children for a node.
+ * Job B: suggesting children for a node.
  *
  * The centre of this file is the **allowlist**, and the red-team cases below
- * are here rather than in W53 because they test that parser and CLAUDE.md is
- * explicit that the test goes with the code.
+ * are here rather than in the guardrail suite because they test that parser,
+ * and a test goes with the code it tests.
  *
  * What the 2.3 spike measured, and what these assertions therefore pin:
  *
@@ -15,7 +15,7 @@
  *   does not depend on the model behaving.
  * - Injected text **reached a legitimate field on 3 of 3** as well. No parser
  *   can tell an injected `title` from a genuine one, so nothing here writes to
- *   the graph and a person accepts every suggestion by hand (D24).
+ *   the graph and a person accepts every suggestion by hand.
  *
  * Nothing contacts a real model; `Http::fake()` stands in for the runtime.
  */
@@ -69,7 +69,7 @@ function assessmentWithRisk(User $user): array
 }
 
 // ---------------------------------------------------------------------------
-// The allowlist — this package's security content
+// The allowlist — the security content of suggestions
 // ---------------------------------------------------------------------------
 
 test('the parser reads title and description and nothing else', function () {
@@ -222,7 +222,7 @@ test('suggesting writes nothing to the graph', function () {
         ->assertJson(['child_type' => 'attack', 'generated' => true])
         ->assertJsonCount(2, 'suggestions');
 
-    // D24. A suggestion becomes a node when a person clicks accept, and that
+    // A suggestion becomes a node when a person clicks accept, and that
     // click goes through NodeController::store — never from here.
     expect($assessment->nodes()->count())->toBe($before);
 });
@@ -369,7 +369,7 @@ test('a second suggestion while one is running is refused', function () {
 
     Cache::lock('assistant:generating:'.$user->id, 60)->get();
 
-    // The same SingleFlight W51 introduced: job B reuses it rather than
+    // The same SingleFlight the help job introduced: job B reuses it rather than
     // inventing a second notion of "one at a time".
     $this->actingAs($user)
         ->postJson("/assessments/{$assessment->uuid}/assistant/suggestions", [

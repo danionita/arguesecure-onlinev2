@@ -16,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Tests\Feature\Reporting\ExportFixture;
 
 /*
- * What the five formats actually contain (W74, D34, item 25).
+ * What the five formats actually contain.
  *
  * The theme running through this file: there is **one assembled report and
  * five renderings of it**. Every assertion that matters here is an assertion
@@ -66,7 +66,7 @@ test('every format is a real file of its own kind, not a rename of another', fun
         $responses[$name]->assertOk();
     }
 
-    // D34's reasoning, asserted: faking .xlsx with a CSV and .docx with HTML
+    // The reasoning for real file formats, asserted: faking .xlsx with a CSV and .docx with HTML
     // produces files that open with a repair dialog, which is worse than not
     // offering the format. Both are ZIP containers with a known first part —
     // an HTML file renamed .docx has neither.
@@ -90,7 +90,7 @@ test('the HTML export is self-contained: no CDN, no external asset, no script', 
         ->get(route('assessments.report.export-html', $assessment))
         ->getContent();
 
-    // The CSP rule in CLAUDE.md binds a file that leaves the server as much
+    // The rule that nothing loads from a CDN (security.md §6) binds a file that leaves the server as much
     // as a page served by it: this one is opened from a mail attachment on a
     // machine that has never met this deployment. A single <link> to a font
     // host would make the document depend on a network it will not have.
@@ -109,7 +109,7 @@ test('node text is written as text, never as markup', function () {
         ->get(route('assessments.report.export-html', $assessment))
         ->getContent();
 
-    // CLAUDE.md: no HTML renderer exists in this codebase any more, and one
+    // No HTML renderer exists in this codebase any more, and one
     // must not be reintroduced for generated output. This class writes HTML;
     // it never renders any.
     expect($html)->toContain('&lt;script&gt;')
@@ -219,7 +219,7 @@ test('the CSV is the whole report, not the ranked defence list it used to be', f
 /*
  * ReportOptions binds all five formats.
  *
- * This is the failure W33 named for the download button, restated for
+ * This is the failure named for the download button, restated for
  * exports: an export that silently ignores "include shelved" produces a
  * document that looks complete and is not, and the omission is invisible in
  * the file. Each case below flips one option and asserts every format
@@ -266,7 +266,7 @@ test('include methodology reaches every format', function () {
     expect($on)->toContain('Appendix: methodology')
         ->and($on)->not->toContain('methodology appendix is not included')
         ->and($off)->not->toContain('Appendix: methodology')
-        // W153: leaving it out is stated, as the warnings' omission is.
+        // Leaving it out is stated, as the warnings' omission is.
         ->and($off)->toContain('The methodology appendix is not included in this report.');
 
     // The independence assumption and the per-occurrence definition of
@@ -276,7 +276,7 @@ test('include methodology reaches every format', function () {
 });
 
 /*
- * W153, D120. The four optional appendices and details all start off; only
+ * The four optional appendices and details all start off; only
  * `download=1` turns three of them on, and never the assignees.
  */
 test('comments, methodology, warnings and assignees all default off', function () {
@@ -296,7 +296,7 @@ test('comments, methodology, warnings and assignees all default off', function (
 });
 
 /*
- * W136, D105. The warnings appendix is optional, but a report without it must
+ * The warnings appendix is optional, but a report without it must
  * not read as "the model raised none": it says how many it left out.
  */
 test('include_warnings defaults off, and download=1 turns it on', function () {
@@ -373,7 +373,7 @@ test('show assignees is off by default and adds a column only when chosen', func
 
     // A report is a document that leaves the room. Who was responsible for
     // which line is internal information the exporter has to choose to
-    // include — never inherited from a default (W46).
+    // include — never inherited from a default.
     expect($default)->not->toContain('<th>Assignees</th>')
         ->and($on)->toContain('<th>Assignees</th>');
 });
@@ -390,17 +390,17 @@ test('baseline current hides the target columns in every format', function () {
         ->and($both)->toContain('<th>Target ALE</th>');
 
     // The target total is still stated — the executive summary is the one
-    // place a reader must be able to see what the plan would buy — but the
+    // place a reader must be able to see what the remediation would buy — but the
     // per-risk target column is gone, which is what "baseline=current" asks
     // for. Asserting the total disappeared too would pin the wrong thing.
     expect($current)->not->toContain('€36,700');
 });
 
 /*
- * `download=1` survives the button (D35).
+ * `download=1` survives the button.
  *
  * "Download report" is removed and "Print as configured" becomes "Print",
- * but the forced-full URL W33 defined does not go away: it is what the HTML
+ * but the forced-full URL defined for the download button does not go away: it is what the HTML
  * and Word exports render from, so its query-parameter contract stays. A
  * stale link carrying `baseline=current` must not produce a file that looks
  * complete while silently omitting the target state.
@@ -461,8 +461,8 @@ test('an assessment priced in dollars exports in dollars', function () {
 /*
  * The exporters read the assembled report and nothing else.
  *
- * The rule in the brief — "any exporter that re-queries is a second source
- * of truth for the same figures, and they will diverge" — is enforceable
+ * The rule that "any exporter that re-queries is a second source
+ * of truth for the same figures, and they will diverge" is enforceable
  * because every exporter's `export()` takes an array and a ReportOptions and
  * has no other collaborator. Handing them a report assembled from an
  * assessment that is then deleted proves it: anything that reached for the
@@ -517,7 +517,7 @@ test('the section list is the same for every format', function () {
 });
 
 /*
- * W139, D118. Every section can be left out with `omit_sections`; a report that
+ * Every section can be left out with `omit_sections`; a report that
  * leaves some out names them, and the figures in the rest do not move.
  */
 test('omit_sections defaults to none, drops unknown ids, keeps document order, and download=1 clears it', function () {

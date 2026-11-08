@@ -10,8 +10,8 @@ uses(TestCase::class, RefreshDatabase::class)->in(__FILE__);
 
 /*
  * `record()`'s kind whitelist (schema.md §3.10's enum) — never a free-form
- * string, matching CLAUDE.md's "no dynamic class instantiation or dynamic
- * column names from request input" discipline applied to this table too.
+ * string, matching the rule against dynamic class instantiation or dynamic
+ * column names from request input (security.md §7) applied to this table too.
  */
 test('record rejects a kind outside the schema enum', function () {
     $assessment = Assessment::factory()->create();

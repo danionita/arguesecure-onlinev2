@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
- * Comments (PLAN.md Phase 8 item 1, schema.md §3.8): threaded exactly two
+ * Comments (schema.md §3.8): threaded exactly two
  * levels deep — a top-level comment plus replies, no deeper. The schema
  * note is explicit that this is enforced in application code, not the
  * database: "`parent_comment_id` must reference a comment whose own
@@ -67,7 +67,7 @@ class CommentService
     }
 
     /**
-     * Re-parses mentions (W47).
+     * Re-parses mentions.
      *
      * An edit can name someone who was not named before, and they should hear
      * about it — but everyone already named must not be told twice, which is
@@ -114,8 +114,8 @@ class CommentService
     /**
      * Top-level comments for a node, with their replies and resolver
      * eager-loaded so the modal's Comments tab renders in one query per
-     * relation rather than N+1 per thread (CLAUDE.md "eager-load
-     * everything"). Both the author and resolver are loaded through the
+     * relation rather than N+1 per thread (every relation is
+     * eager-loaded). Both the author and resolver are loaded through the
      * allowlisted `id, name` column selection here, not left to the
      * controller — see CommentController::commentToArray() for the
      * matching serialization allowlist.
@@ -134,11 +134,10 @@ class CommentService
         // instead of `where node_id = ...`, and 42S22s against a column
         // that does not exist. Confirmed via
         // (new Risk)->comments()->getForeignKeyName() === 'risk_id'.
-        // app/Models/Node.php is W6's, not this package's, so this is
-        // worked around here with an explicit query rather than edited —
-        // see the W18 report for the bug writeup. The same defect affects
-        // Node::revisions(), worked around the same way in the W18
-        // routes/web.php history block.
+        // app/Models/Node.php is outside the comments code, so this is
+        // worked around here with an explicit query rather than edited.
+        // The same defect affects Node::revisions(), worked around the same
+        // way in the routes/web.php history block.
         return Comment::query()
             ->where('node_id', $node->id)
             ->whereNull('parent_comment_id')

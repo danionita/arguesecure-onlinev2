@@ -12,8 +12,7 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 /**
- * Applies a calibration to a **shared system scale** — the admin Defaults tab
- * (W87, PLAN-2.5.md D47).
+ * Applies a calibration to a **shared system scale** — the admin Defaults tab.
  *
  * ## Why this is not `ScaleCalibrator`
  *
@@ -27,7 +26,7 @@ use InvalidArgumentException;
  *
  * ## The blast radius is real and is the point
  *
- * D47: "Defaults are about the *content* a new assessment starts with." They
+ * The point of that tab: "Defaults are about the *content* a new assessment starts with." They
  * are also what every assessment that has never calibrated is still pointing
  * at — `is_system` is exactly the `uncalibrated_scales` flag — so an edit here
  * moves those assessments' figures too. That is not a side effect this class
@@ -90,7 +89,7 @@ final class SystemScaleCalibrator
 
     /**
      * Gives every assessment still pointing at this shared scale its own copy
-     * of it, as it is now (W126: deleting a scale needs this on its own, with
+     * of it, as it is now (deleting a scale needs this on its own, with
      * no edit following).
      *
      * @return int how many assessments were moved onto their own copy
@@ -218,8 +217,8 @@ final class SystemScaleCalibrator
         $level = new ScaleLevel(['code' => $code]);
         // Identity column: `scale_id` is deliberately absent from
         // `ScaleLevel::$fillable`, and a `create()` carrying it is dropped in
-        // silence by Eloquent before dying on NOT NULL (CLAUDE.md — this has
-        // broken three packages).
+        // silence by Eloquent before dying on NOT NULL (this has
+        // broken several earlier changes).
         $level->scale_id = $scale->id;
 
         return $level;

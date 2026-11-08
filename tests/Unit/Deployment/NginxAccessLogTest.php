@@ -1,7 +1,7 @@
 <?php
 
 /**
- * W111: the share token travels in the path of `/s/{token}`, so an access
+ * The share token travels in the path of `/s/{token}`, so an access
  * log line that carries the request line carries a live read token to the
  * container's stdout and the reverse proxy's log. The shipped format must
  * log the masked URI, not `$request`. These assert the configuration's shape;

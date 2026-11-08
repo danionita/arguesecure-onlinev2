@@ -6,7 +6,7 @@ use App\Models\User;
 use Database\Seeders\SampleContentSeeder;
 
 /*
- * W22's single most important rule survives W141: no credential is ever
+ * The seeders' single most important rule still holds: no credential is ever
  * seeded, so seeding must never create or guess a user. What changed is that
  * the library no longer needs one — templates have no owner — so an empty
  * users table, or users but no admin, no longer means nothing is seeded.

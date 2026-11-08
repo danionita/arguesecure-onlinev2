@@ -18,8 +18,8 @@ import { openAssessment } from './support/tree';
  * `throttle:reports` is 10/min per user, and both helpers wait out the
  * server's own `Retry-After` — up to 60s — before retrying. That wait cannot
  * fit inside a 30s test, so a test that hit the limit failed *in the retry*,
- * reporting a timeout rather than the 429 it was handling correctly. W74 made
- * this reachable by adding five export formats to a file that already made
+ * reporting a timeout rather than the 429 it was handling correctly. Adding
+ * five export formats made this reachable, in a file that already made
  * about a dozen requests against the same bucket.
  *
  * Raising the per-test budget here keeps the rate limit exactly as
@@ -102,9 +102,8 @@ async function clickDownload(
  * the kind of test that passes for months and then fails on a faster machine.
  * It did, once the suite dropped from 4.9 to 3.6 minutes.
  *
- * Since W110 (D70) the page has its own limiter, `throttle:report-views`
- * at 60/min, so this file no longer comes near it; the retry stays as
- * cheap insurance.
+ * The page now has its own limiter, `throttle:report-views` at 60/min, so
+ * this file no longer comes near it; the retry stays as cheap insurance.
  *
  * The limit is spec-correct and stays; the suite waits it out, exactly as
  * `fetchReport` already does for the export endpoints. Retrying on the
@@ -126,15 +125,15 @@ async function gotoReport(page: Page, uuid: string, query = ''): Promise<void> {
 }
 
 /**
- * Scenario 8 of PLAN.md's end-to-end list: "Generate the report; confirm
+ * Scenario 8 of the end-to-end scenario list: "Generate the report; confirm
  * current and target states differ correctly, the ranked defence list is
  * ordered by marginal contribution, cost buckets are separated, and Save as
  * PDF produces a clean, correctly paginated document."
  *
- * The last clause is the browser's own print pipeline, deliberately: PLAN.md
- * Phase 7 chose a tuned `@media print` stylesheet over a headless-Chromium
- * sidecar, partly for resource cost and partly to keep `dompdf 0.6` — the
- * most dangerous dependency in the legacy repo — permanently gone. What can
+ * The last clause is the browser's own print pipeline, deliberately: the
+ * report spec (ui.md §9, Print and PDF) chose a tuned `@media print`
+ * stylesheet over a headless-Chromium sidecar, partly for resource cost
+ * and partly to keep `dompdf 0.6` — the most dangerous dependency in the legacy repo — permanently gone. What can
  * be asserted here is that the button exists and triggers the print
  * pipeline; what the operating system's print dialog then produces is
  * outside any browser automation.
@@ -187,10 +186,9 @@ test.describe('the report', () => {
         const uuid = await openAssessment(page);
         await gotoReport(page, uuid);
 
-        // PLAN.md Phase 7 items 4 and 5: implemented controls ranked by
-        // marginal contribution, and todo controls ranked by the opportunity
-        // implementing them would buy — two separate sections, because they
-        // answer two different questions.
+        // Implemented controls ranked by marginal contribution, and todo
+        // controls ranked by the opportunity implementing them would buy —
+        // two separate sections, because they answer two different questions.
         await expect(
             page.getByRole('heading', { name: /cost benefit/i }).first(),
         ).toBeVisible();
@@ -208,16 +206,15 @@ test.describe('the report', () => {
         const uuid = await openAssessment(page);
         await gotoReport(page, uuid);
 
-        // W35 renamed this from "Download PDF" to "Print as configured";
-        // W74/D35 shortened it to "Print". The qualifier existed to draw a
+        // This was renamed from "Download PDF" to "Print as configured" and
+        // then shortened to "Print". The qualifier existed to draw a
         // distinction against a **Download report** button beside it, and
         // that button is gone — the same forced-full render is now an item
         // in the export menu, named by what it produces. A button that
         // prints what is on screen needs no qualifier.
         //
-        // W138: for this authenticated viewer `AssessmentActions.vue` (D40)
-        // renders Print as a menu that asks which view to print. The trigger
-        // is named "Print"; the items are "Print chart", "Print list" and
+        // For this authenticated viewer `AssessmentActions.vue` renders Print
+        // as a menu that asks which view to print. The trigger is named "Print"; the items are "Print chart", "Print list" and
         // "Print report", the current view first.
         const trigger = page.getByRole('button', {
             name: 'Print',
@@ -262,13 +259,13 @@ test.describe('the report', () => {
         await login(page, adminEmail, adminPassword());
         const uuid = await openAssessment(page);
 
-        // W33: the whole of W17 shipped behind a URL nothing linked to.
+        // The whole report once shipped behind a URL nothing linked to.
         // Reaching it by navigation is the point of this test — asserting the
         // page renders while only ever visiting it directly is what let that
         // ship in the first place.
         //
-        // W35 moved it from a link in the page header into the third position
-        // of the view switcher (PLAN-2.2.md D10), so this now presses the
+        // It moved from a link in the page header into the third position
+        // of the view switcher, so this now presses the
         // control a user would actually press.
         await page.getByRole('radio', { name: 'Report' }).click();
 
@@ -278,8 +275,8 @@ test.describe('the report', () => {
         await expect(
             // Exact, because the page carries a "Written summary" section
             // too and a substring match would resolve to both. They were both
-            // called "Executive summary" until W67 — which is what this
-            // selector caught.
+            // called "Executive summary" until one was renamed — which is what
+            // this selector caught.
             page.getByRole('heading', {
                 name: 'Executive summary',
                 exact: true,
@@ -310,10 +307,10 @@ test.describe('the report', () => {
     });
 
     /**
-     * W83 replaced the open/close options panel with a row beside the search
-     * box; W136 (D106) put the settings behind two buttons in that row,
-     * Defences and Sections (W153 renamed Content). The buttons are always on screen, beside the
-     * search box, and there is no "Report options" panel to open or close.
+     * The open/close options panel was replaced by a row beside the search
+     * box, with the settings behind two buttons in that row, Defences and
+     * Sections (formerly Content). The buttons are always on screen, beside
+     * the search box, and there is no "Report options" panel to open or close.
      * The settings are in the pop-ups, so each is opened before it is read.
      */
     test('the Defences and Sections buttons are always visible beside the search box and hold the settings', async ({
@@ -383,10 +380,10 @@ test.describe('the report', () => {
     });
 
     /**
-     * D43. The report's zoom control is its own — not "nothing to zoom",
-     * which was true only through W80 — and moving it must not touch the
-     * chart/list's own stored zoom (contrast: two views sharing one number,
-     * D9's remaining case for the chart and list themselves).
+     * The report's zoom control is its own — not "nothing to zoom", which
+     * was true only while the report had no zoom — and moving it must not
+     * touch the chart/list's own stored zoom (contrast: two views sharing one
+     * number, the remaining case for the chart and list themselves).
      */
     test("the report's zoom is its own and does not disturb the chart/list zoom", async ({
         page,
@@ -443,15 +440,14 @@ test.describe('the report', () => {
             };
         });
 
-        // Renamed and repointed rather than deleted (W74/D35). "Download
-        // report" the *button* is gone; the forced-full URL W33 defined is
-        // not, and the behaviour this test pins — one click, no options step,
+        // Renamed and repointed rather than deleted. "Download report" the
+        // *button* is gone; the forced-full URL is not, and the behaviour this test pins — one click, no options step,
         // every section, both states — is still a requirement. It is reached
         // from the export menu now, where the same render is one of five
         // formats and is named by what it produces.
         await gotoReport(page, uuid);
 
-        // W74 repointed this item at the HTML *export* route rather than at a
+        // This item was repointed at the HTML *export* route rather than at a
         // navigation to `report?download=1`. The forced-full contract is
         // unchanged — `download=1` still overrides every other parameter
         // server-side — but the response is now a file rather than a page, so
@@ -476,8 +472,8 @@ test.describe('the report', () => {
         expect(html).toContain('Full assessment');
         expect(html).not.toContain('Report options');
 
-        // Self-contained, per D34: a file that leaves the server is bound by
-        // the same no-CDN rule as a page served by it.
+        // Self-contained: a file that leaves the server is bound by the same
+        // no-CDN rule as a page served by it.
         expect(html).not.toMatch(/<(script|link)[^>]+https?:\/\//);
 
         // The filename comes from the document title.
@@ -488,9 +484,9 @@ test.describe('the report', () => {
     });
 
     /**
-     * W74 item 15: "The view switcher must occupy the same screen position
-     * across all three views, so switching is a change of content and not a
-     * change of layout... either way, assert it — a pixel claim in prose is
+     * The view switcher's position: "The view switcher must occupy the same
+     * screen position across all three views, so switching is a change of
+     * content and not a change of layout... either way, assert it — a pixel claim in prose is
      * not a guarantee."
      *
      * Here rather than in `tests/js` for the reason
@@ -499,20 +495,20 @@ test.describe('the report', () => {
      * and a switcher that had moved 200px would look identical to one that
      * had not.
      *
-     * **Tightened in W81, which is when it became true.** W74 asserted the
-     * vertical coordinate exactly and the horizontal one only as an anchor —
+     * **Tightened once the page chrome became shared components, which is
+     * when it became true.** It asserted the vertical coordinate exactly and the horizontal one only as an anchor —
      * "within a hand's width of the right edge" — because the editor's row
      * carried the zoom controls *after* the switcher and the report has
      * nothing to zoom, so the two genuinely differed by that group's width.
-     * W74 could not close it (it did not own `Components/Toolbar/Toolbar.vue`)
-     * and refused to fake it with an empty spacer sized to the zoom group,
+     * It could not be closed while `Components/Toolbar/Toolbar.vue` was out
+     * of reach, and refused to fake it with an empty spacer sized to the zoom group,
      * which would have asserted the fix rather than the property.
      *
-     * W81 owns that file. The switcher now sits in the `anchor` slot of
+     * That file is now in scope. The switcher sits in the `anchor` slot of
      * `Components/Chrome/ChromeToolbarBand.vue`, which is **last** in the
      * right-hand group on both pages — the editor's zoom controls and, since
-     * W83, the report's own (`ReportZoomControls.vue`, D43) sit before it on
-     * their respective pages — so its distance from the right edge is the
+     * the report got its own zoom, the report's own (`ReportZoomControls.vue`)
+     * sit before it on their respective pages — so its distance from the right edge is the
      * band's padding and nothing else, for any siblings. That is a property,
      * not a measurement, and the exact equality below is now the honest
      * assertion.
@@ -565,8 +561,8 @@ test.describe('the report', () => {
         expect(report.centreY).toBe(list.centreY);
         expect(report.height).toBe(list.height);
 
-        // The horizontal half of item 15, closed in W81. Exactly the same
-        // inset, not merely the same side of the window.
+        // The horizontal half, closed once the toolbar band was shared.
+        // Exactly the same inset, not merely the same side of the window.
         expect(chart.fromRight).toBe(list.fromRight);
         expect(report.fromRight).toBe(list.fromRight);
 
@@ -606,9 +602,9 @@ test.describe('the report', () => {
         await login(page, adminEmail, adminPassword());
         const uuid = await openAssessment(page);
 
-        // D34's five formats. Requested rather than navigated to: they all
-        // send Content-Disposition: attachment, and `page.goto` on a download
-        // aborts the navigation with "Download is starting" instead of
+        // The five export formats. Requested rather than navigated to: they
+        // all send Content-Disposition: attachment, and `page.goto` on a
+        // download aborts the navigation with "Download is starting" instead of
         // returning a response. `page.request` carries the page's cookies, so
         // this is still an authenticated fetch of the real route.
         const html = await fetchReport(
@@ -636,8 +632,8 @@ test.describe('the report', () => {
         expect(await json.text()).toContain('Payment platform');
 
         // Both OOXML formats are ZIP containers. An HTML file renamed .docx
-        // is not, and it is precisely the fake D34 refused to ship — it opens
-        // with a repair dialog, which is worse than not offering the format.
+        // is not, and it is precisely the fake the export menu refused to
+        // ship — it opens with a repair dialog, which is worse than not offering the format.
         for (const path of ['export.xlsx', 'export.docx']) {
             const response = await fetchReport(
                 page,
@@ -651,12 +647,12 @@ test.describe('the report', () => {
     });
 
     /**
-     * D39, in a real browser with a real anonymous session — every other
-     * test in this file logs in as `adminEmail` first, which exercises only
+     * The guest view, in a real browser with a real anonymous session —
+     * every other test in this file logs in as `adminEmail` first, which exercises only
      * the authenticated branch. This one mints a share token the same way
      * `tests/e2e/13-share-link.spec.ts` does (that file owns the general
      * share-link security assertions; this is the one report-specific
-     * consequence of D39: the guest branch renders no sidebar and no
+     * consequence of that: the guest branch renders no sidebar and no
      * `AssessmentActions`, but the report content, search, options and zoom
      * are unchanged).
      */
@@ -696,12 +692,12 @@ test.describe('the report', () => {
                 }),
             ).toBeVisible();
 
-            // D39: no sidebar landmark for a guest.
+            // No sidebar landmark for a guest.
             await expect(
                 guestPage.getByRole('navigation', { name: 'Main' }),
             ).toHaveCount(0);
 
-            // D40: no AssessmentActions — History sits behind `auth`
+            // No AssessmentActions — History sits behind `auth`
             // middleware and would be a broken link for this session.
             await expect(
                 guestPage.getByRole('button', { name: 'History' }),
@@ -715,18 +711,17 @@ test.describe('the report', () => {
             await expect(
                 guestPage.getByRole('button', { name: 'Export' }),
             ).toBeVisible();
-            // W83's review fix round aligned this button's accessible name
-            // with the authenticated chrome's own `aria-label="Print
-            // report"` (Show.vue) — one action does not get two accessible
+            // This button's accessible name matches the authenticated
+            // chrome's own `aria-label="Print report"` (Show.vue) — one action does not get two accessible
             // names depending on which chrome renders it. This assertion
-            // used to read the pre-W83 exact name 'Print'.
+            // used to read the earlier exact name 'Print'.
             await expect(
                 guestPage.getByRole('button', { name: 'Print report' }),
             ).toBeVisible();
 
             // Search and the options row are the same for a guest as for an
-            // authenticated viewer (W83's whole point: the report content,
-            // search, options and zoom do not depend on which chrome it is
+            // authenticated viewer (the point of the shared chrome: the report
+            // content, search, options and zoom do not depend on which chrome it is
             // in).
             await expect(
                 guestPage.getByRole('searchbox', {

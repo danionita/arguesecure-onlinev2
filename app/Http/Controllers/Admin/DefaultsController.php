@@ -15,7 +15,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * The admin **Defaults** tab (W87, item 10, PLAN-2.5.md D47; 2.5.1; W126).
+ * The admin **Defaults** tab (ui.md §10).
  *
  * ## Why this is not part of Instance settings
  *
@@ -23,7 +23,7 @@ use Inertia\Response;
  * public, how long a session lasts. Defaults are about the *content* a new
  * assessment starts with: the currency and the scales.
  *
- * ## Scales (W126)
+ * ## Scales
  *
  * An admin keeps any number of named scales; the writes are in
  * `ScaleController`. A change to one is used only by assessments created from

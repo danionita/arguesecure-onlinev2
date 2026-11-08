@@ -1,5 +1,5 @@
 /**
- * Module-level toast queue. Real-time (W16) is responsible for the
+ * Module-level toast queue. Real-time editing is responsible for the
  * throttling/grouping behaviour in docs/specs/ui.md §6 ("Dana made 6
  * changes", not six toasts) — this composable only owns the mechanics of
  * showing, auto-dismissing and manually dismissing a toast.

@@ -3,9 +3,9 @@
 use Symfony\Component\Yaml\Yaml;
 
 /*
- * W109 (PLAN-2.7.md D72): the one Redis holds queued jobs, edit locks and,
- * before D71, sessions. Under `allkeys-lru` a full Redis dropped any of them
- * silently; under `noeviction` it refuses the write and the failure is seen.
+ * Redis memory policy (deployment.md §8): the one Redis holds queued jobs,
+ * edit locks and, before sessions moved to the database, sessions. Under
+ * `allkeys-lru` a full Redis dropped any of them silently; under `noeviction` it refuses the write and the failure is seen.
  * The value is asserted, not the flag's presence, because `allkeys-lru` and
  * `volatile-lru` pass a presence check just as well.
  */

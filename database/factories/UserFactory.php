@@ -15,8 +15,8 @@ class UserFactory extends Factory
     /**
      * Define the model's default state.
      *
-     * No fixed credential: CLAUDE.md forbids seeding a password literal anywhere,
-     * including factories, so each built user gets its own random password rather
+     * No fixed credential: no password literal is seeded anywhere, including
+     * factories (security.md §4), so each built user gets its own random password rather
      * than sharing one cached hash across the whole test run.
      *
      * @return array<string, mixed>

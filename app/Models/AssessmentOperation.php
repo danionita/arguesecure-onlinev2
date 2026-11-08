@@ -9,11 +9,11 @@ use Illuminate\Support\Carbon;
 
 /**
  * One linear undo stack per assessment, not per user (schema.md §3.10).
- * Always written by History\UndoService (a later package); no $fillable
+ * Always written by History\UndoService; no $fillable
  * restriction is meaningful since the model is never mass-assigned from a
  * request.
  *
- * Annotations added by W48 for the same reason as NodeRevision's: this table
+ * Annotations added for the same reason as NodeRevision's: this table
  * is read by the history timeline, and without them PHPStan infers the cast
  * columns as strings.
  *
@@ -35,7 +35,7 @@ class AssessmentOperation extends Model
     public $timestamps = false;
 
     /**
-     * W108: `undone_at` keeps microseconds so redo can tell which of two
+     * `undone_at` keeps microseconds so redo can tell which of two
      * undos in the same second came last. The other date columns have none
      * and MariaDB drops the fraction on write.
      */

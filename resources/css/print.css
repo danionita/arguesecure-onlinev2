@@ -1,12 +1,12 @@
 /*
- * Print stylesheet for the report page (PLAN.md Phase 7, ui.md §9). Loaded
+ * Print stylesheet for the report page (ui.md §9). Loaded
  * only by resources/js/Pages/Report/Show.vue, not globally — the tree
  * editor and every other page keep app.css's screen-only rules untouched.
  *
  * "A Download PDF button calls window.print() against a dedicated
  * resources/css/print.css... On every current browser that produces a real
- * PDF via 'Save as PDF'" (PLAN.md). No headless-Chromium container, no
- * dompdf (CLAUDE.md never-reintroduce list) — the browser's own print
+ * PDF via 'Save as PDF'". No headless-Chromium container, no
+ * dompdf (docs/specs/security.md §10) — the browser's own print
  * pipeline against this stylesheet is the whole PDF path.
  */
 
@@ -38,9 +38,9 @@
         max-width: none !important;
         margin: 0 !important;
         padding: 0 !important;
-        /* W83, D43/ui.md §9 "The current zoom is ignored" — the report body
+        /* ui.md §9 "The current zoom is ignored" — the report body
            now carries a CSS `zoom` style from useCanvas.ts (the same
-           primitive the list view uses, D9), reset here for the same reason
+           primitive the list view uses), reset here for the same reason
            the list view's own zoom is reset below: a page printed at
            someone's 140% reading zoom wastes a third of the paper. */
         zoom: 1 !important;
@@ -94,7 +94,7 @@
         content: '';
     }
 
-    /* W33: the full-assessment section is now the longest thing in the
+    /* The full-assessment section is now the longest thing in the
        document — every node with every figure — so it needs to break at the
        right places rather than wherever the page happens to end. A risk and
        its attacks stay together where they fit; a defence row never splits
@@ -122,13 +122,13 @@
 }
 
 /*
- * W49 — the chart and list views print as what is on screen, minus the
- * chrome (PLAN-2.2.md item 21, ui.md §9 "Print").
+ * The chart and list views print as what is on screen, minus the
+ * chrome (ui.md §9, Printing the chart and the list).
  *
- * Same browser pipeline as the report, same stylesheet, no new dependency
- * (D6). The rules below are scoped to `.editor-print`, which
- * AuthenticatedLayout puts on the editor's own container, so nothing here
- * can reach the report's carefully-tuned section breaks above.
+ * Same browser pipeline as the report, same stylesheet, no new dependency.
+ * The rules below are scoped to `.editor-print`, which AuthenticatedLayout
+ * puts on the editor's own container, so nothing here can reach the report's
+ * carefully-tuned section breaks above.
  */
 @media print {
     /* The running header: which assessment, when, and what was filtered.
@@ -177,10 +177,11 @@
     }
 
     /*
-     * Zoom is ignored in favour of a fixed print size (brief item 21).
+     * Zoom is ignored in favour of a fixed print size (ui.md §9, Printing the chart
+     * and the list).
      *
      * The list view applies zoom with CSS `zoom` and the chart with
-     * `transform: scale()` (D9), so both are reset — a page printed at
+     * `transform: scale()`, so both are reset — a page printed at
      * someone's 140% reading zoom wastes a third of the paper, and at 60%
      * it is unreadable.
      */

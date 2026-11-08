@@ -4,14 +4,14 @@
  * card (2.5.1).
  *
  * Both cards used to carry their own copy, and they had drifted: the chart's
- * tooltip named the parents (W69 item 11), the list's said "one node, shown
- * everywhere it belongs", which names nothing. ui.md §3.2 says the two views
+ * tooltip named the parents, the list's said "one node, shown everywhere it
+ * belongs", which names nothing. ui.md §3.2 says the two views
  * must not explain one figure differently, so there is now one component.
  *
- * On an attack the counter is D31's interactive popover — the only place that
- * can detach an attack from one of several risks — and on anything else it
- * is a read-only tooltip listing the parents. AppearsUnderPopover renders
- * nothing for other types, which is why the split is here and not inside it.
+ * On an attack the counter is the interactive popover (ui.md §7) — the only
+ * place that can detach an attack from one of several risks — and on anything
+ * else it is a read-only tooltip listing the parents. AppearsUnderPopover
+ * renders nothing for other types, which is why the split is here and not inside it.
  */
 import AppearsUnderPopover from '@/Components/NodeModal/tabs/AppearsUnderPopover.vue';
 import Icon from '@/Components/UI/Icon.vue';
@@ -25,8 +25,8 @@ const props = defineProps<{
 }>();
 
 /**
- * How many parent names the tooltip lists before it stops counting them out
- * (W69). Past eight, "and N more" is more useful than the ninth name: someone
+ * How many parent names the tooltip lists before it stops counting them out.
+ * Past eight, "and N more" is more useful than the ninth name: someone
  * whose attack sits under fifteen risks is learning that the number is large.
  */
 const PARENT_NAME_CAP = 8;

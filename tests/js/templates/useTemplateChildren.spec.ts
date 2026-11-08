@@ -2,7 +2,7 @@
  * Add from a template (2.5.1): what each template node offers to do, and what
  * doing it writes.
  *
- * The rule under test is W40's "link, don't duplicate" carried over to
+ * The rule under test is the suggestions' "link, don't duplicate" carried over to
  * templates: a template node whose title already exists here as the same type
  * is offered as **Link** (or "Already here" under this very parent), because
  * copying "A.5.15 Access control" a second time would make two controls with
@@ -183,7 +183,7 @@ beforeEach(() => {
             },
         }),
     );
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get,

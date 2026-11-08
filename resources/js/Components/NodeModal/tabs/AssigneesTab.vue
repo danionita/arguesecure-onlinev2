@@ -1,14 +1,14 @@
 <script setup lang="ts">
 /**
- * Assignees tab (W46, item 16; PLAN-2.2.md D13).
+ * Assignees tab.
  *
  * Self-fetching, like ReferencesTab and CommentsTab: assignments are not part
  * of `assessmentStore`'s state, because nothing outside this tab reads them.
  * Assignees are deliberately **not** on chart or list cards — a card says what
- * a node is and what it is worth, and W36/W37 spent two packages taking things
- * off it.
+ * a node is and what it is worth, and earlier changes took things off it
+ * rather than adding more.
  *
- * ## Sharing is a separate, named step (D13)
+ * ## Sharing is a separate, named step
  *
  * The picker lists people who are already on the assessment. Naming anyone
  * else is refused by the server, and the only way through is to ask, in the
@@ -188,7 +188,7 @@ watch(() => props.uuid, load);
             </div>
 
             <!--
-                The one place D13's rule is explained rather than merely
+                The one place the sharing rule is explained rather than merely
                 enforced. Someone looking for a colleague who is not in the
                 list needs to know why, and where to go — otherwise the list
                 just looks incomplete.

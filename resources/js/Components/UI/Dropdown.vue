@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
  * Generic trigger + floating panel (assessment switcher, user menu,
- * per-node "more actions"). It replaced Breeze's own Dropdown in W10;
- * that file was deleted in W55, so this is now the only one.
+ * per-node "more actions"). It replaced Breeze's own Dropdown, which
+ * has been deleted, so this is now the only one.
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 

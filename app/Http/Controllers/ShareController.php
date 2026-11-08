@@ -23,9 +23,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Session;
 
 /**
- * The sharing surface for a single assessment (PLAN.md Phase 3 item 5).
+ * The sharing surface for a single assessment (security.md §3).
  * Every action-bearing method is fronted by a FormRequest whose
- * authorize() calls AssessmentPolicy — no exceptions, per CLAUDE.md.
+ * authorize() calls AssessmentPolicy — no exceptions (security.md §3.1).
  * `resolveToken` is the one public exception to "every route touching an
  * assessment goes through the policy" in spirit only: it doesn't call the
  * policy because it doesn't grant access itself — it writes the session
@@ -33,7 +33,7 @@ use Illuminate\Support\Facades\Session;
  * every subsequent request. That check is what actually decides access.
  *
  * All mutating/read endpoints return JSON: there is no Assessment Inertia
- * page yet (W12 owns it), so this dialog is designed to be dropped into
+ * page yet, so this dialog is designed to be dropped into
  * that page later as a self-fetching Vue component rather than depending
  * on Inertia shared props that don't exist.
  */
@@ -105,11 +105,10 @@ class ShareController extends Controller
     {
         $validated = $request->validated();
 
-        // W8b: UpdatePublicRequest (app/Http/Requests/Sharing/**) is
-        // outside this package's file ownership, so the instance-wide
-        // rule lives here instead of in that FormRequest's rules(). An
-        // instance that forbids public assessments must refuse the flip
-        // server-side, not merely hide the toggle in the UI (W8b brief) —
+        // The instance-wide rule lives here instead of in
+        // UpdatePublicRequest's rules(). An instance that forbids public
+        // assessments must refuse the flip server-side, not merely hide
+        // the toggle in the UI —
         // turning an already-public assessment back to private is always
         // allowed, since that only ever narrows access.
         if ($validated['is_public'] && ! InstanceSettings::publicAssessmentsAllowed()) {
@@ -158,8 +157,8 @@ class ShareController extends Controller
 
         Session::put("share_token.{$assessment->id}", [
             'token' => $assessment->share_token,
-            // Carbon::make(), not a bare nullsafe call: Assessment (out of
-            // this package's ownership) has no @property docblock, so
+            // Carbon::make(), not a bare nullsafe call: Assessment
+            // has no @property docblock, so
             // static analysis can't see through its `casts()` method to
             // know share_token_created_at is really a Carbon instance at
             // runtime — Carbon::make() re-establishes that statically
@@ -167,7 +166,7 @@ class ShareController extends Controller
             'created_at' => Carbon::make($assessment->share_token_created_at)?->toJSON(),
         ]);
 
-        // W114: the editor, which renders read-only because the policy
+        // The editor, which renders read-only because the policy
         // grants a token holder `view` alone. This used to point at the
         // dashboard, which requires a login, so a holder without an
         // account landed on the sign-in page despite holding a valid grant.

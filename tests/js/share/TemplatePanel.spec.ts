@@ -1,5 +1,5 @@
 /**
- * The Publish-as-template panel (W45, item 14; reshaped by W141).
+ * The Publish-as-template panel (reshaped when templates got their own page).
  *
  * The thing worth testing here is not that a button exists. It is that
  * nothing is published on one click, and that the sentences telling the user

@@ -3,7 +3,7 @@ import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 
-// W24 (performance): a hard bundle budget.
+// Performance: a hard bundle budget.
 //
 // Vite's own `build.chunkSizeWarningLimit` only prints a yellow warning — it
 // never fails the build, so a bundle can grow without bound and nobody
@@ -20,7 +20,14 @@ import vue from '@vitejs/plugin-vue';
 // without being loose enough to hide a real regression (e.g. an accidental
 // non-lazy import of a rarely-used page into the shared entry chunk).
 const CHUNK_BUDGET_BYTES = 400 * 1024; // per emitted JS/CSS asset, raw (pre-gzip)
-const TOTAL_BUDGET_BYTES = 900 * 1024; // whole public/build output, raw (pre-gzip)
+// Raised from 900 KB to 920 KB for the deployment notice, which is mounted by
+// every layout and page that builds its own chrome (about 3 KB raw); the build
+// before it stood at 899.9 KB, so any feature at all would have failed.
+// Raised from 920 KB to 940 KB for the email work (the message wording editor,
+// the one-time-link pages, the notification switches and the forgot-password
+// pages, about 20 KB raw together); the build with only the wording editor
+// stood at 921.6 KB.
+const TOTAL_BUDGET_BYTES = 940 * 1024; // whole public/build output, raw (pre-gzip)
 
 function bundleBudget(): Plugin {
     return {

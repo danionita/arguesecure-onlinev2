@@ -7,22 +7,22 @@ import { ref, type ComputedRef } from 'vue';
 
 /**
  * Ask the assistant for children of a node, and accept them one at a time
- * (W52, job B).
+ * (docs/ASSISTANT.md §3, job B).
  *
- * Extracted in W85/D50 so the tree card and the chart card share one
- * implementation instead of the chart growing a second copy that can drift
- * from the first — verbatim duplication of this block is exactly what D50's
- * ruling forbids. `NodeCard.vue` owned this outright before the extraction;
- * `ChartCard.vue` had no assistant trigger at all (D50's own complaint: "the
- * string `assistant` appears zero times").
+ * Extracted so the tree card and the chart card share one implementation
+ * instead of the chart growing a second copy that can drift from the first
+ * — verbatim duplication of this block is what the shared-composable ruling
+ * forbids. `NodeCard.vue` owned this outright before the extraction;
+ * `ChartCard.vue` had no assistant trigger at all (the string `assistant`
+ * appeared zero times in it).
  *
  * Named `assistant*` throughout and never `suggest*` — a caller may also have
- * (or grow) a `suggesting`/`SuggestionList` pair from W40, which means
+ * (or grow) a `suggesting`/`SuggestionList` pair for linking suggestions, which means
  * something unrelated: finding an *existing* node to link, not generating a
  * new one. Two notions of "suggestion" one scroll apart is how the wrong one
  * gets edited (see `NodeCard.vue`'s own warning about this).
  *
- * ## The guardrail lives here (PLAN-2.3-ai.md D24)
+ * ## The guardrail lives here (docs/ASSISTANT.md §6)
  *
  * `acceptAssistantSuggestion` is the accept step, and it is the guardrail
  * itself, not a safety net behind one: the spike measured injected text
@@ -51,7 +51,7 @@ export function useAssistantChildren(
     const assistantAccepted = ref<number[]>([]);
 
     /**
-     * W58. A suggestion measured 28 seconds on a workstation and will be
+     * A suggestion measured 28 seconds on a workstation and will be
      * slower on a host that gives inference four cores, so the button's
      * spinner is not enough on its own: this polls how far the generation
      * has got and offers a Stop that actually stops it, rather than one that

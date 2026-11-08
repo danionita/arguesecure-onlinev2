@@ -9,7 +9,7 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 19 (PLAN-2.2.md W49, item 21): the chart and the list print as what
+ * Scenario 19: the chart and the list print as what
  * is on screen, minus the chrome.
  *
  * These assertions are here rather than in `tests/js` for the same reason
@@ -19,7 +19,7 @@ import {
  * rules against the real bundle, which is the only way to find out whether the
  * sidebar is actually gone.
  *
- * D6 stands: this is the browser's own print pipeline. Nothing here renders a
+ * This is the browser's own print pipeline. Nothing here renders a
  * PDF, and no dependency was added to check that it would.
  */
 
@@ -109,7 +109,7 @@ test.describe('printing', () => {
         const tree = page.getByRole('tree');
 
         // Zoom in twice, then confirm print does not inherit it. The list
-        // applies zoom with CSS `zoom` (PLAN-2.2.md D9), so the rendered box
+        // applies zoom with CSS `zoom`, so the rendered box
         // is what changes — `getComputedStyle().fontSize` is unaffected by it,
         // which is the trap scenario 16 already fell into once.
         await page.getByRole('button', { name: 'Increase text size' }).click();
@@ -135,7 +135,7 @@ test.describe('printing', () => {
 
         // `break-inside: avoid` on the risk rows. Playwright cannot paginate,
         // so the property is what is asserted — the browser's own pagination
-        // is then its problem, and it is the pipeline D6 chose deliberately.
+        // is then its problem, and it is the pipeline chosen deliberately.
         const risk = page
             .locator('li[role="treeitem"][aria-level="2"]')
             .first();

@@ -5,6 +5,7 @@ import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import Index from '../../../resources/js/Pages/Admin/Users/Index.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const post = vi.fn();
 
@@ -43,7 +44,7 @@ function render() {
             filters: { search: '', sort: 'name', direction: 'asc' },
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { AdminLayout: { template: '<div><slot /></div>' } },
         },
     });

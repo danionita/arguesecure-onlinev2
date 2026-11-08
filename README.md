@@ -29,7 +29,7 @@ roadmap done.
   or restored. Structural changes can be undone. A deleted assessment can be
   restored for 30 days, and erased for good before then when an engagement
   ends.
-- **Start from a template.** Twelve are bundled, among them complete
+- **Start from a template.** Fourteen are bundled, among them complete
   gap-analysis templates for ISO/IEC 27001, GDPR, NIS2 and the CIS Controls.
   You can also pull individual risks, attacks or defences from any template
   into an assessment you already have.
@@ -43,7 +43,8 @@ roadmap done.
   summary. It runs on your own hardware and is off unless you install it.
 
 The in-app help (`/help`) explains the concepts, the quantification model,
-the keyboard map, collaboration, sharing and reports.
+the keyboard map, collaboration, sharing and reports. Administrators also have
+their own help, with a search, under Admin → Help; nobody else can open it.
 
 ArgueSecure 2 is a rewrite on Laravel 12, PHP 8.3, Inertia and Vue 3, and
 replaces the 1.x application entirely. This repository starts at 2.6.2, its
@@ -74,7 +75,7 @@ the GitHub Container Registry, so a deployment needs only two files and no
 build. In an empty directory:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/danionita/arguesecure-onlinev2/HEAD/docker-compose.yml
+curl -fsSL https://raw.githubusercontent.com/danionita/arguesecure-onlinev2/HEAD/docker-compose.deploy.yml -o docker-compose.yml
 curl -fsSL https://raw.githubusercontent.com/danionita/arguesecure-onlinev2/HEAD/.env.example -o .env
 sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$(openssl rand -hex 16)|; s|^DB_ROOT_PASSWORD=.*|DB_ROOT_PASSWORD=$(openssl rand -hex 16)|" .env
 docker compose up -d
@@ -84,8 +85,11 @@ The `sed` line sets the two database passwords, which `.env.example` leaves
 empty; the database will not start without them. A source build needs them
 set in `.env` too.
 
+The downloaded `docker-compose.deploy.yml` is the same stack as `docker-compose.yml` without
+the `build:` keys, so a failed pull is an error and never a source build.
+
 `docker compose up` pulls `ghcr.io/danionita/arguesecure:latest`. Set
-`ARGUESECURE_VERSION` in `.env` to pin a release (`2.7.0`) or to follow a
+`ARGUESECURE_VERSION` in `.env` to pin a release (`2.8.0`) or to follow a
 minor line (`2.6`); then `docker compose pull && docker compose up -d`
 upgrades it. The images are public and need no login. Everything below, from
 the first start on, is the same either way.
@@ -104,9 +108,9 @@ Open `http://localhost:8000`, or whichever port you set as `APP_PORT`.
 
 There is no default account, and none is ever seeded. While the `users`
 table is empty, the app shows a setup screen where you create the first
-administrator. Creating it also loads the bundled templates. After that,
+administrator. Creating it also queues the bundled templates, which appear a few seconds later (a running queue worker loads them). After that,
 administrators create accounts under **Admin → Users**, one at a time or in
-bulk from a CSV file. There is no public registration.
+bulk from a CSV file. Self-registration is off by default; an administrator can switch it on under **Admin → Authentication** once email works. A person then enters their email address, follows the link mailed to them, and chooses their password; the account exists only after the link is followed. An optional list of email domains limits who may register, and a daily cap bounds new accounts.
 
 ### Two-factor authentication
 
@@ -121,6 +125,16 @@ factor (a lost phone) from that account's page, and the account sets it up
 again. The secret and the recovery codes are encrypted with `APP_KEY`: keep it
 safe, because losing it makes every enrolled secret unreadable.
 
+### Email
+
+Off by default; ArgueSecure works completely without it. To let it send mail,
+enter an SMTP server and a sender address under **Admin → Email** (the password
+is stored encrypted with `APP_KEY` and never shown again), or set the `MAIL_*`
+variables described in `.env.example`; a value in the environment wins, field by
+field. Mail turns on once **Send test email** has delivered a message to your own
+address, and switches off again when any setting changes. Only SMTP is
+supported. With mail on, a new account created without a typed password is mailed a one-time link to choose its own (never a password), with two reminders, and the message wording is editable on the same tab. An administrator can also switch on email for mentions, assignments and drafted summaries (off by default; one message per ten minutes, a link and no comment text, each person can turn it off).
+
 ### Single sign-on
 
 To sign in through your organisation's identity provider, register
@@ -131,7 +145,8 @@ A value in the environment wins, field by field, over one stored in the
 application. ArgueSecure speaks OpenID
 Connect (authorization-code flow with PKCE), which Microsoft Entra ID, Google
 Workspace, Okta, Keycloak, Authentik and Authelia all offer. Only Keycloak has
-been tested against this build; the others, Entra ID included, are expected to
+been tested against a live provider; Google's setup is written down in
+`docs/specs/deployment.md`, and the others, Entra ID included, are expected to
 work but are unverified. A first sign-in
 links to the existing account with the same verified email; with
 `OIDC_ALLOWED_DOMAINS` it can also create a non-admin account that sees nothing
@@ -139,6 +154,10 @@ until someone shares an assessment with it. *Sign in with SSO only* on the same
 **Authentication** tab turns off password sign-in for everyone but
 administrators, who keep it for when the provider is down. SAML, SCIM and
 group mapping are not supported.
+
+### A notice on every page
+
+Set `APP_NOTICE` in `.env` to show one line of plain text in a band at the top of every page, the login page included, for example on a public demo: "Public demo. Do not enter sensitive data; it may be cleared at any time." It is up to 300 characters, cannot be dismissed and is not printed. Leave it unset for no band.
 
 ### Behind a reverse proxy
 
@@ -148,6 +167,13 @@ relies on is in [`docs/specs/deployment.md`](docs/specs/deployment.md) §4.
 Raise the proxy's header buffers (nginx/SWAG: `proxy_buffer_size 32k;` and
 `proxy_busy_buffers_size 64k;`): responses can carry large headers, and
 without them full page loads fail with 502 "upstream sent too big header".
+
+**Moving to another hostname** needs no code change: set `APP_URL` to the new
+URL and recreate the containers, register the new `/auth/oidc/callback` at your
+identity provider if you use SSO, and redirect the old name's paths to the new
+one in the proxy. Everyone signs in once more, because cookies are bound to the
+host. The steps, an nginx snippet and the list of paths the app answers on are
+in [`docs/specs/deployment.md`](docs/specs/deployment.md) §4.1.
 
 Nothing in the repository hardcodes a host, domain or path. `DATA_PATH` in
 `.env` sets where persistent data (`storage/`, the database, Redis) is
@@ -278,6 +304,11 @@ reset, actually ends the other sessions. Nothing needs changing in `.env`:
 the `SESSION_DRIVER` line older versions copied there is now ignored and can
 be deleted.
 
+**Upgrading to 2.8: check `APP_URL`.** The websocket now accepts connections
+only from the host in `APP_URL`. If people open the app under another
+hostname or by IP address, live updates and presence stop for them (the rest
+of the page works) until you list those hosts in `REVERB_ALLOWED_ORIGINS`.
+
 ### Security log
 
 Admin → **Security log** lists the last 50 security events (sign-ins and
@@ -316,7 +347,7 @@ Versions on an assessment's History page protect against mistakes inside the
 application, not against losing the server, so they are not a backup. A
 single assessment can also be exported as JSON from its **Export** menu, a
 portable copy of all its data. A scheduled export of every assessment is
-planned (see `docs/PLAN.md` Phase 10) but not built. Until
+planned but not built. Until
 then, the database dump is the backup.
 
 ## Development
@@ -351,7 +382,7 @@ running it.
 
 | Document | Covers |
 |---|---|
-| [`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md) | The latest release notes |
+| [`docs/RELEASE-2.8.0.md`](docs/RELEASE-2.8.0.md) | The latest release notes |
 | [`docs/specs/schema.md`](docs/specs/schema.md) | Database, models and authorization |
 | [`docs/specs/calculation-engine.md`](docs/specs/calculation-engine.md) | The quantification model (normative) |
 | [`docs/specs/ui.md`](docs/specs/ui.md) | The editor, the keyboard map and reports |

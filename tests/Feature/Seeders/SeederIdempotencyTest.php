@@ -7,8 +7,8 @@ use App\Models\User;
 use Database\Seeders\SampleContentSeeder;
 
 /*
- * W22's "seeders must be idempotent — running db:seed twice must not
- * duplicate content" requirement.
+ * The requirement that seeders be idempotent: running db:seed twice must not
+ * duplicate content.
  *
  * Idempotency mechanism, stated for the record (also documented on
  * SampleContentSeeder): TemplateAssessmentSeeder skips a fixture whose

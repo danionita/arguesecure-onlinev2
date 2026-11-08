@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 use RuntimeException;
 
 /**
- * The documentation job A answers from (PLAN-2.3-ai.md D21, D22).
+ * The documentation job A answers from.
  *
  * ## The whole corpus, every time
  *
@@ -34,7 +34,7 @@ use RuntimeException;
  *
  * ## `docs/` is not in here, deliberately
  *
- * D22. `docs/` is developer documentation: it describes unbuilt features in
+ * `docs/` is developer documentation: it describes unbuilt features in
  * the present tense and narrates the *legacy* application's security failures
  * — a committed `APP_KEY` amounting to RCE, unauthenticated read endpoints, an
  * admin account with a documented default password — in prose that carries

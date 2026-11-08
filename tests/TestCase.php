@@ -10,7 +10,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * RefreshDatabase rolls the database back between tests; nothing rolled
      * Redis back, so state leaked across whole runs. CalculationCache and the
-     * W16 locks use the Redis facade directly, not the cache abstraction, so
+     * assessment edit locks use the Redis facade directly, not the cache abstraction, so
      * phpunit.xml's CACHE_STORE=array does not isolate them. Their keys are
      * built from `assessments.id`, which restarts from 1 on every fresh
      * migration, so a key one run wrote was a live hit for an unrelated
@@ -27,7 +27,7 @@ abstract class TestCase extends BaseTestCase
      * artifact, so the PHP test run would otherwise depend on someone having
      * run `npm run build` first — passing locally on a stale build and failing
      * in CI, which is exactly what happened. Assets are the JS job's and
-     * Playwright's concern (W25); PHP tests assert responses, not bundles.
+     * Playwright's concern; PHP tests assert responses, not bundles.
      */
     protected function setUp(): void
     {
@@ -35,7 +35,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->withoutVite();
 
-        // Sessions are rows (D71) and the database driver sweeps expired ones
+        // Sessions are rows (security.md §5) and the database driver sweeps expired ones
         // on a 2-in-100 lottery: a `delete` that would land in the query
         // counts of the performance tests on one run in fifty.
         config(['session.lottery' => [0, 100]]);

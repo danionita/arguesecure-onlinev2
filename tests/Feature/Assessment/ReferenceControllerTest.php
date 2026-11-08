@@ -7,9 +7,9 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * External references (schema.md §3.12, ui.md §7's References tab,
- * CLAUDE.md's W21 brief). Mutation-testable authorization matrix following
- * the same {guest, stranger, viewer, editor} shape as
+ * External references (schema.md §3.12, ui.md §7's References tab).
+ * Mutation-testable authorization matrix following the
+ * same {guest, stranger, viewer, editor} shape as
  * tests/Feature/Assessment/LinkControllerTest.php and
  * tests/Feature/Comments/CommentControllerTest.php, plus validation tests
  * per kind and the security.md §7 guarantee that a `cve` (or any derived

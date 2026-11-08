@@ -1,7 +1,6 @@
 /**
- * The coverage section on the report page (PLAN-2.7 D65, D66). The rule for
- * a control's status is the server's (ReportAssembler::controlCoverage);
- * what this pins is that the page says what the payload says and nothing
+ * The coverage section on the report page. The rule for a control's
+ * status is the server's (ReportAssembler::controlCoverage); what this pins is that the page says what the payload says and nothing
  * more: no section when nothing is cited, no "compliant", and a count of
  * what `include_shelved` left out instead of a silent gap.
  */

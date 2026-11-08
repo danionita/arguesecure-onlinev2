@@ -1,5 +1,5 @@
 /**
- * `UI/Modal.vue`'s header slots and where padding lives (W71 items 24 and 3).
+ * `UI/Modal.vue`'s header slots and where padding lives.
  *
  * The padding assertion is the awkward one and the reason it is written down:
  * "add padding" is a one-character change that can be made in either of two

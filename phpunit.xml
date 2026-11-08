@@ -29,7 +29,7 @@
             cache, locks or queue on the same server.
 
             CACHE_STORE=array above does NOT cover this. CalculationCache and
-            the W16 field locks use the Redis facade directly rather than the
+            the real-time field locks use the Redis facade directly rather than the
             cache abstraction, so they land on the default connection's
             database regardless of the cache store. Nothing rolled that back
             between tests, and cache keys are built from assessments.id, which

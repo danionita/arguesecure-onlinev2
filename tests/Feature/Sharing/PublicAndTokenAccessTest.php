@@ -8,18 +8,17 @@ use Illuminate\Support\Facades\Gate;
 
 /**
  * security.md §3.1/§3.2: is_public and a valid share token both grant
- * view only, never write, and neither is a route into this package's own
+ * view only, never write, and neither is a route into the sharing
  * mutation endpoints. Asserted against a real mutation endpoint
- * (share/public — one of the two this package owns) rather than only the
- * read route, per the W9 acceptance criteria.
+ * (share/public) rather than only the read route, per the sharing
+ * acceptance criteria.
  */
 test('a public assessment is readable by a stranger but its sharing cannot be mutated', function () {
     $assessment = Assessment::factory()->public()->create();
     $stranger = User::factory()->create();
 
-    // Read access elsewhere in the app is out of this package's ownership
-    // (no assessment show route exists yet — W12), but the policy read
-    // check itself is directly assertable here.
+    // Read access elsewhere in the app is out of scope for this file, but the
+    // policy read check itself is directly assertable here.
     expect($stranger->can('view', $assessment))->toBeTrue();
 
     $this->actingAs($stranger)
@@ -102,7 +101,7 @@ test('a token-only session cannot reach any mutation endpoint', function () {
 });
 
 /**
- * W8b: an instance that forbids public assessments must refuse the flip
+ * An instance that forbids public assessments must refuse the flip
  * server-side (ShareController::updatePublic), not merely hide the switch
  * in the UI.
  */

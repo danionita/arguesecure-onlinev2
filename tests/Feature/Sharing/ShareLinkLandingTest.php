@@ -5,7 +5,7 @@ use App\Models\Assessment;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /**
- * W114: a share link lands on the assessment itself, read-only. Until 2.7
+ * A share link lands on the assessment itself, read-only. Until 2.7
  * it redirected to the dashboard, which requires a login, so a holder
  * without an account met the sign-in page although the grant had worked.
  * Asserted by following the redirect as a guest, because the redirect

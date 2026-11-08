@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 /**
- * Records the security events that happen in code this package does not own
- * (security.md §11), from events the framework and the models already fire,
+ * Records the security events that happen in code outside the audit
+ * classes (security.md §11), from events the framework and the models already fire,
  * so no controller needs a log line of its own:
  *
  *  - sign-in, a failed or refused one, a lockout and sign-out, from Laravel's
@@ -27,14 +27,14 @@ use Illuminate\Support\Str;
  *    the profile page);
  *  - an assessment made public or private, from the Assessment model's;
  *  - every 403 and every export, from the request lifecycle;
- *  - whatever another package reports through SecurityEventOccurred.
+ *  - whatever other code reports through SecurityEventOccurred.
  *
  * Registered in AppServiceProvider.
  */
 class SecurityEventSubscriber
 {
     /**
-     * The export routes (routes/web.php, W74) and the format each produces.
+     * The export routes (routes/web.php) and the format each produces.
      * Who took a copy of an assessment is what an auditor asks first.
      */
     private const EXPORT_ROUTES = [
@@ -107,6 +107,14 @@ class SecurityEventSubscriber
         $status = $event->response->getStatusCode();
         /** @var User|null $user */
         $user = $request->user();
+
+        // A refused live-channel subscription is the normal answer to a reader
+        // of a public assessment or a share link, once per page load; logging
+        // each would bury the denials worth reading. The channel check is still
+        // what refuses it.
+        if ($status === 403 && $request->is('broadcasting/auth')) {
+            return;
+        }
 
         if ($status === 403) {
             SecurityLog::record(SecurityEvent::AccessDenied, $user, self::routeAssessment($request), [
@@ -197,10 +205,10 @@ class SecurityEventSubscriber
 
     /**
      * The password step of a two-factor account fires Login and then Logout
-     * while the sign-in waits for the code (W116 parks it under the session
-     * key `two_factor.pending`, PendingLogin::SESSION_KEY). Neither is a
+     * while the sign-in waits for the code (the two-factor step parks it under
+     * the session key `two_factor.pending`, PendingLogin::SESSION_KEY). Neither is a
      * sign-in or a sign-out: the real Login comes after the challenge. The key
-     * is the whole test, so this holds with or without W116's classes.
+     * is the whole test, so this holds with or without the two-factor classes.
      */
     private static function signInParkedForSecondFactor(): bool
     {

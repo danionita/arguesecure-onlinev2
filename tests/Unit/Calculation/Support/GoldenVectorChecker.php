@@ -11,7 +11,7 @@ use PHPUnit\Framework\Assert;
  * A single vector's `expected` block can carry a dozen independent claims
  * (baseline totals, pair values, completeness fields, warnings,
  * defence-ranking figures, ...). If the first mismatch aborted the test,
- * the W7 reconciliation report would only ever see one disagreement per
+ * the reconciliation report would only ever see one disagreement per
  * vector per run. This class accumulates every mismatch it finds and fails
  * once, at the end, with the full list — so a single test run produces a
  * complete diagnostic for that vector.

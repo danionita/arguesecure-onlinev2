@@ -9,11 +9,11 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 /*
  * Every route touching an assessment goes through AssessmentPolicy, no
- * exceptions (CLAUDE.md). Per the W20 task brief: browsing the catalogue
+ * exceptions (security.md). Browsing the catalogue
  * needs only an authenticated user; inserting an entry into a specific
  * assessment needs `update`. Every case below proves a stranger with no
  * share gets 403 (or a clean 401-via-redirect-to-login for a guest,
- * matching the W12/W14/W19 mutation groups' own convention), the class of
+ * matching the other mutation groups' own convention), the class of
  * defect security.md calls out as legacy defect #4.
  */
 function catalogMember(Assessment $assessment, User $user, string $role): void

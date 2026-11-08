@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The Scales section of Assessment settings (W126, D94).
+ * The Scales section of Assessment settings.
  *
  * A dropdown of every admin-defined scale, the three band editors, and one
  * Save for all three.

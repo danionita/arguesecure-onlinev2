@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * A Transfer is a Defence with is_transfer = 1 — a presentation variant,
- * not a database type (CLAUDE.md, schema.md §1).
+ * not a database type (schema.md §1).
  *
  * @property-read AttackDefence $pivot present only when this instance was
  *  loaded through Attack::defences(); absent otherwise.

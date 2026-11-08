@@ -6,7 +6,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
-// W120 / D84: the breach lookup is bounded and fails open (security.md §4).
+// The breach lookup is bounded and fails open (security.md §4).
 // PasswordPolicy::rule() skips the lookup under the testing environment, so
 // these tests build the rule the production policy builds.
 

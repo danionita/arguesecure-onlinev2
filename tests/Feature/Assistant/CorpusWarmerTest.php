@@ -1,8 +1,8 @@
 <?php
 
 /**
- * W95 (PLAN-2.6.md D57) — the help corpus is read into a freshly started
- * runtime once, before anyone asks.
+ * The help corpus is read into a freshly started runtime once, before
+ * anyone asks.
  *
  * What matters is when it does *nothing*: on a deployment without the
  * feature, with the help switch off, on a runtime that has already served a
@@ -145,7 +145,7 @@ test('the scheduler runs it every minute, in the background, only where there is
     // Minutes, not Laravel's default 1440: a warm-up killed mid-run (the
     // scheduler restarted with the runtime) never releases the lock, and a
     // day-long one would skip every warm-up until tomorrow. The value, not
-    // the presence — CLAUDE.md's rule for guards.
+    // the presence, as for any guard.
     expect($event->expiresAt)->toBe(10);
 
     // And not at all on a deployment without the assistant.

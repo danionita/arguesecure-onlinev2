@@ -11,7 +11,7 @@ use Tests\TestCase;
 uses(TestCase::class, RefreshDatabase::class)->in(__FILE__);
 
 /*
- * W18b — the RevisionRecorder that PLAN.md Phase 2 named but was never
+ * The RevisionRecorder that the original plan named but was never
  * built (schema.md §3.9). Node's own `updated` model event only carries
  * post-write dirty state via getChanges()/getOriginal() *during* that
  * event (Model::performUpdate() calls syncChanges() before firing

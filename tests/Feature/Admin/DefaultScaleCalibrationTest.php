@@ -5,38 +5,38 @@
  * system scale set, and the thing a new assessment was created from until
  * 2.5.1 removed it.
  *
- * REMOVED (2.5.1). The W87 Defaults tab made the default set's bands editable
+ * REMOVED (2.5.1). The admin Defaults tab made the default set's bands editable
  * directly, after which this select was a second, older answer to "what does a
  * new assessment start with", naming a set nobody could see from the screen
- * that named it. There is one default set now. The W77 guards about seeding
+ * that named it. There is one default set now. The guards about seeding
  * and resolving sets below still hold — `set_key` and the second seeded set
  * both remain — and the four that were about the setting are rewritten as
- * guards on its *absence*, the way W80 treated `ReportOptions::$figures`: not
+ * guards on its *absence*, as was done for `ReportOptions::$figures`: not
  * as a resolved default, because a reintroduced setting defaulting to
  * `default` would pass "new assessments use the default set" while being the
  * exact dead control that was removed.
  *
- * FIXED (W77). These four tests were W75's `DEFECT:` pins, asserting that the
+ * FIXED. These four tests were `DEFECT:` pins, asserting that the
  * "Default scale calibration" field on the admin settings page was a
  * free-text box that did nothing: whatever an admin typed was validated
  * (`required|string|max:64`), written to a varchar(64) defaulting to the
  * literal string `default`, echoed back on the next render, and never
  * consulted again. `AssessmentCreator` picked an assessment's three scales by
  * querying for `is_system = 1, assessment_id IS NULL` and ignored the setting
- * entirely. PLAN-2.4.md D36 called it "a text box that does nothing".
+ * entirely — "a text box that does nothing".
  *
  * They are rewritten in place rather than deleted, so that the reasoning
- * survives and the fix cannot be quietly reverted — the treatment W24 gave
- * the security pins and W68 gave the observer pin.
+ * survives and the fix cannot be quietly reverted — the treatment the
+ * security pins and the observer pin got.
  *
  * ## What the fix was, and the trap it had to clear first
  *
  * The obvious first step — seed a second system set — was actively
- * dangerous, and W75 confirmed it empirically: with two sets seeded the whole
+ * dangerous, and an earlier investigation confirmed it empirically: with two sets seeded the whole
  * suite stayed **green** while assessment creation picked an arbitrary
  * calibration. Three things had to change together:
  *
- * 1. **`scales.set_key`** (W77 migration). A set was an implicit trio of rows
+ * 1. **`scales.set_key`** (added by a migration). A set was an implicit trio of rows
  *    sharing `is_system = 1, assessment_id IS NULL` and nothing else; nothing
  *    grouped or named one, so nothing could select between two.
  * 2. **`SystemScaleSeeder::seedScale()`**, whose `firstOrCreate` keyed on
@@ -47,7 +47,7 @@
  *    over every system scale. With two sets, two rows carry
  *    `kind = 'impact'`, `pluck` silently keeps whichever the database
  *    returned last, and every new assessment gets an arbitrary calibration
- *    with nothing raised anywhere. That is the failure mode CLAUDE.md's
+ *    with nothing raised anywhere. That is the failure mode the
  *    identity-column warning describes — green suite, broken feature —
  *    arriving by a different route.
  *
@@ -76,13 +76,13 @@ beforeEach(function () {
     $this->seed(SystemScaleSeeder::class);
 });
 
-test('FIXED (W77): more than one system scale set exists, so the select is a real choice', function () {
+test('FIXED: more than one system scale set exists, so the select is a real choice', function () {
     $system = Scale::query()
         ->whereNull('assessment_id')
         ->where('is_system', true)
         ->get();
 
-    // Was: three rows, one set, and D36's select would have had one option —
+    // Was: three rows, one set, and the select would have had one option —
     // "the same non-control in a different shape".
     expect(ScaleSets::seededKeys())
         ->toBe([ScaleSets::DEFAULT_KEY, ScaleSets::SMALL_ORGANISATION_KEY]);
@@ -95,8 +95,8 @@ test('FIXED (W77): more than one system scale set exists, so the select is a rea
     }
 });
 
-test('FIXED (W77): the second set is a different calibration, not a copy of the first', function () {
-    // D36 asks for a choice. Two sets holding identical numbers would satisfy
+test('FIXED: the second set is a different calibration, not a copy of the first', function () {
+    // The select exists to offer a choice. Two sets holding identical numbers would satisfy
     // the select and none of the reason for it, so this asserts the sets
     // actually differ where a calibration is supposed to differ — the bands.
     //
@@ -119,7 +119,7 @@ test('FIXED (W77): the second set is a different calibration, not a copy of the 
     }
 });
 
-test('FIXED (W77): re-running the seeder duplicates neither set nor its levels', function () {
+test('FIXED: re-running the seeder duplicates neither set nor its levels', function () {
     // The lookup that keeps this true is the same one that had to change for
     // a second set to be seedable at all: it keyed on (kind, is_system,
     // assessment_id), which is exactly what two sets share. A regression
@@ -138,7 +138,7 @@ test('FIXED (W77): re-running the seeder duplicates neither set nor its levels',
     }
 });
 
-test('FIXED (W77): every seeded set satisfies the schema.md §3.2 invariants', function () {
+test('FIXED: every seeded set satisfies the schema.md §3.2 invariants', function () {
     // A second set is a second chance to write bands that do not band. Every
     // one of these is invariant 1-5 from schema.md §3.2; invariant 5 in
     // particular is the only thing making the qualitative round trip
@@ -170,7 +170,7 @@ test('FIXED (W77): every seeded set satisfies the schema.md §3.2 invariants', f
     }
 });
 
-test('FIXED (W77): the scales table says which set a scale belongs to', function () {
+test('FIXED: the scales table says which set a scale belongs to', function () {
     // The grouping key the fix needed. Asserted on the model's attributes
     // rather than by reading the migration, so it is the column's presence in
     // a loaded row that this depends on.
@@ -202,7 +202,7 @@ test('REMOVED (2.5.1): the setting no longer exists in storage or in the setting
     expect(InstanceSettings::all())->not->toHaveKey('default_scale_calibration');
 });
 
-test('FIXED (W77): a set holding two scales of one kind throws rather than choosing', function () {
+test('FIXED: a set holding two scales of one kind throws rather than choosing', function () {
     // The fallback above answers "this set is not here". A set that *is*
     // here and malformed is a different thing: quietly substituting another
     // calibration for it would be the same silent-wrong-answer failure by a
@@ -213,7 +213,7 @@ test('FIXED (W77): a set holding two scales of one kind throws rather than choos
         'unit' => 'currency',
         'is_system' => true,
     ]);
-    // Identity column, assigned as a property — CLAUDE.md.
+    // Identity column, assigned as a property (never mass-assigned).
     $duplicate->set_key = ScaleSets::DEFAULT_KEY;
     $duplicate->save();
 
@@ -221,7 +221,7 @@ test('FIXED (W77): a set holding two scales of one kind throws rather than choos
         ->toThrow(RuntimeException::class, 'more than one impact scale');
 });
 
-test('FIXED (W77): an incomplete set is never offered as a choice', function () {
+test('FIXED: an incomplete set is never offered as a choice', function () {
     // An assessment's three scale FKs are NOT NULL, so a set missing a kind
     // cannot start one and must not appear in the select.
     Scale::query()

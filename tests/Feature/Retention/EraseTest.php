@@ -20,12 +20,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /*
- * W113 — erasing an assessment, and the daily purge that does it on a timer.
+ * Erasing an assessment, and the daily purge that does it on a timer.
  *
  * The acceptance criterion is that erasing leaves no row referencing the
  * assessment in any table, *enumerated from the schema rather than listed by
  * hand*: `rowsReachableFrom()` walks every foreign key information_schema
- * reports, outward from the assessment, so a table a later package adds
+ * reports, outward from the assessment, so a table added later
  * with a key into this graph is covered without anyone editing this file —
  * and `fullyPopulatedAssessment()` must then put a row in it, or the
  * coverage assertion below names the edge it is missing.
@@ -224,7 +224,7 @@ test('erasing leaves no row referencing the assessment in any table, walked from
     }
 
     // History rows whose node_id a cascade would have nulled are deleted,
-    // not left behind as anonymous rows (PLAN-2.7 W113).
+    // not left behind as anonymous rows.
     expect(DB::table('node_revisions')->whereNull('node_id')->count())->toBe(0);
     expect(notificationsAbout($assessment))->toBe(0);
 

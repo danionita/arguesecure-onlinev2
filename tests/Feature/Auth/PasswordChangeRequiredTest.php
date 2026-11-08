@@ -4,7 +4,7 @@ use App\Models\User;
 
 /**
  * security.md §4: "Admin password reset ... forces a change on next
- * login." W8b closes the gap W8 reported — see App\Http\Middleware\
+ * login." This closes the gap first-run setup left — see App\Http\Middleware\
  * EnsurePasswordChanged and User::booted().
  */
 test('a flagged user is redirected away from an ordinary page', function () {

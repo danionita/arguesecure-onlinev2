@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * An account's link to the identity provider (W117, D76): the provider's
+ * An account's link to the identity provider: the provider's
  * issuer and its stable `sub` for this person. No column is fillable: the
  * identity columns are assigned as properties (.claude/rules/identity-columns.md).
  *

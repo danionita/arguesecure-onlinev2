@@ -11,8 +11,8 @@
  *    identical to the engine fields they claim to come from. Asserting
  *    against a hand-typed expected object would pass just as happily if the
  *    tab and the test made the *same* mistake.
- * 3. Nothing missing is rendered as zero. This is the rule CLAUDE.md states
- *    for the engine, applied at the display layer, and it has three distinct
+ * 3. Nothing missing is rendered as zero. This is the engine's rule
+ *    (calculation-engine.md §6.1), applied at the display layer, and it has three distinct
  *    carriers here: a shelved defence's attribution, an unpriced defence's
  *    CBR, and the inherent column's reduction-against-itself.
  */

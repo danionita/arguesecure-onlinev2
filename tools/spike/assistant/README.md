@@ -1,8 +1,8 @@
 # 2.3 assistant spike — the harness
 
 Throwaway measurement code for the spike that
-`docs/PLAN-2.3-ai.md` asks for before its
-packages can be written. **It is not application code.** Nothing in `app/`,
+the assistant's design ([`docs/ASSISTANT.md`](../../../docs/ASSISTANT.md)) asks for
+before its code can be written. **It is not application code.** Nothing in `app/`,
 `resources/js/` or `routes/` imports it, it is excluded from Pint, PHPStan,
 ESLint and both test runners, and it ships no feature.
 
@@ -51,7 +51,7 @@ non-streamed generation sends no headers until it has finished, so on a CPU
 every answer longer than five minutes dies on the client while the server is
 still working on it — which reads as a server fault and is not one. Both the
 generation and the model pull are streamed here for that reason. **The
-application client W50 builds needs the same treatment**, and Guzzle's default
+application client needs the same treatment**, and Guzzle's default
 timeouts are shorter than undici's.
 
 Tear the whole thing down with:
@@ -106,10 +106,10 @@ is left afterwards is the weights directory and two images
 | `candidates-estimate.mjs` | Bytes read per generated token, from GGUF headers alone. |
 | `candidates-report.mjs` | The markdown tables. |
 
-## Before a model becomes a preset (`verify*`, 2.6 W96)
+## Before a model becomes a preset (`verify*`, 2.6)
 
 **This is the red team to run.** `redteam.mjs` keeps the case list, but it
-speaks Ollama, which D17 retired; `verify.mjs` sends the same cases the way
+speaks Ollama, which the llama.cpp runtime replaced; `verify.mjs` sends the same cases the way
 the application does, through the production launcher
 (`docker/assistant/assistant.sh`, the image and flags `docker-compose.yml`
 pins), and adds three seeds of every job with mechanical quality checks.
@@ -140,12 +140,12 @@ docker run --rm -v "$PWD":/repo -w /repo node:22-alpine \
 | `retrieval.mjs` | Open question 4 — whether job A needs a retrieval step at all. |
 | `fixtures.mjs` | Builds all three prompts from real repository content. |
 | `redteam.mjs` | The injection cases. A prototype of what `tests/Feature/Assistant/` gets. |
-| `prompts/` | The prompts themselves, versioned as files, as the plan requires. |
+| `prompts/` | The prompts themselves, versioned as files, so a prompt change is a reviewable diff. |
 
 ## The one thing to keep when this is deleted
 
-`prompts/` and `redteam.mjs` are drafts of things the packages will own for
-real: W50–W54 take the prompts, and W53 takes the red-team cases and reruns
+`prompts/` and `redteam.mjs` are drafts of things the application owns for
+real: it takes the prompts, and the red-team cases are rerun
 them against a stub so they are deterministic and CI-safe. The rest of this
 directory can go the moment the spike report stops being the reason anyone
 opens it.

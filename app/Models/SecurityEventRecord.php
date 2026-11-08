@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * One row of the stored security event log (W128). Written only by
+ * One row of the stored security event log. Written only by
  * SecurityEventStoreHandler; no column is mass-assignable.
  *
  * @property int $id

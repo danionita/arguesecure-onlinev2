@@ -1,25 +1,21 @@
 /**
  * Keyboard-first outlining (ui.md §3.1 "the keyboard is the primary
- * interface", §4's keyboard map, PLAN.md W14).
+ * interface", §4's keyboard map).
  *
  * ## Integration gap — read before wiring this in
  *
- * This package owns `resources/js/composables/**` and
- * `resources/js/Components/Shortcuts/**`, but not
- * `resources/js/Pages/Assessment/Show.vue`, `resources/js/Layouts/**` or
- * `resources/js/app.ts` (W12/W10's ownership). Nothing in this file can
- * therefore call itself into existence — some component in one of those
- * three places must call `useKeyboardOutline(...)` once, from its own
- * `<script setup>`. That one-line integration is intentionally left for
- * whoever owns those files; see the W14 completion report for the exact
- * change needed (`ref` on `<ul role="tree">` in Show.vue, plus one call in
- * its setup).
+ * This file lives in `resources/js/composables/**`, apart from
+ * `resources/js/Pages/Assessment/Show.vue`, `resources/js/Layouts/**` and
+ * `resources/js/app.ts`. Nothing in this file can therefore call itself into
+ * existence — some component in one of those three places must call
+ * `useKeyboardOutline(...)` once, from its own `<script setup>`: a `ref` on
+ * `<ul role="tree">` in Show.vue, plus one call in its setup.
  *
  * ## Design
  *
  * The store (assessmentStore.ts) has no concept of "the currently focused
  * node" — occurrence state there is only `occurrenceExpanded`. Rather than
- * add that to a store this package does not own, focus is tracked here as
+ * add that to the store, focus is tracked here as
  * a local `focusedPath` ref, computed purely against the store's existing
  * read API (`rootUuid`, `risksOrder`, `attacksUnderRisk`,
  * `defencesUnderAttack`, `isExpanded`) — the exact same functions
@@ -369,7 +365,7 @@ export function useKeyboardOutline(
                     // The operation that does exist is re-parenting *within*
                     // a level — moving an attack from one risk to another —
                     // and that needs a target the keyboard has no way to
-                    // name. useDragDrop.ts, wired into the tree in W27, is
+                    // name. useDragDrop.ts, wired into the tree, is
                     // the affordance for it.
                     break;
                 }

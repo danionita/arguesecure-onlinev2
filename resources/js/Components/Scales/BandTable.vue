@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One scale's bands, editable (W65, ui.md §8).
+ * One scale's bands, editable (ui.md §8, The scale cards).
  *
  * ## The boundary column is one field, not two
  *
@@ -65,10 +65,10 @@ function onBoundary(index: number, raw: string) {
 }
 
 /**
- * The label is the only text field left (W87). The code was removed by D44 —
- * it is internal and is derived server-side — and the colour by D45, so the
- * narrowed type here is the guard that neither comes back as an input without
- * someone reading those decisions first.
+ * The label is the only text field left. The code is internal and derived
+ * server-side, and the colour is read by nothing, so the narrowed type here
+ * is the guard that neither comes back as an input without someone reading
+ * ui.md §8 first.
  */
 function onLabel(index: number, value: string) {
     const updated = props.bands.map((band) => ({ ...band }));
@@ -129,7 +129,7 @@ function outOfBand(band: EditableBand): boolean {
                 >
                     <th class="py-2 pr-2 font-medium">Band</th>
                     <!--
-                        No Code and no Colour column (W87, D44 and D45). The
+                        No Code and no Colour column. The
                         code is internal and derived from the label on create;
                         the colour was read by nothing outside this screen.
                     -->

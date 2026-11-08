@@ -12,7 +12,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * ui.md §6 / PLAN.md Phase 6 item 4. Carries the node's full current row
+ * ui.md §6. Carries the node's full current row
  * (not merely the changed keys): the client keys its store by uuid
  * (assessmentStore.ts's own docblock — "the store holds nodes once"), so
  * `Object.assign(store.nodes[uuid], event.node)` is the entire patch, with
@@ -40,7 +40,7 @@ class NodeUpdated implements ShouldBroadcast, ShouldDispatchAfterCommit
     public function __construct(Node $node, ?int $actorId, ?string $actorName)
     {
         // See NodeCreated: resolved once per request rather than once per
-        // broadcast (W68).
+        // broadcast.
         $this->assessmentUuid = app(AssessmentUuids::class)->forNode($node);
         $this->node = NodeBroadcastPayload::toArray($node);
         $this->actorId = $actorId;

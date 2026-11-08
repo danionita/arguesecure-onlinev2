@@ -16,7 +16,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * The second step of a sign-in with a second factor (W116, D77): the
+ * The second step of a sign-in with a second factor: the
  * account was parked in the session by AuthenticatedSessionController::store
  * after a correct password, and nothing here trusts anything but that.
  */
@@ -77,7 +77,9 @@ class TwoFactorChallengeController extends Controller
 
         // login() migrates the session id (security.md §5: a new id once the
         // account is really authenticated), as the password-only path does.
-        Auth::guard('web')->login($user, $pending['remember']);
+        // Re-checked here, not trusted from the pending sign-in, because
+        // the role may have changed since the password step.
+        Auth::guard('web')->login($user, $pending['remember'] && ! $user->is_admin);
 
         $user->forceFill(['last_login_at' => now()])->save();
 

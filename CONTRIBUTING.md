@@ -1,10 +1,8 @@
 # Contributing to ArgueSecure
 
 ArgueSecure 2 is a rewrite on Laravel 12, Inertia and Vue 3, replacing the
-1.x application entirely. Start with
-`docs/PLAN.md` — the master plan, the settled decisions and
-the work-package table — then the latest release notes
-([`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md)), and the relevant file under
+1.x application entirely. Start with the latest release notes
+([`docs/RELEASE-2.7.0.md`](docs/RELEASE-2.7.0.md)) and the relevant file under
 [`docs/specs/`](docs/specs) for whatever area you're touching. If the specs
 and this file disagree, the specs win.
 
@@ -129,9 +127,7 @@ There is no lock table and no sweep job; the TTL *is* the sweep.
 
 ## Commit and PR conventions
 
-- Branch names follow `v2/<work-package-id>` during the rewrite (see
-  `docs/PLAN.md`'s work-package table).
-- Keep a change inside the file ownership its work package declares. If a
-  change genuinely needs to touch a file outside that ownership, say so
-  explicitly in the PR rather than editing it quietly.
+- Name a branch for what it does, for example `fix/share-link-expiry`.
+- Keep a change focused on one concern. If it genuinely needs to touch an
+  unrelated area, say so explicitly in the PR rather than editing it quietly.
 - Commit messages should explain *why*, not restate the diff.

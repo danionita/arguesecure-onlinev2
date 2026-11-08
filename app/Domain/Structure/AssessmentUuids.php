@@ -7,7 +7,7 @@ use App\Models\Node;
 
 /**
  * Resolves an assessment id to the uuid a broadcast channel is named after,
- * once per request rather than once per mutation (W68).
+ * once per request rather than once per mutation.
  *
  * ## The lookup this removes
  *
@@ -19,7 +19,7 @@ use App\Models\Node;
  * cannot change between the first and the eightieth.
  *
  * It was invisible in the source of any single mutation, which is why it went
- * unnamed until W64 dumped a query log
+ * unnamed until a query log was dumped
  * (tests/Feature/Performance/CatalogInsertQueryBudgetTest.php).
  *
  * ## Why memoising is safe here and would not be elsewhere

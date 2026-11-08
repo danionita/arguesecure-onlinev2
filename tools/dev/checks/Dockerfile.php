@@ -1,11 +1,12 @@
 # PHP 8.3 CLI with the extensions CI and the app image use, plus composer —
 # for running pint, phpstan and Pest on a machine with Docker but no PHP.
 # Not the application image: it never serves the app.
+# jq is for tools/release/ci-gate.sh, which tests/Unit/Release/CiGateTest.php runs.
 FROM composer:2 AS composer
 
 FROM php:8.3-cli-alpine
 
-RUN apk add --no-cache icu-libs libzip oniguruma libpng libjpeg-turbo freetype git bash \
+RUN apk add --no-cache icu-libs libzip oniguruma libpng libjpeg-turbo freetype git bash jq \
     && apk add --no-cache --virtual .build-deps \
         icu-dev libzip-dev oniguruma-dev libpng-dev libjpeg-turbo-dev freetype-dev $PHPIZE_DEPS \
     && docker-php-ext-configure intl \

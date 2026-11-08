@@ -1,7 +1,9 @@
 <?php
 
+use App\Domain\Accounts\SelfRegistration;
 use App\Domain\Assistant\Availability;
 use App\Domain\Assistant\Help\CorpusWarmer;
+use App\Domain\Mail\Invitations;
 use App\Domain\Retention\TrashPurger;
 use App\Domain\Snapshots\AutoVersioner;
 use App\Models\SecurityEventRecord;
@@ -29,7 +31,7 @@ Schedule::command('arguesecure:save-versions')
     ->withoutOverlapping();
 
 /*
- * 2.6 (PLAN-2.6.md D57): after the assistant's runtime starts, read the help
+ * 2.6: after the assistant's runtime starts, read the help
  * corpus into its cache before anyone asks, so the first question after a
  * restart is not the minute-and-a-half one. CorpusWarmer does nothing unless
  * the help feature is available and the runtime reports a slot that has never
@@ -55,7 +57,7 @@ Schedule::command('assistant:warm')
     ->runInBackground();
 
 /*
- * W113 (security.md §12): erase every assessment deleted longer ago than
+ * Trash (security.md §12): erase every assessment deleted longer ago than
  * TRASH_RETENTION_DAYS. Daily is enough — the period is counted in days —
  * and the `scheduler` container runs it like the version saver above.
  */
@@ -64,12 +66,26 @@ Artisan::command('arguesecure:purge-deleted', function (TrashPurger $purger) {
     $this->info("Erased {$erased} deleted assessment(s).");
 })->purpose('Erase assessments deleted longer ago than the retention period');
 
+/*
+ * Invitation reminders: an invited account nobody has signed in to gets a new
+ * link after 3 days and again after 7, then no more. Does nothing with mail
+ * off. Daily is enough; the periods are counted in days.
+ */
+Artisan::command('arguesecure:send-reminders', function () {
+    $sent = Invitations::sendDueReminders();
+    $this->info("Sent {$sent} reminder(s).");
+})->purpose('Remind invited accounts that have never been used');
+
+Schedule::command('arguesecure:send-reminders')
+    ->dailyAt('08:00')
+    ->withoutOverlapping();
+
 Schedule::command('arguesecure:purge-deleted')
     ->daily()
     ->withoutOverlapping();
 
 /*
- * W128 (D98): remove stored security events older than
+ * Security event log (security.md §11.1): remove stored security events older than
  * SECURITY_LOG_RETENTION_DAYS. The stderr stream is not touched.
  */
 Artisan::command('arguesecure:purge-security-events', function () {
@@ -80,5 +96,14 @@ Artisan::command('arguesecure:purge-security-events', function () {
 })->purpose('Remove stored security events older than the retention period');
 
 Schedule::command('arguesecure:purge-security-events')
+    ->daily()
+    ->withoutOverlapping();
+
+/* Self-registrations whose link has expired can no longer be confirmed. */
+Artisan::command('arguesecure:prune-pending-registrations', function () {
+    $this->info('Removed '.SelfRegistration::prune().' pending registration(s).');
+})->purpose('Remove pending self-registrations older than the link lifetime');
+
+Schedule::command('arguesecure:prune-pending-registrations')
     ->daily()
     ->withoutOverlapping();

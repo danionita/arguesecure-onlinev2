@@ -22,24 +22,22 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Snapshots (PLAN.md Phase 8 item 3, schema.md §3.13): freeze a named
+ * Snapshots (schema.md §3.13): freeze a named
  * version of an assessment storing both the frozen graph and the frozen
  * three-baseline results, with the scales inlined so a later recalibration
  * cannot retroactively rewrite a report already sent to a client.
  *
- * Authorization, per the W19 task brief (CLAUDE.md's non-negotiables list
- * every route touching an assessment through AssessmentPolicy, no
- * exceptions): creating and deleting a snapshot need `update` — a snapshot
+ * Authorization (security.md §3.1: every route touching an assessment goes
+ * through AssessmentPolicy, no exceptions): creating and deleting a snapshot need `update` — a snapshot
  * is a write of a new historical record, gated the same as any other
  * assessment mutation; listing, viewing and diffing need only `view`,
  * matching ReportController's read routes, since a snapshot is exactly as
- * visible as the tree it was taken from. **Restoring one** (W61) also needs
+ * visible as the tree it was taken from. **Restoring one** also needs
  * `update`, and that decision has its own reasoning on restore() below —
  * it is the one place where the obvious answer was the wrong one.
  *
- * No FormRequest class here — this package owns only this controller, not
- * app/Http/Requests/** — matching LockController's own documented reason
- * for doing authorization and validation inline instead.
+ * No FormRequest class here — matching LockController's own documented
+ * reason for doing authorization and validation inline instead.
  *
  * `{snapshot}` binds by numeric id (Snapshot carries no uuid column per
  * schema.md §3.13) and is NOT scoped to `{assessment}` via
@@ -104,7 +102,7 @@ class SnapshotController extends Controller
     }
 
     /**
-     * Browsing a frozen version in the editor's own views (W63).
+     * Browsing a frozen version in the editor's own views (ui.md §8, Reading a saved version).
      *
      * `show` answers "what did this version total?"; this answers "what did it
      * look like?". They are different questions and the second is the one
@@ -159,7 +157,7 @@ class SnapshotController extends Controller
     }
 
     /**
-     * Puts a frozen version back, in place (W61).
+     * Puts a frozen version back, in place.
      *
      * ## Why `update` and not `manage`
      *
@@ -229,7 +227,7 @@ class SnapshotController extends Controller
             // rather than as a 500: nothing was written, and the message says
             // which of the two it was.
             //
-            // Narrowed from `RuntimeException` in W62, which was not the small
+            // Narrowed from `RuntimeException` earlier, which was not the small
             // difference it looks like. `QueryException` extends
             // `PDOException` extends `RuntimeException`, so the broad catch
             // swallowed every database error in the restore and rendered its
@@ -295,8 +293,8 @@ class SnapshotController extends Controller
      * published to that whole audience.
      *
      * `schemaVersion` is here rather than only on the detail page because the
-     * restore warning is shown from the list too, and W62 made that warning
-     * depend on it: a v1 snapshot cannot bring labels back and a v2 one can,
+     * restore warning is shown from the list too, and that warning depends
+     * on it: a v1 snapshot cannot bring labels back and a v2 one can,
      * and a dialog that cannot tell which it is has to either overstate or
      * understate what is about to happen.
      *
@@ -317,8 +315,8 @@ class SnapshotController extends Controller
      * `created_at` is cast to `datetime` on the model (Snapshot::casts()),
      * but that Laravel-11-style method-based cast declaration isn't picked
      * up by static analysis here (`parseModelCastsMethod` defaults to
-     * false in vendor/larastan/larastan/extension.neon, a file this
-     * package does not own), so ->created_at reads as `string` to PHPStan
+     * false in vendor/larastan/larastan/extension.neon, a vendor
+     * file), so ->created_at reads as `string` to PHPStan
      * even though it is a Carbon instance at runtime. getAttribute()
      * (untyped, `mixed`) plus this runtime check sidesteps that without
      * touching app/Models/** — the same pattern UndoController::toJson()

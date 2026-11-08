@@ -1,5 +1,5 @@
 /**
- * Progress and cancellation for a generation happening somewhere else (W58).
+ * Progress and cancellation for a generation happening somewhere else.
  *
  * The properties worth pinning here are the ones a later tidy-up would remove
  * without noticing what they were for:

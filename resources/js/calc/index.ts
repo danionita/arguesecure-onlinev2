@@ -1,6 +1,6 @@
 /**
  * TypeScript mirror of the PHP calculation engine (docs/specs/calculation-engine.md
- * §11.5, W11). Ships to the client for instant optimistic feedback while
+ * §11.5). Ships to the client for instant optimistic feedback while
  * editing; PHP remains authoritative and its broadcast result overwrites the
  * local one. Reconciled against tests/fixtures/calculation-vectors.json —
  * the same golden vectors the PHP Pest suite runs — to 1e-9.

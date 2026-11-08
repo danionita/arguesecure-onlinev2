@@ -1,5 +1,5 @@
 /**
- * Sidebar width: one persisted preference, one contextual override (W41, D16).
+ * Sidebar width: one persisted preference, one contextual override.
  *
  * The property that matters most is not tested here but in the layout spec
  * next door — that the reserved gutter depends on `railed` alone and never on

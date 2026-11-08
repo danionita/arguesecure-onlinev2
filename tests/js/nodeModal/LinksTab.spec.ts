@@ -1,5 +1,5 @@
 /**
- * The attack_defence edge is one row, and W31's claim is that it now has one
+ * The attack_defence edge is one row, and the claim is that it now has one
  * editor reachable from both of its ends. The tests that matter are
  * therefore the symmetry ones: the same field, edited from the defence, must
  * produce the same request as it does from the attack — anything less and the
@@ -181,7 +181,7 @@ beforeEach(() => {
             },
         },
     });
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get: vi.fn().mockResolvedValue({ data: {} }),
@@ -229,7 +229,7 @@ describe('the same edge, edited from either end', () => {
     });
 });
 
-describe('the Strength tab puts strength first (W72 item 9)', () => {
+describe('the Strength tab puts strength first', () => {
     it('reads strength, then reduction target, then rationale, in document order', () => {
         // Order is the claim, not presence. The tab is named after strength;
         // a reader who has to scroll past the reduction target to reach it is

@@ -2,7 +2,7 @@
 /**
  * The admin **AI assistant** tab (2.5.1).
  *
- * The switches are W50's and W87's (D25, D48), moved here from the foot of
+ * The switches (docs/ASSISTANT.md) were moved here from the foot of
  * Instance settings unchanged. What changed is the not-installed state: the
  * old panel explained, in a paragraph, which environment variable to set and
  * which `docker compose --profile` command to run. That is installation, and
@@ -14,7 +14,7 @@
  * absent: the switches render only when it is configured, and the server
  * refuses a `true` from a deployment without one.
  *
- * 2.6 (PLAN-2.6.md D55): the model shown is the one the runtime reports it
+ * Since 2.6 the model shown is the one the runtime reports it
  * loaded, matched to the two presets — not a label from `.env`, which could
  * name one model while the container ran another. The presets are listed
  * with the memory each needs, because that is the one fact an admin needs to
@@ -50,7 +50,7 @@ const props = defineProps<{
         assistant_suggestions_enabled: boolean;
         assistant_summary_enabled: boolean;
     };
-    /** Facts about the deployment, not settings (D25). */
+    /** Facts about the deployment, not settings (docs/ASSISTANT.md). */
     assistant: {
         configured: boolean;
         state: string | null;
@@ -198,7 +198,7 @@ function submit() {
                 </p>
 
                 <!--
-                    One switch per feature (W87, item 20, D48). Each can only
+                    One switch per feature (docs/ASSISTANT.md). Each can only
                     subtract: disabled while the assistant itself is off,
                     because that is what they are — a narrowing of a feature
                     that is already on.

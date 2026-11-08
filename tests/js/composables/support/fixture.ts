@@ -1,6 +1,6 @@
 /**
- * Shared fixture for the W15 composable tests. Builds a real
- * `createAssessmentStore` (W12) rather than a hand-rolled fake, so every
+ * Shared fixture for the canvas, search and focus composable tests. Builds a real
+ * `createAssessmentStore` rather than a hand-rolled fake, so every
  * test exercises the composables against the actual public store surface
  * they are constrained to use.
  *
@@ -125,6 +125,7 @@ export function makeFixtureInit(): AssessmentStoreInit {
             strength_fraction: 0.8,
             strength_level_id: null,
             reduction_target: 'likelihood',
+            rationale: null,
         },
         {
             // Deliberately missing strength on this edge only.
@@ -135,6 +136,7 @@ export function makeFixtureInit(): AssessmentStoreInit {
             strength_fraction: null,
             strength_level_id: null,
             reduction_target: null,
+            rationale: null,
         },
         {
             attack_uuid: 'attack2',
@@ -144,6 +146,7 @@ export function makeFixtureInit(): AssessmentStoreInit {
             strength_fraction: 0.5,
             strength_level_id: null,
             reduction_target: null,
+            rationale: null,
         },
     ];
 

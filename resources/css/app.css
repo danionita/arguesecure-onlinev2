@@ -7,7 +7,7 @@
 @source '../js/**/*.vue';
 
 /*
- * Dark mode strategy (W10 design system)
+ * Dark mode strategy (docs/specs/ui.md §2, Design system)
  * -----------------------------------------------------------------------
  * docs/specs/ui.md §2 requires BOTH `prefers-color-scheme` support and an
  * explicit, persisted user toggle. Tailwind's `dark:` variant can only key
@@ -28,43 +28,51 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Self-hosted Figtree (CLAUDE.md: "Nothing loads from a CDN. Strict CSP
- * with nonces; everything self-hosted." — the W24 CSP will block the
- * webfont CDN request this used to make). Files vendored from the
- * Google Fonts repository (github.com/google/fonts, ofl/figtree), latin
- * subset only, weights 400/500/600 (the only weights referenced by
- * --font-sans below and the UI component library). Licensed under the
- * SIL Open Font License 1.1, which permits redistribution; the licence
- * text is vendored alongside the font files at resources/fonts/OFL.txt.
+ * Self-hosted fonts (nothing loads from a CDN, docs/specs/security.md §6). Archivo (headings) and Source Sans 3
+ * (body), the same two the project website uses, latin subset, from the
+ * @fontsource packages. Both are licensed under the SIL Open Font License
+ * 1.1, which permits redistribution; the licence texts are vendored beside
+ * the font files in resources/fonts/. Source Sans 3 is shipped at 400, 500
+ * and 600, the three weights the UI uses.
  */
 @font-face {
-    font-family: 'Figtree';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('../fonts/figtree-latin-400-normal.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Figtree';
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url('../fonts/figtree-latin-500-normal.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Figtree';
+    font-family: 'Archivo';
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src: url('../fonts/figtree-latin-600-normal.woff2') format('woff2');
+    src: url('../fonts/archivo-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Source Sans 3';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/source-sans-3-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Source Sans 3';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../fonts/source-sans-3-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Source Sans 3';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/source-sans-3-latin-600-normal.woff2') format('woff2');
 }
 
 @theme {
+    --font-heading: 'Archivo', ui-sans-serif, system-ui, sans-serif;
     --font-sans:
-        'Figtree', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+        'Source Sans 3', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
 
     /* ---- Surfaces, borders, text -------------------------------------- */
     --color-surface-0: var(--as-surface-0);
@@ -87,7 +95,7 @@
     /* ---- Node type -----------------------------------------------------
      * One family per type in the graph (docs/specs/ui.md §2). `transfer`
      * is its own token set even though it is the same DB row as `defence`
-     * with is_transfer=1 (CLAUDE.md "Domain model") — the UI must still be
+     * with is_transfer=1 (docs/specs/schema.md §1) — the UI must still be
      * able to tell them apart at a glance, which is the whole point of
      * having a separate "transfer-vs-defence" token.
      */
@@ -129,8 +137,7 @@
 
     /* ---- Missing-value state --------------------------------------------
      * A missing impact/likelihood/strength is a distinct visual state, not
-     * zero and not blank (CLAUDE.md "Four things that are easy to get
-     * wrong"). Deliberately drab/neutral so it never reads as "good".
+     * zero and not blank (docs/specs/calculation-engine.md §6). Deliberately drab/neutral so it never reads as "good".
      */
     --color-missing-bg: var(--as-missing-bg);
     --color-missing-border: var(--as-missing-border);
@@ -170,26 +177,28 @@
 
 /* ==== Light theme (default) ============================================ */
 :root {
-    --as-surface-0: #f8fafc;
+    --as-surface-0: #f7f5ef;
     --as-surface-1: #ffffff;
-    --as-surface-2: #f1f5f9;
-    --as-surface-overlay: rgb(15 23 42 / 55%);
+    --as-surface-2: #efece3;
+    --as-surface-overlay: rgb(27 42 58 / 55%);
 
-    --as-border-subtle: #e2e8f0;
-    --as-border-default: #cbd5e1;
-    --as-border-strong: #94a3b8;
+    --as-border-subtle: #e6e2d6;
+    --as-border-default: #d9d4c7;
+    --as-border-strong: #7d8791;
 
-    --as-text-primary: #0f172a;
-    --as-text-secondary: #334155;
-    --as-text-muted: #64748b;
-    --as-text-inverted: #f8fafc;
-    --as-text-link: #4338ca;
+    --as-text-primary: #1b2a3a;
+    --as-text-secondary: #3a4652;
+    --as-text-muted: #5b6672;
+    --as-text-inverted: #f7f5ef;
+    --as-text-link: #0f6e6a;
 
-    --as-focus-ring: #4f46e5;
+    --as-focus-ring: #0f6e6a;
+    --as-brand-outline: #1b2a3a;
+    --as-brand-accent: #0f6e6a;
 
-    --as-node-root-bg: #eef2ff;
-    --as-node-root-border: #a5b4fc;
-    --as-node-root-text: #3730a3;
+    --as-node-root-bg: #dce5ee;
+    --as-node-root-border: #5f7690;
+    --as-node-root-text: #1b2a3a;
 
     --as-node-risk-bg: #fffbeb;
     --as-node-risk-border: #fcd34d;
@@ -215,24 +224,24 @@
     --as-status-todo-border: #fcd34d;
     --as-status-todo-text: #b45309;
 
-    --as-status-shelved-bg: #f1f5f9;
-    --as-status-shelved-border: #cbd5e1;
-    --as-status-shelved-text: #475569;
+    --as-status-shelved-bg: #efece3;
+    --as-status-shelved-border: #d9d4c7;
+    --as-status-shelved-text: #3a4652;
 
-    --as-missing-bg: #f8fafc;
-    --as-missing-border: #cbd5e1;
-    --as-missing-text: #64748b;
+    --as-missing-bg: #f7f5ef;
+    --as-missing-border: #d9d4c7;
+    --as-missing-text: #5b6672;
 
-    --as-magnitude-1-bg: #eef2ff;
-    --as-magnitude-1-text: #4338ca;
-    --as-magnitude-2-bg: #c7d2fe;
-    --as-magnitude-2-text: #312e81;
-    --as-magnitude-3-bg: #818cf8;
-    --as-magnitude-3-text: #1e1b4b;
-    --as-magnitude-4-bg: #4f46e5;
-    --as-magnitude-4-text: #eef2ff;
-    --as-magnitude-5-bg: #312e81;
-    --as-magnitude-5-text: #eef2ff;
+    --as-magnitude-1-bg: #e3f0ee;
+    --as-magnitude-1-text: #0a4f4c;
+    --as-magnitude-2-bg: #b9dcd8;
+    --as-magnitude-2-text: #073c39;
+    --as-magnitude-3-bg: #6fb3ac;
+    --as-magnitude-3-text: #04201f;
+    --as-magnitude-4-bg: #0f6e6a;
+    --as-magnitude-4-text: #ffffff;
+    --as-magnitude-5-bg: #0a3f3d;
+    --as-magnitude-5-text: #e3f0ee;
 }
 
 /* System dark preference, only when the user has not made an explicit choice. */
@@ -240,26 +249,28 @@
     :root:not(.light):not(.dark) {
         color-scheme: dark;
 
-        --as-surface-0: #0b1220;
-        --as-surface-1: #111827;
-        --as-surface-2: #1e293b;
-        --as-surface-overlay: rgb(2 6 23 / 65%);
+        --as-surface-0: #121c27;
+        --as-surface-1: #182431;
+        --as-surface-2: #223142;
+        --as-surface-overlay: rgb(7 12 18 / 65%);
 
-        --as-border-subtle: #1e293b;
-        --as-border-default: #334155;
-        --as-border-strong: #475569;
+        --as-border-subtle: #223142;
+        --as-border-default: #2f3e4e;
+        --as-border-strong: #5f7184;
 
-        --as-text-primary: #f1f5f9;
-        --as-text-secondary: #cbd5e1;
-        --as-text-muted: #94a3b8;
-        --as-text-inverted: #0f172a;
-        --as-text-link: #a5b4fc;
+        --as-text-primary: #f2efe6;
+        --as-text-secondary: #cdd3da;
+        --as-text-muted: #a9b3be;
+        --as-text-inverted: #121c27;
+        --as-text-link: #8fd3cc;
 
-        --as-focus-ring: #818cf8;
+        --as-focus-ring: #8fd3cc;
+        --as-brand-outline: #f7f5ef;
+        --as-brand-accent: #8fd3cc;
 
-        --as-node-root-bg: #1e1b4b;
-        --as-node-root-border: #4338ca;
-        --as-node-root-text: #c7d2fe;
+        --as-node-root-bg: #2a4058;
+        --as-node-root-border: #7f98b3;
+        --as-node-root-text: #e6e9ed;
 
         --as-node-risk-bg: #451a03;
         --as-node-risk-border: #b45309;
@@ -285,24 +296,24 @@
         --as-status-todo-border: #b45309;
         --as-status-todo-text: #fcd34d;
 
-        --as-status-shelved-bg: #1e293b;
-        --as-status-shelved-border: #475569;
-        --as-status-shelved-text: #cbd5e1;
+        --as-status-shelved-bg: #223142;
+        --as-status-shelved-border: #4a5c6f;
+        --as-status-shelved-text: #cdd3da;
 
-        --as-missing-bg: #1e293b;
-        --as-missing-border: #475569;
-        --as-missing-text: #94a3b8;
+        --as-missing-bg: #223142;
+        --as-missing-border: #4a5c6f;
+        --as-missing-text: #a9b3be;
 
-        --as-magnitude-1-bg: #1e1b4b;
-        --as-magnitude-1-text: #c7d2fe;
-        --as-magnitude-2-bg: #3730a3;
-        --as-magnitude-2-text: #e0e7ff;
-        --as-magnitude-3-bg: #4f46e5;
-        --as-magnitude-3-text: #eef2ff;
-        --as-magnitude-4-bg: #818cf8;
-        --as-magnitude-4-text: #1e1b4b;
-        --as-magnitude-5-bg: #c7d2fe;
-        --as-magnitude-5-text: #1e1b4b;
+        --as-magnitude-1-bg: #173533;
+        --as-magnitude-1-text: #b5e4df;
+        --as-magnitude-2-bg: #0a4f4c;
+        --as-magnitude-2-text: #d6efec;
+        --as-magnitude-3-bg: #0f6e6a;
+        --as-magnitude-3-text: #ffffff;
+        --as-magnitude-4-bg: #8fd3cc;
+        --as-magnitude-4-text: #0a2a28;
+        --as-magnitude-5-bg: #b5e4df;
+        --as-magnitude-5-text: #0a2a28;
     }
 }
 
@@ -310,26 +321,28 @@
 .dark {
     color-scheme: dark;
 
-    --as-surface-0: #0b1220;
-    --as-surface-1: #111827;
-    --as-surface-2: #1e293b;
-    --as-surface-overlay: rgb(2 6 23 / 65%);
+    --as-surface-0: #121c27;
+    --as-surface-1: #182431;
+    --as-surface-2: #223142;
+    --as-surface-overlay: rgb(7 12 18 / 65%);
 
-    --as-border-subtle: #1e293b;
-    --as-border-default: #334155;
-    --as-border-strong: #475569;
+    --as-border-subtle: #223142;
+    --as-border-default: #2f3e4e;
+    --as-border-strong: #5f7184;
 
-    --as-text-primary: #f1f5f9;
-    --as-text-secondary: #cbd5e1;
-    --as-text-muted: #94a3b8;
-    --as-text-inverted: #0f172a;
-    --as-text-link: #a5b4fc;
+    --as-text-primary: #f2efe6;
+    --as-text-secondary: #cdd3da;
+    --as-text-muted: #a9b3be;
+    --as-text-inverted: #121c27;
+    --as-text-link: #8fd3cc;
 
-    --as-focus-ring: #818cf8;
+    --as-focus-ring: #8fd3cc;
+    --as-brand-outline: #f7f5ef;
+    --as-brand-accent: #8fd3cc;
 
-    --as-node-root-bg: #1e1b4b;
-    --as-node-root-border: #4338ca;
-    --as-node-root-text: #c7d2fe;
+    --as-node-root-bg: #2a4058;
+    --as-node-root-border: #7f98b3;
+    --as-node-root-text: #e6e9ed;
 
     --as-node-risk-bg: #451a03;
     --as-node-risk-border: #b45309;
@@ -355,24 +368,24 @@
     --as-status-todo-border: #b45309;
     --as-status-todo-text: #fcd34d;
 
-    --as-status-shelved-bg: #1e293b;
-    --as-status-shelved-border: #475569;
-    --as-status-shelved-text: #cbd5e1;
+    --as-status-shelved-bg: #223142;
+    --as-status-shelved-border: #4a5c6f;
+    --as-status-shelved-text: #cdd3da;
 
-    --as-missing-bg: #1e293b;
-    --as-missing-border: #475569;
-    --as-missing-text: #94a3b8;
+    --as-missing-bg: #223142;
+    --as-missing-border: #4a5c6f;
+    --as-missing-text: #a9b3be;
 
-    --as-magnitude-1-bg: #1e1b4b;
-    --as-magnitude-1-text: #c7d2fe;
-    --as-magnitude-2-bg: #3730a3;
-    --as-magnitude-2-text: #e0e7ff;
-    --as-magnitude-3-bg: #4f46e5;
-    --as-magnitude-3-text: #eef2ff;
-    --as-magnitude-4-bg: #818cf8;
-    --as-magnitude-4-text: #1e1b4b;
-    --as-magnitude-5-bg: #c7d2fe;
-    --as-magnitude-5-text: #1e1b4b;
+    --as-magnitude-1-bg: #173533;
+    --as-magnitude-1-text: #b5e4df;
+    --as-magnitude-2-bg: #0a4f4c;
+    --as-magnitude-2-text: #d6efec;
+    --as-magnitude-3-bg: #0f6e6a;
+    --as-magnitude-3-text: #ffffff;
+    --as-magnitude-4-bg: #8fd3cc;
+    --as-magnitude-4-text: #0a2a28;
+    --as-magnitude-5-bg: #b5e4df;
+    --as-magnitude-5-text: #0a2a28;
 }
 
 /* Explicit light choice, forced even when the OS is in dark mode. */
@@ -385,8 +398,15 @@
         @apply bg-surface-0 text-text-primary;
     }
 
+    /* The site's heading face (Archivo 600). Headings only: UI labels,
+       tables and node cards stay in the body face. */
+    h1,
+    h2 {
+        font-family: var(--font-heading);
+    }
+
     /* Respect prefers-reduced-motion globally (docs/specs/ui.md §11); the
-       canvas/expand transitions in W12+ read this same media query. */
+       canvas/expand transitions in the tree editor read this same media query. */
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,

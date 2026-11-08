@@ -14,7 +14,7 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 2 of PLAN.md's end-to-end list, second half: "User A ... adds two
+ * Scenario 2 of the end-to-end scenario list, second half: "User A ... adds two
  * risks, three attacks (one linked to both risks), and four defences with
  * mixed statuses and reduction targets — driven entirely from the keyboard,
  * checking that adding a node focuses the name field and never opens a
@@ -23,7 +23,7 @@ import {
  * That last clause is the whole point of the scenario, and it is a
  * regression test against the legacy editor specifically: v1's flow was
  * click a wrench, reveal buttons, then navigate to a separate full page to
- * name the node (CLAUDE.md: "the main thing to eliminate"). So this asserts
+ * name the node, the main thing to eliminate. So this asserts
  * the negative — no dialog opens, no navigation happens — as hard as it
  * asserts the positive.
  *
@@ -135,17 +135,17 @@ test.describe('keyboard-driven authoring', () => {
         // risks"). There is no keyboard affordance for creating an edge
         // between two existing nodes.
         //
-        // W39 removed the Links tab from attacks and moved both halves of the
+        // The Links tab was removed from attacks and moved both halves of the
         // risk_attack edge — "Appears under", and the control that adds
         // another — onto Details, beside the title. The other way to do this
         // is now a drag onto the second risk, answering "Link it here as
-        // well" (W38); that gesture is covered by its own unit tests.
-        // 2.4 item 12/D31 moved "Appears under" — the parent list, the detach
+        // well"; that gesture is covered by its own unit tests.
+        // 2.4 item 12 moved "Appears under" — the parent list, the detach
         // action and this link control — off the Details tab and onto the
         // parent counter's popover on the card. The counter only renders once
         // a node appears in more than one place, so for an attack under a
         // single risk there is no longer a keyboard path to a second link:
-        // the drag gesture W38 added is the only one, which is a deliberate
+        // the drag gesture is the only one, which is a deliberate
         // decision, not an oversight.
         //
         // The step stays here rather than moving to scenario 8, because
@@ -183,8 +183,8 @@ test.describe('keyboard-driven authoring', () => {
         await openAssessment(page);
         const dialog = page.getByRole('dialog');
 
-        // Impact is per-occurrence loss, never annual (CLAUDE.md's first
-        // easy-to-get-wrong item) — the field label says so, and asserting
+        // Impact is per-occurrence loss, never annual (the first easy-to-get-wrong
+        // item in the calculation) — the field label says so, and asserting
         // on that label is what stops a future rename from quietly turning
         // this into an annual figure.
         await openNodeModal(page, BREACH, 'Impact');
@@ -214,7 +214,7 @@ test.describe('keyboard-driven authoring', () => {
         await expectSaved(page);
 
         // Mixed statuses: implemented counts towards `current`, todo only
-        // towards `target` (PLAN.md's three baselines).
+        // towards `target` (the three baselines).
         //
         // Status is on Details, not Cost, since 2.4 item 9: a tab called Cost
         // that opened on a status control was answering a different question
@@ -241,8 +241,8 @@ test.describe('keyboard-driven authoring', () => {
         // schema.md §3.6: strength lives on `attack_defence`, because one
         // control may be 80% effective against one attack and 20% against
         // another. So it is set per edge, from the defence's Strength tab —
-        // the same LinksTab component and the same LinkStrengthEditor W31
-        // made reachable from both ends of the edge, renamed by W39 to say
+        // the same LinksTab component and the same LinkStrengthEditor
+        // that was made reachable from both ends of the edge, since renamed to say
         // what it edits and now reachable only from this end.
         //
         // The strength input is addressed by role within its own edge's
@@ -275,7 +275,7 @@ test.describe('keyboard-driven authoring', () => {
 
         // The autosave indicator says a write was accepted; only a reload
         // proves it was persisted, which is the difference the legacy app's
-        // silently-dropped mass assignments used to hide (CLAUDE.md).
+        // silently-dropped mass assignments used to hide.
         for (const title of [BREACH, OUTAGE, PHISHING, SQLI, MFA, WAF]) {
             await expect(cardFor(page, title)).toBeVisible();
         }
@@ -284,7 +284,7 @@ test.describe('keyboard-driven authoring', () => {
         ).toHaveCount(2);
 
         // Strength lives on the attack_defence pivot, and a pivot write is
-        // the exact shape of failure CLAUDE.md warns about most loudly — an
+        // the exact shape of failure to guard against most — an
         // identity column dropped silently at the model layer, leaving the
         // UI looking correct until something reads the row back. Reading it
         // back after a reload is the only assertion that would have caught
@@ -301,9 +301,9 @@ test.describe('keyboard-driven authoring', () => {
     });
 
     /**
-     * W88 item 21, in a real browser against a real server — the one place the
+     * The title-save race, in a real browser against a real server — the one place the
      * defect was ever visible. The Details title commits on every keystroke,
-     * and until W88 two keystrokes closer together than one round trip made
+     * and until that was fixed two keystrokes closer together than one round trip made
      * the second request carry an `updated_at` the first had already
      * superseded. The server answered 409 and the editor accused the typist of
      * being a second editor.

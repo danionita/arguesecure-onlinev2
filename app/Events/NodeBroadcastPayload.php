@@ -5,10 +5,10 @@ namespace App\Events;
 use App\Models\Node;
 
 /**
- * The wire shape every W16 node broadcast reuses — deliberately identical
+ * The wire shape every real-time node broadcast reuses — deliberately identical
  * to AssessmentController::nodeToArray() / NodeController::nodeToArray()
- * (both outside this package's ownership, so this cannot simply call one of
- * them) so resources/js/stores/assessmentStore.ts's `NodeRecord` shape is
+ * (this does not call either, to keep the broadcast independent of the
+ * controllers) so resources/js/stores/assessmentStore.ts's `NodeRecord` shape is
  * the single thing every one of the app's three "here is a node" payloads
  * — the initial page load, the PATCH response, and this broadcast — has to
  * agree with.

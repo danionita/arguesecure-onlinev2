@@ -3,8 +3,7 @@
 namespace App\Domain\Reporting;
 
 /**
- * Money as the report renders it, for the exports that leave the server
- * (W74 item 25).
+ * Money as the report renders it, for the exports that leave the server.
  *
  * Two rules, and both are the reason this exists rather than a `sprintf`
  * at each call site:

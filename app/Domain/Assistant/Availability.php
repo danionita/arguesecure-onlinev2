@@ -5,7 +5,7 @@ namespace App\Domain\Assistant;
 use App\Domain\Accounts\InstanceSettings;
 
 /**
- * Whether the assistant can be used, and if not, why (PLAN-2.3-ai.md D25).
+ * Whether the assistant can be used, and if not, why (docs/ASSISTANT.md §1).
  *
  * Three conditions, and every one of them must hold:
  *
@@ -21,8 +21,8 @@ use App\Domain\Accounts\InstanceSettings;
  * shows the action, disabled, with the reason — because there something is
  * wrong and somebody should fix it.
  *
- * `CLAUDE.md`, via W44's `registration_locked`: "a control that appears to do
- * something and does not is worse than no control". The distinction between
+ * The rule behind the removed `registration_locked` switch: "a control that
+ * appears to do something and does not is worse than no control". The distinction between
  * `NOT_CONFIGURED` and `UNREACHABLE` is that rule applied to a feature that is
  * optional by design.
  *
@@ -39,7 +39,7 @@ class Availability
     public const DISABLED = 'disabled';
 
     /**
-     * The assistant is on, but *this* feature is switched off (W87, D48).
+     * The assistant is on, but *this* feature is switched off.
      *
      * A separate state from `DISABLED` because it needs a different sentence:
      * "the assistant is off" is wrong and misleading on an instance where the
@@ -52,7 +52,7 @@ class Availability
 
     public const AVAILABLE = 'available';
 
-    /** Answering questions from the help corpus (D25 job A). */
+    /** Answering questions from the help corpus (job A). */
     public const FEATURE_HELP = 'help';
 
     /** Suggesting risks, attacks and defences under a node (job B). */
@@ -88,7 +88,7 @@ class Availability
             return self::DISABLED;
         }
 
-        // Fourth condition, and it can only ever subtract (W87, D48). It is
+        // Fourth condition, and it can only ever subtract. It is
         // checked *after* the two above, so no value of a feature switch can
         // make a feature work on a deployment with no runtime or on an
         // instance where the assistant is off — and *before* the health probe,

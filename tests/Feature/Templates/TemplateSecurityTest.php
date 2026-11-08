@@ -6,7 +6,7 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W45, PLAN-2.2.md D12, rewritten for W141 — a template has no owner, is
+ * A template has no owner, is
  * reachable through the assessment routes by admins only, and is offered to
  * everyone else through `useAsTemplate` alone. "The tests are the point."
  *
@@ -225,7 +225,7 @@ test('an editor cannot publish an assessment as a template', function () {
 });
 
 /*
- * The narrowing W45 introduced, kept: a `manager` collaborator can invite a
+ * The narrowing kept from the first template sharing: a `manager` collaborator can invite a
  * colleague but cannot offer the assessment to the whole instance, which cannot
  * be taken back from whoever already copied it. See AssessmentPolicy::saveAsTemplate.
  */

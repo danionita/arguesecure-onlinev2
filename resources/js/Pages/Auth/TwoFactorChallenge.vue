@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The second step of signing in with a second factor (W116, D77). One field:
+ * The second step of signing in with a second factor. One field:
  * a six-digit code from the authenticator app or, for a lost phone, one of the
  * recovery codes. Which it is, the server works out.
  */

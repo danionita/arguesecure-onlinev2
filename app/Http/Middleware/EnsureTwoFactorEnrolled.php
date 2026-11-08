@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * D78's *Require two-factor authentication for password sign-in*: with the
+ * The *Require two-factor authentication for password sign-in* switch: with the
  * instance switch on, an account that has no second factor reaches only the
  * profile page (where enrolment lives), the routes enrolment needs, and
  * logout. It is sent there rather than refused, so the switch can be turned
@@ -40,7 +40,7 @@ class EnsureTwoFactorEnrolled
             return $next($request);
         }
 
-        // D78: not asked after a provider sign-in; the provider's own second
+        // Not asked after a provider sign-in; the provider's own second
         // factor is the organisation's to enforce.
         if ($request->hasSession() && $request->session()->get('auth.method') === 'oidc') {
             return $next($request);

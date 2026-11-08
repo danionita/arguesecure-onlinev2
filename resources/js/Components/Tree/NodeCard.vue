@@ -11,7 +11,7 @@
  * wrench, no reveal animation" (ui.md §3.2): nothing is hidden behind a
  * click to reveal a click.
  *
- * ## W29 — labelled, explained
+ * ## Labelled, explained
  *
  * The card used to render current and target figures side by side, unlabelled:
  * a risk row carried three bare numbers and a defence five, with nothing on
@@ -21,9 +21,9 @@
  * the same copy module, so the two views cannot explain the same number
  * differently.
  *
- * ## W36 — the list shows what a human entered
+ * ## The list shows what a human entered
  *
- * The three views have three jobs (PLAN-2.2.md): the chart is for agreeing
+ * The three views have three jobs: the chart is for agreeing
  * what the boxes are, the list is for filling in their values, the report is
  * for reading what those values imply. So this card shows **inputs** — impact,
  * likelihood, status, strength — and no engine output.
@@ -32,20 +32,19 @@
  * (Base / Current / Target ALE). That is the figure a facilitator glances at
  * while working, and showing the three together is the comparison the removed
  * baseline selector kept asking people to make one at a time. It also absorbs
- * the docked `TotalsPanel`, deleted in the same package: two places rendering
+ * the docked `TotalsPanel`, since deleted: two places rendering
  * the same three numbers, one of them costing a permanent strip of vertical
  * space above the tree.
  *
  * What left — annual loss on risks and attacks, the contribution bar, a
  * defence's cost and saving, and the "not applied in this baseline" dimming —
  * is engine output, and all of it reappears in the modal's Statistics tab
- * (W39) and the report, shown against all three baselines rather than against
+ * and the report, shown against all three baselines rather than against
  * whichever one a control happened to be set to.
  *
- * ## W70 — one shape for every entered value
+ * ## One shape for every entered value
  *
- * Two changes, both about a row that reads at a glance (PLAN-2.4.md items 22
- * and 23).
+ * Two changes, both about a row that reads at a glance.
  *
  * The **completeness bar is gone from the root row**. A bar is a comparison
  * against a whole, and the whole it compared against — how many risk/attack
@@ -59,13 +58,14 @@
  * label-colon-value shape, the same hover/focus explanation. The defence was
  * the last holdout, rendering a bare sentence chip; its strength is now the
  * chip's value and its reduction target is the chip's label, which keeps
- * W29's finding (the percentage and the words are one fact, not two) while
+ * the earlier finding (the percentage and the words are one fact, not two) while
  * putting the row in one shape. Computed figures are unaffected because there
  * are none left here but the root's three totals.
  */
-// Two imports from Components/NodeModal/**, which this package does not own:
-// `useNodeModal` predates W40, and `useLinkMutations` is the edge-writing
-// surface W13 built and documented as the store's missing addLink/removeLink.
+// Two imports from Components/NodeModal/**, which belongs to the node modal:
+// `useNodeModal` predates the suggestion list, and `useLinkMutations` is the
+// edge-writing surface built for the modal and documented as the store's
+// missing addLink/removeLink.
 // Reimplementing it here to stay inside a directory boundary would be two
 // implementations of one POST, which is how they drift.
 import AssistantPanel from '@/Components/Node/AssistantPanel.vue';
@@ -115,7 +115,7 @@ const props = defineProps<{
     edge?: AttackDefenceLink;
     expanded: boolean;
     hasChildren: boolean;
-    /** Direct children; the badge shows it while collapsed (W127). */
+    /** Direct children; the badge shows it while collapsed. */
     childCount?: number;
     /** What dragging this occurrence means; null for the root. See TreeNode.vue. */
     dragPayload?: DragPayload | null;
@@ -125,23 +125,23 @@ const emit = defineEmits<{ toggle: [] }>();
 
 const store = inject(ASSESSMENT_STORE_KEY)!;
 // Optional — see TreeNode.vue. Without an editor view the card renders
-// undimmed and unhighlighted, which is the correct degraded behaviour. Since
-// W36 it needs nothing else from the view: the figures it shows are inputs
+// undimmed and unhighlighted, which is the correct degraded behaviour. It
+// needs nothing else from the view: the figures it shows are inputs
 // and the root's three totals, none of which depend on view state.
 const view = inject(EDITOR_VIEW_KEY, null);
 // Optional for the same reason: several existing tests mount NodeCard with
-// only the store provided (ui.md §6, W16). With no lock handle present the
-// title field simply behaves as it did before W16 — always editable,
+// only the store provided (ui.md §6). With no lock handle present the
+// title field simply behaves as it did before field locks — always editable,
 // never shown as locked.
 const locks = inject(LOCKS_KEY, null);
 // Optional for the same reason again: the existing card tests mount this
 // with only the store. Without a drag handle the card renders exactly as it
-// did before W27 — no `draggable`, no drop target.
+// did before drag and drop — no `draggable`, no drop target.
 const dragDrop = inject(DRAG_DROP_KEY, null);
 const modal = useNodeModal();
 // Page props, not the store: the store does not carry the calibration (see
 // useScales.ts's own note). Used only to turn the engine's level *code* into
-// the band's label for display (W87, D44).
+// the band's label for display.
 const { levelsForKind, levelById } = useScales();
 
 /**
@@ -336,17 +336,17 @@ function addChild() {
     );
 }
 
-// --- ask the assistant for children (W52, job B) -----------------------------
+// --- ask the assistant for children -------------------------------------
 //
 // Named `assistant*` throughout, and deliberately not `suggest*`: this file
-// already has a `suggesting` and a `SuggestionList` from W40, which mean
+// already has a `suggesting` and a `SuggestionList` for linking, which mean
 // something entirely different — finding an *existing* node to link. Two
 // unrelated notions of "suggestion" one scroll apart is how the wrong one gets
 // edited.
 //
-// Extracted into useAssistantChildren.ts in W85/D50 so ChartCard.vue can carry
-// the same trigger and the same guardrail (D24) instead of a second,
-// divergent copy of this block.
+// Extracted into useAssistantChildren.ts so ChartCard.vue can carry the same
+// trigger and the same guardrail (nothing a model generates reaches the graph
+// unseen) instead of a second, divergent copy of this block.
 const assistantNodeType = computed(() => node.value?.type);
 const {
     assistantItems,
@@ -393,21 +393,21 @@ const currency = computed(() => store.assessment.currency);
  * Impact and likelihood are **inputs**. The engine echoes them back
  * identically in all three baselines, so which one this reads from is
  * arbitrary — `current` is named outright rather than tracked through a
- * `baseline` ref, because after W36 there is no baseline selection in the
- * editor to track. Anything genuinely baseline-dependent has left this card.
+ * `baseline` ref, because the editor has no baseline selection in the
+ * to track. Anything genuinely baseline-dependent has left this card.
  */
 const inputs = computed(() => store.results.value.current);
 
 /**
  * The ToS card is the one place in the editor that still shows a computed
  * figure, and it shows **all three at once** rather than one chosen by a
- * control (PLAN-2.2.md D8). A facilitator glances at these while working;
+ * control. A facilitator glances at these while working;
  * they are also the comparison the removed selector kept asking people to
  * make one baseline at a time, which is the harder way to make it.
  */
 const rootTotals = computed(() => {
     const results = store.results.value;
-    // Only `isPartial` survives W70's removal of the completeness bar, and it
+    // Only `isPartial` survives the removal of the completeness bar, and it
     // is not a leftover: it decides whether the three totals render with a
     // "≥" (ui.md §9), which is a statement about the figures themselves
     // rather than a second reading of coverage.
@@ -421,12 +421,11 @@ const rootTotals = computed(() => {
                 label: ROOT_TOTAL_LABELS[baseline],
                 total: results[baseline].total,
                 /**
-                 * CLAUDE.md: computed results "render as currency with a
-                 * reduction percentage" — never band-mapped to low/medium/
-                 * high. W36 moved these three figures off the docked panel
-                 * and onto this card and dropped the percentage on the way,
-                 * which is what scenario 6 caught the first time the e2e
-                 * suite ran after it.
+                 * Computed results "render as currency with a
+                 * reduction percentage" (calculation-engine.md) — never band-mapped to low/medium/
+                 * high. These three figures moved off the docked panel and
+                 * onto this card, which dropped the percentage on the way;
+                 * an e2e scenario caught it.
                  *
                  * Against inherent, because that is what "reduction" means
                  * here: how much of the untreated loss the defences remove.
@@ -445,7 +444,7 @@ const rootTotals = computed(() => {
 });
 
 /**
- * Where the current total sits against the tolerance someone set (W44).
+ * Where the current total sits against the tolerance someone set (ui.md §8, Assessment settings).
  *
  * Null when no tolerance is set — which is not the same as a tolerance of
  * zero, and a badge reading "0 over" on every unconfigured assessment would
@@ -485,7 +484,7 @@ const riskResult = computed(() =>
     inputs.value.risks.find((r) => r.uuid === props.uuid),
 );
 /**
- * A band's **label**, looked up from the code the engine reports (W87, D44).
+ * A band's **label**, looked up from the code the engine reports.
  *
  * `RiskResult.impactLevelCode` and `AttackResult.aroLevelCode` are part of
  * calculation-engine.md §8.3's normative payload and do not change. What
@@ -547,7 +546,7 @@ const attackChips = computed(() => {
  * The residual likelihood is not a chip and is no longer in this hint either:
  * residual is baseline-dependent, and stating one baseline's residual with no
  * control to change it would be an arbitrary choice presented as a fact. It
- * lives in the modal's Statistics tab (W39), where all three appear together.
+ * lives in the modal's Statistics tab (ui.md §7), where all three appear together.
  * What stays is the entered rate and its probability, both of which are what
  * the user typed.
  */
@@ -573,7 +572,7 @@ const defenceChips = computed(() => ({
  * Read from the **edge**, above, never from the defence. Strength lives on the
  * `attack_defence` pivot because one control may be 80% effective against one
  * attack and 20% against another, so the same defence renders two different
- * percentages under two attacks and that is correct (CLAUDE.md, schema.md).
+ * percentages under two attacks and that is correct (schema.md).
  */
 const strengthText = computed(() => {
     const { strength, strengthLevelId } = defenceChips.value;
@@ -614,8 +613,7 @@ const defenceHints = computed(() => ({
 }));
 
 /**
- * The chip's label names the reduction target; its value is the strength
- * (W70, item 23).
+ * The chip's label names the reduction target; its value is the strength.
  *
  * `null` is **not** a missing reduction target — it is the default, "overall
  * loss", which is what `LinkStrengthEditor`'s placeholder says and what the
@@ -627,7 +625,7 @@ const defenceHints = computed(() => ({
  * private; `Report/AssessmentTreeSection.vue`, `Report/TransfersSection.vue`
  * and `NodeModal/LinkStrengthEditor.vue` each already carry the same three
  * words for the same reason. Exporting one map is the right fix and belongs
- * to whoever owns that module — W70 does not.
+ * to whoever owns that module.
  */
 const REDUCTION_TARGET_NOUNS: Record<string, string> = {
     likelihood: 'likelihood',
@@ -733,7 +731,7 @@ const reductionLabel = computed(
             </Tooltip>
 
             <!--
-                W36: what a *human entered*, per node — plus the three totals
+                What a *human entered*, per node — plus the three totals
                 at the root, which are the only computed figures left in the
                 editor. Everything removed here (annual loss, contribution,
                 saves, cost) is engine output and lives in the modal's
@@ -744,7 +742,7 @@ const reductionLabel = computed(
             <div class="flex shrink-0 items-center gap-2">
                 <template v-if="node.type === 'root'">
                     <!-- The live region the docked totals panel used to be
-                         (deleted in W36). Collaborative edits change these
+                         (since deleted). Collaborative edits change these
                          figures without the reader touching anything, which
                          is exactly when an assertive-free announcement is
                          worth having. -->
@@ -777,7 +775,7 @@ const reductionLabel = computed(
                     </div>
 
                     <!--
-                        W44. A statement of where the current total sits
+                        A statement of where the current total sits
                         relative to a threshold someone chose, and nothing
                         more. Deliberately not a red/amber/green pill:
                         calculation-engine.md forbids band-mapping a computed
@@ -795,7 +793,7 @@ const reductionLabel = computed(
                         </span>
                     </Tooltip>
 
-                    <!-- W70, item 22: the completeness bar was here. A bar is
+                    <!-- The completeness bar was here. A bar is
                          a fraction of a whole, and the whole — how many
                          risk/attack pairs the assessment has — was never on
                          this row, so the fill had no scale to be read
@@ -856,11 +854,11 @@ const reductionLabel = computed(
                 <template v-else-if="node.type === 'defence'">
                     <StatusPill v-if="node.status" :status="node.status" />
 
-                    <!-- W29 merged strength and reduction target into one
+                    <!-- Strength and reduction target are merged into one
                          phrase, because as two bare chips ("40%" beside
                          "Reduces likelihood") the reader had to infer that
-                         the number belonged to the words. W70 keeps them one
-                         fact and gives them the shape every other entered
+                         the number belonged to the words. They stay one
+                         fact, in the shape every other entered
                          value on this row has: the target is the label, the
                          strength is the value. The label does the joining
                          that the sentence used to do, so nothing has to be
@@ -889,7 +887,8 @@ const reductionLabel = computed(
             <!-- indicator icons -->
             <div class="text-text-muted flex shrink-0 items-center gap-1">
                 <!-- One component for both cards (2.5.1): an attack's counter
-                     is D31's popover, a shared defence's names its parents in
+                     is the parent counter's popover (ui.md §7), a shared
+                     defence's names its parents in
                      the tooltip. The list's used to say only "one node, shown
                      everywhere it belongs", which named nothing. -->
                 <SharedCounter
@@ -909,8 +908,8 @@ const reductionLabel = computed(
             </div>
 
             <!-- Actions: always in the DOM, low-contrast until hover/focus.
-                 W29 removed the pencil (the title is editable by clicking it)
-                 and the link icon (the settings icon opens the same modal, one
+                 There is no pencil (the title is editable by clicking it)
+                 nor a link icon (the settings icon opens the same modal, one
                  tab away) — five actions per row, two of them synonyms, made
                  the row harder to read than the numbers on it. -->
             <div
@@ -929,9 +928,9 @@ const reductionLabel = computed(
                     data-testid="add-from-template"
                     @click="openTemplates"
                 />
-                <!-- W52: one action, next to the one it assists. Rendered only
+                <!-- One action, next to the one it assists. Rendered only
                      where the assistant is actually available — a control that
-                     cannot work is worse than no control (W8b). -->
+                     cannot work is worse than no control. -->
                 <IconButton
                     v-if="
                         showAddChild &&
@@ -985,10 +984,10 @@ const reductionLabel = computed(
             {{ node.description }}
         </p>
 
-        <!-- W52/W58, extracted into AssistantPanel.vue in W85/D50: progress
+        <!-- Extracted into AssistantPanel.vue: progress
              while it runs, the error if it failed, and the suggestions list
              with its accept step. Nothing reaches the graph until each item
-             is accepted by hand (D24). -->
+             is accepted by hand. -->
         <div
             v-if="assistantAsking || assistantError || assistantItems"
             class="mt-2 ml-[3.75rem]"

@@ -2,8 +2,7 @@
  * Shapes returned by CommentController (app/Http/Controllers/
  * CommentController.php's commentToArray() allowlist). `author`/
  * `resolved_by` deliberately expose only `id`/`name` — never email — per
- * CLAUDE.md's W18 non-negotiable list ("Comment authors must expose id and
- * name only").
+ * the rule that comment authors expose id and name only.
  */
 export interface CommentAuthor {
     id: number;

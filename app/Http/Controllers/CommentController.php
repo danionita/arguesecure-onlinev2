@@ -14,8 +14,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Comments (PLAN.md Phase 8 item 1, schema.md §3.8, ui.md §7). Every action
- * runs through AssessmentPolicy/CommentPolicy — no exceptions (CLAUDE.md):
+ * Comments (schema.md §3.8, ui.md §7). Every action
+ * runs through AssessmentPolicy/CommentPolicy — no exceptions:
  * reading a node's comments needs `view`; posting, resolving or unresolving
  * need `comment` (the whole reason the `commenter` role exists — it can
  * comment but never `update` the assessment); editing or deleting a single
@@ -24,16 +24,15 @@ use Illuminate\Support\Facades\Gate;
  * already encodes — this controller defers to it rather than duplicating
  * the "own comment OR manage" check inline.
  *
- * No FormRequest class here, matching SnapshotController's own documented
- * reason: this package owns app/Http/Controllers/CommentController.php but
- * not app/Http/Requests/**, so authorization and validation happen inline.
+ * No FormRequest class here, matching SnapshotController: authorization
+ * and validation happen inline.
  *
  * `{node:uuid}` and `{comment}` both nest under `assessments/{assessment:uuid}`
  * and bind through Assessment's own `nodes()`/`comments()` relations
  * (Laravel's implicit route-model-binding scoping guesses those relation
  * names from the route segments `node`/`comment`), so a comment or node
  * belonging to a different assessment 404s before any method here runs —
- * the same IDOR pattern NodeControllerTest documents for the W12 routes.
+ * the same IDOR pattern NodeControllerTest documents for the node routes.
  */
 class CommentController extends Controller
 {
@@ -153,12 +152,12 @@ class CommentController extends Controller
     /**
      * Never serializes `user`/`resolved_by`'s email or any other User
      * column beyond id/name — an explicit allowlist, not `->toArray()`
-     * (CLAUDE.md: "Comment authors must expose id and name only — never
-     * email, never the password hash... a real bug I fixed in W17").
+     * (comment authors expose id and name only — never email, never the
+     * password hash; this was a real bug in the first comment endpoint).
      * `body` is returned as plain text: the frontend renders it through
      * Vue's default `{{ }}` interpolation, which HTML-escapes
-     * automatically, never `v-html` (see CommentThread.vue). See the W18
-     * report for why this does not attempt full markdown rendering.
+     * automatically, never `v-html` (see CommentThread.vue). Full
+     * markdown rendering is deliberately not attempted.
      *
      * @return array<string, mixed>
      */

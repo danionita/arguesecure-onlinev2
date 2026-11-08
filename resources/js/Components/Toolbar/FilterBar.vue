@@ -4,7 +4,7 @@
  * type, and 'has missing values'... A filter chip bar shows what is active
  * with a one-click clear."
  *
- * W34 moved the chips into a dropdown and left the *active* ones on the bar.
+ * The chips live in a dropdown and the bar keeps only the *active* ones.
  * Rendering all sixteen controls inline was the single largest consumer of
  * toolbar width — at 1280px it wrapped the bar onto a second row by itself,
  * and the second row is vertical space the chart view needs for its
@@ -14,8 +14,8 @@
  * and availability is not something a user needs on screen while working.
  *
  * Tags are rendered only if the caller supplies any — see useFilters.ts's
- * top comment on the store carrying no tag data yet (W12's `NodeRecord`).
- * W43 closes that gap.
+ * top comment on the store once carrying no tag data; labels have since
+ * closed that gap.
  */
 import Chip from '@/Components/UI/Chip.vue';
 import IconButton from '@/Components/UI/IconButton.vue';
@@ -143,7 +143,7 @@ const activeCount = computed(
                 </div>
             </FilterCategory>
 
-            <!-- W34 / brief item 8: "only" came off the label. It was
+            <!-- "only" came off the label. It was
                  never accurate — the filter dims what does not match
                  rather than hiding it — and the word made a reader
                  look for a mode they had not entered. -->

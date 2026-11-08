@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The profile page's *Two-factor authentication* panel (W116, D77, D78).
+ * The profile page's *Two-factor authentication* panel (security.md §4).
  *
  * Three states of one panel: off (with a password box to start), an
  * enrolment waiting for its first code (QR and the secret as text), and on

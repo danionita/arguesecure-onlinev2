@@ -1,12 +1,12 @@
 /**
  * Filters by tag, defence status, node type, and "has missing values"
- * (ui.md §5 / PLAN.md W15). "Non-matching nodes dim rather than disappear,
+ * (ui.md §5). "Non-matching nodes dim rather than disappear,
  * so structure stays legible" — this composable therefore exposes a
  * *dimmed* set of occurrence path-keys, not a hidden/visible split; the
  * consumer decides how "dim" is rendered (see the report on what NodeCard
  * would need to actually apply it).
  *
- * ## The tag gap, closed in W43
+ * ## The tag gap, now closed
  *
  * `NodeRecord` carried no tag data when this was written — the store was not
  * built with tags in scope, and nothing in the application could create one
@@ -15,7 +15,7 @@
  * in a parallel structure. The filter was fully implemented and tested
  * against that injection from the start; it simply had nothing to filter.
  *
- * W43 supplies the real accessor (`useEditorView.ts`). The injection stays:
+ * `useEditorView.ts` now supplies the real accessor. The injection stays:
  * it is what let the filter be built and tested before its data existed, and
  * it is still what lets a test drive this composable without a store full of
  * labels.

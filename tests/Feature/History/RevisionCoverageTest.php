@@ -12,23 +12,23 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W48's audit, as executable assertions rather than a paragraph in a report.
+ * The audit of the revision log, as executable assertions rather than a paragraph in a report.
  *
- * PLAN-2.2.md D15 specifies a "revert to here" that reconstructs the graph as
- * of a chosen moment. The brief required auditing `node_revisions` **before**
- * writing that reconstruction, and stopping if any mutation reaches the graph
+ * The timeline specifies a "revert to here" that reconstructs the graph as
+ * of a chosen moment. The revision log had to be audited **before**
+ * writing that reconstruction, stopping if any mutation reaches the graph
  * without writing a revision — because a reconstruction with a gap produces an
  * assessment that looks restored and is quietly wrong, which is worse than no
  * revert at all.
  *
  * Several mutations did. This file pinned each gap as the behaviour that
- * existed at the time, in the shape CLAUDE.md prescribes: fixing one turns its
+ * existed at the time, in the shape of a pinned defect: fixing one turns its
  * test red, which forces whoever fixes it to read the reasoning and flip the
  * assertion, so a fix can neither be forgotten nor land silently.
  *
- * **W56 closed three of them** — link strength, labels and assignees — **W60
- * closed the fourth**, the assessment's own settings, and **W61 built the
- * restore path the fifth was about**. Every block is rewritten in place as a
+ * **Three of them are closed** — link strength, labels and assignees — **a
+ * fourth**, the assessment's own settings, **and the restore path the fifth
+ * was about now exists**. Every block is rewritten in place as a
  * `FIXED:` regression guard rather than deleted, so the reasoning survives and
  * no fix can be quietly reverted.
  *
@@ -62,8 +62,8 @@ function revisionCount(Assessment $assessment): int
 /**
  * One settings save, with everything the screen posts.
  *
- * W44's form submitted title and description alongside the three settings
- * fields; W86 (item 9) removed both from this screen and from
+ * The settings form once submitted title and description alongside the three
+ * settings fields; both were removed from this screen and from
  * `UpdateAssessmentSettingsRequest`, which now `prohibited`s them — so the
  * baseline here is the three fields that remain, and $changes is what the
  * person typed.
@@ -102,7 +102,7 @@ test('a node field edit writes exactly one revision carrying every changed field
 });
 
 /*
- * FIXED (W56): a defence's strength is recorded.
+ * FIXED: a defence's strength is recorded.
  *
  * WAS: `LinkController::updateAttackDefence()` wrote `strength_fraction`,
  * `strength_mode`, `reduction_target` and `rationale` straight to the
@@ -243,10 +243,10 @@ test('a link revision cannot be reverted through the node-field path', function 
 });
 
 /*
- * FIXED (W56): labels are recorded.
+ * FIXED: labels are recorded.
  *
  * WAS: `TagService` attached and detached `node_tag` rows with no revision.
- * Labels drive the editor's filter (W43), so a reconstruction that ignored
+ * Labels drive the editor's filter, so a reconstruction that ignored
  * them would restore a graph whose saved views no longer select the same
  * nodes.
  *
@@ -278,16 +278,16 @@ test('FIXED: adding and removing a label each write a revision', function () {
 });
 
 /*
- * FIXED (W56): assignees are recorded.
+ * FIXED: assignees are recorded.
  *
- * W46's `node_assignees` writes carried no revision. Lower stakes than
+ * The `node_assignees` writes carried no revision. Lower stakes than
  * strength — an assignee changes no figure — but a timeline that claims to be
  * the record of what was done to an assessment omitted "Dana was made
  * responsible for this", which is exactly the kind of thing a reader goes to
  * history for.
  *
  * THE FIX: the same `field.update` shape as labels, written on the genuine-
- * change branch `AssignmentController` already had for W47's notification —
+ * change branch `AssignmentController` already had for the assignment notification —
  * a no-op assign should no more write a row than send a message.
  *
  * Guards the fix: if the recorder call is removed, this goes red.
@@ -321,9 +321,9 @@ test('FIXED: assigning and unassigning each write a revision', function () {
 });
 
 /*
- * FIXED (W60): the assessment's own settings are recorded.
+ * FIXED: the assessment's own settings are recorded.
  *
- * WAS: W44's amortisation period changes every annual cost, cost-benefit ratio
+ * WAS: the amortisation period changes every annual cost, cost-benefit ratio
  * and return in the report — it is the one setting that moves a figure, and it
  * bumps `calc_version` for exactly that reason. Neither log recorded it, so a
  * reconstruction restored the nodes and left the divisor at today's value.
@@ -343,7 +343,8 @@ test('FIXED: assigning and unassigning each write a revision', function () {
  * structural change (schema.md §3.10). Two honest entries beat one that lies
  * about which log it came from.
  *
- * **W86 (item 9) removed the other half of that trade-off, not this fix.**
+ * **Removing title and description from the settings form took away the
+ * other half of that trade-off, not this fix.**
  * Title and description are gone from this screen and from
  * `UpdateAssessmentSettingsRequest` entirely (`prohibited`, not just
  * unbound) — they live on the root node and are edited there, and the write
@@ -401,14 +402,14 @@ test('a settings save that changes nothing writes no revision', function () {
 });
 
 /**
- * FIXED (W86): the settings form can no longer rename the assessment.
+ * FIXED: the settings form can no longer rename the assessment.
  *
  * WAS: this scenario — a settings save that also renamed the assessment via
  * this screen's own title/description inputs wrote **two** revisions,
  * because the title lived on the root node and `NodeObserver` recorded it
  * separately from the settings-scoped revision above. That was the
- * documented trade-off of W60's fix (see the docblock above), not a defect
- * in it — but item 9's discovery was that the screen should never have had
+ * documented trade-off of the settings fix (see the docblock above), not a
+ * defect in it — but the discovery was that the screen should never have had
  * its own title/description inputs in the first place: they live on the
  * root node and are edited there, in the tree, and a second editor for the
  * same field is how the two diverge.
@@ -449,7 +450,7 @@ test('FIXED: a settings save cannot carry a title or description any more', func
     // The more specific half of the guard: a *legitimate* settings save —
     // no title in the payload at all, exactly what the Vue form now sends —
     // still writes exactly **one** revision, the assessment-scoped one from
-    // recordSettingsUpdate(). Before W86, the same save with a title
+    // recordSettingsUpdate(). Before the title inputs were removed, the same save with a title
     // alongside it produced this row *plus* a second, unscoped root-node
     // revision shaped like an ordinary title edit
     // (`{"title": {"from": …, "to": …}}`, no `scope` key) — the row
@@ -558,12 +559,12 @@ test('creating a node records a structural operation and no revision', function 
 });
 
 /*
- * FIXED (W61): there is a snapshot restore route.
+ * FIXED: there is a snapshot restore route.
  *
- * WAS: the reason the brief's own fallback ("offer revert only back to the
+ * WAS: the reason the fallback ("offer revert only back to the
  * nearest snapshot") could not be taken either. `SnapshotService` created;
  * `SnapshotController` listed, showed and diffed. Nothing applied one back, so
- * D15's "revert to here" had nothing to go through even once the coverage gaps
+ * the timeline's "revert to here" had nothing to go through even once the coverage gaps
  * above were closed.
  *
  * THE FIX: `SnapshotRestorer` and `assessments.snapshots.restore`, restoring

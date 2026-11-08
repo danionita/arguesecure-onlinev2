@@ -1,7 +1,7 @@
 /**
- * The three band editors, relocated and reduced (W87, item 10; D44-D47) and
- * made a controlled component in W126 (D94): they edit a draft the parent
- * owns and save nothing themselves.
+ * The three band editors, relocated and reduced (no code or colour input) and
+ * made a controlled component: they edit a draft the parent owns and save
+ * nothing themselves.
  *
  * What is asserted here is mostly what is **absent**, which needs saying
  * because an absence assertion is easy to write badly. Each one below names
@@ -67,7 +67,7 @@ function cards(overrides: Record<string, unknown> = {}) {
 }
 
 describe('what the editor no longer asks for', () => {
-    it('has no code input and renders no level code (D44)', () => {
+    it('has no code input and renders no level code', () => {
         const wrapper = cards();
 
         // Matched on the attribute alone: the shared Input component puts
@@ -83,7 +83,7 @@ describe('what the editor no longer asks for', () => {
         expect(wrapper.html()).not.toContain('negligible');
     });
 
-    it('has no colour input (D45)', () => {
+    it('has no colour input', () => {
         const wrapper = cards();
 
         expect(wrapper.find('input[type="color"]').exists()).toBe(false);
@@ -101,7 +101,7 @@ describe('what the editor no longer asks for', () => {
         expect(wrapper.text()).not.toContain('in the calculation');
     });
 
-    it('has no warning, no origin chip and no save or reset button of its own (W126)', () => {
+    it('has no warning, no origin chip and no save or reset button of its own', () => {
         const wrapper = cards();
 
         expect(

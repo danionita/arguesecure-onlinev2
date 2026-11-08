@@ -8,7 +8,7 @@ use RuntimeException;
 
 /**
  * Erases an assessment for good: the row and everything that hangs off it
- * (W113, security.md §12). What *Erase permanently* and the daily purge both
+ * (security.md §12). What *Erase permanently* and the daily purge both
  * call; deleting an assessment is otherwise always soft.
  *
  * Mostly the schema's own `ON DELETE CASCADE` (schema.md §3.4, "Deletion
@@ -57,7 +57,7 @@ final class AssessmentEraser
             if (DB::table('scales')->where('assessment_id', $id)->exists()) {
                 $update = [];
                 foreach (['impact', 'likelihood', 'strength'] as $kind) {
-                    // The default set first (W126): with several sets, an unordered
+                    // The default set first: with several sets, an unordered
                     // pick would be arbitrary. The rows are erased with the
                     // assessment either way; falling back keeps a database
                     // whose system scales carry no set_key erasable.

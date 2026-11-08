@@ -1,10 +1,9 @@
 <?php
 
 /**
- * `scale_levels.code` is internal, derived on create, and frozen on rename
- * (W87, PLAN-2.5.md D44).
+ * `scale_levels.code` is internal, derived on create, and frozen on rename.
  *
- * **This file holds the most important test in the package**, and it is worth
+ * **This file holds the most important test for scales**, and it is worth
  * saying what would go wrong without it, because the failure is silent.
  *
  * `code` is the only stable name a band has. A custom scale is *cloned per
@@ -24,7 +23,7 @@
  * replaces it: **deriving the code again on every save** would look correct,
  * pass every test that checks the band still renders, and quietly detach every
  * catalogue entry that named the old value the first time anybody renamed a
- * band. That is the same shape as W78's silent half.
+ * band. That is the same shape as the silent half of an earlier defect.
  *
  * Hence: renaming does not change the code, and a catalogue entry still
  * resolves afterwards. Both, together, or the second is not a test of the

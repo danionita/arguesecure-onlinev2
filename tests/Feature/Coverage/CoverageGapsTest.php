@@ -15,7 +15,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
 /*
- * W119: paths the first coverage measurement (94.5% of statements) showed no
+ * Coverage gaps: paths the first coverage measurement (94.5% of statements) showed no
  * test reaches, chosen for what a regression there would cost.
  */
 

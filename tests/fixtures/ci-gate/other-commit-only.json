@@ -1,0 +1,13 @@
+{
+  "workflow_runs": [
+    {
+      "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "run_number": 3,
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://example.test/run/3",
+      "event": "push"
+    }
+  ]
+}

@@ -9,7 +9,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Crypt;
 
 /**
- * An enrolment in progress, and the profile panel's props (W116, D77).
+ * An enrolment in progress, and the profile panel's props.
  *
  * Until a code from the new secret is confirmed the secret exists only in the
  * session, encrypted — sessions are database rows — and the account is

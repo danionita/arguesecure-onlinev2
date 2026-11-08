@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
- * Labels (W43, item 18; schema.md §3.11).
+ * Labels (schema.md §3.11, ui.md §7 Labels).
  *
- * The `tags` and `node_tag` tables have existed since W1 with nothing above
+ * The `tags` and `node_tag` tables have existed from the first migrations with nothing above
  * them: no controller, no store field, and `useFilters.ts` carrying a
  * documented "tag gap" where the filter it already implements had nothing to
  * filter. This is what fills it.
@@ -62,7 +62,7 @@ class TagService
 
             $node->tags()->syncWithoutDetaching([$tag->id]);
 
-            // W56, closing the second of W48's history gaps. Recorded here
+            // Closes the second of the history page's gaps. Recorded here
             // rather than in TagController so it holds whatever calls this —
             // a console command or a future bulk-label action would otherwise
             // reopen the gap silently. Only on a genuine change: the
@@ -114,7 +114,7 @@ class TagService
         // Direct property assignment, not ::create(): `assessment_id` is an
         // identity column and is deliberately absent from Tag::$fillable, so
         // a mass-assigned create() drops it silently at the model layer and
-        // then dies on the NOT NULL constraint (CLAUDE.md). AssessmentCloner
+        // then dies on the NOT NULL constraint. AssessmentCloner
         // documents the same reasoning at the point it was learned.
         $tag = new Tag(['name' => $name, 'slug' => $slug]);
         $tag->assessment_id = $assessment->id;

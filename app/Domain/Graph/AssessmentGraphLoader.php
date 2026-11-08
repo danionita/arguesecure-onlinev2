@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 /**
  * Four queries load an entire assessment, always (schema.md §1, §4): nodes,
  * risk_attack, attack_defence, scale_levels. The legacy tree render was an
- * N+1 by construction (CLAUDE.md); this loader is the fix, and its query
+ * N+1 by construction; this loader is the fix, and its query
  * count is asserted by a test rather than merely hoped for.
  *
  * Assumes the given Assessment is already loaded (a fifth query, or zero if

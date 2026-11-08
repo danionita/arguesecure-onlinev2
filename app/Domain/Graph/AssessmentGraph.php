@@ -4,7 +4,7 @@ namespace App\Domain\Graph;
 
 /**
  * Plain PHP values, no Eloquent, fully serializable. This is the only input
- * Calculation\RiskCalculator (W7) accepts — passing Eloquent models into the
+ * Calculation\RiskCalculator accepts — passing Eloquent models into the
  * engine is a design violation, because it is what makes the engine pure,
  * testable in isolation, snapshot-replayable, and mirrorable in TypeScript
  * (schema.md §4, calculation-engine.md §11.1).

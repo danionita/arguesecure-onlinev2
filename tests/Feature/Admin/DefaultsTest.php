@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The admin Defaults tab (W87, item 10, PLAN-2.5.md D47).
+ * The admin Defaults tab (its own tab, moved out of Assessment settings).
  *
  * Two things distinguish it from Assessment settings, and both are asserted
  * here because both are easy to get backwards:
@@ -67,14 +67,14 @@ test('the tab renders the three scales of the default set', function () {
 
     $standard = $props['scaleSets'][0];
 
-    // W126: every admin scale is sent, Standard first.
+    // Every admin scale is sent, Standard first.
     expect($standard['key'])->toBe(ScaleSets::DEFAULT_KEY)
         ->and($standard['name'])->toBe('Standard')
         ->and($standard['is_builtin'])->toBeTrue()
         ->and(array_keys($standard['scales']))->toEqualCanonicalizing(['impact', 'likelihood', 'strength'])
         ->and($props['missingKinds'])->toBe([])
         ->and($standard['scales']['impact']['bands'][0])->toHaveKey('code')
-        // D45: the editor cannot change a colour, so it is not handed one.
+        // The editor cannot change a colour, so it is not handed one.
         ->and($standard['scales']['impact']['bands'][0])->not->toHaveKey('color');
 })->group('scales');
 
@@ -292,7 +292,7 @@ test('both editors are handed the same band shape', function () {
         ->get(route('assessments.settings.edit', $assessment->uuid))
         ->viewData('page')['props']['scales']['impact']['bands'][0];
 
-    // D47: the admin "wants the same band editor the assessment gets, not a
+    // The admin "wants the same band editor the assessment gets, not a
     // different one". A component can only be the same if the payload is, so
     // the two are compared key for key rather than trusted to agree.
     expect(array_keys($adminBand))->toEqualCanonicalizing(array_keys($assessmentBand));
@@ -315,7 +315,7 @@ test('an incomplete set is named rather than silently rendered short', function 
 })->group('scales');
 
 test('instance settings no longer writes the default currency', function () {
-    // W87, D47: the control moved to the Defaults tab and did not stay here.
+    // The control moved to the Defaults tab and did not stay here.
     // Two controls writing one column with different rules is how they
     // disagree — and the weaker of the two was `size:3`, which accepts "ZZZ".
     // The three feature switches default on and are `declined` where the

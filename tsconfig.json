@@ -6,6 +6,7 @@
         "jsx": "preserve",
         "strict": true,
         "isolatedModules": true,
+        "types": [],
         "target": "ESNext",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,

@@ -1,10 +1,9 @@
 <?php
 
-// W24 — the response-header half of the OWASP pass (security.md §6).
+// The response-header half of the OWASP pass (security.md §6).
 //
 // `env()` is permitted here and nowhere else outside a config file
-// (CLAUDE.md: "env() outside a config file returns null once config:cache
-// runs"). Everything below is read by
+// (it returns null once config:cache runs). Everything below is read by
 // App\Http\Middleware\SecurityHeaders, which is the only consumer.
 //
 // The directive list is data rather than a hardcoded string in the

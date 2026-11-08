@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * W127/D95: how many children a collapsed card is hiding. A button, because
+ * How many children a collapsed card is hiding. A button, because
  * the number is also the quickest way to expand: it does what the chevron does,
  * and is styled like it (IconButton's `subtle` variant: muted, no ground until
  * hovered) so it sits naturally on the card's button bar.

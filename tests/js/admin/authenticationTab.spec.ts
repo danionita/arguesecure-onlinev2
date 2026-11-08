@@ -1,5 +1,5 @@
 /**
- * The admin **Authentication** tab (W133, D105-D108).
+ * The admin **Authentication** tab (docs/specs/security.md).
  *
  * - A field the environment sets is read-only and says so: editing a value
  *   that would be ignored is a control that appears to do something and does
@@ -95,7 +95,7 @@ describe('the Authentication tab', () => {
         expect(wrapper.get('[data-testid="env-issuer"]').text()).toContain(
             "server's environment",
         );
-        expect(wrapper.get('[data-testid="env-secret"]').exists()).toBe(true);
+        expect(wrapper.find('[data-testid="env-secret"]').exists()).toBe(true);
         const inputs = wrapper.findAll('input');
         const issuer = inputs.find(
             (i) =>

@@ -1,5 +1,5 @@
 /**
- * The report's written executive summary and job C's draft (W54).
+ * The report's written executive summary and job C's draft.
  *
  * Every assertion here is about one of two things: **who sees what**, and
  * **how many deliberate acts stand between a model's paragraph and a document
@@ -25,7 +25,7 @@ beforeEach(() => {
     put.mockReset();
     post.mockReset();
     del.mockReset();
-    // W58: the component probes once on mount to find a draft that is already
+    // The component probes once on mount to find a draft that is already
     // running. Answering "nothing running" keeps every assertion below about
     // the thing it was written for.
     get.mockReset();
@@ -95,7 +95,7 @@ describe('the report summary narrative', () => {
     it('offers no draft action where no assistant exists', () => {
         const wrapper = panel({ assistantAvailable: false });
 
-        // D25: on a deployment with no runtime the narrative is an ordinary
+        // On a deployment with no runtime the narrative is an ordinary
         // text field and nothing hints at a feature that is not there.
         expect(wrapper.find('[data-testid="request-draft"]').exists()).toBe(
             false,

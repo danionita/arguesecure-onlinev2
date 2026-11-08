@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Labels on a node (W43, item 18).
+ * Labels on a node (ui.md §7, Labels).
  *
  * Two actions and no index: the assessment's whole tag vocabulary already
  * arrives with the graph (AssessmentController::show), so the autocomplete
@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
  * round trip to re-send data the page is already holding.
  *
  * Both routes bind `{assessment:uuid}` and `{node:uuid}` and both check the
- * assessment through a FormRequest, per CLAUDE.md — no route touching an
+ * assessment through a FormRequest, (security.md §3.1) — no route touching an
  * assessment skips AssessmentPolicy.
  */
 class TagController extends Controller

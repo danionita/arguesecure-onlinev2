@@ -8,13 +8,13 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Labelling a node (W43, ui.md §7).
+ * Labelling a node (ui.md §7).
  *
  * Gated on `update`, like every other node field. A label is an edit to the
  * assessment, not a personal bookmark — everyone working on it sees the same
  * ones — so a read-only viewer, including anyone holding a share link or
  * reading a public assessment, cannot add one. `is_public` grants read only
- * (CLAUDE.md).
+ * (security.md §3.1).
  */
 class AttachTagRequest extends FormRequest
 {

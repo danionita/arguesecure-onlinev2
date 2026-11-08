@@ -2,10 +2,9 @@
 /**
  * Instance settings: facts about the deployment (2.5.1).
  *
- * Three things left this page. The default currency went to the Defaults tab
- * in W87 (D47); `default_scale_calibration` is gone — there is one default
- * scale set and the Defaults tab edits its bands directly; and the
- * assistant's switches moved to their own tab, where "not installed" is a
+ * Three things left this page. The default currency went to the Defaults tab;
+ * `default_scale_calibration` is gone — there is one default scale set and
+ * the Defaults tab edits its bands directly; and the assistant's switches moved to their own tab, where "not installed" is a
  * state of the page rather than a paragraph of docker commands at the bottom
  * of this one.
  */
@@ -50,16 +49,15 @@ function submit() {
             />
 
             <!--
-                Require two-factor and SSO-only moved to the Authentication tab
-                (W133, D105).
+                Require two-factor and SSO-only moved to the Authentication tab.
             -->
 
             <!--
-                No "registration locked" control here: CLAUDE.md is explicit
-                that there is no public registration, ever — accounts are
+                No "registration locked" control here: there is no public
+                registration, ever (security.md §4) — accounts are
                 admin-created — so there is nothing for such a toggle to
                 gate. A control that looks like it does something and
-                doesn't is worse than no control (W8b).
+                doesn't is worse than no control.
             -->
 
             <div class="flex justify-end pt-2">

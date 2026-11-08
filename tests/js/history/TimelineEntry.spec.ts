@@ -1,5 +1,5 @@
 /**
- * One timeline entry (W48, item 21).
+ * One timeline entry.
  *
  * Two things worth pinning. An **undone** operation stays in the timeline
  * rather than disappearing — history that edits itself is not history, and

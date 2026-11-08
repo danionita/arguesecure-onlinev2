@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Appendices (PLAN.md Phase 7 §8): references, comments if requested,
+ * Appendices (ui.md §9): references, comments if requested,
  * methodology and formulas, and the engine's model-quality warnings
  * (calculation-engine.md §12). Methodology text is static and normative —
  * the independence assumption and the per-occurrence definition of impact
@@ -15,7 +15,7 @@ const props = defineProps<{
     appendices: ReportAppendices;
     options: ReportOptions;
     /**
-     * W54. True when the written executive summary above was drafted by a
+     * True when the written executive summary above was drafted by a
      * model. The disclaimer below is the long form of the mark printed beside
      * the summary itself — both print, so a report whose methodology appendix
      * is switched off still discloses it at the point of use.
@@ -39,7 +39,7 @@ const letters = computed(() => {
     return { references, comments, methodology, warnings };
 });
 
-// Nothing left to print under the heading (W139): leave the heading out too.
+// Nothing left to print under the heading leave the heading out too.
 const hasAppendix = computed(
     () =>
         Object.values(letters.value).some((letter) => letter !== null) ||
@@ -148,7 +148,7 @@ const hasAppendix = computed(
             </h3>
             <div class="text-text-secondary mt-1 space-y-2 text-xs">
                 <!--
-                    W54. First in the methodology appendix, not last: a reader
+                    First in the methodology appendix, not last: a reader
                     deciding how much weight to give this document needs to
                     know which parts of it a machine wrote before they read the
                     formulas, not after.

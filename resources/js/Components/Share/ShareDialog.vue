@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The share dialog (PLAN.md Phase 3 item 5): search existing users and
+ * The share dialog: search existing users and
  * add one with a role, change or revoke a role, transfer ownership, the
  * public flag, and a revocable read-only link. All of it self-fetches
  * from ShareController via axios rather than depending on Inertia shared
@@ -31,7 +31,7 @@ const props = withDefaults(
         assessmentUuid: string;
         /** Whether the current user may transfer ownership (owner or admin). */
         canTransfer?: boolean;
-        /** Admins only (W141): whether to offer "Publish as template". */
+        /** Admins only: whether to offer "Publish as template". */
         canPublishTemplate?: boolean;
     }>(),
     {

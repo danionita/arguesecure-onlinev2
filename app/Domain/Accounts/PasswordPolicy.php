@@ -11,14 +11,13 @@ use Illuminate\Validation\Rules\Password;
  * rule ... If outbound network access is unavailable, degrade to length
  * and complexity only — never block login.").
  *
- * AppServiceProvider (not owned by this package) is where Password::defaults()
- * would normally be centralised; since it is out of W8's file ownership,
- * every request class that validates a password calls PasswordPolicy::rule()
- * explicitly instead.
+ * Password::defaults() in AppServiceProvider would normally centralise this;
+ * since it lives outside the accounts code, every request class that
+ * validates a password calls PasswordPolicy::rule() explicitly instead.
  */
 class PasswordPolicy
 {
-    /** Seconds the breach lookup may take before the password is accepted unchecked (D84). */
+    /** Seconds the breach lookup may take before the password is accepted unchecked. */
     public const BREACH_CHECK_TIMEOUT = 3;
 
     public static function rule(): Password

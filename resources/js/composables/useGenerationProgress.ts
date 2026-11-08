@@ -1,7 +1,7 @@
 import { computed, onBeforeUnmount, ref } from 'vue';
 
 /**
- * Watching a generation that is running somewhere else (W58).
+ * Watching a generation that is running somewhere else.
  *
  * ## Why any of this exists
  *

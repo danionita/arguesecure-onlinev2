@@ -1,20 +1,20 @@
 <script setup lang="ts">
 /**
- * The arrival page (ui.md Â§8, W42 item 17).
+ * The arrival page (ui.md Â§8).
  *
  * `/dashboard` used to render the assessment list â€” the same page as
  * `/assessments`, at a second URL, which meant Laravel's post-login
  * destination and the sidebar's home link both landed somewhere that answered
  * only half the questions someone has when they arrive.
  *
- * ## Two sections of tabs, not four lists (W73 item 21, D32)
+ * ## Two sections of tabs, not four lists
  *
- * W42 stacked four sections: what needs *me*, who is waiting on me, what I
+ * The first version stacked four sections: what needs *me*, who is waiting on me, what I
  * own, what I have been invited to. The order was right and the shape was
  * not. The two that answer *what needs me* and the two that answer *where do
  * I go* ended up half a screen apart, and neither pair fit above the fold â€”
  * so the page that exists to be read at a glance needed scrolling to read at
- * all. D32 pairs them: **Notifications** (Assigned to me Â· Mentions) and
+ * all. Tabs pair them: **Notifications** (Assigned to me Â· Mentions) and
  * **Assessments** (Mine Â· Shared with me).
  *
  * Work still comes before inventory: Notifications is the first section and
@@ -27,11 +27,11 @@
  *
  * ## Empty-state first
  *
- * Unchanged by D32, and deliberately so: the four empty states are the part
- * of W42 that was got right, and each one is as true inside a tab panel as it
+ * Unchanged by the tabs, and deliberately so: the four empty states are the
+ * part of the first version that was got right, and each one is as true inside a tab panel as it
  * was under a heading. Every one says what will appear there and why, in the
- * product's own words, and none of them mentions a work package â€” "Comments
- * that mention you will show up here" was true before W47 filled it and stays
+ * product's own words, and none of them mentions how the product was built â€” "Comments
+ * that mention you will show up here" was true before comments filled it and stays
  * true now.
  */
 import AssessmentRow from '@/Components/Dashboard/AssessmentRow.vue';
@@ -123,8 +123,8 @@ const assessmentTabs = computed(() => [
 
             <div class="space-y-8">
                 <!--
-                    Work first, inventory second â€” the one thing about W42's
-                    ordering that D32 keeps exactly. Each section is a real
+                    Work first, inventory second â€” the one thing about the original
+                    ordering that the tabs keep exactly. Each section is a real
                     `<h2>` inside a real `<section>`, so both are reachable as
                     landmarks, and the tablist repeats the heading as its own
                     accessible name so its tabs are announced as belonging to
@@ -237,7 +237,7 @@ const assessmentTabs = computed(() => [
 
                         <template #shared>
                             <!--
-                                "See all" goes to the shared page now (D33),
+                                "See all" goes to the shared page now,
                                 not to `/assessments` â€” a list that does not
                                 distinguish a shared row from an owned one,
                                 which made the link a promise it could not

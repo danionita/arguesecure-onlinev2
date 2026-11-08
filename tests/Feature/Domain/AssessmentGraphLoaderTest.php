@@ -12,7 +12,7 @@ beforeEach(function () {
 });
 
 /**
- * CLAUDE.md and schema.md §1, §4: "a whole assessment must load in four
+ * schema.md §1, §4: "a whole assessment must load in four
  * queries" is a stated requirement, not a hope — asserted here by counting
  * actual queries via DB::listen rather than trusting the docblock.
  */

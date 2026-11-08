@@ -1,6 +1,6 @@
 /**
  * The assistant suggestions panel, and the accept step that is the guardrail
- * (W52, PLAN-2.3-ai.md D24).
+ * (nothing a model generates reaches the graph unseen; docs/ASSISTANT.md).
  *
  * The 2.3 spike measured that text injected into a node description reaches
  * the model's output on **3 of 3** usable models, and that no prompt wording

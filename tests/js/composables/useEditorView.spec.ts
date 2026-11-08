@@ -1,5 +1,5 @@
 /**
- * `createEditorView`'s dual-canvas proxy (W84/D43).
+ * `createEditorView`'s dual-canvas proxy.
  *
  * `useCanvas.spec.ts` already pins the underlying per-instance behaviour —
  * independent persistence, the two baselines, seeding from the pre-upgrade
@@ -117,10 +117,10 @@ describe('createEditorView canvas proxy', () => {
     });
 
     /**
-     * D43's own acceptance line: a value stored under the pre-W84 key (no
+     * The acceptance line: a value stored under the old key (no
      * view component) is read once as the seed for *both* views.
      */
-    it('seeds both the chart and the list from a zoom stored before this package shipped', () => {
+    it('seeds both the chart and the list from a zoom stored before per-view zoom shipped', () => {
         const store = makeFixtureStore();
         localStorage.setItem('arguesecure:canvas-zoom:anon:ev-6', '0.7');
 

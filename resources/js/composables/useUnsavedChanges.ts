@@ -2,7 +2,7 @@ import { router } from '@inertiajs/vue3';
 import { type MaybeRefOrGetter, onBeforeUnmount, ref, toValue } from 'vue';
 
 /**
- * Unsaved-changes guard (W142, D117).
+ * Unsaved-changes guard.
  *
  * A page or card passes a getter for "has edits that are not saved". While it
  * is true, a user-started GET visit asks first in the app's own dialog

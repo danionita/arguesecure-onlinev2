@@ -156,7 +156,7 @@ class CsvUserImporter
                 $user->password = Hash::make($password);
                 $user->is_admin = $row->admin;
                 $user->is_active = true;
-                // W115: the credential sheet's password is one the admin
+                // The credential sheet's password is one the admin
                 // hands over, so it is good for one sign-in (security.md §4).
                 $user->must_change_password = true;
                 $user->save();
@@ -169,7 +169,7 @@ class CsvUserImporter
     }
 
     /**
-     * Turn what a spreadsheet saved into plain UTF-8 text (D90). Excel's "CSV
+     * Turn what a spreadsheet saved into plain UTF-8 text. Excel's "CSV
      * UTF-8" starts with a byte-order mark, "Unicode Text" is UTF-16, and
      * plain "CSV" is Windows-1252, which an Inertia response cannot carry
      * (invalid UTF-8 fails json_encode). Idempotent: the preview sends the

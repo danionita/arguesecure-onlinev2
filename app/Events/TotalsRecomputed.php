@@ -10,12 +10,12 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * PLAN.md Phase 6 item 4 — "totals recomputed", the last of the five named
+ * ui.md §6 — "totals recomputed", the last of the five named
  * broadcast events. Dispatched by App\Jobs\RecalculateAssessment once it
  * has produced a fresh CalculationResults (from cache or freshly computed),
  * carrying every baseline so the client replaces `store.results.value`
  * outright rather than re-deriving it — the same reasoning as every other
- * W16 event: send the changed data, not an invitation to re-fetch.
+ * real-time event: send the changed data, not an invitation to re-fetch.
  *
  * Not dispatched inside a DB transaction (it comes from a queued job, not
  * a request), so it does not need ShouldDispatchAfterCommit the way the
@@ -52,8 +52,8 @@ class TotalsRecomputed implements ShouldBroadcast
 
     /**
      * Same generic readonly-DTO -> array conversion
-     * AssessmentController::toArray() uses (outside this package's
-     * ownership, so duplicated rather than reused) — get_object_vars(),
+     * AssessmentController::toArray() uses, duplicated rather than
+     * reused — get_object_vars(),
      * called from outside the DTO's own class, only ever sees the public
      * (constructor-promoted, readonly) properties those classes declare.
      */

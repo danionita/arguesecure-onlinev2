@@ -1,16 +1,16 @@
 <script setup lang="ts">
 /**
  * The chrome above the report document: search, the options row, zoom and
- * the view switcher (W83, ui.md §9). Extracted out of `Pages/Report/Show.vue`
- * so its two D39 branches (sidebar for an authenticated viewer, bare for a
+ * the view switcher (ui.md §9). Extracted out of `Pages/Report/Show.vue`
+ * so its two branches (sidebar for an authenticated viewer, bare for a
  * share-link guest) mount this **once each** rather than each carrying its
- * own copy — the exact drift W74's hand-copied toolbar geometry produced
+ * own copy — the exact drift the hand-copied toolbar geometry produced
  * once already (`Components/Chrome/*`'s own docblocks) is what mounting the
  * same component twice avoids, where hand-copying the markup twice would
  * not.
  *
  * "Every option on one line, always visible, immediately beside the
- * search" (brief item 5) replaces the open/close panel W35–W80 had: there
+ * search" replaces the open/close panel the report used to have: there
  * is no open/close state here at all any more. Changing an option still
  * re-requests the page with a new query string via the `update-options`
  * emit — this component holds no report figure and computes none; it only
@@ -69,9 +69,9 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
         <SearchBox :search="search" data-print-hide />
 
         <!--
-            W136, D106. All the report's settings sit behind two buttons, each
+            All the report's settings sit behind two buttons, each
             group under a heading that says what it decides. Defences is
-            which defences the report covers (W153: it was Content, with two
+            which defences the report covers (it was Content, with two
             controls that both concerned defences and did not say so);
             Sections is what is added to the document, and the four optional
             appendices and details start off. There is no Filters button here: these are not node
@@ -185,7 +185,7 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
                             "
                         />
                         <!--
-                        W136, D105; default off since W153. Leaving it out
+                        Default off. Leaving it out
                         replaces the appendix with a count of what was left
                         out.
                     -->
@@ -205,7 +205,7 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
                             Detail
                         </legend>
                         <!--
-                        W46, item 16. Default off, and no export turns it on
+                        Default off, and no export turns it on
                         for you: a report is a document that leaves the room,
                         and who is responsible for which line is internal
                         information the exporter has to choose to include.

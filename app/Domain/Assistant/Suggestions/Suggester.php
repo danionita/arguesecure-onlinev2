@@ -10,7 +10,7 @@ use App\Models\Risk;
 use Illuminate\Support\Facades\File;
 
 /**
- * Job B: propose children for a node (PLAN-2.3-ai.md W52).
+ * Job B: propose children for a node.
  *
  * ## What it is allowed to see, and why that is a short list
  *
@@ -74,7 +74,7 @@ class Suggester
     }
 
     /**
-     * @param  (callable(string): void)|null  $onToken  W58: the progress and
+     * @param  (callable(string): void)|null  $onToken  The progress and
      *                                                  cancellation observer,
      *                                                  passed straight through
      *                                                  to the client. Optional

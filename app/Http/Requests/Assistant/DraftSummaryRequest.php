@@ -6,7 +6,7 @@ use App\Models\Assessment;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Job C's request (W54).
+ * Job C's request.
  *
  * `update`, for the same reason job B requires it: the only thing a draft can
  * become is text in this assessment's report, and an ability to ask for one

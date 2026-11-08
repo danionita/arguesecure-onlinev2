@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // No live API calls — nothing is fetched. Validation patterns and link
-        // templates live in config/arguesecure.php (W6+).
+        // templates live in config/arguesecure.php.
         Schema::create('node_references', function (Blueprint $table) {
             $table->id();
             $table->foreignId('node_id')->constrained('nodes')->cascadeOnDelete();

@@ -42,8 +42,8 @@ export const REFERENCE_KINDS: ReferenceKindMeta[] = [
 export const PRIMARY_KIND: ReferenceKind = 'cve';
 
 /**
- * Only a defence may cite a framework control (PLAN-2.7 D64; the server
- * refuses it anywhere else), and on a defence it is what is cited most, so
+ * Only a defence may cite a framework control (the server refuses it
+ * anywhere else), and on a defence it is what is cited most, so
  * it is the kind a defence's form opens on.
  */
 export function kindsFor(nodeType: string): ReferenceKindMeta[] {

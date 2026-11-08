@@ -4,14 +4,14 @@
  * tabs (docs/specs/ui.md §7). Each tab's content is a named slot keyed by
  * `tab.key`, so the modal stays in control of what each panel renders.
  *
- * ## Panels are lazy, and stay mounted once opened (W71 item 1)
+ * ## Panels are lazy, and stay mounted once opened
  *
  * They used to be `v-show` only, which mounted all eight the moment any node
  * was opened. Two things followed, and both were bugs:
  *
  * - Four of those panels fetch on mount (History, Comments, References,
  *   Statistics), so opening *any* node cost four requests nobody had asked
- *   for — the same class of waste W68 removed on the write path.
+ *   for — the same class of waste already removed on the write path.
  * - A throw in any one of them during render tears down this whole subtree,
  *   and Details, the panel the user is actually looking at, is the visible
  *   casualty. That is the "Details tab sometimes does not load" report.
@@ -97,7 +97,7 @@ function onKeydown(event: KeyboardEvent) {
 <template>
     <div>
         <!--
-            `flex-wrap`, not `overflow-x-auto` (W71 item 16, D30). A horizontal
+            `flex-wrap`, not `overflow-x-auto`. A horizontal
             scroller hides tabs behind an edge with no affordance saying so;
             a defence has eight of them and a narrow modal cut the last two.
             The single bottom edge under the whole strip is this container's

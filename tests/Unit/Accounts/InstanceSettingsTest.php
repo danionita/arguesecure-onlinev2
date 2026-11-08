@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
-// Backed by a real `instance_settings` table now (W8b) — the class no
+// Backed by a real `instance_settings` table now — the class no
 // longer touches the cache store at all, which is exactly the gap this
 // package closed: a cache flush used to silently revert the instance to
 // defaults.

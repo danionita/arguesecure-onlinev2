@@ -9,7 +9,7 @@ use Database\Seeders\SystemScaleSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * W26 — listing, creating and deleting assessments.
+ * Listing, creating and deleting assessments.
  *
  * This is the entry point the application shipped without: every route was
  * `assessments/{assessment}/...`, so nothing could produce the assessment
@@ -21,8 +21,8 @@ use Inertia\Testing\AssertableInertia as Assert;
  * The system scales are reference data seeded by the deployment
  * (docker/entrypoint.sh), not by a migration, so a test database has none
  * unless it asks — exactly the state every fresh deployment was in before
- * W26, and the reason creating the first assessment failed there. Seeding
- * here reproduces a correctly-provisioned instance; the test named
+ * this page existed, and the reason creating the first assessment failed
+ * there. Seeding here reproduces a correctly-provisioned instance; the test named
  * "fails loudly when no system scales are seeded" deliberately tears them
  * back down.
  */
@@ -171,7 +171,7 @@ test('the list never serializes another user email, only a display name', functi
     // Inertia ships the whole prop bag in the page's data-page attribute,
     // so an unrendered field is still readable with View Source. An
     // owner-email leak of exactly this shape was already found once, on the
-    // report cover (W17).
+    // report cover.
     // Asserted on the page that lists someone else's assessments — since
     // 2.5.1 that is "Shared with me", not "My assessments".
     $response = $this->actingAs($user)->get(route('assessments.shared'))->assertOk();
@@ -183,10 +183,10 @@ test('the list never serializes another user email, only a display name', functi
 });
 
 test('the dashboard is a real page, not a placeholder', function () {
-    // W26 wrote this as "the dashboard *is* the assessment list", which was
+    // This was first written as "the dashboard *is* the assessment list", which was
     // the honest thing to assert when no dashboard existed: `/dashboard` is
     // where Laravel sends people after login, and pointing it at the list was
-    // better than a stub. W42 gave it a page of its own, so the component
+    // better than a stub. The dashboard later got a page of its own, so the component
     // changed — but the claim behind the test did not, and it is the claim
     // that is worth keeping: this route answers with something useful.
     $user = User::factory()->create();

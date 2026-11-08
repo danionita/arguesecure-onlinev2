@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Presentational presence-avatar row for the top bar (docs/specs/ui.md
- * §2, §6). This is the "slot", not the websocket — W16 owns pushing real
+ * §2, §6). This is the "slot", not the websocket — real-time editing owns pushing real
  * collaborator data in; this component only lays out whatever list it is
  * given and collapses the overflow into a "+N" chip.
  */

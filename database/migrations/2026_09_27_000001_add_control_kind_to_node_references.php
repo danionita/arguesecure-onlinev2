@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * 2.7, W102 (PLAN-2.7 D64): a defence cites the framework control it
+ * 2.7: a defence cites the framework control it
  * implements as a `control` reference, `FRAMEWORK:CONTROL`. The enum grows
  * by one value; the existing `(kind, identifier)` index is what answers
  * "which assessments cite ISO27001-2022:A.5.23?".

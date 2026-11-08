@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Sharing means nothing for a template (W141, T2): it has no owner to hand it
+ * Sharing means nothing for a template: it has no owner to hand it
  * over from, and a collaborator, a public flag or a share link would put an
  * instance-wide reference object in front of people the library already
  * reaches through `useAsTemplate`. 403 for everyone, an admin included, so no

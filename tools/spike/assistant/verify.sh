@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# PLAN-2.6.md W96: red-team and multi-sample quality runs for the assistant's
+# Red-team and multi-sample quality runs for the assistant's
 # presets, through the *production* launcher — docker/assistant/assistant.sh,
 # the same entrypoint, flags and pinned image docker-compose.yml runs — so a
 # pass here is a pass for what ships, installer included.
@@ -34,7 +34,7 @@ MODELS="${MODELS:-$PWD/data-spike-models}"
 KEEP="${KEEP:-}"
 
 # The llama.cpp build the assistant image is based on, read from its
-# Dockerfile so the two cannot drift (W101 moved the pin there). The launcher
+# Dockerfile so the two cannot drift (the pin lives there). The launcher
 # is mounted from the checkout below, exactly what that image bakes in.
 IMAGE=$(awk '/^FROM / { print $2; exit }' docker/assistant/Dockerfile)
 [ -n "$IMAGE" ] || { echo "could not read the assistant image from docker/assistant/Dockerfile" >&2; exit 1; }
@@ -95,10 +95,10 @@ for config in $CONFIGS; do
 
     echo "[$config] resident: $(docker stats --no-stream --format '{{.MemUsage}}' "$NAME")"
     log="tools/spike/assistant/results/verify-logs/$HOST_LABEL-$config.log"
-    # The server log is evidence for the results beside it (W96 read the
-    # large preset's cache evictions out of one). A run that measured nothing
-    # (exit 3: the label already had every step) must not replace it with an
-    # idle log, and a run that failed keeps its log separately.
+    # The server log is evidence for the results beside it (the
+    # large preset's cache evictions were read out of one). A run that
+    # measured nothing (exit 3: the label already had every step) must not
+    # replace it with an idle log, and a run that failed keeps its log separately.
     case $rc in
         0) docker logs "$NAME" >"$log" 2>&1 ;;
         3) echo "[$config] nothing measured under HOST_LABEL=$HOST_LABEL; $log left as it was" >&2 ;;

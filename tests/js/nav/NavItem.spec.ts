@@ -1,5 +1,5 @@
 /**
- * `NavItem`'s own contract, isolated from `Sidebar.vue` (W82 review fix).
+ * `NavItem`'s own contract, isolated from `Sidebar.vue`.
  *
  * The first version of this file duplicated its entire interactive element
  * — the `:is`, `:type`, `:href`, `:method`, `:as`, `:aria-current`, the class
@@ -123,7 +123,7 @@ describe('the badge, presented differently but counted the same', () => {
 });
 
 /**
- * W82 review, minor: the `Tooltip` component is reachable by keyboard as
+ * The `Tooltip` component is reachable by keyboard as
  * well as by hover (it toggles on `@focusin`/`@focusout`, per its own
  * docblock), but nothing exercised that path for a compact `NavItem`
  * before this. `Tooltip` is pre-existing and reused rather than built here,

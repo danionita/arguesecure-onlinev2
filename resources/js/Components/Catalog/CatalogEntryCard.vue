@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
- * One row in the catalogue browser (schema.md §3.14, PLAN.md Phase 8 item
- * 4). Shows enough to decide whether to insert an entry without opening
+ * One row in the catalogue browser (schema.md §3.14). Shows enough to decide whether to insert an entry without opening
  * it: kind, title, description, and whether it is a bundle (ships with
  * pre-linked children, e.g. a "Phishing" attack shipping with MFA,
  * awareness training and mail filtering).

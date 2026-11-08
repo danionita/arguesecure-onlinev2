@@ -32,8 +32,8 @@ return new class extends Migration
         });
 
         // Contiguity, the lower==0 start, the open top band and the
-        // lower <= representative < upper invariant are validated in ScaleValidator
-        // (W6), not the database — they require comparing sibling rows.
+        // lower <= representative < upper invariant are validated in ScaleValidator,
+        // not the database — they require comparing sibling rows.
     }
 
     /**

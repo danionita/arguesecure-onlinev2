@@ -1,8 +1,8 @@
 /**
- * W110 (D70). Report options changed in quick succession become one request.
+ * Report options changed in quick succession become one request.
  *
  * Every option toggle re-requests the report page, and the page is rate
- * limited. Before W110 each click was its own request, so a few quick toggles
+ * limited. Before they were merged each click was its own request, so a few quick toggles
  * answered 429 (the owner's report). The server half — the page's own
  * 60/min limiter — is guarded in tests/Feature/Report/ReportViewRateLimitTest.php;
  * this is the client half: the clicks are merged, and the row shows each one
@@ -21,6 +21,7 @@ import {
 import ReportOptionsRow from '../../../resources/js/Components/Report/ReportOptionsRow.vue';
 import AssessmentActions from '../../../resources/js/Components/Toolbar/AssessmentActions.vue';
 import ReportShow from '../../../resources/js/Pages/Report/Show.vue';
+import { routeProperties } from '../support/routeProperties';
 import { report } from './support/reportFixture';
 
 const { routerGet } = vi.hoisted(() => ({ routerGet: vi.fn() }));
@@ -68,7 +69,7 @@ function mountReport() {
     return mount(ReportShow, {
         props: { assessment: { uuid: 'u' }, report: report() },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { SummaryNarrative: true, teleport: true },
         },
     });

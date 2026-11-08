@@ -4,7 +4,7 @@ import CommentItem from '../../../resources/js/Components/Comments/CommentItem.v
 import type { Comment } from '../../../resources/js/Components/Comments/types';
 
 /**
- * W119: CommentItem is where the permission flags the server computes
+ * CommentItem is where the permission flags the server computes
  * (`can_edit`, `can_delete`) and the two-level threading rule become buttons.
  * The server is authoritative, but a button that appears for someone who may
  * not use it is a broken promise, and a reply that can itself be replied to
@@ -50,7 +50,7 @@ describe('CommentItem', () => {
     });
 
     it('escapes the body instead of rendering it as markup', () => {
-        // CLAUDE.md W18: a comment body is attacker-controlled text.
+        // A comment body is attacker-controlled text.
         const wrapper = render({ body: '<img src=x onerror=alert(1)>' });
 
         expect(wrapper.find('img').exists()).toBe(false);

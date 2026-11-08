@@ -6,12 +6,15 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import GuestLayout from '../../../resources/js/Layouts/GuestLayout.vue';
 
+const page = { props: {} as Record<string, unknown> };
+
 vi.mock('@inertiajs/vue3', () => ({
     Link: {
         name: 'Link',
         props: ['href'],
         template: '<a :href="href"><slot /></a>',
     },
+    usePage: () => page,
 }));
 
 describe('GuestLayout', () => {
@@ -23,7 +26,15 @@ describe('GuestLayout', () => {
 
         expect(logo.attributes('href')).toBe('/');
         expect(logo.text()).toBe('ArgueSecure');
-        expect(logo.find('svg').attributes('width')).toBe('40');
+        expect(logo.find('svg').attributes('width')).toBe('56');
         expect(wrapper.text()).toContain('body');
+    });
+
+    it('shows the deployment notice above the logo when one is set', () => {
+        page.props = { notice: 'Public demo' };
+        const wrapper = mount(GuestLayout);
+        expect(wrapper.get('[role="status"]').text()).toBe('Public demo');
+        page.props = {};
+        expect(mount(GuestLayout).find('[role="status"]').exists()).toBe(false);
     });
 });

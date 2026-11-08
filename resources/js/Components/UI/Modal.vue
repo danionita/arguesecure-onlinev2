@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Generic modal shell. The node modal (W13) is non-blocking-over-the-tree
+ * Generic modal shell. The node modal is non-blocking-over-the-tree
  * per docs/specs/ui.md §7 — that just means the caller keeps the tree
  * mounted behind it; this component only owns the overlay/dialog mechanics
  * every modal needs: Escape to close, focus trap, and restoring focus to
@@ -123,8 +123,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
                             class="border-border-subtle flex items-center justify-between gap-2 border-b px-4 py-3"
                         >
                             <!--
-                                `#title-prefix` exists for W71 item 24: the node
-                                modal shows what type of node it is with a
+                                `#title-prefix` exists for the node modal, which
+                                shows what type of node it is with a
                                 tinted type icon here, where the eye lands
                                 first, rather than as a chip over on the right
                                 competing with Delete for the same corner.

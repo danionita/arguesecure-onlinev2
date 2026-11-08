@@ -1,12 +1,12 @@
 /**
- * W85: The node card rendering tests for the chart view.
+ * The node card rendering tests for the chart view.
  *
  * Focus: the assistant trigger visibility with three separate gates, and that
- * clicking it actually does something — D50's complaint was a control that
+ * clicking it actually does something — the complaint was a control that
  * was mounted once (on the tree card) and wired nowhere else. The wiring
  * tests here go through `useAssistantChildren.ts`, the composable extracted
- * from `NodeCard.vue` so both cards share one implementation and one D24
- * guardrail rather than the chart card growing a second copy.
+ * from `NodeCard.vue` so both cards share one implementation and one
+ * accept-step guardrail rather than the chart card growing a second copy.
  */
 import { flushPromises, mount } from '@vue/test-utils';
 import { readFileSync } from 'node:fs';
@@ -214,7 +214,7 @@ function findAssistantButton(wrapper: ReturnType<typeof mount>) {
 
 beforeEach(() => {
     localStorage.clear();
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get: vi.fn().mockResolvedValue({ data: {} }),
@@ -225,7 +225,7 @@ beforeEach(() => {
 });
 
 /**
- * W85 item 19 / D50: the assistant trigger on the chart card.
+ * The assistant trigger on the chart card.
  *
  * Three gates control its visibility:
  * 1. showAddChild — the node type must support children (risk or attack)
@@ -242,7 +242,7 @@ beforeEach(() => {
  * from the unset default, and the test passed whether or not `showAddChild`
  * was even part of the guard.
  */
-describe('ChartCard: assistant trigger visibility (W85 D50)', () => {
+describe('ChartCard: assistant trigger visibility', () => {
     it('renders the trigger when all three gates are true', () => {
         const store = createAssessmentStore(makeInit());
         const wrapper = mountCard(store);
@@ -314,7 +314,7 @@ describe('ChartCard: assistant trigger visibility (W85 D50)', () => {
     });
 
     /**
-     * The label must match the tree card's exactly (D50: "the same trigger"),
+     * The label must match the tree card's exactly ("the same trigger"),
      * which is what caught the previous version's hardcoded "Suggest
      * children" against NodeCard.vue's `` `Suggest ${assistantChildType}s` ``.
      */
@@ -331,14 +331,14 @@ describe('ChartCard: assistant trigger visibility (W85 D50)', () => {
 });
 
 /**
- * W85 item 19 / D50, Finding 1: the trigger must actually do something. The
+ * The trigger must actually do something. The
  * prior version emitted `assistantRequest` to a parent (`ChartNode.vue`) that
  * never listened for it — clicking it did nothing. The fix pulls the tree
  * card's assistant logic into `useAssistantChildren.ts` and has both cards
  * call it directly, so this suite asserts the click reaches the store and
- * that nothing lands in the graph before a person accepts it (D24).
+ * that nothing lands in the graph before a person accepts it.
  */
-describe('ChartCard: assistant wiring (W85 D50 Finding 1)', () => {
+describe('ChartCard: assistant wiring (the click reaches the store)', () => {
     it('clicking the trigger asks the store for suggestions', async () => {
         const store = createAssessmentStore(makeInit());
         const suggestChildren = vi
@@ -389,7 +389,7 @@ describe('ChartCard: assistant wiring (W85 D50 Finding 1)', () => {
         await findAssistantButton(wrapper)?.trigger('click');
         await flushPromises();
 
-        // The suggestion is on screen but the guardrail (D24) means it has
+        // The suggestion is on screen but the guardrail means it has
         // not touched the graph yet.
         expect(addChild).not.toHaveBeenCalled();
 
@@ -424,11 +424,11 @@ describe('ChartCard: assistant wiring (W85 D50 Finding 1)', () => {
 });
 
 /**
- * W85 item 1 / D31: The occurrence tag — the attack counter in
+ * The occurrence tag — the attack counter in
  * AppearsUnderPopover now renders as an icon + number chip, matching the
  * defence counter's appearance on both ChartCard and NodeCard.
  */
-describe('ChartCard: occurrence tag (W85 item 1)', () => {
+describe('ChartCard: occurrence tag', () => {
     /**
      * Create a test fixture with attack(s) linked to multiple risks so we can
      * verify the AppearsUnderPopover trigger appears with the correct appearance.
@@ -685,14 +685,14 @@ describe('ChartCard: add from a template (2.5.1)', () => {
 });
 
 /**
- * W105: both floating panels sit inside the chart's scroll container, which
+ * Both floating panels sit inside the chart's scroll container, which
  * clips them. Below the bottom tier of a chart taller than the window a panel
  * opened out of sight, so the card scrolls it into view — when it appears,
  * and again when its content grows. jsdom has no layout and no
  * `scrollIntoView`, so this asserts the call and its arguments; that the
  * panel then fits is e2e scenario 15's to show.
  */
-describe('ChartCard: floating panels scroll into view (W105)', () => {
+describe('ChartCard: floating panels scroll into view', () => {
     let scrolled: { el: Element; options: unknown }[];
 
     beforeEach(() => {
@@ -757,7 +757,7 @@ describe('ChartCard: floating panels scroll into view (W105)', () => {
         const store = createAssessmentStore(makeInit());
         vi.spyOn(store, 'suggestChildren').mockResolvedValue({
             childType: 'attack',
-            suggestions: [{ title: 'Phishing', description: null }],
+            suggestions: [{ title: 'Phishing', description: '' }],
             cancelled: false,
         });
         const wrapper = mountCard(store);
@@ -772,8 +772,8 @@ describe('ChartCard: floating panels scroll into view (W105)', () => {
     });
 });
 
-/** W127/D95: the at-rest badge on a collapsed card. */
-describe('a collapsed card shows how many children it hides (W127)', () => {
+/** The at-rest badge on a collapsed card. */
+describe('a collapsed card shows how many children it hides', () => {
     it('shows the exact count, named for a screen reader, and expands on click', async () => {
         const wrapper = mountCard(createAssessmentStore(makeInit()), {
             collapsed: true,
@@ -879,13 +879,13 @@ describe('a collapsed card shows how many children it hides (W127)', () => {
 });
 
 /**
- * W127 follow-up (D104): the hover bar must not be held open by mouse focus.
+ * Follow-up: the hover bar must not be held open by mouse focus.
  * jsdom computes no CSS, so this reads the source, as list/TreeNode.spec.ts
  * does for the same reason. Clicking a bar button leaves focus on it;
  * `group-focus-within` then kept the bar visible after the pointer left, and
  * while other cards were used, until the button was used again.
  */
-describe('the hover bar is not held open by mouse focus (W127 follow-up)', () => {
+describe('the hover bar is not held open by mouse focus', () => {
     const root = resolve(__dirname, '../../../resources/js/Components');
     const chart = readFileSync(`${root}/Chart/ChartCard.vue`, 'utf8');
     const list = readFileSync(`${root}/Tree/NodeCard.vue`, 'utf8');

@@ -1,20 +1,20 @@
 <?php
 
 /*
- * The local inference assistant (PLAN-2.3-ai.md, W50).
+ * The local inference assistant (docs/ASSISTANT.md).
  *
  * Everything here is deployment-level: whether this installation has an
  * inference runtime at all, where it is, and how long it is allowed to take.
  * Whether the feature is *switched on* is a separate, admin-controlled
- * decision living in `instance_settings` — see D25 and
+ * decision living in `instance_settings` — see
  * App\Domain\Assistant\Availability, which requires both.
  *
- * `env()` is permitted here and nowhere else (CLAUDE.md: it returns null once
+ * `env()` is permitted here and nowhere else (it returns null once
  * `config:cache` runs). Every value below is read through `config()`.
  *
  * ## Why the timeouts are enormous, and explicit
  *
- * D20. CPU inference runs for minutes: the spike measured 249s for a job C
+ * CPU inference runs for minutes: the spike measured 249s for a job C
  * draft and 94s for the first help answer of a session
  * (docs/spikes/2.3-inference.md). Every HTTP client in wide use defaults to
  * something between 5 and 30 seconds, and a non-streamed generation sends no
@@ -29,9 +29,10 @@ return [
     /*
      * Whether this deployment has an inference runtime at all.
      *
-     * Off by default, and the overwhelmingly common case (D25): the assistant
+     * Off by default, and the overwhelmingly common case: the assistant
      * needs a second container and 6 GiB of RAM for the small model, 28 GiB
-     * for the large one (PLAN-2.6.md D52), and ArgueSecure must run anywhere. When this is false the assistant routes are not registered,
+     * for the large one, and ArgueSecure must run anywhere. When this is
+     * false the assistant routes are not registered,
      * so the feature cannot be reached by URL by someone who read about it,
      * and the admin settings page does not offer a toggle for something the
      * deployment cannot do.
@@ -39,14 +40,14 @@ return [
     'enabled' => env('ASSISTANT_ENABLED', false),
 
     /*
-     * The llama.cpp server (D17). An internal compose service name, never a
+     * The llama.cpp server. An internal compose service name, never a
      * public hostname — nothing about the assistant is published to the host,
      * for the same reason Reverb is not (deployment.md §2.1).
      */
     'base_url' => env('ASSISTANT_BASE_URL', 'http://assistant:8080'),
 
     /*
-     * There is no `model` key (2.6, D55). Which model runs is decided where
+     * There is no `model` key. Which model runs is decided where
      * it runs — docker/assistant/assistant.sh, from ASSISTANT_MODEL or
      * ASSISTANT_MODEL_FILE — and the admin tab asks the runtime what it
      * loaded (App\Domain\Assistant\RuntimeModel) rather than trusting a label
@@ -61,7 +62,7 @@ return [
      * quickly rather than hang a request.
      *
      * `stream_idle` is the one that actually protects anything. Because every
-     * request streams (D20), the meaningful failure is not "the answer took
+     * request streams, the meaningful failure is not "the answer took
      * too long" but "no token has arrived for a while", which catches a wedged
      * runtime without cutting off a job that is simply long.
      */
@@ -74,7 +75,7 @@ return [
     /*
      * How long a health probe result is trusted, in seconds.
      *
-     * The probe must never sit on a page render (D25). Caching it means a
+     * The probe must never sit on a page render. Caching it means a
      * wedged or absent runtime costs one slow probe per interval rather than
      * one per request, and the editor still paints.
      */
@@ -90,7 +91,7 @@ return [
      * generic filler — so lower these to make the feature quicker only in the
      * knowledge that the answers get worse.
      *
-     * The jobs themselves land in W51, W52 and W54; the budgets live here so
+     * The budgets for the assistant's jobs live here so
      * one file answers "how long can the assistant take".
      */
     'max_tokens' => [

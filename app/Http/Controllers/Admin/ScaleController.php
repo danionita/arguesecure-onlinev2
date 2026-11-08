@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use InvalidArgumentException;
 
 /**
- * Admin-defined scales (W126, D92-D94): create, save, rename, delete.
+ * Admin-defined scales (schema.md §3.2, ui.md §8): create, save, rename, delete.
  *
  * Inside the `admin` middleware group, so gated on `is_admin` like the rest of
  * the tab; each FormRequest repeats the check, as every admin request does.

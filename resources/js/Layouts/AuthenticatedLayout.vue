@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Top-level chrome for authenticated pages (docs/specs/ui.md §2, W41).
+ * Top-level chrome for authenticated pages (docs/specs/ui.md §2).
  *
  * The top bar is gone. Its only real navigation was a product mark and a user
  * menu; the rest was a search box reading "Search this assessment…" on every
@@ -16,7 +16,8 @@
  * The layout reserves the sidebar's width; the sidebar fills it. When the
  * rail's panel is floating, the nav leaves the flow and the gutter stays at
  * 48px, so the content beside it does not move — which is the whole point of
- * D16 and the reason the chart's width can be asserted across a nav expand.
+ * the sidebar's floating panel and the reason the chart's width can be
+ * asserted across a nav expand.
  *
  * ## Skip link
  *
@@ -25,6 +26,7 @@
  * thing they came for, which on the editor is a tree they wanted to be in.
  */
 import ChromeHeaderBand from '@/Components/Chrome/ChromeHeaderBand.vue';
+import DeploymentNotice from '@/Components/Chrome/DeploymentNotice.vue';
 import { useFlashToasts } from '@/Components/Chrome/flashToasts';
 import NotificationPanel from '@/Components/Nav/NotificationPanel.vue';
 import Sidebar from '@/Components/Nav/Sidebar.vue';
@@ -35,9 +37,9 @@ import {
 } from '@/Components/Nav/useSidebar';
 import ToastContainer from '@/Components/UI/ToastContainer.vue';
 import UnsavedChangesDialog from '@/Components/UI/UnsavedChangesDialog.vue';
-// W49. Loaded here rather than only in Report/Show.vue so the chart and the
-// list print too — same stylesheet, same browser pipeline, no new dependency
-// (PLAN-2.2.md D6). Its report rules are scoped to `.report-*` and its editor
+// Loaded here rather than only in Report/Show.vue so the chart and the
+// list print too — same stylesheet, same browser pipeline, no new dependency.
+// Its report rules are scoped to `.report-*` and its editor
 // rules to `.editor-print`, so neither view can disturb the other's page
 // breaks.
 import { useTheme } from '@/Components/UI/useTheme';
@@ -48,7 +50,7 @@ import '../../css/print.css';
 
 useTheme();
 
-// W115: what a controller flashed, shown once, in the `ToastContainer` below.
+// What a controller flashed, shown once, in the `ToastContainer` below.
 useFlashToasts();
 
 const page = usePage();
@@ -76,7 +78,7 @@ const currentUrl = computed(() => {
 });
 
 /**
- * The contextual override (D16). Matched on the URL rather than on a prop,
+ * The contextual override for the sidebar. Matched on the URL rather than on a prop,
  * because every page that renders a canvas is under this prefix and no page
  * outside it is — and a prop would have to be added to each of them by hand,
  * which is the version that gets forgotten on the next page someone adds.
@@ -97,7 +99,7 @@ const inAssessment = computed(() => ASSESSMENT_PAGE.test(currentUrl.value));
 const sidebar = useSidebar(inAssessment);
 
 /**
- * The notification feed (W47). Opened from the sidebar, rendered here because
+ * The notification feed. Opened from the sidebar, rendered here because
  * the sidebar is 48px wide inside an assessment and a feed does not fit in it.
  *
  * `notificationsRead` is a local override rather than a re-fetch of the shared
@@ -117,7 +119,7 @@ const badgeCount = computed(() =>
 );
 
 /**
- * The running header (W49). Screen-hidden, print-only.
+ * The running header. Screen-hidden, print-only.
  *
  * A printed chart or list is otherwise a picture of an unnamed thing from an
  * unknown date — exactly the page that ends up in a folder and cannot be
@@ -125,8 +127,8 @@ const badgeCount = computed(() =>
  * editor views had nothing.
  *
  * The title comes from the page's own props rather than from the shared
- * `nav.currentAssessment` prop, which deliberately carries no title (W44:
- * reading it lazy-loads the root node on every request in the application).
+ * `nav.currentAssessment` prop, which deliberately carries no title (reading
+ * it lazy-loads the root node on every request in the application).
  */
 const printTitle = computed(() => {
     const assessment = page.props.assessment as { title?: string } | undefined;
@@ -141,7 +143,7 @@ const printedOn = computed(() => new Date().toLocaleDateString());
  * prefix. `inAssessment` matches every page under `/assessments/{uuid}`,
  * including the report (`/assessments/{uuid}/report`), which
  * `Pages/Report/Show.vue`'s authenticated branch also mounts inside this
- * layout (D39). W82 gave `editorPrint` that same broad match, so the
+ * layout. `editorPrint` once had that same broad match, so the
  * report — reachable this way whenever a viewer is authenticated rather
  * than holding a bare share link — inherited `.print-header`, the editor's
  * own running header, even though the report has its own cover page and
@@ -169,10 +171,12 @@ const editorPrint = computed(() => ASSESSMENT_EDITOR.test(currentUrl.value));
             Skip to content
         </a>
 
+        <DeploymentNotice />
+
         <div class="flex">
             <!-- The reserved gutter. See the header: this is the only place
                  either width is chosen. `no-print` on the gutter rather than
-                 on the nav inside it (W49): hiding only the nav would leave
+                 on the nav inside it: hiding only the nav would leave
                  240px of blank paper down the left of every printed page. -->
             <div
                 class="no-print shrink-0"
@@ -197,7 +201,7 @@ const editorPrint = computed(() => ASSESSMENT_EDITOR.test(currentUrl.value));
             </div>
 
             <div class="min-w-0 flex-1">
-                <!-- W81: the same markup this rendered inline, moved into a
+                <!-- The same markup this rendered inline, moved into a
                      component the report can render too. The report cannot use
                      this layout (see the file header of Pages/Report/Show.vue)
                      and had reproduced the band by hand, where it drifted. The

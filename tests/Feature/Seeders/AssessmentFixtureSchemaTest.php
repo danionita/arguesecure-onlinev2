@@ -5,8 +5,8 @@ use Database\Seeders\Support\CatalogFixtureValidator;
 use Database\Seeders\Support\SeederFixtureException;
 
 /*
- * W22's "every JSON fixture parses, and validates against the frozen
- * schema" requirement. Every fixture under database/seeders/templates/ is
+ * Requirement: "every JSON fixture parses, and validates against the frozen
+ * schema". Every fixture under database/seeders/templates/ is
  * routed to the validator matching its declared `kind`, entirely without a
  * database — both validators are pure array-in/array-out, so this proves
  * the fixture set itself is well-formed independent of any seeding.
@@ -18,7 +18,7 @@ function fixturePaths(): array
     return glob(database_path('seeders/templates/*.json')) ?: [];
 }
 
-test('at least the seven W22 fixtures exist', function () {
+test('at least the seven seeder fixtures exist', function () {
     $names = array_map(fn (string $p): string => basename($p), fixturePaths());
 
     expect($names)->toContain('demo-webshop.json')

@@ -94,3 +94,46 @@ describe('X-Socket-ID', () => {
         expect(headers['X-Socket-ID']).toBeUndefined();
     });
 });
+
+describe('a refused channel subscription', () => {
+    function establish() {
+        connect();
+        FakeSocket.last!.emit('message', {
+            data: JSON.stringify({
+                event: 'pusher:connection_established',
+                data: JSON.stringify({ socket_id: '123.456' }),
+            }),
+        });
+    }
+
+    it('leaves the page without live updates, quietly, on a 403', async () => {
+        const post = vi.fn().mockRejectedValue({ response: { status: 403 } });
+        (window as unknown as { axios: { post: unknown } }).axios.post = post;
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        establish();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(post).toHaveBeenCalledTimes(1);
+        expect(FakeSocket.last!.sent).toEqual([]);
+        expect(error).not.toHaveBeenCalled();
+        error.mockRestore();
+    });
+
+    it('reports any other failure', async () => {
+        const failure = { response: { status: 500 } };
+        (window as unknown as { axios: { post: unknown } }).axios.post = vi
+            .fn()
+            .mockRejectedValue(failure);
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        establish();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(error).toHaveBeenCalledWith(
+            'Live updates are unavailable',
+            failure,
+        );
+        error.mockRestore();
+    });
+});

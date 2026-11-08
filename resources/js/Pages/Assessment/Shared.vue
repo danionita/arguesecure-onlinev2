@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * *Assessments shared with me* (ui.md §8, W73 item 20, D33; 2.5.1).
+ * *Assessments shared with me* (ui.md §8; 2.5.1).
  *
  * Its own page, because "nobody has shared anything with you" is a different
  * statement from "you have no assessments". Since 2.5.1 it renders the same

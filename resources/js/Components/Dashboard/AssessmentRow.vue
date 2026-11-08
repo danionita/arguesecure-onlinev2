@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One assessment on the dashboard (W42).
+ * One assessment on the dashboard (ui.md §8).
  *
  * Deliberately not the assessment *list*'s row: that one carries five actions
  * and a permission behind each of them, and a dashboard is for deciding where
@@ -8,8 +8,8 @@
  * lives one click away on `/assessments`.
  *
  * The owner's name renders whenever there is one, which on the "Shared with
- * me" section is every row — "the thing that is missing today" (PLAN-2.2.md
- * W42). Knowing whose work you are about to open is most of what makes a
+ * me" section is every row — "the thing that is missing today" when the
+ * dashboard was designed. Knowing whose work you are about to open is most of what makes a
  * shared list usable.
  */
 import type { DashboardAssessment } from '@/Pages/Dashboard.vue';

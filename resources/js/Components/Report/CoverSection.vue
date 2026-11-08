@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
- * Cover section (PLAN.md Phase 7 §1): title and target of assessment —
- * these live on the ROOT NODE, not the assessment row (CLAUDE.md "Domain
- * model in one screen") — owner, date, scale calibration used, and the
+ * Cover section (ui.md §9): title and target of assessment —
+ * these live on the ROOT NODE, not the assessment row (docs/specs/schema.md §1) — owner, date, scale calibration used, and the
  * completeness statement.
  */
 import Icon from '../UI/Icon.vue';

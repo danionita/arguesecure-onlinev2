@@ -18,7 +18,7 @@ class CommentPolicy
 {
     /**
      * Goes through the Gate rather than calling AssessmentPolicy's methods, so
-     * its `before()` hook (the template rule, W141) applies here too: a direct
+     * its `before()` hook (the template rule) applies here too: a direct
      * method call skips it, which let a stray collaborator row edit a template.
      */
     private function assessment(?User $user, string $ability, Assessment $assessment): bool

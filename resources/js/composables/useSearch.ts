@@ -1,15 +1,15 @@
 /**
- * Full-text search over the tree (ui.md §5 / PLAN.md W15).
+ * Full-text search over the tree (ui.md §5).
  *
  * ## Client-side vs. server round-trip
  *
  * schema.md backs search with `FULLTEXT(title, description)` for exactly
- * this feature, but W12's page load already ships the *entire* assessment
- * graph to the browser in one Inertia visit (CLAUDE.md: "Eager-load
- * everything... a whole assessment must load in four queries") — there is
+ * this feature, but the page load already ships the *entire* assessment
+ * graph to the browser in one Inertia visit (a whole assessment loads in four
+ * eager-loaded queries) — there is
  * no partial/paginated tree. Searching the copy already sitting in
  * `store.nodes` is therefore strictly faster than a round trip: no network
- * latency and no server load. (Until W30 it also matched `notes`, which had
+ * latency and no server load. (It once also matched `notes`, which had
  * no FULLTEXT index at all; that field is gone, so the client-side scan and
  * the server-side index now cover exactly the same two columns.)
  *
@@ -18,7 +18,7 @@
  * thousands of nodes, and at that size shipping the whole graph to the
  * client in one page load would itself already be the bottleneck. For the
  * shape this tool targets (a workshop-scale risk assessment: dozens to a
- * few hundred nodes, per PLAN.md's worked example), that threshold is far
+ * few hundred nodes), that threshold is far
  * above anything realistic, so client-side is the deliberate choice here.
  * If assessments grow large enough to challenge that, the fix is a
  * server-backed search endpoint using the FULLTEXT index, not a rewrite of
@@ -38,9 +38,9 @@ export function useSearch(store: AssessmentStore) {
     const activeIndex = ref(0);
     /**
      * Bound with `ref="inputEl"` on the search `<input>` in SearchBox.vue.
-     * Exposed as `focus()` below — this is exactly what W14 calls to
-     * implement `/` from ui.md §4's keyboard map; W15 does not register
-     * the key binding itself (that file is W14's, running concurrently).
+     * Exposed as `focus()` below — this is exactly what the keyboard
+     * composables call to implement `/` from ui.md §4's keyboard map; this
+     * file does not register the key binding itself.
      */
     const inputEl = ref<HTMLInputElement | null>(null);
 
@@ -92,7 +92,7 @@ export function useSearch(store: AssessmentStore) {
 
     // Synchronous flush: activeIndex must already be reset by the time a
     // caller reads it right after setting `query`, not on the next tick —
-    // tests and W14's key handling both do exactly that.
+    // tests and the key handling both do exactly that.
     watch(
         matches,
         () => {

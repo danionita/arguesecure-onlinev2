@@ -1,9 +1,9 @@
 /**
- * Comments (PLAN.md Phase 8 item 1, schema.md §3.8). Talks to
+ * Comments (schema.md §3.8). Talks to
  * CommentController directly, the same self-contained pattern
- * NodeModal/useLinkMutations.ts already established for this package's own
- * W13 sibling: no dependency on resources/js/stores/assessmentStore.ts
- * (outside this package's ownership, and comments are not part of its
+ * NodeModal/useLinkMutations.ts uses: no dependency on
+ * resources/js/stores/assessmentStore.ts
+ * (comments are not part of its
  * state — a node's comment *count* is a separate concern, see
  * useUnresolvedCommentCounts() below), just `window.axios` + Ziggy's
  * `route()` and a small local reactive list.
@@ -132,10 +132,8 @@ export function useComments(assessmentUuid: string, nodeUuid: string) {
  * §3.2) needs a count per node across the whole assessment, not one node
  * at a time — see CommentController::unresolvedCounts(). Exported
  * separately from useComments() because the node card lives in
- * resources/js/Components/Tree/** (W12, outside this package's
- * ownership); this is the piece that package's NodeCard.vue would call.
- * See the W18 report for the exact call this composable expects to be
- * wired into.
+ * resources/js/Components/Tree/**; this is the piece its NodeCard.vue
+ * calls.
  */
 export async function fetchUnresolvedCommentCounts(
     assessmentUuid: string,

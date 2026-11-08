@@ -1,15 +1,15 @@
 /**
- * D43 — zoom is persisted per view; the storage key gains the view mode.
+ * Zoom is persisted per view; the storage key gains the view mode.
  * Integration 2.5: `Pages/Report/Show.vue` now passes `view: 'report'`
  * straight through to `useCanvas.ts` (a `CanvasView`, widened there rather
  * than on `EditorViewMode` — see that file's header) instead of folding
  * `::report` into the *assessmentUuid* argument. This test asserts the
- * property the brief calls for directly, against the same `useCanvas.ts`
+ * property that matters directly, against the same `useCanvas.ts`
  * the chart and list views already read and write, without mounting the
  * whole page: the report's key differs from the chart/list key, and writing
  * through it never touches the plain `assessmentUuid`/`chart`/`list` keys
- * (D9 — through W83 chart and list still share one zoom number by design;
- * only the report gets its own).
+ * (chart and list still share one zoom number by design; only the report
+ * gets its own).
  */
 import { describe, expect, it } from 'vitest';
 import { useCanvas } from '../../../resources/js/composables/useCanvas';
@@ -25,7 +25,7 @@ function fakeStorage() {
     };
 }
 
-describe('D43 — the report zoom key is view-namespaced', () => {
+describe('the report zoom key is view-namespaced', () => {
     it('the key the report writes to contains "report" and differs from the chart/list key', () => {
         const storage = fakeStorage();
 

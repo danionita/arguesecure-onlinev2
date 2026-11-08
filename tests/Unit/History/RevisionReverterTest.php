@@ -14,11 +14,11 @@ use Tests\TestCase;
 uses(TestCase::class, RefreshDatabase::class)->in(__FILE__);
 
 /*
- * W18b — RevisionReverter, the domain logic extracted from the W18 route
+ * RevisionReverter, the domain logic extracted from the original route
  * closure (routes/web.php's former "revert this field" handler). The HTTP
  * authorization/shape contract is pinned by the pre-existing
  * tests/Feature/History/NodeRevisionRevertTest.php, unchanged by this
- * package; these exercise the domain object directly.
+ * extraction; these exercise the domain object directly.
  */
 test('reverting a field applies the recorded prior value and returns the new revision', function () {
     $assessment = Assessment::factory()->create();

@@ -8,9 +8,9 @@ use App\Models\User;
 use Database\Seeders\SampleContentSeeder;
 
 /*
- * W22's "the demo assessment, once seeded, computes: assert RiskCalculator
+ * Requirement: "the demo assessment, once seeded, computes: assert RiskCalculator
  * returns a complete result with no missing-value warnings, since 'fully
- * populated' is the entire point of it" requirement.
+ * populated' is the entire point of it".
  */
 
 test('the seeded demo assessment computes a complete result on all three baselines', function () {
@@ -31,7 +31,7 @@ test('the seeded demo assessment computes a complete result on all three baselin
         expect($result->completeness->pairsTotal)->toBeGreaterThan(0);
     }
 
-    // Sanity-check plausibility (CLAUDE.md: impact is loss-per-occurrence,
+    // Sanity-check plausibility (calculation-engine.md: impact is loss-per-occurrence,
     // likelihood a rate-per-year — getting these backwards would make the
     // totals implausible by orders of magnitude). Controls should reduce
     // the total monotonically: inherent > current >= target is not

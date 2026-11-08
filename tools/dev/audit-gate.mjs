@@ -1,6 +1,6 @@
 // The npm half of CI's security job. Every npm package here is a
 // devDependency, including the ones Vite bundles for browsers, so
-// `npm audit --omit=dev` audits nothing and always reports 0 (W122, D86).
+// `npm audit --omit=dev` audits nothing and always reports 0.
 // This audits the whole lockfile and fails on any high or critical advisory
 // that tools/dev/audit-allowlist.json does not name, and on any allowlist
 // entry whose advisory is gone, so the list only shrinks.

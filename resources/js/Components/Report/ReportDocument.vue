@@ -1,22 +1,22 @@
 <script setup lang="ts">
 /**
  * The report document itself — everything from the cover to the appendices
- * (PLAN.md Phase 7, ui.md §9). Extracted from `Pages/Report/Show.vue` in
- * W83 so the page can mount it once from either of its two chromes (D39:
- * sidebar for an authenticated user, bare for a share-link guest) without
+ * (ui.md §9). Extracted from `Pages/Report/Show.vue` so the page can mount
+ * it once from either of its two chromes (a sidebar for an authenticated
+ * user, bare for a share-link guest) without
  * hand-copying this ~120-line block into both branches — which is exactly
  * the failure `Components/Chrome/*`'s own docblocks describe for the
  * geometry above it (two copies that have to agree by inspection and once
  * did not). This component owns none of that geometry; it is the content
  * both chromes wrap.
  *
- * `zoomStyle` (W83, D43) is applied to this component's own root `<main>`
- * rather than to anything above it: the brief is explicit that "the chrome
- * does not scale, and neither does the print output" — the toolbar, the
+ * `zoomStyle` is applied to this component's own root `<main>`
+ * rather than to anything above it: the chrome
+ * does not scale, and neither does the print output (ui.md §9) — the toolbar, the
  * search box and the options row live in the page, outside this component,
  * and are untouched by it. `print.css`'s `.report-print { zoom: 1 !important; }`
  * is the print-time override, matching how the list view's own CSS `zoom`
- * is reset for the same reason (D9, ui.md §9 "The current zoom is
+ * is reset for the same reason (ui.md §9 "The current zoom is
  * ignored").
  */
 import { computed, type CSSProperties } from 'vue';
@@ -78,7 +78,7 @@ const shows = (id: string) =>
         />
 
         <!--
-            W54. The written summary sits above the figures because that
+            The written summary sits above the figures because that
             is the order it is read in: prose first, then the numbers it
             refers to.
         -->
@@ -193,7 +193,7 @@ const shows = (id: string) =>
         />
 
         <!--
-            W139, D118. A report with sections left out names them, so a
+            A report with sections left out names them, so a
             partial document cannot pass for a complete one.
         -->
         <p

@@ -1,15 +1,15 @@
 /**
- * Every label and every hover explanation the node card shows (ui.md §3.2,
- * W29). One module, for three reasons:
+ * Every label and every hover explanation the node card shows (ui.md §3.2).
+ * One module, for three reasons:
  *
  * 1. It is product copy. It explains a calculation to a workshop participant
  *    who has never read `calculation-engine.md`, and it will be edited by
  *    people who are not editing Vue.
  * 2. It has to be assertable. "A missing impact excludes the pair from the
  *    total; a missing strength is treated as zero reduction" is the honest
- *    distinction CLAUDE.md insists on, and the only way it stays true is if a
+ *    distinction calculation-engine.md insists on, and the only way it stays true is if a
  *    test reads the string.
- * 3. The chart view (W32) renders the same numbers in a different shape. Two
+ * 3. The chart view renders the same numbers in a different shape. Two
  *    views explaining the same figure differently is worse than either view
  *    explaining it badly.
  *
@@ -17,22 +17,22 @@
  * number: Components/UI/format.ts owns rounding, and a hint that rounds
  * differently from the chip it explains reads as a contradiction.
  *
- * ## Unreferenced by the cards, on purpose (W37)
+ * ## Unreferenced by the cards, on purpose
  *
  * `rootTotalHint`, `rootReductionHint`, `riskAleHint`, `attackAleHint`,
  * `contributionHint`, `defenceSavingHint`, `notAppliedHint`, `BASELINE_LABELS`
  * / `BASELINE_HINTS`, and several `VALUE_LABELS` keys currently have no caller.
- * That is the direct consequence of W36 and W37 taking engine output off both
+ * That is the direct consequence of taking engine output off both
  * cards: the copy did not become wrong, it became **early**. Every one of them
- * is consumed by the node modal's Statistics tab in W39, which shows exactly
+ * is consumed by the node modal's Statistics tab, which shows exactly
  * these figures across all three baselines, and rewriting them there from
  * scratch would be how the two surfaces start explaining one number
  * differently — the thing this module exists to prevent.
  *
  * Two exports *were* deleted rather than parked, because they can never come
- * back: `BASELINE_OPTIONS` fed the baseline selector, which PLAN-2.2.md D8
- * closes for good, and `attackLikelihoodHint` interpolated one baseline's
- * residual into a sentence, which is precisely the arbitrary choice D8 removes.
+ * back: `BASELINE_OPTIONS` fed the baseline selector, which was removed
+ * for good (the editor shows no baseline selector), and `attackLikelihoodHint` interpolated one baseline's
+ * residual into a sentence, which is precisely the arbitrary choice that removal avoids.
  */
 import type { Baseline, DefenceStatus, ReductionTarget } from '@/calc/types';
 
@@ -53,7 +53,7 @@ export const BASELINE_HINTS: Record<Baseline, string> = {
 };
 
 /**
- * What the three totals are called **on the ToS card** (W36).
+ * What the three totals are called **on the ToS card**.
  *
  * "Inherent" is the engine's word and the report's word; it is also jargon,
  * and the card is the surface a facilitator glances at mid-workshop. "Base"
@@ -145,7 +145,7 @@ export const RISK_IMPACT_HINT =
     'Loss each time this risk occurs — not the annual loss. Entered by hand.';
 
 /**
- * Takes the band's **label**, not its code (W87, D44). `scale_levels.code` is
+ * Takes the band's **label**, not its code. `scale_levels.code` is
  * internal and frozen on rename, so quoting it here named a band by a string
  * the band table had stopped showing.
  */
@@ -168,7 +168,7 @@ export function contributionHint(
 // --- attack ---------------------------------------------------------------
 
 /**
- * The list card's version (W36): what the user entered, and nothing about a
+ * The list card's version: what the user entered, and nothing about a
  * baseline. The residual half of `attackLikelihoodHint` below is
  * baseline-dependent, and with no selector in the editor, naming one
  * baseline's residual would be an arbitrary choice stated as a fact. All
@@ -181,7 +181,7 @@ export function attackLikelihoodEnteredHint(
     return `${aroBase} entered — about a ${approxProbability} chance of at least one occurrence this year.`;
 }
 
-/** The band's label, not its code — see `riskImpactLevelHint` (W87, D44). */
+/** The band's label, not its code — see `riskImpactLevelHint`. */
 export function attackLikelihoodLevelHint(levelLabel: string): string {
     return `Likelihood band "${levelLabel}", from this assessment's likelihood scale. A rate per year, not a probability.`;
 }

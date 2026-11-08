@@ -2,7 +2,7 @@
 
 This file is the shared golden-vector fixture required by
 [`docs/specs/calculation-engine.md`](../../docs/specs/calculation-engine.md) §11.5 and §15.12. Both
-`Calculation\RiskCalculator` (Pest, W7) and its TypeScript mirror (Vitest, W11) must be exercised
+`Calculation\RiskCalculator` (Pest) and its TypeScript mirror (Vitest) must be exercised
 against every vector in here and agree with the `expected` block, and with each other, to the
 tolerance declared at the top of the file (`1e-9`, absolute).
 
@@ -43,7 +43,7 @@ Notes on reading `input`:
   won over realism. Nothing in the engine should care about the format of an id.
 - `risk_attack` and `attack_defence` are the DAG edges — `nodes` §-style single-table inheritance is
   flattened here into `risks` / `attacks` / `defences` arrays purely for fixture readability; the
-  edges are what CLAUDE.md and schema.md actually call load-bearing (strength lives on the edge,
+  edges are what schema.md (§3.6) calls load-bearing (strength lives on the edge,
   ordering lives on the edge).
 - A `null` `impact_mode` / `likelihood_mode` / `strength_mode` means "missing" (⊥), per
   calculation-engine.md §6.1 — distinct from a present mode with a `0` amount, which is a known value.

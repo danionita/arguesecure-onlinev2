@@ -11,14 +11,14 @@ use RuntimeException;
  *
  * ## Why this exists rather than a bare RuntimeException
  *
- * SnapshotController shows the message of whatever it catches. W61 caught
+ * SnapshotController shows the message of whatever it catches. It first caught
  * `RuntimeException`, which looked narrow and is not: **`QueryException`
  * extends `PDOException` extends `RuntimeException`**, so any database error
  * inside a restore was caught by that block and its message — the failing SQL
  * and its bound values, which for this path means node titles, descriptions and
  * user ids — was rendered into a flash message on the page.
  *
- * That was found by mutation-testing something else in W62: neutering an
+ * That was found by mutation-testing something else: neutering an
  * unrelated guard produced a foreign-key violation, and the test stayed green
  * because the resulting 500 had been quietly converted into a friendly-looking
  * error banner. A test that cannot go red is not the worst of it; the leak is.

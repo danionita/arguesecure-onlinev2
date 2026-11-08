@@ -6,7 +6,7 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * Comments (PLAN.md Phase 8 item 1, schema.md §3.8, CLAUDE.md's W18 brief):
+ * Comments (schema.md §3.8):
  * threaded exactly two levels deep, resolvable, gated through
  * AssessmentPolicy's `view`/`comment` abilities with an author-or-manager
  * check for edit/delete. Every mutating route is checked against

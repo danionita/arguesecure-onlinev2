@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Undoes a snapshot restore by restoring the snapshot taken just before it
- * (W61).
+ * (the snapshot restore operation).
  *
- * Every other applier in this package reverses one small structural change.
+ * Every other applier reverses one small structural change.
  * This one reverses a wholesale replacement, and it can only do that because
  * `SnapshotController::restore` takes a **safety snapshot** of the current
  * state before touching anything: the operation's `inverse` points at that
@@ -42,7 +42,7 @@ final class RestoreSnapshotApplier implements CommandApplier
     {
         $snapshotId = (int) ($command['snapshot_id'] ?? 0);
 
-        // D82: only the operation's own assessment may be restored by it.
+        // Only the operation's own assessment may be restored by it.
         if (isset($command['assessment_id']) && (int) $command['assessment_id'] !== $assessmentId) {
             throw new UndoConflictException('Cannot undo: this change belongs to another assessment.');
         }
@@ -60,8 +60,7 @@ final class RestoreSnapshotApplier implements CommandApplier
 
         /*
          * Resolved from the container rather than injected: CommandDispatcher
-         * builds appliers with `new $applierClass` and this package does not
-         * own that file. Every other applier needs nothing but Eloquent, so
+         * builds appliers with `new $applierClass`. Every other applier needs nothing but Eloquent, so
          * the dispatcher never had a reason to resolve them, and giving it one
          * for this single case would change the contract every applier is
          * written against.
@@ -73,8 +72,7 @@ final class RestoreSnapshotApplier implements CommandApplier
 
         /*
          * No operation id to group under. `UndoService` does not tell an
-         * applier which row it is applying, and this package does not own that
-         * class — so the revisions this undo writes stay ungrouped rather than
+         * applier which row it is applying — so the revisions this undo writes stay ungrouped rather than
          * being folded into some other operation's entry. One timeline entry
          * too many is a smaller lie than one attributed to the wrong action.
          */

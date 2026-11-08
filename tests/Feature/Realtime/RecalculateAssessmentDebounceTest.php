@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
 
 /*
- * PLAN.md Phase 6 item 4: "a queued RecalculateAssessment job debounced
+ * ui.md §6 (Real-time): "a queued RecalculateAssessment job debounced
  * 250ms per assessment, so dragging a slider produces one broadcast
- * rather than forty." Required by the W16 brief: "the debounce collapses
+ * rather than forty." Required of the real-time layer: "the debounce collapses
  * rapid changes into one recompute."
  *
  * Queue::fake() replaces the queue manager outright — it records what was

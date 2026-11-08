@@ -7,6 +7,9 @@ use App\Domain\Structure\ReorderService;
 use App\Http\Controllers\Admin\AssistantController;
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\DefaultsController;
+use App\Http\Controllers\Admin\HelpController as AdminHelpController;
+use App\Http\Controllers\Admin\MailController;
+use App\Http\Controllers\Admin\MailTemplateController;
 use App\Http\Controllers\Admin\ScaleController as AdminScaleController;
 use App\Http\Controllers\Admin\SecurityLogController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -60,7 +63,7 @@ Route::get('/', function () {
     ]);
 });
 
-// W26: the dashboard was Breeze's placeholder page, which mentioned no
+// The dashboard was Breeze's placeholder page, which mentioned no
 // assessments and linked to nothing — so the application's home screen
 // after login was a dead end. It now renders the assessment list, which is
 // what a user needs on arrival and the only entry point to creating one.
@@ -69,7 +72,7 @@ Route::get('/', function () {
 // because `dashboard` is where Laravel's own auth scaffolding sends people
 // after login, the sidebar's home link points at it, and several tests assert it
 // answers 200 — a redirect would change all three for no benefit.
-// W42: `/dashboard` is a dashboard now, not a second rendering of the
+// `/dashboard` is a dashboard now, not a second rendering of the
 // assessment list. It answers the four questions someone has on arrival —
 // what is assigned to me, who mentioned me, what do I own, what have I been
 // invited to — where the list answers only the last two.
@@ -102,10 +105,11 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         ->middleware('throttle:credentials')
         ->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile/mail-notifications', [ProfileController::class, 'updateMailNotifications'])->name('profile.mail-notifications');
     Route::delete('/profile/sessions/{sessionId}', [ProfileController::class, 'revokeSession'])
         ->name('profile.sessions.destroy');
 
-    // W116: the profile's two-factor panel. Starting, regenerating codes and
+    // The profile's two-factor panel. Starting, regenerating codes and
     // turning off take the current password, so they sit behind the same
     // 5/min per-user bucket as the other password-taking routes.
     Route::post('/profile/two-factor/confirm', [TwoFactorController::class, 'confirm'])
@@ -121,9 +125,14 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
             ->name('profile.two-factor.destroy');
     });
 
-    // /admin is additionally gated on is_admin (PLAN.md Phase 3 item 3).
+    // /admin is additionally gated on is_admin (security.md §3).
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::redirect('/', '/admin/users');
+
+        // The administrators' help and its search: admin only, and not part
+        // of the public help or the assistant's corpus.
+        Route::get('help', [AdminHelpController::class, 'index'])->name('help.index');
+        Route::get('help/{slug}', [AdminHelpController::class, 'show'])->name('help.show');
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
@@ -134,6 +143,9 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('users/{user}/invitation', [UserController::class, 'resendInvitation'])
+            ->middleware('throttle:invitation-resend')
+            ->name('users.invitation');
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::delete('users/{user}/identity', [UserIdentityController::class, 'destroy'])->name('users.identity.destroy');
         Route::delete('users/{user}/two-factor', [UserTwoFactorController::class, 'destroy'])->name('users.two-factor.destroy');
@@ -141,31 +153,46 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
         Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
 
-        // W133, D105-D108: sign-in settings (SSO, SSO only, required two-factor).
+        // Sign-in settings (SSO, SSO only, required two-factor).
         Route::get('authentication', [AuthenticationController::class, 'edit'])->name('authentication.edit');
         Route::put('authentication', [AuthenticationController::class, 'update'])->name('authentication.update');
         Route::post('authentication/check', [AuthenticationController::class, 'check'])
             ->middleware('throttle:oidc-check')
             ->name('authentication.check');
 
+        // Outbound email: SMTP settings and a test message.
+        Route::get('email', [MailController::class, 'edit'])->name('mail.edit');
+        Route::put('email', [MailController::class, 'update'])->name('mail.update');
+        Route::post('email/test', [MailController::class, 'test'])
+            ->middleware('throttle:mail-test')
+            ->name('mail.test');
+
+        Route::put('email/notifications', [MailController::class, 'notifications'])->name('mail.notifications');
+
+        // Wording of each message kind. `{kind}` is checked against the
+        // fixed list in the controller, never used to build a class or a column.
+        Route::put('email/templates/{kind}', [MailTemplateController::class, 'update'])->name('mail.templates.update');
+        Route::delete('email/templates/{kind}', [MailTemplateController::class, 'destroy'])->name('mail.templates.destroy');
+        Route::post('email/templates/{kind}/preview', [MailTemplateController::class, 'preview'])->name('mail.templates.preview');
+
         // 2.5.1: the assistant's switches, on a tab of their own.
         Route::get('assistant', [AssistantController::class, 'edit'])->name('assistant.edit');
         Route::put('assistant', [AssistantController::class, 'update'])->name('assistant.update');
 
-        // W128, D96–D100 — the stored security event log and its download.
+        // The stored security event log and its download (security.md §11.1).
         Route::get('security-log', [SecurityLogController::class, 'index'])->name('security-log.index');
         Route::get('security-log/download', [SecurityLogController::class, 'download'])
             ->middleware('throttle:security-log-export')
             ->name('security-log.download');
 
-        // W87, D47 — the Defaults tab. Separate from Instance settings
+        // The Defaults tab. Separate from Instance settings
         // because they answer different questions: that one is about the
         // deployment, this one about the content a new assessment starts
         // with. Inside the same `admin` middleware group, so it is gated on
         // `is_admin` exactly as every route above it is.
         Route::get('defaults', [DefaultsController::class, 'edit'])->name('defaults.edit');
         Route::put('defaults/currency', [DefaultsController::class, 'updateCurrency'])->name('defaults.currency');
-        // W126, D92-D94: admin-defined scales. `{scaleSet:key}` binds by the
+        // Admin-defined scales. `{scaleSet:key}` binds by the
         // scale's key, so an unknown one is a 404; the kinds inside a payload
         // are a fixed list the FormRequest validates (no column name is ever
         // built from request input).
@@ -175,16 +202,15 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         Route::delete('defaults/scales/{scaleSet:key}', [AdminScaleController::class, 'destroy'])->name('scales.destroy');
     });
 
-    // W9 sharing (PLAN.md Phase 3 item 5). Every route below is fronted by
+    // Sharing (security.md §3.2, §3.3). Every route below is fronted by
     // a FormRequest whose authorize() calls AssessmentPolicy — see
     // app/Http/Requests/Sharing/**. {collaborator}'s implicit binding is
     // NOT scoped to {assessment} via Route::scopeBindings(): that
     // mechanism guesses a relation name on the parent model from the
     // child segment's name (it would look for Assessment::collaborators()),
-    // and Assessment (app/Models/**, outside this package's ownership)
-    // names that relation members() instead. Each FormRequest below and
-    // CollaboratorService::assertBelongsTo() therefore make the
-    // cross-assessment check explicitly (security.md §3.3 IDOR test).
+    // and Assessment names that relation members() instead. Each
+    // FormRequest below and CollaboratorService::assertBelongsTo()
+    // therefore make the cross-assessment check explicitly (security.md §3.3 IDOR test).
     Route::prefix('assessments/{assessment:uuid}/share')->name('share.')->middleware(RejectTemplate::class)->group(function () {
         Route::get('/', [ShareController::class, 'index'])->name('index');
         Route::get('users', [ShareController::class, 'searchUsers'])
@@ -198,13 +224,13 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         Route::delete('token', [ShareController::class, 'destroyToken'])->name('token.destroy');
     });
 
-    // W12 tree editor mutations (PLAN.md Phase 5, ui.md §3.3-§3.5). Kept
+    // Tree editor mutations (ui.md §3.3-§3.5). Kept
     // inside this `auth` group deliberately, unlike the read route below:
     // AssessmentPolicy already denies a guest every ability here (`update`
     // and `delete` both require a real $user — is_public/share-token only
     // ever grant `view`), so requiring auth up front turns that into a
     // clean 401 for an anonymous caller instead of a policy-driven 403,
-    // matching the convention the W9 sharing routes above already set.
+    // matching the convention the sharing routes above already set.
     // `{assessment:uuid}`/`{node:uuid}` bind by uuid, not id — the stable,
     // clone/snapshot-safe client-facing identity (schema.md §3.4) — and
     // NodeController/its FormRequests additionally assert the node belongs
@@ -215,7 +241,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     // outer group's `authenticated` default is not enough for this
     // sub-group specifically, so it gets its own, tighter limiter, in its
     // own bucket (RateLimitServiceProvider).
-    // W40's suggestion endpoint. Deliberately outside the `throttle:mutations`
+    // The node-title suggestion endpoint. Deliberately outside the `throttle:mutations`
     // group below: it writes nothing, and a type-ahead field fires a request
     // per keystroke, so putting it in the mutation bucket would let a user
     // typing "multi-factor authentication" exhaust the budget for the edits
@@ -234,7 +260,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
 });
 
 // ---------------------------------------------------------------------
-// W73 — the two routes the sidebar needed (ui.md §2 and §8, D33).
+// The two routes the sidebar needed (ui.md §2 and §8).
 //
 // **Placed here rather than appended, and this is the one thing about this
 // block that is not free choice.** `assessments.show` immediately below
@@ -242,16 +268,16 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
 // literal `assessments/shared` appended at the foot of this file would be
 // matched by it first, bound as uuid `"shared"`, and 404 on the model
 // lookup. The alternatives were constraining that route — an edit to a
-// route W73 does not own — or giving D33's page a path it does not
-// specify. Nothing existing is edited, moved or reordered by inserting
+// route this block does not own — or giving the shared-with-me page a path
+// the spec does not give it. Nothing existing is edited, moved or reordered by inserting
 // here; only these two lines are new.
 //
 // `throttle:authenticated` — security.md §9's "everything else
 // authenticated: 300/min per user". Asserted by value, never as "it has a
 // throttle": a group whose limiter merely starts with `throttle` is not a
-// guard (CLAUDE.md).
+// guard.
 //
-// W73 also added `assessments.new`, a POST that created an untitled
+// This block also added `assessments.new`, a POST that created an untitled
 // assessment straight from the sidebar. It was removed at integration: it put
 // two buttons reading "New assessment" on the list page doing two different
 // things, one asking for a title and one not. The sidebar now links to
@@ -270,8 +296,8 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
 // ShareController::resolveToken above is also unauthenticated.
 // ShowAssessmentRequest still runs AssessmentPolicy::view() for every
 // caller, logged in or not — this route is not itself the authorization
-// boundary, the policy is (CLAUDE.md "every route touching an assessment
-// goes through AssessmentPolicy. No exceptions").
+// boundary, the policy is (every route touching an assessment goes through
+// AssessmentPolicy, no exceptions; security.md §3).
 Route::middleware('active')->get('assessments/{assessment:uuid}', [AssessmentController::class, 'show'])
     ->name('assessments.show');
 
@@ -284,13 +310,11 @@ Route::get('/s/{token}', [ShareController::class, 'resolveToken'])
 
 require __DIR__.'/auth.php';
 
-// W13 node modal — Links tab edge mutations (ui.md §7, PLAN.md W13).
-// Appended as its own group rather than merged into the W12
-// `assessments/{assessment:uuid}` group above: this package's file
-// ownership is "routes/web.php — append only... do not edit or reorder
-// any existing route or group", and another package appends concurrently,
-// so touching that group risks silently dropping its middleware in a
-// hand-merge. Same `auth`+`active` middleware and `{assessment:uuid}`
+// Node modal, Links tab: edge mutations (ui.md §7).
+// Appended as its own group rather than merged into the tree editor's
+// `assessments/{assessment:uuid}` group above: this file is shared and
+// blocks are appended concurrently, so touching that group risks silently
+// dropping its middleware in a hand-merge. Same `auth`+`active` middleware and `{assessment:uuid}`
 // binding convention as that group, for the same reason documented there —
 // AssessmentPolicy denies a guest every ability these need (creating,
 // editing or removing an edge all require `update`).
@@ -316,31 +340,24 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])
     });
 
 // ---------------------------------------------------------------------
-// W14: keyboard, drag-and-drop, undo (ui.md §3.6, §4; schema.md §3.10).
-// Appended, not merged into the W12 group above, per this package's file
-// ownership: routes/web.php is append-only and editing an existing group
-// is out of scope. Fully-qualified class names throughout — no new `use`
+// Keyboard, drag-and-drop, undo (ui.md §3.6, §4; schema.md §3.10).
+// Appended, not merged into the tree editor's group above: this file is
+// shared and editing an existing group risks a bad merge. Fully-qualified class names throughout — no new `use`
 // import is added at the top of the file, keeping this block the only
 // diff.
 //
-// Undo/redo/peek are fronted by app/Http/Requests/History/** (this
-// package's own FormRequests, gating on AssessmentPolicy::update via
-// Gate — any editor, not only the operation's author).
+// Undo/redo/peek are fronted by app/Http/Requests/History/** (their own
+// FormRequests, gating on AssessmentPolicy::update via Gate — any editor,
+// not only the operation's author).
 //
-// The reorder/move endpoints below exist only because W12's merged tree
+// The reorder/move endpoints below exist only because the merged tree
 // editor core does not yet expose any HTTP endpoint for re-sequencing or
 // re-parenting an edge — NodeController only has store/update/destroy,
 // and UpdateNodeRequest's rules() do not accept `position` for any node
-// type. That gap sits in app/Http/Controllers/NodeController.php and
-// app/Http/Requests/Assessment/**, both outside this package's ownership
-// (only app/Http/Controllers/UndoController.php is), so it cannot be
-// closed by editing those files. Implementing it as closures here —
-// authorize, validate, then delegate the actual mutation to
-// App\Domain\Structure\ReorderService / LinkService (owned by W6, used
-// but never edited) — is the narrowest way to make drag-and-drop actually
-// persist without creating a second controller file this package does
-// not own. See the W14 completion report for the full gap writeup,
-// including that NodeController's store()/destroy() still do not call
+// type. Implementing it as closures here — authorize, validate, then
+// delegate the actual mutation to App\Domain\Structure\ReorderService /
+// LinkService — is the narrowest way to make drag-and-drop actually
+// persist without adding a second controller. Note that NodeController's store()/destroy() still do not call
 // History\UndoService::record(), so create/delete are not yet undoable
 // end-to-end from the UI (only through this route's own reorder/move
 // actions, which do record).
@@ -379,7 +396,7 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])->prefix('assessments
         $scope = $data['scope'];
         $order = $data['order'];
 
-        // W104: every uuid below comes from the body, so each lookup is
+        // Every uuid below comes from the body, so each lookup is
         // scoped to the route's assessment, the one the policy checked. A
         // node of another assessment answers as a node that does not exist.
         if ($scope === 'nodes') {
@@ -391,7 +408,7 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])->prefix('assessments
             foreach ($order as $uuid) {
                 $entries[] = ['key' => ['node_uuid' => $uuid], 'position' => $rows[$uuid]->position];
             }
-            // W25: was `$rows->only($order)->sortBy(...)->pluck('id')`, which
+            // Previously `$rows->only($order)->sortBy(...)->pluck('id')`, which
             // always produced an empty array — so this endpoint answered 200
             // and reordered nothing at all.
             //
@@ -481,12 +498,12 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])->prefix('assessments
 
         $edge = $data['edge'];
         $meta = EdgeResolver::meta($edge);
-        // W104: scoped to the route's assessment, as in reorder above.
+        // Scoped to the route's assessment, as in reorder above.
         $fromParent = EdgeResolver::findNodeIn($assessment->id, $data['from_parent_uuid']);
         $toParent = EdgeResolver::findNodeIn($assessment->id, $data['to_parent_uuid']);
         $child = EdgeResolver::findNodeIn($assessment->id, $data['child_uuid']);
 
-        // W121 (D82): findNodeIn() includes trashed rows, and a move touching
+        // findNodeIn() includes trashed rows, and a move touching
         // one is a link no screen shows, whose undo ReparentEdgeApplier refuses.
         if ($fromParent === null || $toParent === null || $child === null
             || $fromParent->trashed() || $toParent->trashed() || $child->trashed()) {
@@ -549,23 +566,22 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])->prefix('assessments
 });
 
 // ---------------------------------------------------------------------
-// W16 — Real-time collaboration (PLAN.md Phase 6, docs/specs/security.md
-// §8). Appended as its own block for the same reason the W13 block above
-// documents its own append: this package's ownership is "routes/web.php —
-// append only... do not edit or reorder existing routes or groups", and
-// other packages append concurrently.
+// Real-time collaboration (docs/specs/security.md §8, ui.md §6). Appended
+// as its own block for the same reason the Links-tab block above
+// documents its own append: this file is shared and blocks are appended
+// concurrently.
 //
 // POST /broadcasting/auth itself is registered in bootstrap/app.php
 // (->withBroadcasting()), not here — see that file's docblock for why it
 // could not be left to withRouting()'s own `channels:` shortcut.
 
-// Field-level locking (PLAN.md Phase 6 item 3, security.md). No table, no
+// Field-level locking (schema.md §3.15, security.md §8). No table, no
 // polling — LockController talks to Redis directly
 // (app/Domain/Locking/LockManager.php). `{assessment:uuid}`/`{node:uuid}`
-// match the W12/W13 groups' binding convention above; `{field}` is
+// match the node and link groups' binding convention above; `{field}` is
 // constrained to the same charset LockController's own allow-list uses, so
 // an obviously-invalid value 404s at the routing layer rather than reaching
-// the controller. `auth`+`active` up front, same reasoning as the W12 node-
+// the controller. `auth`+`active` up front, same reasoning as the node-
 // mutation group: AssessmentPolicy never grants `update` to a guest, so
 // this just turns that into a 401 instead of a 403.
 // security.md §9 default: "everything else authenticated: 300/min per
@@ -586,14 +602,12 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
     });
 
 // ---------------------------------------------------------------------
-// W17 — reports (PLAN.md Phase 7, docs/specs/ui.md §9). Appended as its own
-// block for the same reason every other package's block above documents
-// its own append: this package's file ownership is "routes/web.php —
-// append only... never edit or reorder existing lines", and other packages
-// append here too.
+// Reports (docs/specs/ui.md §9). Appended as its own
+// block for the same reason every other block above documents its own
+// append: this file is shared and blocks are appended concurrently.
 //
 // Deliberately outside the `auth` group and using the same `active`
-// middleware + `{assessment:uuid}` binding convention as the W12 read
+// middleware + `{assessment:uuid}` binding convention as the tree editor's read
 // route (assessments.show) just above `require __DIR__.'/auth.php'`: the
 // report is exactly as visible as the tree it reports on — a public
 // assessment or a valid share-link session both grant `view` with no
@@ -606,7 +620,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // AssessmentPolicy::view()'s is_public/share-token branches instead of
 // short-circuiting to false first.
 //
-// Two limiters (W110, D70): the page, re-requested by every option toggle,
+// Two limiters: the page, re-requested by every option toggle,
 // carries security.md §9's "Report views" (60/min per user, 10/min per
 // address for a guest); the exports below carry "Report generation: 10/min
 // per user". They shared the second until toggling an option a few times
@@ -619,7 +633,7 @@ Route::middleware(['active'])
         Route::get('/', [ReportController::class, 'show'])
             ->middleware('throttle:report-views')->name('show');
 
-        // W74 / D34 — the five formats behind the one export menu. Every one
+        // The five formats behind the one export menu. Every one
         // of them is a read of the same assembled report and carries
         // `throttle:reports`, not the page's `report-views`, because an
         // export is a report generation: exempting them would put the
@@ -628,11 +642,11 @@ Route::middleware(['active'])
         //
         // `defences.csv` and `export.json` keep their paths and their route
         // names. The CSV is the whole report now rather than the ranked
-        // defence list, but the URL is in e2e coverage this package does not
-        // own and in whatever has bookmarked it since W17.
+        // defence list, but the URL is in e2e coverage and in whatever has
+        // bookmarked it since reports first shipped.
         //
         // PDF is deliberately not a route here. It is the browser's own print
-        // pipeline (D6, not reopened) — no headless-Chromium sidecar, and
+        // pipeline (a settled choice) — no headless-Chromium sidecar, and
         // `dompdf` stays gone.
         Route::middleware('throttle:reports')->group(function () {
             Route::get('export.html', [ReportController::class, 'exportHtml'])->name('export-html');
@@ -644,27 +658,24 @@ Route::middleware(['active'])
     });
 
 // ---------------------------------------------------------------------
-// W19 — snapshots (PLAN.md Phase 8 item 3, schema.md §3.13). Appended as
-// its own block per this package's file ownership: "routes/web.php —
-// APPEND ONLY, in a single clearly-marked block at the very end. Never
-// edit or reorder an existing line."
+// Snapshots (schema.md §3.13). Appended as its own block at the end of
+// the file; existing lines are not edited or reordered.
 //
-// `{assessment:uuid}` matches every other package's binding convention
+// `{assessment:uuid}` matches the binding convention of the groups above
 // above; `{snapshot}` binds by numeric id — Snapshot carries no uuid
 // column (schema.md §3.13) — and is deliberately NOT declared
 // `{snapshot:uuid}` nor scoped via Route::scopeBindings() (Assessment has
 // no singular `snapshot()` relation for that mechanism to guess), so
 // SnapshotController re-asserts the cross-assessment ownership itself,
-// same IDOR pattern as the W12 node routes above.
+// same IDOR pattern as the node routes above.
 //
 // Read routes (index/show/diff) sit outside the `auth` group and use only
-// the `active` middleware, exactly like the W17 report routes just above:
+// the `active` middleware, exactly like the report routes just above:
 // a snapshot is exactly as visible as the tree it was taken from, and
 // `view` covers is_public and a valid share-link session with no account.
-// `store`/`destroy` require `update` (CLAUDE.md's W19 brief: "Creating and
-// deleting a snapshot needs `update`; viewing needs `view`") and sit inside
+// `store`/`destroy` require `update` (viewing needs only `view`) and sit inside
 // the `auth`+`active` group so an anonymous caller gets a clean 401 rather
-// than a policy-driven 403, matching the W12 mutation group's convention.
+// than a policy-driven 403, matching the node mutation group's convention.
 // ---------------------------------------------------------------------
 Route::middleware('active')
     ->prefix('assessments/{assessment:uuid}/snapshots')
@@ -686,26 +697,23 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
     });
 
 // ---------------------------------------------------------------------
-// W18 — comments + history (PLAN.md Phase 8 items 1-2, schema.md §3.8-3.9,
-// ui.md §7). Appended as its own block per this package's file ownership:
-// "routes/web.php — APPEND ONLY, in a single clearly-marked block at the
-// very end. Never edit or reorder an existing line." `use
+// Comments + history (schema.md §3.8-3.9, ui.md §7). Appended as its own
+// block; existing lines are not edited or reordered. `use
 // App\Http\Controllers\CommentController;` was inserted into the existing
-// alphabetised `use` block at the top, matching how every prior package
-// (W15/W17/W19's own controller imports) already did the same — the
-// established precedent for "append only" has always meant "do not touch
-// any other package's route registrations or their meaning", not
-// "literally the last byte of the file".
+// alphabetised `use` block at the top, as the earlier blocks' controller
+// imports were — "append only" means not touching other routes'
+// registrations or their meaning, not "literally the last byte of the
+// file".
 //
 // `{assessment:uuid}`/`{node:uuid}`/`{comment}` follow the same binding
 // convention as every group above: `{comment}` implicitly scopes to the
 // route's assessment via Laravel's guessed `Assessment::comments()`
-// relation (added by W6 — see app/Models/Assessment.php), the identical
+// relation (see app/Models/Assessment.php), the identical
 // IDOR-safe pattern NodeControllerTest documents for `{node:uuid}`.
 //
 // Read routes (listing comments, the unresolved-count map, listing a
 // node's revision history) sit outside `auth` and use only `active`,
-// matching the W17/W19 read-route convention: `view` is granted by
+// matching the report and snapshot read-route convention: `view` is granted by
 // is_public and a valid share-link session with no account, so gating
 // behind `auth` would be a narrower surface than AssessmentPolicy itself
 // grants. Every mutating comment route needs the assessment's `comment`
@@ -714,29 +722,28 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // `update`); AssessmentPolicy::comment() requires a non-null $user for
 // every branch (unlike `view`, is_public/token grant nothing here), so
 // these sit inside `auth`+`active` for a clean 401 rather than a
-// policy-driven 403, the same reasoning the W12/W16 mutation groups give.
+// policy-driven 403, the same reasoning the node-mutation and locking groups give.
 //
-// --- The node_revisions / "revert this field" gap — closed by W18b ---
-// The original W18 package found no writer of `node_revisions` anywhere in
+// --- The node_revisions / "revert this field" gap, since closed ---
+// This block originally found no writer of `node_revisions` anywhere in
 // the codebase (App\Domain\History\RevisionRecorder did not exist, and
 // NodeController::update() saved a node's fields without recording
-// anything) and, per CLAUDE.md's "stop and report — do not silently
-// diverge", implemented the list/revert endpoints as route closures rather
-// than reach into app/Domain/History/** or add a controller — paths it did
-// not own. It also left tests/Feature/History/NodeRevisionRevertTest.php
+// anything) and, rather than silently diverge from the specs,
+// implemented the list/revert endpoints as route closures rather
+// than reach into app/Domain/History/** or add a controller. It also left tests/Feature/History/NodeRevisionRevertTest.php
 // seeding node_revisions rows directly, exactly as any future writer would
 // leave them, so the list/group/revert mechanics were provably correct
 // independent of who populated the table.
 //
-// W18b (this package) is that follow-up: it built
+// A follow-up closed the gap: it built
 // App\Domain\History\RevisionRecorder (wired into NodeObserver::updated(),
 // which now writes a node_revisions row for every ordinary field save —
 // see that class's own docblock for why create/delete are deliberately
 // excluded), and moved these two closures into
 // App\Http\Controllers\NodeRevisionController plus
-// App\Domain\History\RevisionReverter (CLAUDE.md: "Business logic goes in
-// app/Domain/, not in controllers and never in views... Route closures are
-// worse than either"). NodeRevisionRevertTest's seeded-row tests are
+// App\Domain\History\RevisionReverter (business logic belongs in
+// app/Domain/, not in controllers or views, and route closures are worse
+// than either). NodeRevisionRevertTest's seeded-row tests are
 // unchanged and still pass — this only changes who else also writes rows,
 // not the list/revert contract they were written against.
 // ---------------------------------------------------------------------
@@ -780,7 +787,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // reverting a field ("reverting a field needs update") — a revert is a
 // real write to the node, gated exactly like NodeController::update()
 // gates any other one. Logic lives in NodeRevisionController and
-// App\Domain\History\RevisionReverter (W18b) — see that controller's own
+// App\Domain\History\RevisionReverter — see that controller's own
 // docblock for why this used to be two route closures.
 Route::middleware('active')
     ->prefix('assessments/{assessment:uuid}/nodes/{node:uuid}/revisions')
@@ -798,18 +805,16 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
         Route::post('{revision}/revert', [NodeRevisionController::class, 'revert'])->name('revert');
     });
 
-// W20 — templates + catalogue
+// Templates + catalogue
 // ---------------------------------------------------------------------
-// Templates and catalogue (schema.md §3.14, PLAN.md Phase 8 item 4).
-// Appended as its own block per this package's file ownership:
-// "routes/web.php — APPEND ONLY, in a single clearly-marked block at the
-// very end. Never edit or reorder an existing line."
+// Templates and catalogue (schema.md §3.14).
+// Appended as its own block at the end of the file; existing lines are
+// not edited or reordered.
 //
 // Catalogue browsing (`GET /catalog`) needs only an authenticated user
-// (CLAUDE.md's W20 brief: "browsing the catalogue needs an authenticated
-// user") — it is a global library, not scoped to any one assessment, so
+// (browsing the catalogue needs nothing more) — it is a global library, not scoped to any one assessment, so
 // it sits in `auth`+`active` for a clean 401 rather than a
-// policy-driven 403, matching the W12/W14/W19 mutation groups' own
+// policy-driven 403, matching the node, reorder and snapshot mutation groups' own
 // convention above. Inserting an entry into a specific assessment
 // (`POST .../catalog-entries/{catalogEntry}/insert`) additionally
 // requires `update` on that assessment, checked inside
@@ -819,7 +824,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // decision and this route sits inside `auth` only for the clean-401
 // reason above, not as the authorization boundary itself.
 //
-// `{assessment:uuid}` matches every other package's binding convention;
+// `{assessment:uuid}` matches the binding convention of the groups above;
 // `{catalogEntry}` binds by numeric id — CatalogEntry carries no uuid
 // column (schema.md §3.14) — matching SnapshotController's own
 // `{snapshot}` convention and its documented reason (Assessment has no
@@ -833,11 +838,11 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // `view` (owner, a shared role, is_public, or a valid share-link
 // session — the same audience `view` grants everywhere else), so it also
 // sits in `auth`+`active` for the clean-401 reason above even though
-// `view` itself would tolerate a guest, matching how the W12 node-mutate
+// `view` itself would tolerate a guest, matching how the node-mutate
 // group reasons about `update`/`delete` never being guest-reachable.
 // `POST /assessments/{assessment:uuid}/template` needs `saveAsTemplate`
 // — admin only — and copies the assessment into a new, ownerless template
-// (W141; through 2.6 `PATCH` flipped a flag on the assessment itself).
+// (through 2.6, `PATCH` flipped a flag on the assessment itself).
 // `POST /templates` and `DELETE /templates/{uuid}` create and erase one,
 // for admins.
 // `POST /templates/{assessment:uuid}/use` needs `view` on the source
@@ -860,7 +865,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     // 2.5.1: "add from template" in the editor — read-only, `useAsTemplate`.
     Route::get('templates/options', [TemplateController::class, 'options'])->name('templates.options');
     Route::get('templates/{assessment:uuid}/nodes', [TemplateController::class, 'nodes'])->name('templates.nodes');
-    // W141: templates are managed here and nowhere else, by any admin. Publishing
+    // Templates are managed here and nowhere else, by any admin. Publishing
     // an assessment copies it into a separate template; there is no route that
     // reads or clears a link back, because none exists.
     Route::post('templates', [TemplateController::class, 'create'])->name('templates.create');
@@ -868,14 +873,13 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     Route::post('assessments/{assessment:uuid}/template', [TemplateController::class, 'publish'])->name('assessments.template.publish');
 });
 
-// W21 — external references
+// External references
 // ---------------------------------------------------------------------
-// CVE and friends (schema.md §3.12, ui.md §7's References tab, PLAN.md
-// Phase 8 item 5). Appended as its own block per this package's file
-// ownership: "routes/web.php is shared: append only, in a single clearly
-// marked block at the end. Do not touch or reorder existing routes."
+// CVE and friends (schema.md §3.12, ui.md §7's References tab).
+// Appended as its own block at the end of the file; existing routes are
+// not touched or reordered.
 //
-// `{assessment:uuid}/nodes/{node:uuid}/references` matches the W18/W18b
+// `{assessment:uuid}/nodes/{node:uuid}/references` matches the
 // comments-and-revisions nesting convention exactly: `{node:uuid}` scopes
 // through `Assessment::nodes()` via Laravel's implicit route-model-binding
 // scoping, and `ReferenceController`/its FormRequests additionally assert
@@ -917,15 +921,14 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
         Route::delete('{reference}', [ReferenceController::class, 'destroy'])->name('destroy');
     });
 
-// W23 — help + docs
+// Help + docs
 // ---------------------------------------------------------------------
-// Markdown help pages (PLAN.md Phase 9 item 2, resources/markdown/help/**).
-// Appended as its own block per this package's file ownership:
-// "routes/web.php is shared: append only, in a single clearly-marked block
-// at the end. Do not touch or reorder existing routes."
+// Markdown help pages (resources/markdown/help/**).
+// Appended as its own block at the end of the file; existing routes are
+// not touched or reordered.
 //
 // Deliberately outside the `auth` group and using only the `active`
-// middleware, matching the W17/W19/W21 read-route convention above: help
+// middleware, matching the report, snapshot and reference read-route convention above: help
 // is general product documentation, not assessment data, so a facilitator
 // running a public workshop or a guest reading a shared assessment through
 // a read-only link (both of whom may have no account at all) can reach it
@@ -943,13 +946,13 @@ Route::middleware('active')->prefix('help')->name('help.')->group(function () {
     Route::get('{slug}', [HelpController::class, 'show'])->name('show');
 });
 
-// W26 — assessment lifecycle: list, create, delete
+// Assessment lifecycle: list, create, delete
 // ---------------------------------------------------------------------
 // The application shipped without any of these. Every other assessment
 // route is `assessments/{assessment}/...`, so nothing could produce the
 // assessment they all presuppose: a fresh deployment reached first-run
-// setup, logged in, and then had no way to create anything. docs/PLAN.md
-// never assigned this to a package — it fell between W8, W9 and W12.
+// setup, logged in, and then had no way to create anything. It fell between
+// the admin, sharing and tree-editor work.
 //
 // `index` and `store` take no {assessment}, so there is no subject for
 // AssessmentPolicy to authorize: `auth`+`active` is the boundary, and the
@@ -957,8 +960,7 @@ Route::middleware('active')->prefix('help')->name('help.')->group(function () {
 // than filtering after the fact. `destroy` does have a subject and goes
 // through the policy's `delete` ability like everything else.
 //
-// Appended as its own block, per the convention every package here
-// follows for this shared file.
+// Appended as its own block.
 // security.md §9 default: "everything else authenticated: 300/min per
 // user".
 Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function () {
@@ -967,14 +969,14 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
     Route::delete('assessments/{assessment:uuid}', [AssessmentLifecycleController::class, 'destroy'])
         ->name('assessments.destroy');
 
-    // W42 item 20. Gated on `view`, not `manage`: duplicating clones into
+    // Duplicate. Gated on `view`, not `manage`: duplicating clones into
     // the actor's own ownership and touches nothing in the source, which is
-    // exactly the reasoning `templates.use` already follows (W20) — anyone
+    // exactly the reasoning `templates.use` already follows — anyone
     // who can read a thing can build their own private copy of it.
     Route::post('assessments/{assessment:uuid}/duplicate', [AssessmentLifecycleController::class, 'duplicate'])
         ->name('assessments.duplicate');
 
-    // W113: back from *Deleted*, or out of it for good. `withTrashed()` is
+    // Restore and erase: back from *Deleted*, or out of it for good. `withTrashed()` is
     // what lets the binding find a deleted assessment at all; the controller
     // answers 404 for a live one, after the policy (`delete` to restore,
     // `forceDelete` to erase).
@@ -986,13 +988,12 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])->group(function 
         ->name('assessments.erase');
 });
 
-// W43 labels (item 18). Appended as its own block, per the convention every
-// package here follows for this shared file.
+// Labels (ui.md §7). Appended as its own block.
 //
 // security.md §9: "Node and link mutations: 120/min per user" — labelling a
 // node is a node mutation and belongs in that bucket, not in the 300/min
 // default. Asserted by value in tests/Feature/Security, because a group
-// whose limiter merely *starts with* `throttle` is not a guard (CLAUDE.md).
+// whose limiter merely *starts with* `throttle` is not a guard.
 Route::middleware(['auth', 'active', 'throttle:mutations'])
     ->prefix('assessments/{assessment:uuid}')
     ->name('assessments.')
@@ -1001,8 +1002,7 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])
         Route::delete('nodes/{node:uuid}/tags/{tag}', [TagController::class, 'destroy'])->name('nodes.tags.destroy');
     });
 
-// W44 assessment settings (item 12). Appended as its own block, per the
-// convention every package here follows for this shared file.
+// Assessment settings (ui.md §8). Appended as its own block.
 //
 // Gated on `manage` inside the controller and the FormRequest rather than by
 // the middleware: these change what every figure in the assessment means, so
@@ -1017,18 +1017,17 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
         Route::patch('settings', [AssessmentSettingsController::class, 'update'])->name('settings.update');
     });
 
-// W46 assignees (item 16). Appended as its own block, per the convention
-// every package here follows for this shared file.
+// Assignees (security.md §3.1b). Appended as its own block.
 //
 // security.md §9: "Node and link mutations: 120/min per user". Assigning is a
 // node mutation and belongs in that bucket, not in the 300/min default.
 // Asserted by value in tests/Feature/Security, because a group whose limiter
-// merely *starts with* `throttle` is not a guard (CLAUDE.md).
+// merely *starts with* `throttle` is not a guard.
 //
 // Every route is gated inside AssignmentController: `view` to read the list,
 // `update` to change it, and `manage` — additionally — for the one path that
 // would share the assessment with someone new. That last split is the whole
-// authorization content of this package; see the controller's docblock for
+// authorization content of this block; see the controller's docblock for
 // why an editor must not reach it.
 Route::middleware(['auth', 'active', 'throttle:mutations'])
     ->prefix('assessments/{assessment:uuid}')
@@ -1040,8 +1039,7 @@ Route::middleware(['auth', 'active', 'throttle:mutations'])
         Route::delete('nodes/{node:uuid}/assignees/{user}', [AssignmentController::class, 'destroy'])->name('nodes.assignees.destroy');
     });
 
-// W47 notifications (item 15). Appended as its own block, per the convention
-// every package here follows for this shared file.
+// Notifications (security.md §3.1c). Appended as its own block.
 //
 // No assessment in the route and so nothing for AssessmentPolicy to decide:
 // every query is scoped to `$request->user()->notifications()`, which answers
@@ -1059,16 +1057,15 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
         Route::patch('{notification}', [NotificationController::class, 'markRead'])->name('read');
     });
 
-// W48 history (item 21). Appended as its own block, per the convention every
-// package here follows for this shared file.
+// History. Appended as its own block.
 //
 // `view`, gated in the controller — history is the record of what was done to
 // something you can already read, and gating it higher would let a viewer see
 // today's numbers but not how they got there, which is the opposite of what a
 // defensible assessment is for.
 //
-// There is no revert route. D15 specifies one; the audit this package's brief
-// required found that several mutations reach the graph without writing a
+// There is no revert route. The original design specified one; the audit
+// of history coverage found that several mutations reach the graph without writing a
 // revision — a defence's strength among them — so a reconstruction would
 // produce an assessment that looks restored and is quietly wrong. The findings
 // are pinned in tests/Feature/History/RevisionCoverageTest.php.
@@ -1081,10 +1078,9 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
         Route::post('history/versions', [AssessmentHistoryController::class, 'store'])->name('history.versions.store');
     });
 
-// W50 — the assistant runtime (PLAN-2.3-ai.md). Appended as its own block, per
-// the convention every package here follows for this shared file.
+// The assistant runtime (docs/ASSISTANT.md). Appended as its own block.
 //
-// **`assistant` is the point of this block.** D25: a deployment with no
+// **`assistant` is the point of this block.** A deployment with no
 // inference runtime does not serve a disabled assistant endpoint, it serves no
 // assistant endpoint — so the feature 404s for someone who read about it
 // elsewhere and tried the URL. The middleware answers that from config alone,
@@ -1099,15 +1095,15 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // which the controller consults.
 //
 // `throttle:authenticated` is security.md §9's default bucket. The tighter
-// per-user limit the generating routes need arrives with W52, which is the
-// first package that can exhaust a CPU; asking for a status is not that.
+// per-user limit the generating routes need arrives with the generating routes below, which can
+// exhaust a CPU; asking for a status cannot.
 Route::middleware(['auth', 'active', 'assistant', 'throttle:authenticated'])
     ->prefix('assistant')
     ->name('assistant.')
     ->group(function () {
         Route::get('status', AssistantStatusController::class)->name('status');
 
-        // W51 — job A. `throttle:assistant` (6/min per user) stacks on the
+        // Job A. `throttle:assistant` (6/min per user) stacks on the
         // group's default and binds first; it is a named limiter, so it is a
         // genuinely separate bucket rather than double-counting the same one.
         //
@@ -1119,7 +1115,7 @@ Route::middleware(['auth', 'active', 'assistant', 'throttle:authenticated'])
             ->name('help');
     });
 
-// W52 — job B. Assessment-scoped, so it lives on the assessment prefix rather
+// Job B. Assessment-scoped, so it lives on the assessment prefix rather
 // than the flat /assistant one: SuggestChildrenRequest runs AssessmentPolicy
 // like every other route touching an assessment, and the parent uuid is
 // checked against *this* assessment so the endpoint cannot be used to read one
@@ -1135,10 +1131,10 @@ Route::middleware(['auth', 'active', 'assistant', 'throttle:assistant'])
         Route::post('suggestions', AssistantSuggestionController::class)->name('suggestions');
     });
 
-// W54 — job C, the drafted executive summary (PLAN-2.3-ai.md). Appended as its
+// Job C, the drafted executive summary (docs/ASSISTANT.md). Appended as its
 // own block, per the append-only rule every block above follows.
 //
-// **Two groups, and the split is the package's main deployment decision.**
+// **Two groups, and the split is this block's main deployment decision.**
 //
 // The drafting route is assistant-gated like job A and B: `assistant` (this
 // deployment has a runtime at all), `throttle:assistant` (6/min per user), and
@@ -1149,7 +1145,7 @@ Route::middleware(['auth', 'active', 'assistant', 'throttle:assistant'])
 // The narrative routes are not gated on anything assistant-related. The
 // report's written summary is an ordinary field of the assessment that a
 // person types; the overwhelming majority of deployments have no inference
-// runtime (D25) and must still be able to write, edit and clear it. Putting
+// runtime and must still be able to write, edit and clear it. Putting
 // these behind the `assistant` middleware would have made a plain text field
 // disappear on every instance that never wanted an assistant.
 Route::middleware(['auth', 'active', 'assistant', 'throttle:assistant'])
@@ -1167,7 +1163,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
         Route::delete('draft', [SummaryNarrativeController::class, 'destroyDraft'])->name('draft.destroy');
     });
 
-// W58 — progress and cancellation. Appended as its own block, per the
+// Progress and cancellation. Appended as its own block, per the
 // append-only rule every block above follows.
 //
 // **`throttle:authenticated`, not `throttle:assistant`, and that is the
@@ -1179,7 +1175,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
 // notice the difference.
 //
 // Still behind `assistant`: a deployment with no runtime has no generation to
-// report on, and D25's "no assistant route exists at all" holds for these too.
+// report on, and the rule that "no assistant route exists at all" holds for these too.
 Route::middleware(['auth', 'active', 'assistant', 'throttle:authenticated'])
     ->prefix('assistant')
     ->name('assistant.')
@@ -1197,10 +1193,10 @@ Route::middleware(['auth', 'active', 'assistant', 'throttle:authenticated'])
     });
 
 // ---------------------------------------------------------------------
-// W61 — snapshot restore. Appended as its own block, per the append-only
+// Snapshot restore. Appended as its own block, per the append-only
 // rule every block above follows.
 //
-// The route W48 pinned as missing: `assessments.snapshots.restore`, asserted
+// The route the history-coverage test pinned as missing: `assessments.snapshots.restore`, asserted
 // by name in tests/Feature/History/RevisionCoverageTest.php so that building
 // it turns that pin red rather than letting it be forgotten.
 //
@@ -1221,7 +1217,7 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
     });
 
 // ---------------------------------------------------------------------
-// W63 — browsing a frozen version. Appended as its own block, per the
+// Browsing a frozen version. Appended as its own block, per the
 // append-only rule every block above follows.
 //
 // `active` and not `auth`, matching the read group `show` and `index` live
@@ -1240,7 +1236,7 @@ Route::middleware('active')
     });
 
 // ---------------------------------------------------------------------
-// W65 — the scale calibration screen. Appended as its own block, per the
+// The scale calibration screen. Appended as its own block, per the
 // append-only rule every block above follows.
 //
 // `manage`, and for once the spec says so outright rather than leaving it
@@ -1260,11 +1256,11 @@ Route::middleware(['auth', 'active', 'throttle:authenticated'])
     ->prefix('assessments/{assessment:uuid}/scales')
     ->name('assessments.scales.')
     ->group(function () {
-        // W87, D46: the GET that rendered `Scales/Calibrate` is **gone**, not
+        // The GET that rendered `Scales/Calibrate` is **gone**, not
         // merely unlinked. The three cards now live on Assessment settings,
         // and a screen that still answers its URL after its entry points are
         // removed is how a second, divergent editor survives a consolidation.
-        // W126, D94: one request saves all three kinds, all or nothing. The
+        // One request saves all three kinds, all or nothing. The
         // per-kind routes and "Reset to default" are gone: choosing a scale in
         // the settings dropdown is how defaults are applied.
         Route::put('', [ScaleCalibrationController::class, 'update'])->name('update');

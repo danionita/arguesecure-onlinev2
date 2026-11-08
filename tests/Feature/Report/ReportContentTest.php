@@ -16,7 +16,7 @@ use Inertia\Testing\AssertableInertia as Assert;
  * strength resolving to 0.65) are entered here as their already-resolved
  * quantitative numbers instead of through a custom scale, since the report
  * layer never re-derives a scale resolution either — RiskCalculatorTest
- * (tests/Unit/Calculation, W7) is the place that exercises the qualitative
+ * (tests/Unit/Calculation) is the place that exercises the qualitative
  * path itself.
  *
  * Rows/risks are created and linked in the same order the worked example

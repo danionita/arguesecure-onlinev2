@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Help index (PLAN.md Phase 9 item 2, W23). Reachable without an account
- * (see routes/web.php's W23 block), so the chrome depends on who is reading:
+ * Help index (ui.md §2, Navigation). Reachable without an account
+ * (see the public help routes in routes/web.php), so the chrome depends on who is reading:
  * the sidebar for someone signed in, a small standalone header for a guest —
  * `HelpShell.vue` makes that choice for both help pages.
  */
@@ -17,10 +17,12 @@ interface HelpPageSummary {
 defineProps<{
     pages: HelpPageSummary[];
     /**
-     * W51. Always unavailable for a guest — this page is reachable without an
+     * Always unavailable for a guest — this page is reachable without an
      * account, the generating endpoint behind the control is not.
      */
     assistant: { available: boolean; reason: string | null };
+    /** Administrators get a link to their own help. */
+    adminHelp?: boolean;
 }>();
 </script>
 
@@ -38,7 +40,7 @@ defineProps<{
             <!--
                 One action, at the top of the page where someone is already
                 looking for an answer. Not a floating button and not a chat
-                bubble: PLAN-2.3-ai.md is explicit that the assistant appears
+                bubble: docs/ASSISTANT.md §3 is explicit that the assistant appears
                 where it helps and nowhere else.
             -->
             <AskAssistant
@@ -56,6 +58,14 @@ defineProps<{
                     </Link>
                 </li>
             </ul>
+
+            <p v-if="adminHelp" class="mt-6 text-sm">
+                <Link
+                    :href="route('admin.help.index')"
+                    class="text-text-secondary hover:text-text-primary underline"
+                    >Administrator help</Link
+                >
+            </p>
         </div>
     </HelpShell>
 </template>

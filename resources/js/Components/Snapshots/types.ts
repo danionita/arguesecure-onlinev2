@@ -1,6 +1,6 @@
 /**
  * Mirrors app/Http/Controllers/SnapshotController.php's Inertia props
- * byte-for-byte (PLAN.md Phase 8 item 3, schema.md §3.13). `results` reuses
+ * byte-for-byte (schema.md §3.13). `results` reuses
  * the existing engine-mirror type from resources/js/calc — the same
  * CalculationResults shape RiskCalculator produces server-side, since a
  * snapshot's `results` column is that exact object frozen, never
@@ -11,13 +11,13 @@ import type { CalculationResults } from '@/calc';
 export interface SnapshotSummary {
     id: number;
     name: string;
-    /** The `snapshots.graph` format this one was written in. 2 and above carry labels (W62). */
+    /** The `snapshots.graph` format this one was written in. 2 and above carry labels. */
     schemaVersion: number;
     createdBy: string | null;
     createdAt: string | null;
 }
 
-/** A label as it looked when the snapshot was taken — by value, never by id (W62). */
+/** A label as it looked when the snapshot was taken — by value, never by id. */
 export interface CanonicalTag {
     name: string;
     slug: string;

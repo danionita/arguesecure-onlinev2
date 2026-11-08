@@ -1,5 +1,5 @@
 /**
- * W71 item 1: "the Details tab sometimes does not load".
+ * "The Details tab sometimes does not load".
  *
  * Two candidates were named, both real, and each gets its own reproduction
  * here because the fix for one does nothing for the other:
@@ -52,7 +52,10 @@ let wrapper: VueWrapper | null = null;
 
 function render(store: AssessmentStore, stubs: Record<string, unknown>): void {
     wrapper = mount(NodeModal, {
-        global: { provide: { [ASSESSMENT_STORE_KEY as symbol]: store }, stubs },
+        global: {
+            provide: { [ASSESSMENT_STORE_KEY as symbol]: store },
+            stubs: stubs as never,
+        },
     });
 }
 
@@ -77,11 +80,11 @@ function tabNamed(label: string): HTMLElement | undefined {
 }
 
 beforeEach(() => {
-    // W88: the Details tab now builds the assistant's ask-and-accept flow in
+    // The Details tab now builds the assistant's ask-and-accept flow in
     // setup, and useGenerationProgress resolves its two URLs there — so
     // mounting the modal at all needs Ziggy's global. Stubbed rather than
     // routed: nothing in this file presses the button.
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => '/' + name);
     useNodeModal().close();
     window.history.replaceState(null, '', '/assessments/abc');
@@ -177,7 +180,7 @@ describe('the type is an icon beside the title, not a chip by Delete (item 24)',
         ).toBe(true);
     });
 
-    it('leaves Delete in the actions group W37 put it in', () => {
+    it('leaves Delete in the actions group it was put in', () => {
         useNodeModal().open('mfa');
         render(makeComputedStore(), {});
 

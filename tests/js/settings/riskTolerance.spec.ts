@@ -1,5 +1,5 @@
 /**
- * The risk tolerance where a reader meets it (W44, item 12).
+ * The risk tolerance where a reader meets it: the badge and the chart line.
  *
  * Two surfaces, one rule: it is a comparison, never a verdict. The badge and
  * the chart line both state where a threshold someone chose sits relative to
@@ -24,7 +24,7 @@ const BLOCKS = [
 
 function chart(riskTolerance: number | null) {
     return mount(BaselineBarChart, {
-        props: { blocks: BLOCKS, currency: 'EUR', riskTolerance },
+        props: { blocks: BLOCKS as never, currency: 'EUR', riskTolerance },
     });
 }
 

@@ -3,8 +3,8 @@
 use App\Domain\Help\MarkdownRenderer;
 
 /*
- * W23 brief: "If you add a renderer, a test that a script tag or
- * `javascript:` URL in markdown does not survive rendering." Help content
+ * The requirement for the help pages: if there is a renderer, a test must show that a
+ * script tag or `javascript:` URL in markdown does not survive rendering. Help content
  * is authored by whoever owns this repository today, but
  * MarkdownRenderer's own docblock is explicit that the config is set so
  * this stays true "if help is ever made user-editable" — these assertions

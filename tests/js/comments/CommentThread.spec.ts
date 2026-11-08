@@ -6,7 +6,7 @@ import type { Comment } from '../../../resources/js/Components/Comments/types';
 import { useToast } from '../../../resources/js/Components/UI/useToast';
 
 /**
- * W119: CommentThread wires CommentItem events to the right comment id and
+ * CommentThread wires CommentItem events to the right comment id and
  * request. The risk is a reply's edit/delete being sent for its parent (or
  * the reverse), a failed request vanishing silently, and a viewer who may not
  * comment being shown a posting form.

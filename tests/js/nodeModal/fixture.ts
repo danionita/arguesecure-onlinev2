@@ -1,8 +1,8 @@
 /**
  * One assessment, built so the Statistics tab has something to be wrong
- * about (W39).
+ * about.
  *
- * The shape is chosen for the three cases the plan named and the two the
+ * The shape is chosen for the three cases the statistics tab must tell apart and the two the
  * engine draws distinctions over:
  *
  * - **MFA** — implemented and priced. Has an `mc` in current and target, an

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Refuses every assistant route on a deployment that has no inference runtime
- * (PLAN-2.3-ai.md D25).
+ * (docs/ASSISTANT.md).
  *
  * **404, not 403.** The difference is the whole point: 403 says "this exists
  * and you may not have it", which is false and invites someone to go looking
@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  * any test can set the config value it branches on, so "the route is absent
  * when unconfigured" and "the route is present when configured" cannot both
  * be exercised in one run. A guard that cannot be tested — and cannot be
- * mutation-tested — is exactly what CLAUDE.md's "a presence assertion is not a
+ * mutation-tested — is exactly what the rule "a presence assertion is not a
  * guard" warns about, and this project has already been bitten once by a
  * security check that no test could see.
  *

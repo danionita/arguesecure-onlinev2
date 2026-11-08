@@ -1,5 +1,5 @@
 /**
- * D39 — the report keeps the sidebar for an authenticated user and renders
+ * The report keeps the sidebar for an authenticated user and renders
  * bare for a share-link guest, chosen on whether `auth()->user()` exists.
  * `Pages/Report/Show.vue`'s file header explains why: that layout requires
  * a `{name,email}` user, and the report's audience includes anonymous
@@ -7,12 +7,12 @@
  *
  * Both branches are asserted here by the presence/absence of the sidebar's
  * own landmark (`nav[aria-label="Main"]`, `Components/Nav/Sidebar.vue`) —
- * the brief calls out the guest path as "the one that will be forgotten...
+ * the guest path is "the one that will be forgotten...
  * invisible until a share link is opened by someone outside the
  * organisation," so it gets its own assertion rather than being inferred
  * from something else passing.
  *
- * The same branch governs `AssessmentActions` (D40): mounted for an
+ * The same branch governs `AssessmentActions`: mounted for an
  * authenticated viewer, not mounted at all for a guest. See Show.vue's file
  * header for why — `History` has no ability gate and sits behind `auth`
  * middleware, so offering it to a guest would be a broken link, not a
@@ -21,6 +21,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import type { ReportData } from '../../../resources/js/Components/Report/types';
+import { routeProperties } from '../support/routeProperties';
 
 let mockUser: { id: number; name: string; email: string } | null = null;
 
@@ -130,7 +131,12 @@ function report(): ReportData {
         transfers: [],
         controlCoverage: { frameworks: [], hiddenShelved: 0 },
         tree: { risks: [], orphanAttacks: [], orphanDefences: [] },
-        appendices: { references: [], comments: [], warnings: [] },
+        appendices: {
+            references: [],
+            comments: [],
+            warnings: [],
+            warningsOmitted: 0,
+        },
     };
 }
 
@@ -145,13 +151,13 @@ async function mountReport() {
             report: report(),
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { SummaryNarrative: true, teleport: true },
         },
     });
 }
 
-describe('D39 — the report chrome by auth state', () => {
+describe('the report chrome by auth state', () => {
     it('renders the sidebar landmark for an authenticated user', async () => {
         mockUser = { id: 1, name: 'Dana', email: 'dana@example.com' };
         const wrapper = await mountReport();
@@ -173,7 +179,7 @@ describe('D39 — the report chrome by auth state', () => {
         expect(
             wrapper.find('[data-testid="assessment-actions"]').exists(),
         ).toBe(true);
-        // History has no ability gate anywhere it is rendered (D41) — it is
+        // History has no ability gate anywhere it is rendered — it is
         // reachable for the authenticated viewer this bar was mounted for.
         expect(wrapper.text()).toContain('History');
     });

@@ -1,5 +1,5 @@
 /**
- * What the recursive chart nodes need from the view that owns them (W32):
+ * What the recursive chart nodes need from the view that owns them:
  * where each occurrence sits, and which one the reader has selected.
  *
  * Provided rather than prop-drilled for the same reason the editor view is:

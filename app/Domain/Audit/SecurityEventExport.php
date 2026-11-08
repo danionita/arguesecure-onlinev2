@@ -6,14 +6,14 @@ use App\Models\SecurityEventRecord;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Selects and renders the stored security event log for download (W128).
+ * Selects and renders the stored security event log for download.
  *
  * The filters are validated against {@see SecurityEvent} by the request
  * before they reach here; nothing from the request names a column.
  */
 final class SecurityEventExport
 {
-    /** Rows in one download (D99). */
+    /** Rows in one download. */
     public const MAX_ROWS = 50_000;
 
     public const COLUMNS = [

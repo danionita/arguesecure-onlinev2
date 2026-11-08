@@ -1,5 +1,5 @@
 /**
- * Labels on the Details tab (W43, item 18).
+ * Labels on the Details tab.
  *
  * `TagEditor.spec.ts` covers the field's own behaviour against props. These
  * cover the wiring: that the tab shows the node's labels, offers the

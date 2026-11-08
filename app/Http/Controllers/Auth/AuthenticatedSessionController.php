@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Domain\Accounts\InstanceSettings;
+use App\Domain\Accounts\SelfRegistration;
 use App\Domain\Identity\Oidc\OidcConfig;
 use App\Domain\Identity\TwoFactor\PendingLogin;
+use App\Domain\Mail\PasswordResets;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
@@ -19,7 +21,7 @@ class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view — or the one-time first-run setup screen if
-     * no account exists yet (security.md §4, PLAN.md Phase 3 item 2).
+     * no account exists yet (security.md §4).
      */
     public function create(): Response|RedirectResponse
     {
@@ -29,7 +31,10 @@ class AuthenticatedSessionController extends Controller
 
         return Inertia::render('Auth/Login', [
             'status' => session('status'),
-            // W117: the "Sign in with ..." link, when a provider is configured.
+            // "Forgot password?" exists only while mail is on.
+            'canReset' => PasswordResets::available(),
+            'canRegister' => SelfRegistration::enabled(),
+            // The "Sign in with ..." link, when a provider is configured.
             'sso' => OidcConfig::enabled()
                 ? ['label' => OidcConfig::buttonLabel(), 'url' => route('oidc.redirect'), 'only' => InstanceSettings::ssoOnly()]
                 : null,
@@ -58,7 +63,7 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        // W116 (D77): a correct password is only the first step for an account
+        // A correct password is only the first step for an account
         // with a second factor. LoginRequest has already logged it in (and
         // queued the remember-me cookie it asked for), so undo both before
         // anything is sent: logout() unqueues that cookie and cycles the
@@ -68,7 +73,7 @@ class AuthenticatedSessionController extends Controller
         // ride on an id a third party could have planted.
         if (Auth::user()->hasTwoFactorEnabled()) {
             $userId = Auth::id();
-            $remember = $request->boolean('remember');
+            $remember = $request->boolean('remember') && ! Auth::user()->is_admin;
 
             Auth::guard('web')->logout();
 

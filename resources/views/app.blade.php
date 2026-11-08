@@ -6,7 +6,14 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-        {{-- W41: the theme, before the first paint.
+        {{-- The brand's icons, all self-hosted in public/. The SVG is the
+             mark on an ink tile, so it reads on light and dark browser chrome;
+             the .ico is the fallback for browsers that skip SVG icons. --}}
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="icon" href="/favicon.ico" sizes="32x32">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+        {{-- The theme, before the first paint.
 
              Everything else about the theme lives in
              resources/js/Components/UI/useTheme.ts, but no module script can

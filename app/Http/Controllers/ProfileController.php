@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Accounts\InstanceSettings;
 use App\Domain\Accounts\SessionRegistry;
 use App\Domain\Identity\TwoFactor\Enrolment;
+use App\Domain\Mail\NotificationMail;
 use App\Http\Controllers\Auth\OidcController;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -33,11 +34,48 @@ class ProfileController extends Controller
             'status' => session('status'),
             'sessions' => SessionRegistry::forUser($user->id, $request->session()->getId()),
             'ownedAssessmentCount' => $user->ownedAssessments()->count(),
-            // W116: the two-factor panel. `recoveryCodes` is flashed by the
+            // The two-factor panel. `recoveryCodes` is flashed by the
             // action that made them and is on the page exactly once.
             'twoFactor' => $enrolment->panel($user, $request->session()),
             'recoveryCodes' => session('recoveryCodes'),
+            // Only the kinds the administrator has allowed to be mailed.
+            'mailNotifications' => collect(NotificationMail::KINDS)
+                ->filter(fn (array $d, string $kind) => NotificationMail::kindAllowed($kind))
+                ->map(fn (array $d, string $kind) => ['kind' => $kind, 'label' => $d['label'], 'on' => NotificationMail::wants($user, $kind)])
+                ->values()
+                ->all(),
         ]);
+    }
+
+    /** Which of the allowed kinds this person wants by email. */
+    public function updateMailNotifications(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'kinds' => ['required', 'array'],
+            'kinds.*' => ['boolean'],
+        ]);
+
+        $user = $request->user();
+        // Only the kinds the page offered (the ones allowed now) are changed.
+        // A kind an administrator has not allowed is left as it is, so
+        // switching it on later does not find people opted out of mail they
+        // never declined.
+        $off = collect($user->mail_notifications_off ?? []);
+
+        foreach (array_keys(NotificationMail::KINDS) as $kind) {
+            if (! NotificationMail::kindAllowed($kind)) {
+                continue;
+            }
+
+            $off = (bool) ($validated['kinds'][$kind] ?? false)
+                ? $off->reject(fn (string $k) => $k === $kind)
+                : $off->push($kind);
+        }
+
+        $user->mail_notifications_off = $off->unique()->values()->all();
+        $user->save();
+
+        return back();
     }
 
     /**
@@ -50,12 +88,10 @@ class ProfileController extends Controller
 
         // security.md §4: "Changing an email requires the current
         // password." ProfileUpdateRequest (the Breeze scaffold this
-        // controller extends) is outside this package's file ownership
-        // (app/Http/Requests/Auth/** and .../Admin/** are owned, but not
-        // the bare app/Http/Requests/ path it lives in), so the extra
+        // controller extends) does not carry that rule, so the extra
         // check is added here inline rather than in that request class —
-        // reported as a gap in the W8 report.
-        // W117 (D79): in SSO-only mode a non-admin has no password to give, so
+        // a known gap in that request class.
+        // In SSO-only mode a non-admin has no password to give, so
         // an email change asks for a provider sign-in within the last five
         // minutes instead, sending them to the provider if there is none.
         if ($emailChanging && InstanceSettings::ssoOnly() && ! $user->is_admin) {

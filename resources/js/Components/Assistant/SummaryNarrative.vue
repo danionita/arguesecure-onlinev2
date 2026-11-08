@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * The report's written executive summary, and job C's draft (W54).
+ * The report's written executive summary, and job C's draft.
  *
  * ## Three states, and only one of them involves a model
  *
  * The narrative is an ordinary field. Somebody types a few paragraphs at the
  * top of their report and that is the whole feature on the great majority of
- * deployments, which have no inference runtime at all (D25). The Draft action
+ * deployments, which have no inference runtime at all (docs/ASSISTANT.md §1). The Draft action
  * appears only where one exists; nothing else on this component changes.
  *
  * ## A draft is never the document
@@ -21,7 +21,7 @@
  * every direct instruction to misbehave, and one of three candidates carried a
  * planted string into the summary prose. Job C's output is attributed to the
  * author and read by a client. **The person reading the draft is the
- * guardrail** (D24); everything else is behind them.
+ * guardrail** (docs/ASSISTANT.md §6); everything else is behind them.
  *
  * ## Text, never markup
  *
@@ -117,7 +117,7 @@ async function discardDraft() {
 }
 
 /**
- * W58. Job C runs on a queue for minutes — 249 seconds for 73 nodes, measured
+ * Job C runs on a queue for minutes — 249 seconds for 73 nodes, measured
  * — so between pressing Draft and the notification arriving there was nothing
  * on screen at all. This polls the assessment's generation, which is the right
  * scope: the draft belongs to the assessment, so a collaborator who did not
@@ -211,9 +211,9 @@ function messageFrom(e: unknown): string | null {
     >
         <div class="flex items-baseline justify-between gap-4">
             <!--
-                "Written summary", not "Executive summary" (W67). The report
+                "Written summary", not "Executive summary". The report
                 already has a section by that name — ExecutiveSummarySection,
-                the three baseline figures, which PLAN.md Phase 7 §2 names — and
+                the three baseline figures, which the report spec names — and
                 two sibling sections carrying the same accessible name give a
                 reader navigating by heading the same label twice with no way
                 to tell which is which. Found by the end-to-end run, as a strict
@@ -343,7 +343,7 @@ function messageFrom(e: unknown): string | null {
             </div>
         </div>
 
-        <!-- W58. Between "Drafting" and the notification there used to be
+        <!-- Between "Drafting" and the notification there used to be
              nothing on screen for four minutes. `no-print`: a running
              generation is not part of the document. -->
         <div v-if="inFlight" class="no-print mt-3">

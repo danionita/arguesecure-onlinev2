@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Admin-defined scales (W126, D92-D94): create, save, rename, delete.
+ * Admin-defined scales: create, save, rename, delete.
  *
  * Authorization first, as for every route: each write is refused to a
- * non-admin and to an anonymous caller. Then the rules of the plan
- * (docs/PLAN-2.7-scales.md), one test per acceptance criterion.
+ * non-admin and to an anonymous caller. Then the rules for admin-defined
+ * scales, one test per acceptance criterion.
  */
 
 use App\Domain\Retention\AssessmentEraser;

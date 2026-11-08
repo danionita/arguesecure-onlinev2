@@ -1,19 +1,19 @@
 /**
- * Full-text search over the report (W83, ui.md §9 "Search, options, zoom").
+ * Full-text search over the report (ui.md §9 "Search, options, zoom").
  *
  * `useSearch.ts` (ui.md §5) does this job for the editor, but it is typed
  * `useSearch(store: AssessmentStore)` and walks `store.nodes` — the editor's
  * live, mutable graph. The report has no store: it is a server-computed
  * document (`ReportData`, assembled once by `ReportBuilder` and handed down
- * as an Inertia prop), and CLAUDE.md is explicit that nothing here may
- * re-derive an engine figure client-side. Constructing a full `AssessmentStore`
+ * as an Inertia prop), and nothing here may re-derive an engine figure
+ * client-side (calculation-engine.md). Constructing a full `AssessmentStore`
  * — abilities, mutation methods, calculation state — purely to get a search
  * index would be exactly that: fabricating a second, client-side notion of
  * the assessment to search over. This composable searches the *content*
  * already sitting in `report.tree` (titles, descriptions, rationale — never a
  * computed figure) and produces the same shape `SearchBox.vue` already knows
  * how to render (`Components/Toolbar/SearchBox.vue`, reused unmodified),
- * which is the "reuse the component, not fork it" half of the brief.
+ * which is the "reuse the component, not fork it" half of the design.
  *
  * `report.tree` is deliberately the search surface, not the whole document:
  * ui.md §9 calls the full-assessment section "the list view on paper" — the
@@ -67,7 +67,7 @@ export function useReportSearch(getReport: () => ReportData) {
     /** Every rendered row of `tree.risks[].attacks[].defences[]`, title + description (+ rationale for a defence) — never a figure. */
     function rows(): Row[] {
         const out: Row[] = [];
-        // An omitted tree renders no rows, so it has nothing to find (W139).
+        // An omitted tree renders no rows, so it has nothing to find.
         if (getReport().options.omittedSections.includes('tree')) return out;
         for (const risk of getReport().tree.risks) {
             out.push({

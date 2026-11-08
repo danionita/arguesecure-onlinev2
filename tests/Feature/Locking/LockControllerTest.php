@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Redis;
 
 /*
- * PLAN.md Phase 6 item 3 / security.md: field-level locking through
+ * security.md: field-level locking through
  * LockController, backed by app/Domain/Locking/LockManager.php. The
- * required cases from the W16 brief: a viewer may join (view the
+ * required cases: a viewer may join (view the
  * assessment) but may not acquire a lock; a lock cannot be stolen by a
  * second user while held; a lock refresh by a non-holder fails; a
  * released lock is immediately acquirable.

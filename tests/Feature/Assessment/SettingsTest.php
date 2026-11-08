@@ -7,11 +7,11 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * Assessment settings (W44, item 12).
+ * Assessment settings.
  *
- * Two of the four settings here are **display only** (PLAN-2.2.md D14), and
+ * Two of the four settings here are **display only**, and
  * that is the property most at risk of quietly becoming false: a later
- * package adds "and if it is over tolerance, mark it high", and the tool
+ * change adds "and if it is over tolerance, mark it high", and the tool
  * starts issuing verdicts that calculation-engine.md forbids it from issuing.
  * So the display-only claim is pinned as an executable assertion — the totals
  * before and after are compared figure for figure — rather than left as a
@@ -61,7 +61,7 @@ function valuedAssessment(): Assessment
 /**
  * @return array<string, mixed>
  *
- * No `title`/`description` here (W86, item 9): they live on the root node
+ * No `title`/`description` here: they live on the root node
  * and are edited there. `UpdateAssessmentSettingsRequest` now `prohibited`s
  * both — see "the settings form rejects a title or a description" below,
  * which is the guard that used to be exercised by this payload carrying them
@@ -179,7 +179,7 @@ test('the risk tolerance changes no computed figure — the pinned form of "disp
         ->viewData('page')['props']['results'];
 
     /*
-     * PLAN-2.2.md D14 and calculation-engine.md together: the tolerance draws
+     * calculation-engine.md and the display-only rule together: the tolerance draws
      * a marker and a badge, and it must never enter RiskCalculator or
      * band-map a result into low/medium/high. The temptation to "just" mark
      * an over-tolerance risk as high is exactly what this pins against — the
@@ -237,13 +237,13 @@ test('the amortisation period is bounded and does move the figures it should', f
 });
 
 /**
- * W86, item 9. Title and description live on the root node and are edited
+ * Title and description live on the root node and are edited
  * there, in the tree — this screen carrying its own copies was the two-
  * editors-for-one-field mistake, and the write went through the ordinary
  * `NodeObserver`/`RevisionRecorder` path on `$root->save()`, so the history
  * page was recording a title/description edit from a second place on top of
  * the tree's own (see `tests/Feature/History/RevisionCoverageTest.php`'s
- * `FIXED (W86)` guard for that half).
+ * `FIXED` guard for that half).
  *
  * The acceptance criterion is at the request class, not just the absence of
  * the Vue inputs: a removed input is not a removed endpoint, so this posts
@@ -296,13 +296,13 @@ test('the settings page offers the currency list and the assessment’s scales',
 });
 
 /**
- * W82, D41: Settings left the sidebar for `AssessmentActions` (rendered
+ * Settings left the sidebar for `AssessmentActions` (rendered
  * from `Pages/Assessment/Show.vue`'s own `store.abilities.manage`, asserted
  * in `tests/js/pages/AssessmentShowActions.spec.ts`), and the shared
  * `nav.currentAssessment` Inertia prop this test used to assert on existed
  * for no other reason — `HandleInertiaRequests::currentAssessment()` is
  * gone with it. This is the negative half of that removal: a prop nothing
- * reads is exactly the kind of dead control CLAUDE.md's
+ * reads is exactly the kind of dead control the
  * `ReportOptions::$figures` write-up warns stays in a codebase for years,
  * and a reintroduced `nav.currentAssessment` computed for a sidebar that no
  * longer reads it would be that mistake again with an extra query on every
@@ -325,14 +325,14 @@ test('only the amortisation period invalidates the calculation cache', function 
     $assessment = valuedAssessment();
     $url = route('assessments.settings.update', $assessment->uuid);
 
-    // Settle: since W86 (item 9) this screen never touches the root node at
-    // all — title and description are gone from the payload — so this first
-    // save is a plain baseline read, not a version-bumping write.
+    // Settle: this screen never touches the root node at all — title and
+    // description are gone from the payload — so this first save is a plain
+    // baseline read, not a version-bumping write.
     $this->actingAs($assessment->owner)->patch($url, settingsPayload());
     $settled = $assessment->fresh()->calc_version;
 
     /*
-     * Currency and risk tolerance are display only (PLAN-2.2.md D14). The
+     * Currency and risk tolerance are display only. The
      * cache key is (assessment, calc_version, engine_version), so bumping it
      * for either would discard a correct result to recompute the identical
      * one on the next page load — on an assessment large enough for the cache

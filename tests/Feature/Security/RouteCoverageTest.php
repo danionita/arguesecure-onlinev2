@@ -1,7 +1,7 @@
 <?php
 
 /**
- * W24 — security.md §3.3's first required test, which no package had
+ * security.md §3.3's first required test, which had not been
  * written:
  *
  *   "A route-coverage test enumerating Route::getRoutes() and asserting
@@ -11,7 +11,7 @@
  *
  * Defect #4 is the legacy app's `show` actions on risks, attacks and
  * defences having no `authorize()` call and no global scope — a direct
- * object reference that read private data. Every package since W6 has
+ * object reference that read private data. Every change since the first routes has
  * *claimed* its routes are policy-guarded; `grep -rn "getRoutes()" tests/`
  * returned nothing before this file, so nothing had ever checked.
  *
@@ -53,8 +53,20 @@ function guestReachableRouteNames(): array
         'setup.store',
         'two-factor.challenge', // the second sign-in step; the account is not signed in until it passes
         'two-factor.challenge.store',
-        'oidc.redirect',        // W117: starting and finishing a provider sign-in
+        'oidc.redirect',        // starting and finishing a provider sign-in
         'oidc.callback',
+        'invitation.show',  // an emailed one-time link; the token is the credential
+        'invitation.store',
+        'verification.show', // the same for address verification
+        'verification.store',
+        'notifications.unsubscribe', // a signed link from an email; the signature is the credential
+        'notifications.unsubscribe.store',
+        'register',         // self-registration: guest-only and 404 while off
+        'register.store',
+        'password.request', // "Forgot password?", guest-only and 404 while mail is off
+        'password.email',
+        'password.reset',   // an emailed one-time link; the token is the credential
+        'password.reset.store',
         'share.resolve',    // /s/{token} — presenting a token must work with no account
         'help.index',       // product documentation, not assessment data
         'help.show',
@@ -211,7 +223,7 @@ it('denies the same routes to a guest with no session at all', function () {
  * Write routes whose body names nodes by uuid, with a request for each
  * branch that resolves them. The policy only ever sees the {assessment} in
  * the URL, so each of these must resolve every body uuid through that
- * assessment (W104). A write route that takes node uuids in its body
+ * assessment. A write route that takes node uuids in its body
  * belongs in this list.
  *
  * @return list<array{0: string, 1: callable(array<string, string>): array<string, mixed>}>
@@ -308,9 +320,20 @@ it('requires auth and an active account on the broadcasting auth endpoint', func
         ->toContain('active');
 });
 
-it('exposes no self-service registration or password-reset route', function () {
-    // security.md §4: "No public registration. Accounts are admin-created."
-    foreach (['register', 'password.request', 'password.reset', 'password.email'] as $name) {
-        expect(Route::has($name))->toBeFalse($name);
+it('exposes self-service registration only behind its switch, and password reset only through the mail-gated routes', function () {
+    // security.md §4: registration is off by default. The routes exist but
+    // answer 404 until an admin switches it on and mail works
+    // (SelfRegistrationTest); both are guest-only and the submission is throttled.
+    expect(Route::getRoutes()->getByName('register')->gatherMiddleware())->toContain('guest');
+    expect(Route::getRoutes()->getByName('register.store')->gatherMiddleware())->toContain('guest', 'throttle:register');
+    $this->get('/register')->assertNotFound();
+
+    // Password reset by email exists, but only for guests and only while mail
+    // is on (ForgotPasswordController / ResetPasswordController 404 otherwise).
+    foreach (['password.request', 'password.email'] as $name) {
+        expect(Route::getRoutes()->getByName($name)->gatherMiddleware())->toContain('guest', 'throttle:forgot-password');
+    }
+    foreach (['password.reset', 'password.reset.store'] as $name) {
+        expect(Route::getRoutes()->getByName($name)->gatherMiddleware())->toContain('throttle:mail-link');
     }
 });

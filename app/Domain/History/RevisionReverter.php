@@ -8,7 +8,7 @@ use App\Models\NodeRevision;
 use App\Models\User;
 
 /**
- * "Revert this field" (PLAN.md Phase 8 item 2, schema.md §3.9: "a 'revert
+ * "Revert this field" (schema.md §3.9: "a 'revert
  * this field' action recorded as a normal edit"). Applies one field from
  * one historical revision back onto its node through an ordinary
  * `Node::save()` — deliberately NOT App\Domain\History\UndoService and NOT
@@ -18,8 +18,8 @@ use App\Models\User;
  *
  * Writes no `node_revisions` row itself: the `save()` call below fires
  * Node's `updated` model event, which NodeObserver forwards to
- * RevisionRecorder::recordUpdate() — the single writer of that table
- * (W18b). This keeps "exactly one writer of node_revisions" true rather
+ * RevisionRecorder::recordUpdate() — the single writer of that table.
+ * This keeps "exactly one writer of node_revisions" true rather
  * than having the revert path duplicate what the recorder already does.
  */
 class RevisionReverter
@@ -51,7 +51,7 @@ class RevisionReverter
         /** @var array<string, mixed> $changes */
         $changes = $revision->getAttribute('changes');
 
-        // An assessment-settings revision (W60) hangs off the root node but is
+        // An assessment-settings revision hangs off the root node but is
         // not *about* it: `currency` and `amortization_years` are columns on
         // `assessments`, not on `nodes`. Refused here, explicitly, rather than
         // left to fail further down on the $fillable check — that check would
@@ -68,8 +68,8 @@ class RevisionReverter
         }
 
         // Fixed allowlist read from Node's own $fillable (never a dynamic
-        // column name built from request input, security.md defect #7 /
-        // CLAUDE.md) — reusing the model's own contract rather than
+        // column name built from request input, security.md §7,
+        // defect #7) — reusing the model's own contract rather than
         // duplicating a second hardcoded list, matching RevisionRecorder::
         // trackedFields()'s identical reasoning.
         if (! in_array($field, $node->getFillable(), true)) {
@@ -88,8 +88,8 @@ class RevisionReverter
 
         // If the target value already matched what the node held, save()
         // found nothing dirty, 'updated' never fired, and RevisionRecorder
-        // never ran — the same "no-op saves write nothing" contract W18b's
-        // brief requires of ordinary edits applies here too, so this is
+        // never ran — the same "no-op saves write nothing" contract that
+        // ordinary edits follow applies here too, so this is
         // reported as "nothing to revert" rather than silently returning
         // the old, unrelated revision.
         if ($newRevision === null || $newRevision->id === $previousRevisionId) {

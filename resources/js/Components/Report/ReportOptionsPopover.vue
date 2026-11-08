@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One of the report toolbar's two settings buttons (W136, D106): a trigger
+ * One of the report toolbar's two settings buttons: a trigger
  * over a `Dropdown` panel the caller fills with headed groups. It is the Filters
  * button's look (`Toolbar/FilterBar.vue`) without its state: the report's
  * settings are server inputs that change what the document contains, not

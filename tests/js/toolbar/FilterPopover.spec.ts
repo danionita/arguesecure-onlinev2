@@ -1,5 +1,5 @@
 /**
- * W137 — the shell knows nothing about what it holds. Its one job beyond
+ * The filter shell knows nothing about what it holds. Its one job beyond
  * hosting a slot is the count, and a count shown for zero (or missing for a
  * non-zero) is the regression a filter bar would not notice.
  */
@@ -66,7 +66,7 @@ describe('FilterCategory', () => {
 
 describe('the shell', () => {
     it('holds no filter or server logic of its own', () => {
-        // W137: the editor's filters are client state and the report's
+        // The editor's filters are client state and the report's
         // options are server inputs; a shell that imported either would have
         // picked a side.
         for (const file of ['FilterPopover.vue', 'FilterCategory.vue']) {

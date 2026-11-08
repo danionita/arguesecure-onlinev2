@@ -8,11 +8,11 @@ use Illuminate\Support\Carbon;
 
 /**
  * Immutable per-field change log (schema.md §3.9). Always written by
- * History\RevisionRecorder (a later package), never by mass assignment from
+ * History\RevisionRecorder, never by mass assignment from
  * a request, hence no $fillable restriction is meaningful here — the model
  * is not exposed to user input at all.
  *
- * The annotations below were added by W48, which reads this table for the
+ * The annotations below exist because the history timeline reads this table for the
  * history timeline: without them PHPStan infers the cast columns from the
  * schema — `changes` as a string, `created_at` as a string — and every reader
  * has to work around casts this class already declares. Every other model in

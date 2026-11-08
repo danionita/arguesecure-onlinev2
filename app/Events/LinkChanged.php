@@ -13,13 +13,13 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * ui.md §6 / PLAN.md Phase 6 item 4 — "link changed". Covers both edge
+ * ui.md §6, "link changed". Covers both edge
  * tables (schema.md §1: risk_attack, attack_defence) with one event shape
  * rather than two, since the client-side patch is the same operation on a
  * different array (assessmentStore.ts's riskAttackLinks / attackDefenceLinks)
  * either way. A drag-reparent (routes/web.php's `move` action) unlinks then
  * relinks, so it surfaces as one `deleted` LinkChanged followed by one
- * `created` one — this is the "moved" case from PLAN.md Phase 6 item 4;
+ * `created` one — this is the "moved" case;
  * there is no separate node-position broadcast for it because the edge is
  * what actually changed, not the node.
  */
@@ -49,7 +49,7 @@ class LinkChanged implements ShouldBroadcast, ShouldDispatchAfterCommit
         // LinkService — so both this and the two uuids below read memory. The
         // relation is still lazy-loadable, so a caller that does not set it is
         // correct and merely slower, which is the property that keeps this
-        // from being a trap (W68).
+        // from being a trap.
         $assessmentUuid = app(AssessmentUuids::class)->forNode($row->risk);
 
         return new self(

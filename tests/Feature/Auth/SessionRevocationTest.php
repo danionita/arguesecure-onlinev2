@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Cookie;
 
 /*
- * W107 (D71). Every revocation path deletes rows of the `sessions` table
+ * Every revocation path deletes rows of the `sessions` table
  * (SessionRegistry), so it only revokes anything when that table is where
  * the sessions live. These tests sign in on two "devices" through the real
  * login route, revoke one from the other, and send the revoked device's
@@ -76,12 +76,12 @@ function deviceIsSignedIn(TestCase $test, string $sessionId): bool
 
 beforeEach(function () {
     // The point of these tests: on the array driver, which the suite used
-    // before D71, they pass whether or not anything is revoked.
+    // before sessions were pinned to the database, they pass whether or not anything is revoked.
     expect(config('session.driver'))->toBe('database');
 });
 
 test('sessions are stored in the database whatever SESSION_DRIVER says', function () {
-    // D71. Installs before 2.7 copied SESSION_DRIVER=redis from .env.example
+    // Installs before 2.7 copied SESSION_DRIVER=redis from .env.example
     // into their own .env, which compose loads over anything the image
     // sets; only a value config/session.php does not read from the
     // environment reaches them on upgrade.

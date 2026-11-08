@@ -52,6 +52,8 @@ Two sets of variables therefore mean different things and must not be conflated:
 
 Set the `REVERB_CLIENT_*` trio only for a proxy-less local run (`php artisan serve` alongside `php artisan reverb:start`), where there is no nginx to proxy `/app`.
 
+The websocket accepts connections only from the host of `APP_URL`. A page served from another hostname, or opened by IP address, needs `REVERB_ALLOWED_ORIGINS` (comma-separated hosts, `*` wildcards allowed within a host name) or its live updates and presence stop; the rest of the page works.
+
 `REVERB_MAX_REQUEST_SIZE` and `REVERB_APP_MAX_MESSAGE_SIZE` (both default 1,000,000 bytes in `config/reverb.php`) bound a broadcast. A totals broadcast costs roughly 1 KB per node, so the default covers around a thousand nodes. Both must be raised together, because one governs the publish Reverb accepts over HTTP and the other the per-app message.
 
 ### 2.2 Compose skeleton
@@ -127,7 +129,7 @@ DATA_PATH=
 
 ### 2.4 Published images
 
-Every release is published to GitHub's container registry by `.github/workflows/image.yml`, so a deployment is `docker-compose.yml` and a `.env`: no checkout, no build, no Node or Composer traffic on the host.
+Every release is published to GitHub's container registry by `.github/workflows/image.yml`, so a deployment is `docker-compose.deploy.yml` (saved as `docker-compose.yml`) and a `.env`: no checkout, no build, no Node or Composer traffic on the host.
 
 | Image | Built from | Used by |
 |---|---|---|
@@ -136,10 +138,10 @@ Every release is published to GitHub's container registry by `.github/workflows/
 
 | Git ref | Tags published |
 |---|---|
-| `v2.7.0`, the newest release overall | `2.7.0`, `2.7`, `latest` |
+| `v2.8.0`, the newest release overall | `2.8.0`, `2.8`, `latest` |
 | `v2.7.1`, the newest in its minor line but not overall | `2.7.1`, `2.7` |
 | `v2.6.3`, not the newest in its minor line | `2.6.3` only |
-| `v2.7.0-rc1` (any other `v*` tag) | `2.7.0-rc1` only |
+| `v2.8.0-rc1` (any other `v*` tag) | `2.8.0-rc1` only |
 | a manual run of the workflow | `sha-<commit>`, `edge` |
 
 `ARGUESECURE_VERSION` in `.env` chooses the tag (default `latest`); `ARGUESECURE_IMAGE` overrides the repository, for a fork. Both published images always carry the same tag, so a pulled app and assistant come from the same commit and read the same `models.conf`. A source build keeps that true only if it rebuilds the assistant too (§8). Only `linux/amd64` is published.
@@ -148,9 +150,11 @@ The sidebar shows the running version. It is the release tag, passed by `image.y
 
 Each service keeps `build:` beside `image:`. Compose pulls an image it does not have and builds only when the pull fails; `--build` always builds. A source checkout works the same way as an image-only deployment, and its local build carries the published name until the next `docker compose pull` replaces it. Because every compose project on a host builds to that one name, a second project on the same host (a throwaway deployability check, or the end-to-end stack, which `docker-compose.e2e.yml` gives its own `:e2e` tag) must set `ARGUESECURE_VERSION` to a name of its own; otherwise its build retags the image the first stack runs, and that stack's next `up` recreates itself from it and migrates its database with it.
 
-Before anything is pushed, `image.yml` boots the new images from a directory holding nothing but `docker-compose.yml` and a `.env`, with `--pull never`, and requires `/up` and the setup screen to answer and `assistant-install list` to read the catalogue from inside the assistant image. `tests/Unit/Deployment/ComposeImageDeployTest.php` keeps the compose file from drifting: every buildable service names an image, and no service bind-mounts a path from the checkout.
+`docker-compose.deploy.yml` is the file to deploy with: `docker-compose.yml` with every `build:` key and the `composer_auth` secret removed, saved as `docker-compose.yml` in the deployment directory. With no Dockerfile beside it and nothing to fall back to, a failed pull stops `up` with an error instead of starting a source build. `tests/Unit/Deployment/ComposeImageDeployTest.php` requires it to equal the full file minus those keys, service by service, so the two cannot drift.
 
-The packages are public, so pulling needs no login. The workflow's Publish step runs only for `github.repository == 'danionita/arguesecure-onlinev2'` and never for pull requests; elsewhere it builds and boots the images and pushes nothing. The `Release` workflow (`release.yml`, manual dispatch on `main`) checks that `VERSION`, `docs/RELEASE-<VERSION>.md` and an untagged `v<VERSION>` agree, creates the tag and GitHub release from the notes file, and dispatches `image.yml` on the new tag. The same workflow has two maintenance modes, one per run: repointing an existing tag at another commit on `main`, and rewriting an existing release's notes from `docs/RELEASE-<version>.md`.
+Before anything is pushed, `image.yml` boots the new images from a directory holding nothing but `docker-compose.deploy.yml` (saved as `docker-compose.yml`) and a `.env`, with `--pull never`, and requires `/up` and the setup screen to answer and `assistant-install list` to read the catalogue from inside the assistant image. `tests/Unit/Deployment/ComposeImageDeployTest.php` keeps the compose file from drifting: every buildable service names an image, and no service bind-mounts a path from the checkout.
+
+The packages are public, so pulling needs no login. The workflow's Publish step runs only for `github.repository == 'danionita/arguesecure-onlinev2'` and never for pull requests; elsewhere it builds and boots the images and pushes nothing. The `Release` workflow (`release.yml`, manual dispatch on `main`) first refuses unless the newest `CI` run on the commit it runs on has finished green (`tools/release/ci-gate.sh`), so a release cannot start while CI is still running or after it failed; then it checks that `VERSION`, `docs/RELEASE-<VERSION>.md` and an untagged `v<VERSION>` agree, creates the tag and GitHub release from the notes file, and dispatches `image.yml` on the new tag. The maintenance modes below change no code and skip the CI check; moving a tag (`move_tag`) re-releases code and does not. The same workflow has two maintenance modes, one per run: repointing an existing tag at another commit on `main`, and rewriting an existing release's notes from `docs/RELEASE-<version>.md`.
 
 ---
 
@@ -218,6 +222,68 @@ proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection "upgrade";
 ```
 
+### 4.1 Changing the public hostname
+
+Moving an instance to another name (`risk.example.com` to `demo.example.com`, say) is configuration and the reverse proxy; the app needs no code change and no data migration. Links built during a request follow the host the browser used, links built without a request (queued jobs, the scheduler) follow `APP_URL`, and nothing in the database stores an absolute URL to the app: notifications hold uuids and titles, share links hold only a token, and the security log holds the path. `tests/Feature/Deployment/HostnameTest.php` pins each of these.
+
+1. Add the new name to DNS and to the proxy's certificate, and serve the app on both names for the move. The proxy must pass the name the browser used on to the app (nginx: `proxy_set_header Host $host;`), because `X-Forwarded-Host` is not trusted and request-built links use `Host`. Pages opened on the old name may be refused a live-update connection by some browsers during the overlap, since the websocket origin allowed is the new `APP_URL`'s; keep the overlap short.
+2. Set `APP_URL` to the new URL, then recreate the containers so the cached configuration is rebuilt: `docker compose up -d --force-recreate app reverb queue scheduler`.
+3. If single sign-on is on, register `<new APP_URL>/auth/oidc/callback` at the provider. Keep the old redirect URI until the old name stops serving the app.
+4. Expect everyone to sign in once more. Session, CSRF and remember-me cookies are host-only (`SESSION_DOMAIN` stays unset, see [security.md §5](security.md#5-sessions-and-cookies)), so cookies set for the old name are not sent to the new one. Authenticator apps and recovery codes are unaffected.
+5. Redirect the old name's app paths to the new one, keeping path and query. Use 307 until the result is checked, then 308 (the temporary and permanent forms that keep the request method and body, so a form left open in an old tab is not turned into a GET): a cached permanent redirect cannot be withdrawn if you roll back. A redirect cannot move a websocket, so a tab left open on the old name reconnects only after a reload. In nginx:
+
+   ```nginx
+   # Old name: send the app's paths to the new name.
+   location ~ ^/(login|logout|setup|two-factor-challenge|confirm-password|password|register|forgot-password|reset-password|invitation|email|auth|profile|dashboard|notifications|catalog|templates|help|assessments|admin|assistant|up|broadcasting|app|build|storage)(/|$) {
+       return 307 https://demo.example.com$request_uri;
+   }
+
+   # Share links carry their token in the path: keep it out of this proxy's log.
+   location ^~ /s/ {
+       access_log off;
+       return 307 https://demo.example.com$request_uri;
+   }
+   ```
+
+   The old name's `/` keeps serving the app unless you redirect it too (`location = / { return 307 https://demo.example.com$request_uri; }`). If nothing else will use the old name, one `return 307 https://demo.example.com$request_uri;` for the whole server block is simpler. The app itself does not answer for, or redirect from, a name it is not configured for: only the proxy sees both names.
+6. Afterwards, point monitors at `<new APP_URL>/up`, and remove the old redirect URI at the identity provider.
+
+Keep `SESSION_DOMAIN` unset. A parent-domain cookie would be sent to every sibling service on the domain, such as a website on the bare name.
+
+**The first path segments the app answers on**, for deciding what to redirect from the old name. `/`, `/favicon.ico` and `/robots.txt` are also answered by the app but are safe to hand to something else.
+
+| Prefix | What it is |
+|---|---|
+| `login` | Sign-in form and submit |
+| `logout` | Sign out |
+| `setup` | First-run administrator creation (answers only while there are no users) |
+| `two-factor-challenge` | Second sign-in step |
+| `confirm-password` | Password re-confirmation for sensitive actions |
+| `password` | Password change |
+| `register` | Self-registration (answers only while an administrator has switched it on and email is on) |
+| `forgot-password` | "Forgot password?" (answers only while email is on) |
+| `reset-password` | The page an emailed reset link opens (`/reset-password/<token>`) |
+| `invitation` | The page an emailed invitation link opens (`/invitation/<token>`) |
+| `email` | The page an emailed address-verification link opens (`/email/verify/<token>`) |
+| `auth` | Single sign-on (`/auth/oidc/...`) |
+| `profile` | Your profile, devices and two-factor settings |
+| `dashboard` | The dashboard |
+| `notifications` | The notification feed |
+| `catalog` | The catalog of standards and frameworks |
+| `templates` | Templates |
+| `help` | The in-app help |
+| `assessments` | Assessments and everything inside them |
+| `admin` | Administration |
+| `assistant` | The optional assistant |
+| `s` | Share links (`/s/<token>`) |
+| `up` | Health check |
+| `broadcasting` | Websocket authorization |
+| `app` | The websocket itself, proxied to Reverb inside the app container |
+| `build` | Built front-end assets |
+| `storage` | Laravel's local-disk route |
+
+`tests/Feature/Deployment/AppPathPrefixesTest.php` fails if a registered route's first segment is missing from this table, or if a row here has no route behind it.
+
 ---
 
 ## 5. Environment variables
@@ -237,33 +303,45 @@ proxy_set_header Connection "upgrade";
 | `REVERB_APP_ID`, `REVERB_APP_KEY`, `REVERB_APP_SECRET` | generated on first run alongside `APP_KEY`; do not set them in `.env` |
 | `REVERB_HOST`, `REVERB_PORT`, `REVERB_SCHEME` | where the **app** posts broadcasts to: `reverb` / `8080` / `http` (§2.1) |
 | `REVERB_CLIENT_HOST`, `REVERB_CLIENT_PORT`, `REVERB_CLIENT_SCHEME` | where the **browser** dials. Unset means "this page's own origin", which is correct behind the nginx proxy. Set only for a proxy-less local run |
+| `REVERB_ALLOWED_ORIGINS` | optional, comma-separated hosts a browser may open the websocket from. Unset means the host of `APP_URL`; set it when the app answers to several hostnames or is opened by IP address, or live updates stop for those visitors |
 | `REVERB_MAX_REQUEST_SIZE`, `REVERB_APP_MAX_MESSAGE_SIZE` | optional broadcast size limits, bytes, default 1,000,000 each; set together |
 | `LOG_CHANNEL`, `LOG_LEVEL` | optional; the image defaults them to `stderr` and `info` (§8) |
 | `ARGUESECURE_DEFAULT_CURRENCY`, `ARGUESECURE_AMORTIZATION_YEARS` | product defaults |
 | `TRASH_RETENTION_DAYS` | default 30, at least 1; days a deleted assessment stays in the trash |
 | `SECURITY_LOG_RETENTION_DAYS` | default 90, at least 1; days the admin Security log keeps stored events. Stderr is not affected |
 | `OIDC_*` | optional single sign-on (§5.1) |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_ENCRYPTION`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME` | optional outbound email (§5.2); all empty means the application sends no mail |
 | `ASSISTANT_ENABLED` | **default `false`, and the common case.** When false the assistant routes are never registered, so the feature answers 404 rather than 403, and everything else in `config/assistant.php` is inert |
 | `ASSISTANT_MODEL_PATH`, `ASSISTANT_MODEL_FILE`, `ASSISTANT_MODEL`, `ASSISTANT_THREADS` | where the mounted GGUF is, which file, which preset or label, and how many cores the runtime may take (§9) |
 | `ASSISTANT_BASE_URL`, `ASSISTANT_CONNECT_TIMEOUT`, `ASSISTANT_STREAM_IDLE_TIMEOUT`, `ASSISTANT_TOTAL_TIMEOUT`, `ASSISTANT_HEALTH_TTL`, `ASSISTANT_MAX_TOKENS_HELP`, `ASSISTANT_MAX_TOKENS_SUGGESTIONS`, `ASSISTANT_MAX_TOKENS_SUMMARY`, `ASSISTANT_CONTEXT_TOKENS` | all optional with working defaults. Read `config/assistant.php` before changing a timeout: they are deliberately large because CPU inference runs for minutes |
 
 The assistant variables are the one group where setting them is not enough to switch anything on. Three separate switches gate it: this environment flag, the profile-gated container, and an admin toggle that does not render until the first two hold. [`docs/ASSISTANT.md`](../ASSISTANT.md) describes them and the admin settings page points at it; §9 is the operational half.
 
-There is no SMTP dependency: accounts are admin-created and passwords are reset in the admin UI, so no `MAIL_*` variables are used.
+There is no SMTP dependency: the application works completely without mail, and sends none until an administrator has configured a server and delivered a test message (§5.2).
 
 Application code never calls `env()` outside a config file, because it returns `null` once `config:cache` has run (the entrypoint runs it, §6). Everything is read through `config()`.
 
+`APP_NOTICE` shows one line of plain text in a band at the top of every page, the login page and shared views included (for example, a warning on a public demo that no real data should be entered). It is cut at 300 characters, shown as text without HTML, Markdown or links, cannot be dismissed and is not printed. Unset or blank means no band.
+
 ### 5.1 Single sign-on (optional)
 
-Enter the provider on **Admin → Authentication**, or set `OIDC_ISSUER`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` (see `.env.example`; a value set there wins over one stored on the tab, field by field, so a bad stored value is fixed by editing `.env`), and register `<APP_URL>/auth/oidc/callback` as the redirect URI at the provider (Microsoft Entra ID, Google Workspace, Okta, Keycloak, Authentik, Authelia, or any OpenID Connect provider with discovery). The app container must reach the provider over https; the provider needs no inbound access to it. `OIDC_ALLOWED_DOMAINS` lets a first sign-in create a non-admin account for those email domains (empty creates none); the provider must send `email_verified`, or set `OIDC_TRUST_EMAIL=true` for a provider you control that does not. `OIDC_BUTTON_LABEL` sets the login link's text ("Sign in with <label>"). Leave `OIDC_ISSUER` empty for no SSO: the login page shows no link and the two `/auth/oidc` routes answer 404.
+Enter the provider on **Admin → Authentication**, or set `OIDC_ISSUER`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` (see `.env.example`; a value set there wins over one stored on the tab, field by field, so a bad stored value is fixed by editing `.env`), and register `<APP_URL>/auth/oidc/callback` as the redirect URI at the provider (Microsoft Entra ID, Google Workspace, Okta, Keycloak, Authentik, Authelia, or any OpenID Connect provider with discovery). If you move the instance to another hostname, register the new URI before switching ([§4.1](#41-changing-the-public-hostname)). The app container must reach the provider over https; the provider needs no inbound access to it. `OIDC_ALLOWED_DOMAINS` lets a first sign-in create a non-admin account for those email domains (empty creates none); the provider must send `email_verified`, or set `OIDC_TRUST_EMAIL=true` for a provider you control that does not. `OIDC_BUTTON_LABEL` sets the login link's text ("Sign in with <label>"). Leave `OIDC_ISSUER` empty for no SSO: the login page shows no link and the two `/auth/oidc` routes answer 404.
 
 Only Keycloak has been tested against this build; every other provider is expected to work because they speak standard OpenID Connect, but has not been verified.
+
+**Google (written from Google's documentation, not verified against a live account):** in the Google Cloud console create an OAuth client of type *Web application*, add `<APP_URL>/auth/oidc/callback` as an authorised redirect URI, and use `https://accounts.google.com` as the issuer. Google's ID tokens carry `email` and a boolean `email_verified`, which are honoured. The `hd` (hosted domain) claim is not used: restrict who may create an account with `OIDC_ALLOWED_DOMAINS` (`gmail.com` for personal Google accounts, or your own Workspace domain). A wildcard is not accepted; list each domain. Set the OAuth consent screen's publishing status to *In production*: while it is *Testing*, only listed test users can sign in and their grants expire after seven days.
 
 **Microsoft Entra ID (written from Microsoft's documentation, not verified):** register a web application, add the redirect URI above, create a client secret, and use `https://login.microsoftonline.com/<tenant-id>/v2.0` as the issuer. Entra's ID tokens carry the `email` claim only if it is added as an optional claim, and do not carry `email_verified`: for a single-tenant app whose directory you control, set `OIDC_TRUST_EMAIL=true`; do not do so for a multi-tenant app.
 
 Keep an administrator able to sign in with a password: it is the way in if the provider is down.
 
 ---
+
+### 5.2 Outbound email (optional)
+
+Off by default; the application works completely without it. Enter an SMTP server and a sender on **Admin → Email**, or set `MAIL_HOST`, `MAIL_PORT`, `MAIL_ENCRYPTION` (`tls` for implicit TLS, usually port 465; `starttls`, the default, usually 587; `none`), `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS` and `MAIL_FROM_NAME` (see `.env.example`). A value set in the environment wins over one stored on the tab, field by field. Only SMTP is supported: Laravel's `MAIL_MAILER` and the other transports are not used. `starttls` refuses to send unless the server upgrades the connection; `tls` is encrypted from the first byte; `none` never upgrades, so the password and every message cross the network readable, and it is for a relay on the same machine only. Certificates are always verified.
+
+Mail counts as on only after **Send test email** has delivered a message with the settings now in force; the test goes to the signed-in administrator's own address and nowhere else. Changing any setting, including an environment value, switches mail off again until the next test. The app container (and the queue worker, which will send in the background) must reach the SMTP server on its port; nothing else needs inbound access. SPF, DKIM and DMARC for the sender address are set up at the mail provider. Account mail is queued, so the `queue` worker must be running; the daily `arguesecure:send-reminders` command (08:00, run by the `scheduler` container) mails the invitation reminders. With mail off both do nothing. Notification email is also queued: the first notification for a person opens a ten-minute window held in the cache (Redis), and one delayed job mails what gathered. The wording of each message kind is edited on the same tab (`mail_templates`; a kind with no row uses the shipped default, so an upgrade changes nothing). The tab records which fields changed in the security log, never values, and the password is stored encrypted with `APP_KEY`.
 
 ## 6. First run and the entrypoint
 
@@ -280,7 +358,7 @@ Back up `storage/app/config/app.key` with the database. The `storage` volume als
 
 **No user is ever seeded.** The app detects an empty `users` table and serves the first-run setup screen ([security.md §4](security.md#4-authentication)). There is no default `db:seed`: `DatabaseSeeder` creates nothing.
 
-**Reference content arrives with the first administrator.** `SetupController` calls `SampleContentSeeder::seedReferenceContent()` the moment the first administrator is created, so a fresh deployment reaches the dashboard with the bundled templates (every `kind: assessment` fixture in `database/seeders/templates/`) and the catalogue entries (every `kind: catalog` fixture). Both halves are idempotent and no credential is created anywhere. A failure there is logged and does not block the account. An instance whose fixtures have moved on since its first-run setup can run `php artisan db:seed --class='Database\Seeders\SampleContentSeeder' --force`, which needs no administrator and creates no users.
+**Reference content arrives with the first administrator.** `SetupController` queues the `SeedReferenceContent` job (which calls `SampleContentSeeder::seedReferenceContent()`) the moment the first administrator is created, so a fresh deployment gets the bundled templates (every `kind: assessment` fixture in `database/seeders/templates/`) and the catalogue entries (every `kind: catalog` fixture) a few seconds after the dashboard first loads. The seeding is about 900 nodes of writes and must not hold up the setup request, so the queue worker runs it; if no worker runs, nothing is seeded until the `db:seed` command below is run. `retry_after` is 1500 s, above the longest job timeout (1200 s), so a long job is not released back onto the queue while it is still running. Both halves are idempotent and no credential is created anywhere. A failure there is logged and does not block the account. An instance whose fixtures have moved on since its first-run setup can run `php artisan db:seed --class='Database\Seeders\SampleContentSeeder' --force`, which needs no administrator and creates no users.
 
 ---
 
@@ -291,12 +369,12 @@ GitHub Actions in the public repository runs on every push and pull request (`.g
 | Job | Steps |
 |---|---|
 | `php` | PHP 8.3, `composer install`, `vendor/bin/pint --test`, `vendor/bin/phpstan analyse`, `php artisan test` (Pest) against MariaDB and Redis service containers |
-| `js` | Node 22, `npm ci`, `npm run lint`, `npm run type-check` (`vue-tsc --noEmit`), `npm run test:unit` (Vitest). Needs nothing from `php` |
+| `js` | Node 22, `npm ci`, `npm run lint:check` (ESLint, no autofix, no warnings), `npm run format:check` (Prettier), `npm run type-check` (`vue-tsc --noEmit` over `tsconfig.json` for the application, then again over `tsconfig.tests.json` for `tests/js`, `tests/e2e` and `playwright.config.ts`, the only config with Node's types; the image build runs only the first, since it copies `tsconfig.json` and `resources/` alone, so a new `include` in it must match something the build stage has), `npm run test:unit` (Vitest). Needs nothing from `php` |
 | `docker` | Needs `php` and `js`. `docker compose build` (retried with back-off), `docker compose up -d`, poll `/up` until healthy, assert `/login` redirects (302) and `/setup` answers 200 on a fresh instance, assert an application log line reaches the container's stderr at `info` (and a `debug` line does not) and that no `storage/logs/laravel.log` is written, `docker compose down -v` |
 | `e2e` | Needs `php`, `js` and `docker`. Playwright (Chromium) against the composed stack with `docker-compose.e2e.yml` on port 8100; uploads the report on failure |
 | `security` | `composer audit --locked`, `tools/dev/audit-gate.mjs` over `npm audit` of the whole lockfile (every npm package is a devDependency, so `--omit=dev` would always report 0), and a gitleaks secret scan |
 
-`image.yml` additionally builds, boots and (on tags and manual runs) publishes the images (§2.4); on pull requests that touch the Dockerfile, `docker/`, the compose file or `.env.example` it builds and boots without pushing. The `docker` job is the one that catches deployability regressions, which are silent and expensive to find late.
+`image.yml` additionally builds, boots and (on tags and manual runs) publishes the images (§2.4); on pull requests that touch the Dockerfile, `docker/`, either compose file or `.env.example` it builds and boots without pushing. The `docker` job is the one that catches deployability regressions, which are silent and expensive to find late.
 
 ---
 

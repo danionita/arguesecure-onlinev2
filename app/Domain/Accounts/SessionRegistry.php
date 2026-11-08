@@ -11,14 +11,13 @@ use Illuminate\Support\Str;
  * Lists and revokes a user's active sessions for the profile page's
  * session/device list (ui.md §10). Reads the `sessions` table directly
  * via the query builder rather than an Eloquent model, since
- * `app/Models/**` is outside this package's file ownership and a session
- * row is infrastructure, not a domain entity.
+ * a session row is infrastructure, not a domain entity.
  *
  * Every revocation path (password and email change, admin reset,
  * deactivation and deletion, the profile page's revoke button) deletes
  * rows here, so it revokes nothing unless the sessions live in this table.
  * Until 2.7 the shipped environment chose the redis driver, under which
- * the table stayed empty and every one of those paths was a no-op; D71
+ * the table stayed empty and every one of those paths was a no-op; 2.7
  * fixed the driver to `database` in config/session.php, and
  * tests/Feature/Auth/SessionRevocationTest.php drives each path through
  * real sign-ins on that driver.

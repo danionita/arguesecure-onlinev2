@@ -8,14 +8,14 @@ use App\Models\User;
 use Illuminate\Support\Str;
 
 /*
- * Per-node history (PLAN.md Phase 8 item 2, schema.md §3.9, ui.md §7):
+ * Per-node history (schema.md §3.9, ui.md §7):
  * listing a node's revisions, grouped by operation, and "revert this
  * field" — recorded as a normal edit, not an undo (schema.md §3.10).
  *
- * IMPORTANT — see the W18 completion report and the docblock at the top of
- * the W18 routes/web.php block: no writer of `node_revisions` exists
+ * IMPORTANT — see the docblock at the top of the history block in
+ * routes/web.php: no writer of `node_revisions` exists
  * anywhere in this codebase yet (app/Domain/History/RevisionRecorder.php,
- * which the task brief said already existed, does not; NodeController::
+ * which these tests assumed already existed, does not; NodeController::
  * update() saves fields without recording anything). These tests seed
  * node_revisions rows directly with NodeRevision::create() — exactly what
  * any writer, present or future, would leave behind — to prove the list/
@@ -138,7 +138,7 @@ test('an editor can revert a field, and the revert itself writes a new revision,
 
     // The revert wrote a *new* node_revisions row recording itself as an
     // ordinary update (schema.md §3.10: "recorded as a normal edit, not an
-    // undo") — never touching assessment_operations, W14's separate stack.
+    // undo") — never touching assessment_operations, the separate undo stack.
     $newRevisionId = $response->json('revision.id');
     expect($newRevisionId)->not->toBe($revision->id);
 

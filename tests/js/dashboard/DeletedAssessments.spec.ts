@@ -1,5 +1,5 @@
 /**
- * *Deleted* on My assessments (W113): Restore for every row, Erase
+ * *Deleted* on My assessments: Restore for every row, Erase
  * permanently only where the server said `can_erase`, and the retention
  * period stated wherever a delete or an erase is confirmed.
  *
@@ -10,6 +10,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Index from '../../../resources/js/Pages/Assessment/Index.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const post = vi.fn();
 const destroy = vi.fn();
@@ -85,7 +86,7 @@ function liveRow() {
 function render(props: Record<string, unknown> = {}) {
     return mount(Index, {
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: {
                 AuthenticatedLayout: { template: '<div><slot /></div>' },
                 ConfirmDialog: ConfirmDialogStub,

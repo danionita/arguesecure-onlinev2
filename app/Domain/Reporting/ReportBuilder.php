@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 
 /**
  * Load the graph, compute the baselines, assemble the report — once, in one
- * place, for the page and for all five exports (W74 item 25).
+ * place, for the page and for all five exports.
  *
  * Every export route used to repeat this sequence in the controller, and the
  * repetition was the risk: the CSV route loaded nodes without comments, the
@@ -22,8 +22,8 @@ use Illuminate\Support\Collection;
  * truth for the same numbers, and a second source of truth eventually
  * disagrees.
  *
- * The four-query budget (CLAUDE.md: "a whole assessment must load in four
- * queries") is `AssessmentGraphLoader`'s, and the one flat node query below
+ * The four-query budget (a whole assessment loads in four queries,
+ * schema.md §1) is `AssessmentGraphLoader`'s, and the one flat node query below
  * is the same one `AssessmentController::show` issues. Nothing here adds a
  * query per node, per risk or per format.
  */

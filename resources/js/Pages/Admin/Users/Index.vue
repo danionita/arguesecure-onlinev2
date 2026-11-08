@@ -33,7 +33,7 @@ const props = defineProps<{
     filters: { search: string; sort: string; direction: 'asc' | 'desc' };
 }>();
 
-// W115: Inertia flash data, delivered with one response and kept out of
+// Inertia flash data, delivered with one response and kept out of
 // browser history, so Back to this table does not show a password again.
 const page = usePage();
 const generatedPassword = computed(() => {

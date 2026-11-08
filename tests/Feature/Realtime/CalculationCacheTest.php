@@ -8,10 +8,10 @@ use App\Models\Risk;
 use Illuminate\Support\Facades\Redis;
 
 /*
- * calculation-engine.md §11.4 — deferred from W7 to W16 because
+ * calculation-engine.md §11.4 — deferred from the calculator to the real-time layer because
  * RiskCalculator must stay pure (no Eloquent, no I/O). "Cache the full
  * result... invalidate by explicit version bump, not TTL or fingerprint."
- * Required by the W16 brief: "the cache is invalidated by a version bump
+ * Required of the real-time layer (ui.md §6): "the cache is invalidated by a version bump
  * rather than by time."
  */
 afterEach(function () {

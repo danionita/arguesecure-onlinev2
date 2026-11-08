@@ -6,11 +6,11 @@ use App\Domain\Reporting\Money;
 use App\Domain\Reporting\ReportOptions;
 
 /**
- * The one projection every export renders from (W74 item 25).
+ * The one projection every export renders from.
  *
  * ## Why this exists
  *
- * D34 puts five formats behind one menu. The obvious way to build five
+ * One menu offers five formats. The obvious way to build five
  * formats is five classes that each walk the report and each decide which
  * figure goes in which column — and the day someone adds a column to the
  * defence ranking, four of the five are wrong and nothing fails. So there is
@@ -25,7 +25,7 @@ use App\Domain\Reporting\ReportOptions;
  *
  * ## What the options bind
  *
- * `ReportOptions` binds all five formats, not just the page (W33's finding
+ * `ReportOptions` binds all five formats, not just the page (the finding
  * about the download button, restated for exports):
  *
  * - **`baseline`** — the current and target columns appear only when chosen.
@@ -35,17 +35,16 @@ use App\Domain\Reporting\ReportOptions;
  *   would put rejected controls in a document sent to an auditor.
  * - **`includeComments`** — the comment appendix, which is the one option
  *   that changes what was *fetched* upstream.
- * - **`includeWarnings`** (W136) — the model-quality warnings appendix; when
+ * - **`includeWarnings`** — the model-quality warnings appendix; when
  *   off, a one-line count of what was left out replaces it.
  * - **`includeMethodology`** — the appendix stating the independence
  *   assumption and the per-occurrence definition of impact.
  * - **`showAssignees`** — adds a column of names, and only when chosen. A
  *   report is a document that leaves the room.
  *
- * **That list is now the whole of it.** Through W79 there was a sixth
+ * **That list is now the whole of it.** There used to be a sixth
  * option, `figures`, which this class received and ignored — it bound
- * nothing in any renderer and never had. W80 removed it rather than building
- * it: calculation-engine.md §8.3 renders every ALE, cost, CBR, ROSI and
+ * nothing in any renderer and never had. It was removed rather than built: calculation-engine.md §8.3 renders every ALE, cost, CBR, ROSI and
  * net-benefit figure as currency and §11.2 step 8 forbids band-mapping them,
  * so no option could have made a "qualitative" document out of this one, and
  * the per-node half of the idea — a value shown as the level its author
@@ -54,7 +53,7 @@ use App\Domain\Reporting\ReportOptions;
  */
 final class ReportSectionBuilder
 {
-    /** D65's three states, as the coverage section words them. */
+    /** The three states of a cited control, as the coverage section words them. */
     private const COVERAGE_STATUS = [
         'implemented' => 'Implemented',
         'planned' => 'Planned',
@@ -146,7 +145,7 @@ final class ReportSectionBuilder
     }
 
     /**
-     * The author's own words (W54), which the Word and HTML exports carry as
+     * The author's own words, which the Word and HTML exports carry as
      * the prose section they are. `writtenSummary` comes off the assembled
      * report rather than off the model a second time, for the same reason
      * every figure does.
@@ -433,8 +432,8 @@ final class ReportSectionBuilder
     }
 
     /**
-     * PLAN-2.7 D65: the controls the defences cite, one row per citing
-     * defence. No section at all when nothing cites one (D66's count of
+     * The controls the defences cite, one row per citing
+     * defence. No section at all when nothing cites one (the count of
      * shelved-only controls aside), so an assessment
      * that is not about a framework does not get an empty heading about
      * frameworks. The status column is the control's, repeated on each of
@@ -488,7 +487,7 @@ final class ReportSectionBuilder
      * one place the DAG's **edges** appear — a defence row carries the
      * strength, reduction target and rationale of *that link*, not of the
      * defence, because one control may be 80% effective against one attack
-     * and 20% against another (CLAUDE.md, schema.md). A CSV of defences
+     * and 20% against another (schema.md §3.6). A CSV of defences
      * alone could not express that, which is half of why item 25 widened it.
      *
      * @param  array<string, mixed>  $report
@@ -673,7 +672,7 @@ final class ReportSectionBuilder
     }
 
     /**
-     * W136, D105: the section is switched off, so the document says how many
+     * The section is switched off, so the document says how many
      * warnings it left out — nothing when there were none.
      *
      * @param  array<string, mixed>  $report
@@ -699,7 +698,7 @@ final class ReportSectionBuilder
     }
 
     /**
-     * Says the methodology appendix is not in this report (W153, D120): it
+     * Says the methodology appendix is not in this report: it
      * states the independence assumption and the definition of impact, so a
      * report without it must not read as one that never needed them. A
      * one-cell table, like the warnings note.
@@ -716,7 +715,7 @@ final class ReportSectionBuilder
     }
 
     /**
-     * Names the sections `omit_sections` left out (W139, D118), so a partial
+     * Names the sections `omit_sections` left out, so a partial
      * document cannot pass for a complete one. A one-cell table, like the
      * warnings note, because the CSV carries only tables.
      *
@@ -786,7 +785,7 @@ final class ReportSectionBuilder
                 'A pair with no impact or no likelihood is excluded from the total rather than counted as zero, because counting it as zero would understate risk. A defence with no recorded strength is treated as reducing nothing, which overstates residual risk — the safe direction.',
                 'Computed losses are reported as currency with a reduction percentage. They are never mapped to a low/medium/high band.',
             ],
-            // No Code column (W87, D44). `scale_levels.code` is internal — it
+            // No Code column. `scale_levels.code` is internal — it
             // is derived from the label and frozen on rename — and this export
             // was the one place a user actually saw one. Origin and Label say
             // everything the row is for.

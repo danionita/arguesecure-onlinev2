@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    // W16 (PLAN.md Phase 6, security.md §8): registered here rather than
+    // Websocket authorization (security.md §8): registered here rather than
     // via withRouting()'s own `channels:` parameter, because that
     // convenience always calls Broadcast::routes() with its framework
     // default (`['middleware' => ['web']]`) — no `auth`, no `active` — and
@@ -50,19 +50,22 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
-            // W8b: enforced globally rather than per-route-group because
-            // routes/web.php and routes/auth.php are owned by another
-            // package mid-edit in this worktree — see the middleware's own
-            // docblock for the route-name whitelist that prevents a
-            // redirect loop.
+            // Enforced globally rather than per-route-group because
+            // it must cover every route in routes/web.php and routes/auth.php
+            // — see the middleware's own docblock for the route-name
+            // whitelist that prevents a redirect loop.
             EnsurePasswordChanged::class,
-            // W116 (D78): after the password check, so an account that owes
+            // After the password check, so an account that owes
             // both does the password first. Does nothing unless an admin has
             // switched "require two-factor" on.
             EnsureTwoFactorEnrolled::class,
         ]);
 
-        // W8b: must run before Illuminate\Session\Middleware\StartSession
+        // The SMTP password is a secret, not text: spaces at its edges are part
+        // of it. Laravel already leaves `password` fields alone by default.
+        $middleware->trimStrings(except: ['mail_password']);
+
+        // Must run before Illuminate\Session\Middleware\StartSession
         // (part of the framework's own default 'web' group) so the
         // configured session lifetime is in effect before the session
         // cookie's expiry is computed — see the middleware's docblock.
@@ -70,13 +73,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ApplyInstanceSessionLifetime::class,
         ]);
 
-        // W24 (security.md §6). This file is outside W24's declared
-        // ownership (`config/**`, `app/Http/Middleware/**`,
-        // `tests/Feature/Security/**`), and this is the package's only
-        // edit to it: a middleware that is not registered does nothing, so
-        // the OWASP pass could not otherwise deliver a CSP at all. Same
-        // narrow exception, for the same reason, that W16's
-        // ->withBroadcasting() block above documents for itself.
+        // security.md §6. A middleware that is not registered does nothing,
+        // so the security-headers middleware has to be registered here or
+        // no CSP is delivered at all. Same narrow exception, for the same
+        // reason, that the ->withBroadcasting() block above documents for
+        // itself.
         //
         // Registered as *global* middleware — outside `$middleware->web()`
         // — rather than only on the `web` group, closing a gap the pinned
@@ -102,14 +103,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // nonce rather than generate a second one.
         $middleware->append(SecurityHeaders::class);
 
-        // W8: 'active' rejects a deactivated user on every authenticated
+        // 'active' rejects a deactivated user on every authenticated
         // request (security.md §4); 'admin' gates the /admin area
-        // (PLAN.md Phase 3 item 3). Registered as aliases, applied on the
+        // (ui.md §10). Registered as aliases, applied on the
         // relevant route groups in routes/web.php and routes/auth.php —
         // not globally, since guest routes (login, first-run setup) must
         // stay reachable with no authenticated user at all.
-        // W50: 'assistant' 404s every assistant route on a deployment that
-        // runs no inference runtime (PLAN-2.3-ai.md D25). See the middleware's
+        // 'assistant' 404s every assistant route on a deployment that
+        // runs no inference runtime (docs/ASSISTANT.md). See the middleware's
         // docblock for why it is a middleware rather than a condition around
         // the route block — briefly, a boot-time branch cannot be tested in a
         // suite that boots once.
@@ -136,7 +137,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // W24 (security.md §6), completing the SecurityHeaders registration
+        // security.md §6, completing the SecurityHeaders registration
         // above: a 404 for a URL matching no route is rendered here,
         // outside the middleware pipeline, so it needs the header set
         // applied directly rather than inherited from `$next()`'s return.
@@ -149,9 +150,8 @@ return Application::configure(basePath: dirname(__DIR__))
             return app(SecurityHeaders::class)->apply($response, $request);
         });
     })
-    // W16 (PLAN.md Phase 6 item 4): registered here, not in a service
-    // provider, per this package's file ownership ("bootstrap/app.php —
-    // only to register an observer or middleware if genuinely required").
+    // Registered here, not in a service provider: this file is where
+    // observers and middleware are registered.
     // Each concrete STI subclass is observed individually — Node.php's own
     // docblock explains why Node itself carries no type scope and, for the
     // same underlying reason, no observer registered on `Node::class` would

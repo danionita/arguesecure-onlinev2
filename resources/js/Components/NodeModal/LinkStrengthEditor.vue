@@ -2,7 +2,7 @@
 /**
  * Everything that lives on one `attack_defence` edge: strength (quantitative
  * fraction or qualitative level), reduction target, and the rationale
- * (W31, ui.md §7, schema.md §3.6 — "strength lives on the pivot, not on the
+ * (ui.md §7, schema.md §3.6 — "strength lives on the pivot, not on the
  * defence, because one control may be 80% effective against one attack and
  * 20% against another").
  *
@@ -14,8 +14,8 @@
  * `attack_defence` and there should be one editor for it; only the heading
  * around it differs.
  *
- * **Strength comes before the reduction target, and the order is pinned**
- * (W72 item 9). The tab is named after strength; the reduction target is a
+ * **Strength comes before the reduction target, and the order is pinned**.
+ * The tab is named after strength; the reduction target is a
  * refinement of a reduction that has to exist first, and it does not move the
  * assessment total at all (calculation-engine.md — everything multiplies).
  * Asking about the refinement above the thing it refines is the wrong order
@@ -71,7 +71,7 @@ const strengthFraction = computed(() =>
     nullableNumberToString(link.value?.strength_fraction ?? null),
 );
 
-// W31: read straight off the store. The tab used to keep a local draft map
+// Read straight off the store. The tab used to keep a local draft map
 // because AssessmentGraphLoader did not select this column, so a saved
 // rationale could never be displayed again after a reload — it does select
 // it now, and the loader carries it through to the page props.

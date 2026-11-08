@@ -3,7 +3,7 @@
 /**
  * Cloning an assessment whose scales have been calibrated.
  *
- * FIXED (W78) — was: it did not work at all. `AssessmentCloner::cloneScaleIfCustom()`
+ * FIXED — was: it did not work at all. `AssessmentCloner::cloneScaleIfCustom()`
  * mass-assigns two identity columns —
  *
  *     Scale::query()->create(['assessment_id' => $target->id, ...])
@@ -20,27 +20,26 @@
  * The transaction rolls the whole clone back, so nothing is corrupted — but
  * an assessment that has been calibrated cannot be cloned, which also means
  * it cannot be published as a template and instantiated. This is the third
- * time this exact trap has hit this exact file: CLAUDE.md records
- * AssessmentCloner breaking on it twice in W6, over `Tag` and `RiskAttack`,
- * and its warning ("this has broken three separate packages ... in two of
- * them it made the feature completely non-functional while the whole test
- * suite stayed green") describes what you are reading. The scales path was
+ * time this exact trap has hit this exact file: the identity-column
+ * rule records AssessmentCloner breaking on it twice early on, over `Tag` and
+ * `RiskAttack`, and its warning (the trap made the feature completely
+ * non-functional while the whole test suite stayed green) describes what you
+ * are reading. The scales path was
  * never covered, so it stayed green here too.
  *
- * ## FIXED (W78) — this pin has been flipped
+ * ## FIXED — this pin has been flipped
  *
- * W77 pinned the defect because `app/Domain/Structure/AssessmentCloner.php`
- * was outside its ownership. W78 owned that file and fixed it: both columns
+ * The defect was first pinned here because the cloner was outside the
+ * pinning change's scope. It was then fixed: both columns
  * are now assigned as properties and saved, and `set_key` is left at its
  * column default rather than copied. The two `DEFECT:` tests below are
- * rewritten in place as `FIXED (W78)` regression guards rather than deleted,
+ * rewritten in place as `FIXED` regression guards rather than deleted,
  * so the reasoning survives and the fix cannot be quietly reverted.
  *
  * The fixed behaviour is covered in depth by
- * `tests/Feature/Structure/CloneCalibratedScalesTest.php` (W78), including
- * the per-level band check and the `set_key` NULL assertion that W78 could
- * only guard behind `Schema::hasColumn()` because W77's column lived on a
- * sibling branch. On this branch both have landed and that assertion runs.
+ * `tests/Feature/Structure/CloneCalibratedScalesTest.php`, including
+ * the per-level band check and the `set_key` NULL assertion, which is guarded
+ * behind `Schema::hasColumn()` and runs wherever the column exists.
  * What is kept here is the pair of failure modes themselves, because they
  * failed *differently* and only one of them was loud — see below.
  *
@@ -54,7 +53,7 @@
  *     $clone->assessment_id = $target->id;
  *     $clone->save();
  *
- * The trade-off is the W77 column. A cloned scale is assessment-owned, so its
+ * The trade-off is the `set_key` column. A cloned scale is assessment-owned, so its
  * `set_key` must be **NULL** — it belongs to that assessment, not to a shared
  * system set. Carrying the source's `set_key` across would make the clone
  * look like a member of a system set that `ScaleSets::resolve()` would then
@@ -67,7 +66,7 @@
  * Fixing it turned the first test below red, which was the point: whoever did
  * it had to read the paragraph above and decide about `set_key` deliberately
  * rather than discovering it when assessment creation started failing on an
- * instance that had cloned a calibrated assessment. W78 decided it by
+ * instance that had cloned a calibrated assessment. The fix decided it by
  * construction — the clone is built field by field rather than `replicate()`d,
  * so a column it does not name is left at its default. That is load-bearing,
  * not incidental: switching this path to `replicate()` later would silently
@@ -123,7 +122,7 @@ function assessmentWithCustomScale(User $owner): Assessment
     return $assessment->fresh();
 }
 
-test('FIXED (W78): the loud half — a calibrated assessment clones instead of dying on scale_id', function () {
+test('FIXED: the loud half — a calibrated assessment clones instead of dying on scale_id', function () {
     $owner = User::factory()->create();
     $assessment = assessmentWithCustomScale($owner);
 
@@ -140,7 +139,7 @@ test('FIXED (W78): the loud half — a calibrated assessment clones instead of d
     expect(ScaleLevel::query()->where('scale_id', $clonedScale->id)->count())->toBe(2);
 });
 
-test('FIXED (W78): the silent half — the clone owns its scale rather than orphaning it as a system one', function () {
+test('FIXED: the silent half — the clone owns its scale rather than orphaning it as a system one', function () {
     $owner = User::factory()->create();
     $assessment = assessmentWithCustomScale($owner);
     $before = Assessment::query()->count();

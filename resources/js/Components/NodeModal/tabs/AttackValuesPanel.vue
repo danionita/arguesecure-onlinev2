@@ -52,7 +52,7 @@ function setAro(value: string) {
 
     props.store.updateNode(props.uuid, {
         likelihood_aro: aro,
-        // W25: the mode must travel with the number.
+        // The mode must travel with the number.
         //
         // The segmented control above renders `node.likelihood_mode ??
         // 'quantitative'`, so a brand-new attack *looks* like it is already

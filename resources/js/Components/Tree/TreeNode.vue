@@ -12,13 +12,12 @@
  * inside this file's own template resolves to.
  *
  * This is exclusively the list view's renderer — the chart's equivalent has
- * been `Components/Chart/ChartNode.vue` since W32 — but it stays in
- * `Components/Tree/` rather than moving into `Components/List/` (W84):
- * `Tree/NodeCard.vue` sits right beside it (W85's) and W88 is dispatched
- * against `Tree/useNodeSuggestions.ts`, so relocating this file would rewrite
- * import paths in files this package does not own and risk colliding with
- * W88's own in-flight work, for no functional gain — D51's spacing and
- * indent changes below only need this file edited, not moved.
+ * been `Components/Chart/ChartNode.vue` since the chart view arrived — but it
+ * stays in `Components/Tree/` rather than moving into `Components/List/`:
+ * `Tree/NodeCard.vue` sits right beside it and `Tree/useNodeSuggestions.ts`
+ * is imported from elsewhere, so relocating this file would rewrite import
+ * paths in other files for no functional gain — the spacing and indent
+ * changes below only need this file edited, not moved.
  */
 import { dragPayloadFor, type DragPayload } from '@/composables/useDragDrop';
 import { EDITOR_VIEW_KEY } from '@/composables/useEditorView';
@@ -72,9 +71,9 @@ const childUuids = computed<string[]>(() => {
 });
 
 /**
- * What this occurrence is, as far as dragging is concerned (W27 defect 3).
+ * What this occurrence is, as far as dragging is concerned.
  *
- * W38 moved the switch itself into `dragPayloadFor` in useDragDrop.ts, where
+ * The switch itself lives in `dragPayloadFor` in useDragDrop.ts, where
  * the chart's cards read the same one. Two copies of "what does dragging this
  * mean" would be invisible until a drop landed under the wrong parent in one
  * view and the right one in the other.
@@ -105,11 +104,11 @@ function childEdge(childUuid: string): AttackDefenceLink | undefined {
         class="mb-1.5"
     >
         <!--
-            W84/D51: "the list breathes" — two changes, not substitutes for
+            "The list breathes" — two changes, not substitutes for
             each other (see useCanvas.ts's CANVAS_BASE_SCALE docblock for the
             other half, the baseline). `mb-1.5` (6px) is this element's own
-            contribution to row spacing; NodeCard.vue's `py-0.5` (W85, not
-            this package's) adds to it, so the two stack rather than one
+            contribution to row spacing; NodeCard.vue's `py-0.5`
+            adds to it, so the two stack rather than one
             replacing the other. Asserted as this exact class in
             tests/js/list/TreeNode.spec.ts — a class of "some margin" would
             stay green if it were reverted to nothing.
@@ -124,8 +123,8 @@ function childEdge(childUuid: string): AttackDefenceLink | undefined {
             :drag-payload="dragPayload"
             @toggle="toggle"
         />
-        <!-- W84/D51: indent per level grew from `ml-2.5 pl-2.5` (10px) to
-             `ml-4 pl-4` (16px) — the item 16 density complaint was partly
+        <!-- Indent per level grew from `ml-2.5 pl-2.5` (10px) to
+             `ml-4 pl-4` (16px) — the density complaint was partly
              that sibling levels read as one indistinct column. -->
         <ul
             v-if="expanded && childUuids.length"

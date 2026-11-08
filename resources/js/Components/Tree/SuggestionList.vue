@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The list under the add-a-child title field (W40).
+ * The list under the add-a-child title field (ui.md §3.3).
  *
  * Advisory, not modal: it never takes focus, so the caret stays in the field
  * and typing continues to work with the list open. `mousedown.prevent` is what

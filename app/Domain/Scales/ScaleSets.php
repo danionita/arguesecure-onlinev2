@@ -8,10 +8,10 @@ use RuntimeException;
 use stdClass;
 
 /**
- * The catalogue of shared system scale *sets* (W77, PLAN-2.4.md D36).
+ * The catalogue of shared system scale *sets*.
  *
  * A set is a trio of `is_system = 1, assessment_id IS NULL` scales — one
- * impact, one likelihood, one strength — sharing a `set_key`. Before W77 the
+ * impact, one likelihood, one strength — sharing a `set_key`. Before sets had keys the
  * trio existed but the key did not, so there was no way to have two of them
  * and no way for `instance_settings.default_scale_calibration` to name one.
  *
@@ -21,11 +21,11 @@ use stdClass;
  *
  * - the **keys**, which the seeder writes and the settings form validates
  *   against;
- * - the **names**, which live in `scale_sets` (W126);
+ * - the **names**, which live in `scale_sets`;
  * - **resolution**, which turns a key into the three scale ids an assessment
  *   is created with.
  *
- * ## Names are data since W126
+ * ## Names are data
  *
  * They were a constant while a set was not a row. An admin can now create one,
  * so the name lives in `scale_sets`, one row per set, and the three scales of
@@ -37,7 +37,7 @@ final class ScaleSets
     /**
      * The set every instance has.
      *
-     * This is the value the W77 migration backfilled every pre-existing
+     * This is the value the migration that added `set_key` backfilled every pre-existing
      * system scale to, the value `instance_settings.default_scale_calibration`
      * defaults to, and the set AssessmentCreator falls back to when the
      * configured one has been removed. Removing it from the seeder without
@@ -49,7 +49,7 @@ final class ScaleSets
     /**
      * A second, genuinely different calibration — not a copy of the first.
      *
-     * D36 notes that a select with one option is the same non-control in a
+     * A select with one option is the same non-control in a
      * different shape, which is the whole reason a second set had to exist
      * before the setting could mean anything.
      */
@@ -215,7 +215,7 @@ final class ScaleSets
      * was correct only for as long as exactly one set existed. With two, two
      * rows share `kind = 'impact'`, `pluck` keeps whichever the database
      * happened to return last, and every new assessment gets an arbitrary
-     * calibration with nothing raised anywhere — the failure W75 pinned and
+     * calibration with nothing raised anywhere — the failure a test pinned and
      * confirmed empirically against a green suite.
      *
      * A duplicate kind *within* one set throws rather than returning null.
@@ -282,8 +282,8 @@ final class ScaleSets
      * name and order when it has a row there (a left join, so a set seeded
      * under a key `scale_sets` does not know still comes back).
      *
-     * `set_key IS NULL` rows are excluded: a system scale predating the W77
-     * migration cannot exist (it backfilled them all), so a NULL here would
+     * `set_key IS NULL` rows are excluded: a system scale predating the
+     * `set_key` migration cannot exist (it backfilled them all), so a NULL here would
      * be a row written by something that bypassed the seeder, and it belongs
      * to no set by definition.
      *

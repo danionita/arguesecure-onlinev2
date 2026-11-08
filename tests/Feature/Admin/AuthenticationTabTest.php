@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * W133, D105-D108: the Authentication tab. Settings come from the environment
+ * The Authentication tab. Settings come from the environment
  * (config) first and from the database otherwise, field by field; the secret
  * is encrypted at rest and never leaves the server.
  */

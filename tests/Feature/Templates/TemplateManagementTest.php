@@ -10,7 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 /*
- * W141 — templates are created, listed, edited and deleted on the Templates
+ * Templates are created, listed, edited and deleted on the Templates
  * page by admins, own nothing, and appear in no assessment list.
  */
 
@@ -173,7 +173,7 @@ test('an edited bundled template is not overwritten by the next seed', function 
 
 // --- migrating what 2.6 left behind (T6) -----------------------------------
 
-/** Drops the CHECK so a pre-W141 shape can be built, and puts it back after. */
+/** Drops the CHECK so a pre-2.7 shape can be built, and puts it back after. */
 function withoutTemplateCheck(Closure $body): void
 {
     DB::statement('ALTER TABLE assessments DROP CONSTRAINT assessments_template_ownerless');
@@ -246,7 +246,7 @@ test('a template somebody published is copied and the assessment goes back to it
         ->and(Risk::query()->where('assessment_id', $copy->id)->value('uuid'))->not->toBe($risk->uuid);
 });
 
-// --- the library's changes are in the security log (W141) -------------------
+// --- the library's changes are in the security log -------------------
 
 test('creating, publishing and deleting a template are logged, with the actor and the template', function () {
     require_once __DIR__.'/../Audit/Capture.php';

@@ -1,6 +1,6 @@
 /**
  * Shared blank-vs-zero handling for every numeric Values-tab input
- * (calculation-engine.md §6, CLAUDE.md "blank is not zero"). Input.vue's
+ * (calculation-engine.md §6: blank is not zero). Input.vue's
  * native <input> always emits its value as a string — `''` when the user
  * has cleared the field, a numeric literal otherwise — so the empty string
  * is the one and only signal for "the user has not typed a number", and it

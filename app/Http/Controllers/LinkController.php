@@ -18,20 +18,20 @@ use App\Models\Risk;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Edge mutations for the node modal's Links tab (ui.md §7, PLAN.md W13):
+ * Edge mutations for the node modal's Links tab (ui.md §7):
  * which risks an attack belongs to, which defences apply to an attack, and
  * — because "strength belongs to the attack-defence edge, not the defence
  * node" — the per-link strength and reduction target.
  *
- * Creating and removing edges goes through LinkService (app/Domain/Structure,
- * not owned by this package) rather than duplicating its same-assessment
- * check here, matching CLAUDE.md's "business logic goes in app/Domain/".
+ * Creating and removing edges goes through LinkService (app/Domain/Structure)
+ * rather than duplicating its same-assessment check here: business logic
+ * belongs in app/Domain/, not in controllers.
  * Editing an *existing* edge's scalar fields (strength, reduction target,
  * rationale) is done directly against the AttackDefence pivot model here —
  * LinkService currently only exposes link/unlink, no field-level update —
  * the same shape NodeController already uses for a node's own scalar
  * fields ($node->fill()/save(), no dedicated "UpdateNodeService" either).
- * Reported in the W13 summary as a candidate for a future LinkService
+ * A candidate for a future LinkService
  * method if link-editing logic grows beyond this.
  */
 class LinkController extends Controller
@@ -89,12 +89,12 @@ class LinkController extends Controller
     }
 
     /**
-     * Push a link creation onto the undo stack (W38).
+     * Push a link creation onto the undo stack.
      *
-     * Creating an edge was not undoable before this: W14 recorded reorder and
-     * move from its own route closures, and W13 built this controller without
+     * Creating an edge was not undoable before this: reorder and move were recorded from their own
+     * route closures, and this controller was built without
      * touching UndoService, so a link created from the Links tab left no trace
-     * on the stack at all. W38 makes linking a drag gesture — one drop away,
+     * on the stack at all. Linking is now a drag gesture — one drop away,
      * on a projector, in front of a room — which turns "not undoable" from an
      * inconsistency into a hazard.
      *
@@ -153,7 +153,7 @@ class LinkController extends Controller
 
         unset($validated['attack_uuid'], $validated['defence_uuid']);
 
-        // W56. Captured before the fill: the pivot has no observer to read
+        // Captured before the fill: the pivot has no observer to read
         // getOriginal() from the way NodeObserver does for a node, and this
         // method is its only writer.
         $before = $link->getAttributes();
@@ -161,7 +161,7 @@ class LinkController extends Controller
         $link->fill($validated);
         $link->save();
 
-        // Closes the first of W48's history gaps (schema.md §3.9). Strength is
+        // Closes the first of the history gaps (schema.md §3.9). Strength is
         // a multiplicand in the total, so a change to it that left no trace
         // made a past total unreconstructable — see RevisionRecorder.
         $revisions->recordLinkUpdate($link, $attack, $defence, $before, $request->user());

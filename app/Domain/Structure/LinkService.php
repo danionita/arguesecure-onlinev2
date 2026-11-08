@@ -11,7 +11,7 @@ use App\Models\RiskAttack;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Creates and removes the DAG edges (schema.md §3.5, §3.6). W5 deliberately
+ * Creates and removes the DAG edges (schema.md §3.5, §3.6). The migrations deliberately
  * left endpoint-type and same-assessment validation to this service — it is
  * not database-enforceable on a self-referencing pivot.
  *
@@ -112,7 +112,7 @@ class LinkService
 
     /**
      * Hands an edge the two nodes it connects, before the save or delete that
-     * fires its observer (W68).
+     * fires its observer.
      *
      * The observers and LinkChanged both need the endpoints — for the channel
      * name, for the payload's uuids, and for the assessment the recalculation

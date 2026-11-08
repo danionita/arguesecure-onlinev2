@@ -1,5 +1,5 @@
 /**
- * W138 (D109, D110): Print asks which view to print.
+ * Print asks which view to print.
  *
  * jsdom has no print pipeline, so `window.print` is a spy. What is asserted
  * is the order of events, which is what regresses silently: a print that
@@ -21,6 +21,7 @@ import {
     usePrintOnArrival,
     withPrintToken,
 } from '../../../resources/js/composables/usePrintOnArrival';
+import { routeProperties } from '../support/routeProperties';
 
 const visit = vi.fn();
 vi.mock('@inertiajs/vue3', async () => {
@@ -70,7 +71,7 @@ function mountActions(
             setViewMode,
             userId: 7,
         },
-        global: { config: { globalProperties: { route } } },
+        global: { config: { globalProperties: routeProperties(route) } },
     });
 }
 

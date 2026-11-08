@@ -11,7 +11,7 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 11 of PLAN.md's end-to-end list: "Open the read-only share link
+ * Scenario 11 of the end-to-end list: "Open the read-only share link
  * in a private window with no session: content is visible, every edit
  * affordance is absent, and the API rejects a hand-crafted mutation."
  *
@@ -23,7 +23,7 @@ import {
  * RiskPolicy/AttackPolicy/DefencePolicy all returned
  * `$node->tree->public || owner` for `update` and `destroy`, so any logged-in
  * user could edit or delete the contents of any public assessment
- * (security.md, PLAN.md Phase 2). In 2.0, `is_public` and a share token
+ * (security.md). In 2.0, `is_public` and a share token
  * grant `view` and nothing else.
  *
  * Every test here runs in a context with no session at all — not a
@@ -118,7 +118,7 @@ test.describe('the read-only share link', () => {
             await page.goto(shareUrl);
             await expect(page).not.toHaveURL(/\/s\//);
 
-            // W114: the link itself lands on the assessment. No second
+            // The link itself lands on the assessment. No second
             // navigation — until 2.7 it went to the dashboard, which sent a
             // holder without an account to the sign-in page.
             await expect(page).toHaveURL(
@@ -142,7 +142,7 @@ test.describe('the read-only share link', () => {
     });
 
     test('every edit affordance is absent', async ({ browser }) => {
-        const { shareUrl, assessmentUuid } = await mintShareLink(browser);
+        const { shareUrl } = await mintShareLink(browser);
         const context = await browser.newContext();
 
         try {

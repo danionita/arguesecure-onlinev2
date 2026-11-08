@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
- * "You dropped this somewhere else — did you mean move, or link?" (W38,
- * PLAN-2.2.md D11).
+ * "You dropped this somewhere else — did you mean move, or link?"
  *
  * Not a `ConfirmDialog` with an extra button. A confirm dialog asks one
  * question with a safe default and a destructive alternative; this asks the
@@ -36,7 +35,7 @@ const emit = defineEmits<{
 <template>
     <Modal :show="show" title="Move or link?" size="sm" @close="emit('cancel')">
         <!--
-            The padding is here, not on `Modal`'s body (W71 item 3). Every
+            The padding is here, not on `Modal`'s body. Every
             other consumer of Modal pads its own content, so padding the body
             would double-pad all four — and NodeModal in particular wants its
             tab strip flush to the dialog's edges.

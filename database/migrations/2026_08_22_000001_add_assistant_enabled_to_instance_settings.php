@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * The admin-controlled half of the assistant switch (PLAN-2.3-ai.md D25).
+     * The admin-controlled half of the assistant switch (docs/ASSISTANT.md).
      *
      * There are deliberately two switches, not one, because they answer two
      * different questions. `config('assistant.enabled')` is a *deployment*

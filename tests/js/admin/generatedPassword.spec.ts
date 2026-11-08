@@ -1,5 +1,5 @@
 /**
- * W115: the generated password reaches the users table, from Inertia's flash
+ * The generated password reaches the users table, from Inertia's flash
  * data rather than from a prop — so it is delivered with one response and is
  * not in browser history.
  */
@@ -7,6 +7,7 @@ import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import Index from '../../../resources/js/Pages/Admin/Users/Index.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const page = reactive<{ props: object; flash: Record<string, unknown> }>({
     props: {},
@@ -36,7 +37,7 @@ function render() {
             filters: { search: '', sort: 'name', direction: 'asc' },
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { AdminLayout: { template: '<div><slot /></div>' } },
         },
     });

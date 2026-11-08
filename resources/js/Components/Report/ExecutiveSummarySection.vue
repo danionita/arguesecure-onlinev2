@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Executive summary (PLAN.md Phase 7 §2): inherent / current / target
+ * Executive summary (ui.md §9): inherent / current / target
  * annual loss, the reduction each buys, and the total annual cost of
  * controls. Baseline visibility follows the chosen report option
  * (`options.baseline`) — inherent is always shown, since both the current
@@ -16,7 +16,7 @@ const props = defineProps<{
     summary: ExecutiveSummary;
     baseline: ReportBaseline;
     currency: string;
-    /** W44. Passed straight through to the chart, which draws the line. */
+    /** Passed straight through to the chart, which draws the line. */
     riskTolerance?: number | null;
 }>();
 

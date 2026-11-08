@@ -22,7 +22,7 @@ use App\Models\Risk;
  * deployment, from the moment there was anything to calculate.
  *
  * It hid because the e2e suite's assertions could still pass: the client
- * recomputes optimistically in TypeScript (W11), so the numbers on screen
+ * recomputes optimistically in TypeScript, so the numbers on screen
  * were right even when the authoritative broadcast never arrived. Only the
  * queue worker's log said otherwise.
  */

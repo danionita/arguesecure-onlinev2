@@ -1,7 +1,7 @@
 /**
- * The admin **Security log** tab (W128, D96–D100): the download links carry
+ * The admin **Security log** tab: the download links carry
  * the filters, the table lists the rows, and the page says where application
- * logs are instead of offering them (D96).
+ * logs are instead of offering them.
  */
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';

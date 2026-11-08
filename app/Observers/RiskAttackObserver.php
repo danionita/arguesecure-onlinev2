@@ -8,14 +8,14 @@ use App\Observers\Concerns\TriggersRecalculation;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * PLAN.md Phase 6 item 4 — link changed. See NodeObserver's docblock for
+ * Link changed. See NodeObserver's docblock for
  * why this lives as a pivot-model observer rather than inline in
- * LinkController (outside this package's ownership).
+ * LinkController.
  *
  * Same known gap as AttackDefenceObserver: LinkService::unlinkRiskFromAttack()
  * deletes via the query builder, not `$model->delete()`, so `deleted()`
  * below does not fire through today's only caller — see that observer's
- * docblock and the W16 session's final report.
+ * docblock.
  */
 class RiskAttackObserver
 {

@@ -1,18 +1,18 @@
 <script setup lang="ts">
 /**
- * **Scales** — the target of assessment's own tab (W72 item 10; ui.md §7).
+ * **Scales** — the target of assessment's own tab (ui.md §7, Scales tab).
  *
  * The currency, the risk tolerance, the amortisation period and the three
- * qualitative scales are not new: W44 built them all on
+ * qualitative scales are not new: they were first built on
  * `Pages/Assessment/Settings.vue`, at `/assessments/{uuid}/settings`, reached
  * only from a sidebar item. Everything else about the assessment is edited by
  * opening its root node, so the one screen that says what its numbers *mean*
- * being somewhere else is a place people do not find. Item 10 surfaces them
+ * being somewhere else is a place people do not find. This tab surfaces them
  * where the rest of the root node's fields already are.
  *
  * ## One controller, one request object, read and written from two screens
  *
- * The brief is explicit that this must not become a second write path to the
+ * This must not become a second write path to the
  * same columns, and it is not: this tab **reads** `AssessmentSettingsController::edit`
  * and **writes** `AssessmentSettingsController::update` through
  * `UpdateAssessmentSettingsRequest`, exactly as the settings page does. No
@@ -27,7 +27,7 @@
  *   config array on every editor page load for a tab most sessions never
  *   open. So this asks the settings controller for its own props, with the
  *   `X-Inertia` headers that make it answer in JSON, on first activation of
- *   the tab. W71 made panels lazy, so "first activation" is genuinely the
+ *   the tab. Panels are lazy, so "first activation" is genuinely the
  *   first time anyone opens it.
  * - **The write is axios, not `router.patch`.** The controller redirects to
  *   `assessments.settings.edit` on success, which is right for the settings
@@ -39,7 +39,7 @@
  * ## Bands are not edited here
  *
  * A scale's levels are calibrated in the three cards on Assessment settings
- * (W65, relocated there by W87 / D46) and this tab links to it. That editor
+ * (ui.md §8, The scale cards) and this tab links to it. That editor
  * has its own ordering, bounds and overlap rules; a summary answering "what
  * are the bands called" is what belongs beside a value someone is entering,
  * and it is what the settings page shows for the same reason.
@@ -55,10 +55,10 @@ import { computed, onMounted, ref } from 'vue';
 /*
  * The scales branch is typed by `ScaleDetail` — the shape
  * `AppDomainScalesScaleDescriber` actually emits — rather than by a
- * hand-written summary of it (W87).
+ * hand-written summary of it.
  *
  * It was a local interface declaring `levels: { code, label }[]`, which is
- * what this endpoint sent until W87 replaced it with `ScaleDescriber`. The
+ * what this endpoint sent until it was replaced with `ScaleDescriber`. The
  * server then began sending `bands` and this file kept reading `levels`,
  * which is a TypeError in the render function rather than a missing row —
  * and `vue-tsc` could not see it, because a hand-written interface asserts
@@ -222,7 +222,7 @@ async function save(): Promise<void> {
          * spread over it — so the local recompute has to follow it or every
          * annualised cost on screen stays on the old divisor until something
          * unrelated triggers a recalculation. Currency and tolerance are
-         * display-only (PLAN-2.2.md D14) and need no recompute, but they are
+         * display-only and need no recompute, but they are
          * assigned in the same place because they come from the same save.
          */
         const changedAmortization =

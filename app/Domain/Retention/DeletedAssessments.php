@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * The *Deleted* list on *My assessments* (W113): every deleted assessment the
+ * The *Deleted* list on *My assessments*: every deleted assessment the
  * caller could have deleted, so could restore.
  *
  * Restoring is the `delete` ability and erasing is `forceDelete`, both from

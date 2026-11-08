@@ -11,24 +11,22 @@ use App\Models\InstanceSetting;
  * currency, default scale calibration, whether public assessments are
  * allowed, session lifetime, registration lockdown").
  *
- * W8b follow-up: this used to persist through Cache::forever() because no
- * table existed and database/migrations/** was outside W8's file ownership
- * — a cache flush silently reverted the instance to defaults. It now backs
+ * This used to persist through Cache::forever() because no table existed
+ * yet — a cache flush silently reverted the instance to defaults. It now backs
  * onto the `instance_settings` table (schema.md's "Instance settings"
  * section) via App\Models\InstanceSetting, a real singleton row. This
  * class's public interface (all()/update()) is unchanged so
- * SettingsController needs no changes beyond what W8b's other gaps
- * require.
+ * SettingsController needs no changes.
  *
  * `registration_locked` has been removed rather than wired up.
- * CLAUDE.md is explicit: "No public registration. Accounts are
- * admin-created." There is no registration route, guarded or otherwise, in
+ * The rule is "No public registration. Accounts are admin-created"
+ * (security.md §4). There is no registration route, guarded or otherwise, in
  * this application, in any state — so a toggle that claims to lock/unlock
  * "registration" has nothing to gate. Wiring it to something else (e.g.
  * gating first-run setup or admin user-creation) would just be renaming a
  * different, already-real control to reuse this key, which is more
  * confusing than removing it. A control that appears to do something and
- * does not is worse than no control (per this package's brief) — so it is
+ * does not is worse than no control — so it is
  * gone from storage, validation and the settings page rather than kept as
  * a permanently-disabled toggle.
  *
@@ -95,7 +93,7 @@ class InstanceSettings
     }
 
     /**
-     * D79: non-admins sign in through the provider only. Meaningless without
+     * Non-admins sign in through the provider only. Meaningless without
      * a provider, so it is false unless one is configured: an instance whose
      * provider settings were removed must not refuse every password.
      */
@@ -104,7 +102,7 @@ class InstanceSettings
         return OidcConfig::enabled() && InstanceSetting::singleton()->sso_only;
     }
 
-    /** D78: password sign-in sends an account with no second factor to enrolment. */
+    /** Password sign-in sends an account with no second factor to enrolment. */
     public static function requireTwoFactor(): bool
     {
         return InstanceSetting::singleton()->require_two_factor;
@@ -126,7 +124,7 @@ class InstanceSettings
     }
 
     /**
-     * The column each of D48's three feature switches is held by.
+     * The column each of the three assistant feature switches is held by.
      *
      * A fixed map looked up by exact key, not `"assistant_{$feature}_enabled"`.
      * Building a column name from a string is a legacy defect this codebase
@@ -144,7 +142,7 @@ class InstanceSettings
 
     /**
      * Whether an admin has left one of the three assistant features switched
-     * on (W87, item 20, D48).
+     * on.
      *
      * **This is a quarter of the answer, not the answer.** Like
      * `assistantEnabled()` above it says nothing about whether a runtime
@@ -187,10 +185,10 @@ class InstanceSettings
             'default_currency' => 'EUR',
             'public_assessments_allowed' => true,
             // Off, on every deployment, until somebody decides otherwise
-            // (PLAN-2.3-ai.md D25).
+            // (docs/ASSISTANT.md §1).
             'assistant_enabled' => false,
             // On, unlike the switch above them, and the difference is the
-            // point (W87, D48). These are only ever read once an admin has
+            // point. These are only ever read once an admin has
             // already switched the assistant on; defaulting them off would
             // make enabling the assistant a two-step act whose second step is
             // invisible, and an admin who turned it on and found nothing
@@ -200,7 +198,7 @@ class InstanceSettings
             'assistant_suggestions_enabled' => true,
             'assistant_summary_enabled' => true,
             'session_lifetime_minutes' => 480,
-            // Off (W116, D78): on, it would send every account to enrolment at
+            // Off: on, it would send every account to enrolment at
             // its next sign-in with no warning.
             'require_two_factor' => false,
             'sso_only' => false,

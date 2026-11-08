@@ -1,9 +1,9 @@
 <?php
 
 /**
- * W58 — progress, and a Stop that actually stops.
+ * Progress, and a Stop that actually stops.
  *
- * ## What this package is really about
+ * ## What this is really about
  *
  * CPU inference is slow enough to change what the interface owes a person: 94
  * seconds for the first help answer of a session, 28 for a suggestion, 249 for
@@ -341,7 +341,7 @@ test('a deployment with no runtime serves none of these routes', function () {
 
     config()->set('assistant.enabled', false);
 
-    // D25 again: 404, not 403, and it holds for the progress routes as much as
+    // As elsewhere: 404, not 403, and it holds for the progress routes as much as
     // for the generating ones. A deployment without an assistant does not
     // advertise one by answering questions about it.
     $this->actingAs($owner)->getJson(route('assistant.generation.show'))->assertNotFound();

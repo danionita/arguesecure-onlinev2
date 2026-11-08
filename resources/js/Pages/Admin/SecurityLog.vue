@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
- * The admin **Security log** tab (W128, D96–D100): the last 50 stored security
+ * The admin **Security log** tab (docs/specs/security.md §11.1): the last 50 stored security
  * events matching a date range and event, and a CSV or JSON download of all
  * of them (capped). It shows what this instance recorded in the retention
  * window; the stderr stream is the copy an operator ships off the host.
- * Application logs are not here (D96).
+ * Application logs are not here.
  */
 import Button from '@/Components/UI/Button.vue';
 import AdminLayout from '@/Pages/Admin/AdminLayout.vue';

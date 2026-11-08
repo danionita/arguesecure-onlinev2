@@ -5,11 +5,10 @@ namespace App\Domain\Help;
 use App\Domain\Assistant\Help\Corpus;
 
 /**
- * The fixed manifest of help pages (PLAN.md Phase 9 item 2, W23). A
+ * The fixed manifest of help pages (help is authored as markdown pages). A
  * hardcoded slug => title map, not a directory scan: the slug in the URL
- * never becomes a filesystem path built from request input (CLAUDE.md "no
- * dynamic column names from request input" — the same principle applies to
- * paths), and the manifest doubles as the fixed navigation order for the
+ * never becomes a filesystem path built from request input (the rule against dynamic column
+ * names from request input, security.md §7, applies to paths too), and the manifest doubles as the fixed navigation order for the
  * help index and the "every markdown file the help index lists actually
  * exists and parses" test.
  *
@@ -17,7 +16,8 @@ use App\Domain\Assistant\Help\Corpus;
  * how to build an assessment and what its numbers mean, then working with
  * other people and with templates, then history and the report, which are
  * reached for once an assessment has content. The keyboard map is a
- * reference and administration concerns few readers, so both come last.
+ * reference and sign-in concern few readers, so both come last. The
+ * administrators' pages are not here: {@see AdminHelpLibrary}.
  *
  * Every page here is also the assistant's help corpus, whole, on every
  * question ({@see Corpus}); a page added here is paid for in prompt
@@ -38,7 +38,6 @@ final class HelpLibrary
         'reading-a-report' => 'How to read a report',
         'keyboard' => 'Keyboard map',
         'signing-in' => 'Signing in',
-        'administration' => 'Administration',
     ];
 
     /**

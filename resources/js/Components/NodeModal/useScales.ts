@@ -2,20 +2,19 @@
  * Reads the assessment's three configured scales straight off the Inertia
  * page props (`usePage().props`) rather than through the assessment store.
  *
- * Gap worth recording (see the W13 report): AssessmentController already
+ * Gap worth recording: AssessmentController already
  * sends `scaleLevels`/`scales` on Assessment/Show (app/Http/Controllers/
  * AssessmentController.php lines ~61-62 — the exact shape AssessmentGraph
  * carries, schema.md §3.2), but Pages/Assessment/Show.vue's own
  * `defineProps` doesn't declare them and createAssessmentStore()'s
  * `AssessmentStoreInit` doesn't accept them, so the qualitative Values-tab
- * level pickers have no store-exposed path to this data. Both those files
- * are outside this package's ownership (Pages/**, stores/**), so rather
- * than editing them this composable reaches the same data the page
+ * level pickers have no store-exposed path to this data. Rather
+ * than changing those files this composable reaches the same data the page
  * component already received via Inertia's page-props object directly —
  * `usePage().props` carries everything `Inertia::render()` sent regardless
  * of what any one page component's `defineProps` declares, so this needs
  * no change to Show.vue or the store to work correctly today. The cleaner
- * long-term fix is for W12 to add `scaleLevels`/`scales` to
+ * long-term fix is for the store to add `scaleLevels`/`scales` to
  * `AssessmentStoreInit` so every consumer reads them from one place.
  */
 import type { PageProps } from '@/types';

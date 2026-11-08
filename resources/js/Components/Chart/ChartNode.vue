@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One occurrence in the chart, positioned from the layout (W32).
+ * One occurrence in the chart, positioned from the layout.
  *
  * The nesting is deliberate and load-bearing. It would be simpler to flatten
  * the chart into four rows of absolutely-positioned divs — the coordinates
@@ -78,7 +78,7 @@ function addChild() {
 }
 
 /**
- * Opening the modal, unless there is no modal to open (W63).
+ * Opening the modal, unless there is no modal to open.
  *
  * A frozen snapshot renders these cards with no `NodeModal` mounted, because
  * the modal's tabs read live comments, history and references — today's

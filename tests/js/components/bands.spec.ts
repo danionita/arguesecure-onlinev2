@@ -9,7 +9,7 @@ import {
 } from '../../../resources/js/Components/Scales/bands';
 
 /**
- * The band-editing rules behind the calibration screen (W65, ui.md §8).
+ * The band-editing rules behind the calibration screen (ui.md §8).
  *
  * ui.md's instruction is the design: "the invariants are non-negotiable, so
  * **make them impossible to violate rather than validating after the fact**."
@@ -103,7 +103,7 @@ function expectValid(bands: EditableBand[], unit: 'currency' | 'fraction') {
     }
 
     // Only the carried codes. A band this module created carries `null` and is
-    // named server-side (W87, D44), and several nulls collapsing to one set
+    // named server-side, and several nulls collapsing to one set
     // entry is not a collision — it is the absence of a code.
     const carried = bands.map((b) => b.code).filter((c) => c !== null);
     expect(new Set(carried).size).toBe(carried.length);
@@ -253,7 +253,7 @@ describe('splitBand', () => {
             bands = splitBand(bands, 0, 'currency', MULTIPLIER);
         }
 
-        // W87, D44. This module used to mint `${code}_2` and nudge it until it
+        // This module used to mint `${code}_2` and nudge it until it
         // was unused. It cannot do that job correctly: it can only see the
         // bands being edited, while `scale_levels_code_unique (scale_id, code)`
         // is a fact about the whole scale — including bands this save removes,

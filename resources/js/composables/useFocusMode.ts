@@ -1,5 +1,5 @@
 /**
- * Focus mode — isolate one subtree (ui.md §5 / PLAN.md W15).
+ * Focus mode — isolate one subtree (ui.md §5).
  *
  * Focus is keyed on the *occurrence* path-key, not the node uuid, for the
  * same reason expand/collapse state is (ui.md §3.1, assessmentStore.ts's
@@ -79,7 +79,7 @@ export function useFocusMode(store: AssessmentStore) {
         focusedPathKey.value = pathKey;
     }
 
-    /** `Escape` clears focus mode per ui.md §4 — W14 owns the key binding and calls this. */
+    /** `Escape` clears focus mode per ui.md §4 — the keyboard composables bind the key and call this. */
     function exit() {
         focusedPathKey.value = null;
     }

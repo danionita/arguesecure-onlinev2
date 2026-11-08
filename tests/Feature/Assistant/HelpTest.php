@@ -1,16 +1,16 @@
 <?php
 
 /**
- * W51 — job A: answering a question about ArgueSecure from its own help pages.
+ * Job A: answering a question about ArgueSecure from its own help pages.
  *
  * The interesting assertions here are not "it returns an answer". They are the
  * four decisions the spike forced, each of which is invisible in a passing
  * feature and expensive when it silently stops holding:
  *
- * 1. **The corpus is the manifest, and `docs/` is not in it** (D22). A drift
+ * 1. **The corpus is the manifest, and `docs/` is not in it**. A drift
  *    here does not break anything — it makes the assistant fluently repeat the
  *    *legacy* application's security failures as current fact.
- * 2. **Corpus first, question last** (D21). Reversing them looks like
+ * 2. **Corpus first, question last**. Reversing them looks like
  *    formatting and costs a 14× slowdown, because it destroys the prompt
  *    prefix the runtime caches.
  * 3. **Authenticated, rate-limited, one at a time.** The help pages this reads
@@ -64,21 +64,21 @@ test('the corpus is every page in the manifest, and nothing else', function () {
 test('the corpus does not contain developer documentation', function () {
     $text = app(Corpus::class)->text();
 
-    // D22, and the reason this test exists rather than a comment. `docs/`
+    // The reason this test exists rather than a comment. `docs/`
     // narrates the *legacy* application's security failures — a committed
     // APP_KEY amounting to RCE, an admin account with a documented default
     // password — in prose carrying nothing to mark it historical once chunked
     // into a prompt. A user asking "is ArgueSecure secure?" would get a
     // fluent, well-sourced, catastrophically wrong answer.
     //
-    // Phrases picked from docs/PLAN.md's opening paragraphs.
+    // Phrases picked from the legacy-security narrative in docs/.
     expect($text)->not->toContain('remote code execution');
     expect($text)->not->toContain('CVE-2018-15133');
     expect($text)->not->toContain('work package');
 });
 
 test('the corpus still fits the context window', function () {
-    // D21's no-retrieval decision holds only while the haystack is smaller
+    // Sending the whole corpus with no retrieval holds only while the haystack is smaller
     // than the context window. When this goes red the decision needs
     // revisiting — with BM25, not embeddings — rather than the threshold being
     // raised.
@@ -262,7 +262,7 @@ test('the assistant rate limit is 6 a minute, not the authenticated default', fu
     }
 
     // Assert the *specified* value, never that some limiter is present:
-    // CLAUDE.md's "a presence assertion is not a guard" was learned when a
+    // A presence assertion is not a guard: a
     // prefix match let a laxer `throttle:300,1` satisfy a test looking for
     // `throttle`.
     $this->actingAs($user)

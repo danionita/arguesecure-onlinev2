@@ -2,6 +2,7 @@
 
 namespace App\Domain\Identity\Oidc;
 
+use App\Domain\Accounts\SelfRegistration;
 use App\Domain\Identity\Oidc\Events\SsoAccountCreated;
 use App\Domain\Identity\Oidc\Events\SsoIdentityLinked;
 use App\Models\User;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * Who a validated ID token is (D76). In order:
+ * Who a validated ID token is. In order:
  *
  *  1. the account already linked to `(iss, sub)`, whatever its email now says;
  *  2. the active account with the token's email, linked on this first
@@ -118,6 +119,10 @@ final class SsoAccounts
     private function create(string $email, array $claims, string $issuer, string $subject): User
     {
         $name = is_string($claims['name'] ?? null) && trim($claims['name']) !== '' ? trim($claims['name']) : $email;
+
+        // A request still waiting for its link loses to a verified provider
+        // sign-in for the same address: its password dies with it.
+        SelfRegistration::discardFor($email);
 
         return DB::transaction(function () use ($email, $name, $issuer, $subject): User {
             $user = new User;

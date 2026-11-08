@@ -1,7 +1,7 @@
 <?php
 
 /*
- * W124 (D90): the sidebar's version is the release tag, carried into the
+ * The sidebar's version is the release tag, carried into the
  * image by a build argument. If any link of that chain is cut, a release
  * image silently says `dev`, which no other test would notice.
  */
@@ -35,7 +35,7 @@ test('the config reads the build version, then the VERSION file, then dev', func
 });
 
 test('VERSION names a release whose notes file exists', function () {
-    // The sidebar links to docs/RELEASE-<version>.md at that tag (W124). A
+    // The sidebar links to docs/RELEASE-<version>.md at that tag. A
     // VERSION with no notes file is a link that 404s.
     $version = trim(buildRoot('VERSION'));
 

@@ -1,7 +1,6 @@
 /**
  * Mirrors app/Http/Controllers/CatalogController.php's and
- * TemplateController.php's Inertia props byte-for-byte (schema.md §3.14,
- * PLAN.md Phase 8 item 4).
+ * TemplateController.php's Inertia props byte-for-byte (schema.md §3.14).
  */
 
 export type CatalogEntryKind = 'risk' | 'attack' | 'defence';

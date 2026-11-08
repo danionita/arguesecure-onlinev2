@@ -1,10 +1,10 @@
 <?php
 
 /**
- * W115: a password the admin did not type reaches the admin, once, and is
+ * A password the admin did not type reaches the admin, once, and is
  * good for one sign-in.
  *
- * Until W115 `UserController` wrote `->with('generatedPassword', …)` and
+ * Until this was fixed `UserController` wrote `->with('generatedPassword', …)` and
  * nothing passed the session's flash bag to the page, so leaving the password
  * blank created an account nobody knew the password of. The table's banner
  * existed and never had anything to show.

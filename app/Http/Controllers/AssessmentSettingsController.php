@@ -13,7 +13,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * One settings screen for an assessment (W44, item 12; ui.md §8).
+ * One settings screen for an assessment (ui.md §8, Assessment settings).
  *
  * These settings were scattered or absent: the amortisation period was on the
  * assessment row with no control anywhere, the currency likewise, the title
@@ -34,10 +34,10 @@ class AssessmentSettingsController extends Controller
         return Inertia::render('Assessment/Settings', [
             'assessment' => [
                 'uuid' => $assessment->uuid,
-                // Title and description are deliberately absent (W86, item 9):
+                // Title and description are deliberately absent:
                 // they live on the root node and are edited there. Carrying
                 // them here again is the two-editors-for-one-field mistake
-                // this package removed.
+                // this screen no longer allows.
                 'currency' => $assessment->currency,
                 'amortization_years' => (int) $assessment->amortization_years,
                 'risk_tolerance' => $assessment->risk_tolerance,
@@ -45,7 +45,7 @@ class AssessmentSettingsController extends Controller
             'currencies' => UpdateAssessmentSettingsRequest::currencies(),
             'maxAmortizationYears' => (int) config('arguesecure.max_amortization_years', 10),
             /*
-             * Editable here since W87 (D46), where it was a read-only summary
+             * Editable here; it used to be a read-only summary
              * linking to a screen of its own.
              *
              * The screen and its route are deleted rather than unlinked: a
@@ -55,13 +55,13 @@ class AssessmentSettingsController extends Controller
              * Defaults tab sends, so the two screens cannot be handed
              * different shapes and drift apart.
              *
-             * `code` is in the payload and is drawn nowhere (D44). It is the
+             * `code` is in the payload and is drawn nowhere. It is the
              * round-trip token that freezes a code across a rename; an id
              * cannot do that job, because a custom scale is cloned per
              * assessment and its level ids do not exist until the clone runs.
              */
             'scales' => ScaleDescriber::forAssessment($assessment),
-            // W126: every admin scale in full, so picking one fills the editors
+            // Every admin scale in full, so picking one fills the editors
             // without a request, and the key the dropdown starts on (null is
             // Custom).
             'scaleSets' => ScaleDescriber::allSets(),
@@ -97,7 +97,7 @@ class AssessmentSettingsController extends Controller
              * adding one to record three columns from one screen would put a
              * global hook in the path of every assessment write for the
              * benefit of a single controller. So this one caller passes the
-             * before-state explicitly, and W60's coverage test is what stops a
+             * before-state explicitly, and the history coverage test is what stops a
              * second settings writer appearing without one.
              */
             $before = $assessment->only(['currency', 'amortization_years', 'risk_tolerance']);
@@ -130,15 +130,15 @@ class AssessmentSettingsController extends Controller
             $assessment->save();
 
             /*
-             * W60. The amortisation period is the one setting on this screen
+             * The amortisation period is the one setting on this screen
              * that moves a figure, and until now neither history log recorded
              * it — so a reconstruction restored the nodes and left the divisor
              * at today's value (schema.md §3.9).
              *
-             * Until W86 a settings save that also renamed the assessment wrote
+             * Once, a settings save that also renamed the assessment wrote
              * **two** revisions: this one, and the ordinary root-node revision
              * the observer wrote for the title. That is gone now — title and
-             * description no longer reach this controller at all (item 9) —
+             * description no longer reach this controller at all —
              * but the reasoning is left here because a settings-scoped
              * revision folding into the tree's own would still be wrong if
              * some other field ever moved the other way: they are two
@@ -151,9 +151,8 @@ class AssessmentSettingsController extends Controller
             $this->revisions->recordSettingsUpdate($assessment, $before, $request->user());
 
             // Title and description used to be written to the root node
-            // here (W44) — removed in W86 (item 9). They live on the root
-            // node and are edited there; this screen writing them too was
-            // the second editor for one field CLAUDE.md warns is how they
+            // here. They now live on the root node and are edited there; this screen writing them too was
+            // the second editor for one field, which is how they
             // diverge, and `UpdateAssessmentSettingsRequest` now rejects
             // both fields outright so this write path cannot come back
             // through a scripted request either.

@@ -2,11 +2,10 @@
  * Link.md — Attack<->Defence and Risk<->Attack edge mutations for the node
  * modal's Links tab (ui.md §7). Talks to LinkController directly rather
  * than through a dedicated store method: the store (resources/js/stores/
- * assessmentStore.ts, outside this package's ownership) exposes no
- * addLink/removeLink/updateLink API — only addChild(), which creates a
- * *new* node and its edge together, not "link to an existing node". Per
- * the W13 brief ("work through the store's existing public surface and
- * report any gap"), this is exactly that gap, reported in the W13 summary.
+ * assessmentStore.ts) exposes no addLink/removeLink/updateLink API — only
+ * addChild(), which creates a *new* node and its edge together, not "link
+ * to an existing node". This module fills that gap without editing the
+ * store.
  *
  * What the store *does* already expose publicly is enough to build this
  * without editing it: `riskAttackLinks`/`attackDefenceLinks` are plain

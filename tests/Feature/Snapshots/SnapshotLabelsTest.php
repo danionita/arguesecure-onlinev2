@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Labels and assignees inside a snapshot (W62, `snapshots.graph` v2).
+ * Labels and assignees inside a snapshot (`snapshots.graph` v2).
  *
- * W61 shipped a restore with a known hole in it: a snapshot recorded no labels
+ * The first restore shipped with a known hole in it: a snapshot recorded no labels
  * and no assignees, so a node a restore *brought back* came back bare. That was
  * counted and reported rather than hidden, which made it a stated limitation
  * instead of a defect — but it was still the only reason a restore was ever
@@ -105,7 +105,7 @@ test('freezing labels does not cost a query per node', function () {
     // "did not grow" rather than as a fixed budget: a fixed number would go red
     // on any unrelated query added to the snapshot path and would then be
     // adjusted rather than read, which is how a budget test stops meaning
-    // anything. CLAUDE.md names this exact N+1 as the legacy tree's defect.
+    // anything. This exact N+1 was the legacy tree's defect.
     expect($withMany)->toBeLessThanOrEqual($withFew);
 })->group('snapshots');
 
@@ -214,7 +214,7 @@ test('a restore does not re-assign someone who has lost access', function () {
     $snapshot = snapshotOf($assessment);
 
     // Removing a collaborator removes their assignments — AssessmentUser's
-    // `deleted` hook, W46, and a decision that file argues at length.
+    // `deleted` hook, a decision that file argues at length.
     $assessment->members()->detach($user->id);
     expect($risk->fresh()->assignees()->count())->toBe(0);
 
@@ -277,7 +277,7 @@ test('a v1 snapshot still restores the graph it does hold', function () {
 
     restoreAs($assessment->owner, $assessment, $snapshot)->assertRedirect();
 
-    // The point of keeping v1 readable: the snapshots taken before W62 are
+    // The point of keeping v1 readable: the snapshots taken before labels were recorded are
     // exactly the ones somebody is most likely to need.
     expect($risk->fresh()->title)->toBe('Cardholder data breach');
 })->group('snapshots');
@@ -313,8 +313,8 @@ test('a database error is never dressed up as a friendly restore failure', funct
 
     $response = restoreAs($assessment->owner, $assessment, $snapshot);
 
-    // The regression guard for W62's narrowed catch. `QueryException` extends
-    // `PDOException` extends `RuntimeException`, so W61's `catch
+    // The regression guard for the narrowed catch. `QueryException` extends
+    // `PDOException` extends `RuntimeException`, so the first restore's `catch
     // (RuntimeException)` caught this and rendered its message — the failing
     // SQL and its bound values — into the page's error banner. It has to reach
     // the error handler instead, where security.md's rule about never showing
@@ -341,7 +341,7 @@ test('a snapshot from a version this code does not know is refused whole', funct
 
     // Refused, and nothing written. A partial restore of a shape this code had
     // guessed at is the "looks restored and is quietly wrong" failure the whole
-    // W48 audit exists to prevent — READABLE_VERSIONS is a list and not a
+    // audit of the history paths exists to prevent — READABLE_VERSIONS is a list and not a
     // floor for exactly this reason.
     expect($risk->fresh()->title)->toBe('Renamed since')
         ->and(Assessment::query()->whereKey($assessment->id)->sole()->snapshots()->count())->toBe(1);

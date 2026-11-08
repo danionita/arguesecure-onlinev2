@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Job B's request (W52).
+ * Job B's request.
  *
  * `update`, the same ability `StoreNodeRequest` requires — because the whole
  * purpose of a suggestion is to become a node, and an ability to *ask* that is
@@ -16,7 +16,7 @@ use Illuminate\Validation\Rule;
  * who cannot use it. A viewer sees no suggest action at all.
  *
  * Every route touching an assessment goes through `AssessmentPolicy`, without
- * exception (CLAUDE.md). This one is no different for having a model behind
+ * exception (security.md §3.1). This one is no different for having a model behind
  * it.
  */
 class SuggestChildrenRequest extends FormRequest

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * *My assessments* and the "new assessment" entry point (W26, W42; 2.5.1).
+ * *My assessments* and the "new assessment" entry point (2.5.1).
  *
  * Until 2.5.1 this page listed the caller's own assessments *and* the ones
  * shared with them, under the heading "Assessments", while the sidebar linked
@@ -9,7 +9,7 @@
  * else, and the list itself (filter, rows, icon actions) is the same
  * component the shared page renders: `Components/Dashboard/AssessmentList.vue`.
  *
- * ## Deleted (W113)
+ * ## Deleted
  *
  * Below the list, every deleted assessment the caller could restore — their
  * own, those they manage, every one for an admin — with **Restore** and, for
@@ -50,7 +50,7 @@ const props = withDefaults(
         deleted?: DeletedAssessment[];
         retentionDays?: number;
         show?: 'active' | 'deleted';
-        /** The admin-defined scales, Standard first (W126). */
+        /** The admin-defined scales, Standard first. */
         scaleOptions?: { value: string; label: string }[];
     }>(),
     {
@@ -98,7 +98,7 @@ const creating = ref(new URLSearchParams(window.location.search).has('new'));
 const form = useForm({
     title: '',
     description: '',
-    // Standard unless another is picked (W126); the first option is Standard.
+    // Standard unless another is picked; the first option is Standard.
     scale_set_key: props.scaleOptions[0]?.value ?? 'default',
 });
 
@@ -235,7 +235,7 @@ function submit() {
                 `ShareDialog.vue`, the catalogue's insert dialog in
                 `Pages/Catalog/Index.vue`, all `px-4 py-4`/`p-4`). This form
                 was missing that wrapper entirely, which is what an unstyled
-                container looks like (item 8, PLAN-2.5.md).
+                container looks like.
             -->
             <form class="space-y-4 px-4 py-4" @submit.prevent="submit">
                 <Input

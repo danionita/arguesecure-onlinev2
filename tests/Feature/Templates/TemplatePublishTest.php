@@ -8,7 +8,7 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W141, T3 — publishing copies. The template is a separate, ownerless
+ * Publishing copies. The template is a separate, ownerless
  * assessment; the source is neither flagged nor linked nor touched, and there
  * is nothing to unpublish. Through 2.6 publishing flipped `is_template` on the
  * assessment itself, so these tests replace the ones that asserted that.

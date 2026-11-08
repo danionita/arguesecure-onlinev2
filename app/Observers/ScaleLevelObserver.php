@@ -7,9 +7,8 @@ use App\Models\ScaleLevel;
 use App\Observers\Concerns\TriggersRecalculation;
 
 /**
- * Closes the one invalidation gap TriggersRecalculation's own docblock
- * admitted to: "scale changes are schema.md territory this package does not
- * own a model for". Node, risk_attack and attack_defence mutations bumped
+ * Closes the one invalidation gap that once existed: scale changes had no
+ * observer. Node, risk_attack and attack_defence mutations bumped
  * `calc_version`; a scale recalibration did not.
  *
  * That was harmless only for as long as nothing read the calculation cache.

@@ -128,7 +128,7 @@ return [
             'tap' => [RedactLogs::class],
         ],
 
-        // W111 (security.md §11): the security event log. One JSON object per
+        // The security event log (security.md §11). One JSON object per
         // line on stderr whatever LOG_CHANNEL says, so `docker compose logs`
         // and a log shipper see it and a SIEM parses it without a grammar.
         // `info` whatever LOG_LEVEL says: raising the application's level to
@@ -142,7 +142,7 @@ return [
                 'stream' => env('APP_ENV') === 'testing' ? 'php://memory' : 'php://stderr',
             ],
             'formatter' => JsonFormatter::class,
-            // Redaction first, then the handler that stores the record (W128).
+            // Redaction first, then the handler that stores the record.
             'tap' => [RedactLogs::class, StoreSecurityEvents::class],
         ],
 

@@ -17,7 +17,7 @@ test('a non-admin cannot view or update instance settings', function () {
 
 // `default_scale_calibration` used to read 'strict' here — an arbitrary
 // string, which was the point: the field was free text nothing consulted.
-// W77 made it a reference to a seeded scale set, so the only value an
+// It is now a reference to a seeded scale set, so the only value an
 // unseeded instance may send is the key its column already defaults to
 // (App\Domain\Scales\ScaleSets::selectableKeys explains why that one is
 // always legal). The set-level assertions live in DefaultScaleCalibrationTest.
@@ -42,7 +42,7 @@ test('an admin can view and update instance settings', function () {
 
 test('instance settings no longer writes the default currency at all', function () {
     /*
-     * W87, D47. The default currency moved to the admin **Defaults** tab: it
+     * The default currency moved to the admin **Defaults** tab: it
      * is a fact about the content a new assessment starts with, not about the
      * deployment. It moved rather than being copied, because two controls
      * writing one column with different rules is how they come to disagree.

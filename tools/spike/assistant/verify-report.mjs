@@ -1,5 +1,5 @@
 /**
- * Prints the W96 tables from `results/verify-<host>-*.json`: the red-team
+ * Prints the verification tables from `results/verify-<host>-*.json`: the red-team
  * matrix beside the 2.3 record, and the multi-sample quality checks.
  *
  *   node tools/spike/assistant/verify-report.mjs unraid

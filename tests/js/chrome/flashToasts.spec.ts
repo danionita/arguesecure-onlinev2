@@ -1,5 +1,5 @@
 /**
- * W115: what a controller flashed is shown once, in the shared chrome.
+ * What a controller flashed is shown once, in the shared chrome.
  */
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

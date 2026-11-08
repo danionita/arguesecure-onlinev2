@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One admin-defined scale on the Defaults tab (W126, D92-D94): its name, the
+ * One admin-defined scale on the Defaults tab: its name, the
  * three band editors and **one Save for the whole scale**. A custom scale can
  * also be renamed and deleted; a built-in one can only be edited.
  */

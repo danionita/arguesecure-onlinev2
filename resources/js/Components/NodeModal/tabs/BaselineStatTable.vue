@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Three baselines side by side, one row per figure (W39).
+ * Three baselines side by side, one row per figure.
  *
  * A real `<table>`, not a grid of divs. Every cell here is a number whose
  * meaning comes from the intersection of its row and its column, which is the
@@ -10,7 +10,7 @@
  *
  * This is also where the formal baseline vocabulary now lives.
  * `BASELINE_LABELS` says "Inherent" while the ToS card says "Base"
- * (`ROOT_TOTAL_LABELS`, W36): the card is glanced at mid-workshop and this
+ * (`ROOT_TOTAL_LABELS`): the card is glanced at mid-workshop and this
  * table is read, so the table uses the word the report and the methodology
  * appendix use, and the column tooltip connects the two.
  */

@@ -9,10 +9,10 @@ use Monolog\Level;
  * line's `event` field, which an operator's SIEM rules match on: a value is
  * never renamed once released, only added.
  *
- * The `mfa.*` and `sso.*` cases are recorded for W116 and W117
- * (PLAN-2.7-identity.md), which dispatch SecurityEventOccurred rather than
- * writing a line of their own; they are named here so both packages build
- * against one list.
+ * The `mfa.*` and `sso.*` cases are recorded for the two-factor and
+ * single sign-on code, which dispatch SecurityEventOccurred rather than
+ * writing a line of their own; they are named here so both build against one
+ * list.
  */
 enum SecurityEvent: string
 {
@@ -36,6 +36,22 @@ enum SecurityEvent: string
     case SettingsUpdated = 'admin.settings_updated';
     case LogDownloaded = 'admin.log_downloaded';
 
+    case MailSettingsUpdated = 'mail.settings_updated';
+    case MailTestSent = 'mail.test_sent';
+    case MailTestFailed = 'mail.test_failed';
+    case MailTemplateUpdated = 'mail.template_updated';
+    case MailTemplateReset = 'mail.template_reset';
+    case MailFailed = 'mail.failed';
+    case MailNotificationsUpdated = 'mail.notifications_updated';
+    case MailUnsubscribed = 'account.mail_unsubscribed';
+    case PasswordResetRequested = 'auth.password_reset_requested';
+    case PasswordResetByEmail = 'account.password_reset_by_email';
+    case AccountInvited = 'account.invited';
+    case InvitationUsed = 'account.invitation_used';
+    case ReminderSent = 'account.reminder_sent';
+    case EmailVerified = 'account.email_verified';
+    case AccountSelfRegistered = 'account.self_registered';
+
     case ShareLinkCreated = 'share.link_created';
     case ShareLinkRevoked = 'share.link_revoked';
     case ShareLinkRedeemed = 'share.link_redeemed';
@@ -48,7 +64,7 @@ enum SecurityEvent: string
 
     case AssessmentExported = 'assessment.exported';
 
-    // W141. A template is offered to every account and deleting one is final.
+    // A template is offered to every account and deleting one is final.
     case TemplatePublished = 'template.published';
     case TemplateCreated = 'template.created';
     case TemplateDeleted = 'template.deleted';

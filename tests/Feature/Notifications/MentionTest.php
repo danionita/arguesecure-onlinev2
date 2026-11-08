@@ -7,9 +7,9 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * Mentions (W47, item 15).
+ * Mentions (security.md §3.1c).
  *
- * The security content of this package is the candidate set: mentions match
+ * The security content of this feature is the candidate set: mentions match
  * against **collaborators on that assessment only**. Matching against `users`
  * would turn any comment box into an account-existence oracle — type `@dana`,
  * see whether anything happens, and you have learned that a Dana has an

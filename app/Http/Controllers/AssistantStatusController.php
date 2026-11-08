@@ -7,11 +7,11 @@ use Illuminate\Http\JsonResponse;
 
 /**
  * What the assistant can currently do, for a client deciding whether to offer
- * an action (PLAN-2.3-ai.md W50).
+ * an action (docs/ASSISTANT.md §3).
  *
- * This is the whole of W50's user-facing surface: no generation happens here
- * and no prompt is built. W51, W52 and W54 add the jobs; this tells them
- * whether to appear.
+ * This is the whole of the status surface: no generation happens here and no
+ * prompt is built. The generation jobs are elsewhere; this tells them whether
+ * to appear.
  *
  * **The route is not registered at all when the deployment has no runtime**
  * (see the assistant block in routes/web.php), so this controller is only ever
@@ -26,7 +26,7 @@ class AssistantStatusController extends Controller
     {
         $state = $availability->state();
 
-        // No `model` any more (2.6, D55). It was `config('assistant.model')`,
+        // No `model` any more (2.6). It was `config('assistant.model')`,
         // a label an operator typed that could name one model while the
         // container ran another. Which model is running is now asked of the
         // runtime itself, on the admin tab only — not here, where every

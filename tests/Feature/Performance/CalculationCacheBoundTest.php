@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Redis;
 
 /*
- * W109 (PLAN-2.7.md D72): CalculationCache::put() leaves one entry per
+ * CalculationCache::put() leaves one entry per
  * assessment. Every edit bumps calc_version and so writes a new key; before
  * this, each predecessor lingered for the six-hour TTL, and with Redis set to
  * `noeviction` that growth would end in refused writes for the queue and the
@@ -56,7 +56,7 @@ test('several edits leave one cached entry, the current one', function () {
 });
 
 test('versions skipped between two writes are no obstacle: the write before is still deleted', function () {
-    // The debounced job and W64's coalescing both mean consecutive writes
+    // The debounced job and the coalesced recalculation both mean consecutive writes
     // need not be consecutive versions, so deleting key(calc_version - 1)
     // would leave this one behind.
     $assessment = Assessment::factory()->create(['calc_version' => 10]);

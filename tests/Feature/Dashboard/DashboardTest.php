@@ -4,11 +4,11 @@ use App\Models\Assessment;
 use App\Models\User;
 
 /*
- * The dashboard (W42 item 17).
+ * The dashboard (ui.md §8).
  *
  * Two of its four sections have no data source yet, so most of what is worth
  * asserting today is the shape of the seam: the props exist, they are lists,
- * and W46/W47 fill them without the page changing. The rest is scoping, which
+ * and the assignment and mention features fill them without the page changing. The rest is scoping, which
  * is the part that would actually leak.
  */
 
@@ -98,7 +98,7 @@ test('an owner’s address never reaches the page', function () {
     $response = $this->actingAs($user)->get(route('dashboard'));
 
     // A dashboard is a page about other people's work, which is exactly
-    // where an address leaks (security.md, and the W17 report cover).
+    // where an address leaks (security.md, and the report cover).
     expect($response->getContent())->not->toContain('dana@example.test');
 });
 
@@ -139,7 +139,7 @@ test('the most recently touched assessments come first', function () {
         );
 });
 
-// D91 (W125): the tab counts are the real totals, not the six-row excerpt.
+// The tab counts are the real totals, not the six-row excerpt.
 test('the Mine count is every owned assessment, not the excerpt', function () {
     $user = User::factory()->create();
     Assessment::factory()->count(8)->create(['owner_user_id' => $user->id]);

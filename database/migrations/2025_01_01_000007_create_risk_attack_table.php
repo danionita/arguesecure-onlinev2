@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // Endpoint-type and same-assessment invariants (risk_node_id.type = 'risk',
         // attack_node_id.type = 'attack', both nodes share an assessment_id) are not
-        // database-enforceable here and are asserted in LinkService and its tests (W6).
+        // database-enforceable here and are asserted in LinkService and its tests.
         Schema::create('risk_attack', function (Blueprint $table) {
             $table->id();
             $table->foreignId('risk_node_id')->constrained('nodes')->cascadeOnDelete();

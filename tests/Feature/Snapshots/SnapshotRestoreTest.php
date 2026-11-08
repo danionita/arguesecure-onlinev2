@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Restoring a frozen version (W61).
+ * Restoring a frozen version.
  *
- * The route W48 pinned as missing. Its own pin —
+ * The route an earlier audit pinned as missing. Its own pin —
  * tests/Feature/History/RevisionCoverageTest.php's "there is no snapshot
  * restore route for a revert to go through" — is flipped in that file rather
  * than deleted, so the reasoning survives.
@@ -225,7 +225,7 @@ test('a node brought back from a v1 snapshot is reported as unlabelled', functio
     // v1's shape holds no labels, assignees or comments (schema.md §3.13), so
     // a node it brings back comes back bare. Counted and said out loud rather
     // than silently absorbed — that is the difference between a known
-    // limitation and a defect. W62 closed this for snapshots taken since, and
+    // limitation and a defect. The labelled snapshot format closed this for snapshots taken since, and
     // the v1 ones already written do not stop existing, so this stays.
     $response->assertSessionHas('success', fn (string $message): bool => str_contains($message, 'without their labels'));
 });
@@ -320,6 +320,6 @@ test('the restore route carries the authenticated rate limit', function () {
 
     // The specified value, not "it has a throttle": an enclosing group's
     // looser limit would satisfy a presence check and leave the hole open
-    // (CLAUDE.md's rule about presence assertions).
+    // (a presence assertion is not a guard).
     expect($route->gatherMiddleware())->toContain('throttle:authenticated');
 });

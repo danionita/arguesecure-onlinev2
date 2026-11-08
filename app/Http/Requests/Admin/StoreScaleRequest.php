@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/** A new custom scale (W126): a name, and which scale to copy. */
+/** A new custom scale: a name, and which scale to copy. */
 class StoreScaleRequest extends FormRequest
 {
     public function authorize(): bool

@@ -10,7 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
- * An admin unlinks an account from the identity provider (W117, D76): the
+ * An admin unlinks an account from the identity provider (security.md §4): the
  * next provider sign-in links by verified email again, or is refused. The
  * account's sessions end, as when MFA is removed. Behind the `admin`
  * middleware on the route group, and checked here too.

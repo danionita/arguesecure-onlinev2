@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Every export, in one menu (D34, W74 item 15).
+ * Every export, in one menu (ui.md §9, Export: one menu, five formats).
  *
  * Before this there were three controls in a row — Download report, Defences
  * CSV, Export JSON — sharing the options bar with Print and Close, and the
@@ -9,7 +9,7 @@
  * I take away with me* (this). Five formats behind one trigger is the second
  * one stated once.
  *
- * **"Download report" is gone (D35).** W33's argument for a no-options
+ * **"Download report" is gone.** The argument for a no-options
  * download button was that the default path to a document should not require
  * understanding five toggles — which is now served here, where the same
  * forced-full render is one of five formats and is named by what it
@@ -27,7 +27,7 @@
  * The current options ride along in the query string, so an export means
  * what the panel says it means: the file a reader takes away is the document
  * they were looking at, not a differently-configured one. That binding is
- * the whole of W33's finding about the old download button, and it is
+ * the whole of the finding about the old download button, and it is
  * asserted server-side as well as here.
  */
 import type { ReportOptions } from '@/Components/Report/types';
@@ -168,8 +168,8 @@ const linkClass =
                 </a>
 
                 <!--
-                    The forced-full path W33 defined, kept as an item rather
-                    than as a second button (D35). `download=1` overrides
+                    The forced-full path, kept as an item rather than as a
+                    second button. `download=1` overrides
                     every other parameter server-side, so this cannot be
                     partially undone by whatever the panel happens to be set
                     to — which was the entire point of having it.

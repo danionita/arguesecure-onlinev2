@@ -2,17 +2,17 @@
  * The admin **AI assistant** tab (2.5.1).
  *
  * Replaces four specs that mounted Instance settings to test the assistant
- * panel at its foot (W50's toggle, W75's permanent panel, W87's per-feature
- * switches, and D36's calibration select, which is gone). The rules they
+ * panel at its foot (the on/off toggle, the permanent panel, the per-feature
+ * switches, and the calibration select, which is gone). The rules they
  * pinned still hold and are re-asserted here, against the tab they moved to:
  *
- * - **No control where there is no runtime** (W50, D25). A toggle that cannot
+ * - **No control where there is no runtime** (the assistant is optional and invisible without a runtime). A toggle that cannot
  *   work is worse than no toggle.
- * - **The page still says the feature exists** (W75, D37) — now in one line,
+ * - **The page still says the feature exists** (a short notice, not a hidden feature) — now in one line,
  *   "AI service not installed", with a tooltip pointing to the README rather
  *   than a paragraph of docker commands. Installation is for whoever holds the
  *   compose file.
- * - **Each feature switch only subtracts** (W87, D48): disabled while the
+ * - **Each feature switch only subtracts** (a feature can be turned off, never on past the assistant): disabled while the
  *   assistant itself is off.
  */
 import { mount } from '@vue/test-utils';
@@ -76,7 +76,7 @@ function page(
     });
 }
 
-/** docker/assistant/models.conf, as the controller sends it (D52). */
+/** docker/assistant/models.conf, as the controller sends it (docs/ASSISTANT.md). */
 const PRESETS = [
     {
         name: 'small',
@@ -135,14 +135,14 @@ describe('a deployment with no inference runtime', () => {
         expect(wrapper.get('[role="tooltip"]').text()).toContain('README.md');
     });
 
-    it('offers no control at all (W50, D25)', () => {
+    it('offers no control at all without a runtime', () => {
         const wrapper = page(UNCONFIGURED);
 
         expect(wrapper.find('[role="switch"]').exists()).toBe(false);
         expect(prose(wrapper)).not.toContain('Enable the assistant');
     });
 
-    it('still says what the feature is (W75, D37)', () => {
+    it('still says what the feature is without a runtime', () => {
         const text = prose(page(UNCONFIGURED));
 
         expect(text).toContain('suggests risks, attacks and defences');
@@ -163,7 +163,7 @@ describe('a deployment with a runtime', () => {
         expect(text).toContain("Draft the report's executive summary");
     });
 
-    it('names the model the runtime reports, and which preset it is (D55)', () => {
+    it('names the model the runtime reports, and which preset it is', () => {
         const text = prose(page(CONFIGURED));
 
         expect(text).toContain(
@@ -173,7 +173,9 @@ describe('a deployment with a runtime', () => {
 
     it('lists both presets with the memory each needs, marking the running one', () => {
         const list = page(CONFIGURED).get('[data-testid="assistant-presets"]');
-        const [small, large] = list.findAll('li').map((li) => prose(li));
+        const [small, large] = list
+            .findAll('li')
+            .map((li) => prose(li as never));
 
         expect(small).toContain('needs about 6 GiB of memory');
         expect(small).toContain('running');
@@ -221,7 +223,7 @@ describe('a deployment with a runtime', () => {
         expect(prose(wrapper)).not.toContain('ASSISTANT_MODEL');
     });
 
-    it('disables the three features while the assistant itself is off (D48)', () => {
+    it('disables the three features while the assistant itself is off', () => {
         const fieldset = page(CONFIGURED).get(
             '[data-testid="assistant-features"]',
         );

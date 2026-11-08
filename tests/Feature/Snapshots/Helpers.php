@@ -69,7 +69,8 @@ function frozenGraph(Snapshot $snapshot): array
 }
 
 /**
- * Rewrites a snapshot into the shape W19 wrote and W62 replaced.
+ * Rewrites a snapshot into the shape the first format wrote and the labelled
+ * format replaced.
  *
  * Built by taking a real one apart rather than by pasting a fixture: a
  * hand-written blob would drift from what the encoder actually produces, and
@@ -99,7 +100,7 @@ function asVersion1(Snapshot $snapshot): Snapshot
  * A label attached to one node.
  *
  * `assessment_id` as a property, never through create(): it is an identity
- * column and is deliberately absent from Tag::$fillable (CLAUDE.md), and a
+ * column and is deliberately absent from Tag::$fillable (identity columns are never mass-assigned), and a
  * fixture that mass-assigned it would fail the same silent way the production
  * code is written to avoid.
  */

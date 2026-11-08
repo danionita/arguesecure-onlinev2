@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
  * The chrome around a help page (2.5.1), chosen on `auth.user` exactly as
- * the report chooses its own (ui.md §9, D39).
+ * the report chooses its own (ui.md §9).
  *
- * The help routes sit outside `auth` on purpose (routes/web.php's W23
- * block): a workshop guest or a share-link reader must be able to read them.
+ * The help routes sit outside `auth` on purpose (routes/web.php's help and
+ * docs block): a workshop guest or a share-link reader must be able to read them.
  * `AuthenticatedLayout` cannot render for that visitor — it has no
  * `{name, email}` user — so a guest gets the small standalone header these
  * pages have always had, with a way to log in.
@@ -15,7 +15,8 @@
  * without the browser's own back button. The sidebar is the way out now, to
  * anywhere, so that link is gone rather than kept beside it.
  */
-import Icon from '@/Components/UI/Icon.vue';
+import DeploymentNotice from '@/Components/Chrome/DeploymentNotice.vue';
+import BrandMark from '@/Components/UI/BrandMark.vue';
 import { useTheme } from '@/Components/UI/useTheme';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -41,6 +42,7 @@ useTheme();
         class="bg-surface-0 min-h-screen"
         data-testid="help-shell-guest"
     >
+        <DeploymentNotice />
         <header class="border-border-subtle bg-surface-1 border-b">
             <div
                 class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-4 sm:px-6"
@@ -49,11 +51,7 @@ useTheme();
                     href="/"
                     class="text-text-primary flex items-center gap-2 text-lg font-semibold"
                 >
-                    <Icon
-                        name="shield"
-                        :size="24"
-                        class="text-node-root-text"
-                    />
+                    <BrandMark :size="24" />
                     ArgueSecure
                 </Link>
                 <Link

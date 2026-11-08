@@ -1,17 +1,16 @@
 <script setup lang="ts">
 /**
  * The three band editors of a scale — impact, likelihood and defence strength
- * (W65, relocated and reduced in W87; ui.md §8, PLAN-2.5.md D44-D47; made a
- * controlled component in W126, D94).
+ * (ui.md §8, The scale cards; a controlled component, so a scale picked in the
+ * parent swaps the whole draft).
  *
  * ## One component, two screens
  *
  * Assessment settings edits an assessment's own bands; the admin Defaults tab
- * edits each admin-defined scale. D47 is explicit that the admin "wants the
- * same band editor the assessment gets, not a different one", so this is that
- * editor.
+ * edits each admin-defined scale. The admin wants the same band editor the
+ * assessment gets, not a different one, so this is that editor.
  *
- * ## It saves nothing (W126)
+ * ## It saves nothing
  *
  * It used to hold its own working copy and save each kind on its own request.
  * A scale is now saved as a whole — one Save for all three kinds — and the
@@ -20,12 +19,12 @@
  * through `v-model`. Where the Save button is, and what it does, is the
  * parent's business.
  *
- * ## What W87 removed, and why each removal is not a regression
+ * ## What was removed, and why each removal is not a regression
  *
- * - **The code column** (D44). `scale_levels.code` is internal: derived from
+ * - **The code column**. `scale_levels.code` is internal: derived from
  *   the label on create, frozen on rename, carried back untouched, drawn
  *   nowhere.
- * - **The colour input** (D45). Nothing outside the old calibration screen
+ * - **The colour input**. Nothing outside the old calibration screen
  *   read `scale_levels.color`.
  * - **The live preview** and the **"Still using the system defaults"
  *   warning**: using the defaults is the normal state, and a warning says

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The scale calibration screen (W65, ui.md §8).
+ * The scale calibration screen (ui.md §8).
  *
  * The last specified-but-unbuilt feature. What is asserted here is not "the
  * form saves" — it is the four things that make editing a scale safe to offer
@@ -296,10 +296,10 @@ test('two bands sent with the same code do not collide on the unique index', fun
     $bands[1]['code'] = $duplicated;
     $bands[1]['label'] = 'Slight';
 
-    // W87, D44: codes are no longer a user input, so a duplicate is not a form
+    // Codes are no longer a user input, so a duplicate is not a form
     // error any more — it is a payload the first band claims and the second
     // one cannot. The second is treated as a new band and named from its
-    // label. Before W87 this was a 422; the requirement now is only that
+    // label. It used to be a 422; the requirement now is only that
     // `scale_levels_code_unique (scale_id, code)` is never reached, because
     // reaching it is a 500 partway through a save.
     calibrateAs($assessment->owner, $assessment, 'impact', $bands)
@@ -338,7 +338,7 @@ test('a calibration bumps the calculation version exactly once', function () {
     calibrateAs($assessment->owner, $assessment, 'impact', $bands)->assertRedirect();
 
     // Once, not once per band. Every ScaleLevel write fires ScaleLevelObserver;
-    // W64's coalesce() collapses them. Not zero, though — every figure cached
+    // the observer's coalesce() collapses them. Not zero, though — every figure cached
     // against the old calibration has to become unreachable.
     expect((int) $assessment->fresh()->calc_version)->toBe($before + 1);
 })->group('scales');
@@ -353,7 +353,7 @@ test('an editor cannot calibrate a scale', function () {
     ]);
 
     // calculation-engine.md §8.4 pitfall 6 says the manager role outright, and
-    // unlike W61's restore there is no lower-gated route to the same effect: an
+    // unlike restoring a version there is no lower-gated route to the same effect: an
     // editor changes one value, a recalibration moves every figure in the
     // assessment and every report already computed from it.
     test()->actingAs($editor)
@@ -390,7 +390,7 @@ test('an unknown scale kind is never read, and a payload with no real kind is re
     // The kind selects a column on `assessments`. Building one from request
     // input is a legacy defect this codebase forbids by name: the kinds are a
     // fixed list the FormRequest validates, so a key outside it is never
-    // looked at, and a payload with nothing else in it is a 422 (W126).
+    // looked at, and a payload with nothing else in it is a 422.
     test()->actingAs($assessment->owner)
         ->put(route('assessments.scales.update', $assessment), ['scales' => ['colour' => ['bands' => []]]])
         ->assertSessionHasErrors('scales');
@@ -422,9 +422,9 @@ test('the page sends every band field the editor needs', function () {
     // The editor needs the bounds and the representative, plus what the rule
     // would suggest for those bounds — and `code`, which it carries back
     // untouched and draws nowhere, because that is what freezes a code across
-    // a rename (W87, D44).
+    // a rename.
     //
-    // No `color`: D45 stopped it being editable, so the editor is not handed a
+    // No `color`: it is no longer editable, so the editor is not handed a
     // value it cannot change and does not draw. The column keeps its `#9CA3AF`
     // default.
     expect(array_keys($band))->toEqualCanonicalizing([
@@ -449,7 +449,7 @@ test('removing a band on an assessment’s own scale renumbers without colliding
     $assessment = Assessment::factory()->create();
 
     // The first save clones, so the new scale starts with no levels and
-    // nothing is renumbered — which is exactly why this defect survived W65.
+    // nothing is renumbered — which is exactly why this defect survived the screen's first release.
     // It takes a *second* edit, on a scale that already has rows, to reach
     // `scale_levels_ordinal_unique (scale_id, ordinal)`.
     $bands = bandsOf($assessment, 'impact');

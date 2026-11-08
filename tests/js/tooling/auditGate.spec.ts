@@ -3,7 +3,6 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-// @ts-expect-error plain ES module without types
 import { advisories, evaluate } from '../../../tools/dev/audit-gate.mjs';
 
 const advisory = (id: string, name: string, severity: string) => ({
@@ -28,7 +27,7 @@ const audit = {
 
 describe('npm audit gate', () => {
     it('reads advisories and skips "depends on" strings', () => {
-        expect(advisories(audit).map((a: { id: string }) => a.id)).toEqual([
+        expect(advisories(audit).map((a) => (a as { id: string }).id)).toEqual([
             'GHSA-aaaa',
             'GHSA-bbbb',
             'GHSA-cccc',
@@ -37,7 +36,7 @@ describe('npm audit gate', () => {
 
     it('fails on a high advisory that is not allowlisted, and only on high or critical', () => {
         const { unlisted } = evaluate(audit, [{ id: 'GHSA-aaaa' }]);
-        expect(unlisted.map((a: { id: string }) => a.id)).toEqual([
+        expect(unlisted.map((a) => (a as { id: string }).id)).toEqual([
             'GHSA-bbbb',
         ]);
     });
@@ -57,7 +56,9 @@ describe('npm audit gate', () => {
             { id: 'GHSA-bbbb' },
             { id: 'GHSA-gone' },
         ]);
-        expect(stale.map((e: { id: string }) => e.id)).toEqual(['GHSA-gone']);
+        expect(stale.map((e) => (e as { id: string }).id)).toEqual([
+            'GHSA-gone',
+        ]);
     });
 
     it('treats critical like high', () => {
@@ -121,7 +122,7 @@ describe('npm audit gate (CLI)', () => {
         const found = advisories(merged);
         expect(found).toHaveLength(3);
         expect(
-            evaluate(merged, []).unlisted.map((x: { id: string }) => x.id),
+            evaluate(merged, []).unlisted.map((x) => (x as { id: string }).id),
         ).toEqual(['GHSA-eeee', 'c:1']);
     });
 

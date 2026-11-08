@@ -1,5 +1,5 @@
 /**
- * The chrome above the report (W74 item 15, rebuilt in W81): where the
+ * The chrome above the report (rebuilt on the shared chrome): where the
  * switcher sits, and how the options are grouped.
  *
  * jsdom has no layout engine — `getBoundingClientRect()` is all zeroes, so a
@@ -8,11 +8,11 @@
  * `tests/e2e/10-report.spec.ts`. What is guarded here is the *structure* that
  * produces it.
  *
- * Through W80 that meant asserting the report's hand-made copy carried the
+ * That used to mean asserting the report's hand-made copy carried the
  * editor toolbar's classes — which is exactly the check that cannot notice a
  * padding the copy never had, and did not: the report's switcher shipped 6px
- * above the editor's. W81 replaced the copy with `Components/Chrome/*`, which
- * both pages render, so the assertion below is a different one: the report's
+ * above the editor's. The copy was then replaced with
+ * `Components/Chrome/*`, which both pages render, so the assertion below is a different one: the report's
  * band and row are the *same elements* the editor's toolbar produces, class
  * for class, compared against a real mount of `Toolbar.vue` rather than
  * against a string copied out of it. Re-inlining the markup in either page
@@ -27,6 +27,7 @@ import {
 } from '../../../resources/js/composables/useEditorView';
 import ReportShow from '../../../resources/js/Pages/Report/Show.vue';
 import { makeFixtureStore } from '../composables/support/fixture';
+import { routeProperties } from '../support/routeProperties';
 import { report } from './support/reportFixture';
 
 vi.mock('@inertiajs/vue3', async () => {
@@ -73,7 +74,7 @@ function mountReport(options: Record<string, unknown> = {}) {
             report: { ...base, options: { ...base.options, ...options } },
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { SummaryNarrative: true, teleport: true },
         },
     });
@@ -112,8 +113,8 @@ describe('the report chrome', () => {
     });
 
     /**
-     * W81. The vertical position of the switcher is the sum of every padding
-     * above it, and W74's copy of those paddings was missing one. Comparing
+     * The vertical position of the switcher is the sum of every padding
+     * above it, and the report's old copy of those paddings was missing one. Comparing
      * the report's band and row against a real mount of the editor's toolbar
      * is the only jsdom-reachable statement of "there is one definition":
      * a hand-written class list can be wrong in a way no string assertion
@@ -126,7 +127,7 @@ describe('the report chrome', () => {
         const reportRow = report.get('[data-testid="toolbar-row"]');
         const editorRow = editor.get('[data-testid="toolbar-row"]');
 
-        // The row: the inner padding, which is the one W74's copy did have.
+        // The row: the inner padding, which is the one the old copy did have.
         expect(reportRow.classes().sort()).toEqual(editorRow.classes().sort());
 
         // The band around it: the outer padding, which lived in
@@ -143,18 +144,18 @@ describe('the report chrome', () => {
     });
 
     /**
-     * W81, the horizontal half of ui.md §9. The report has nothing to zoom and
-     * the editor does, so through W80 the two switchers sat at different
+     * The horizontal half of ui.md §9. The report had nothing to zoom and
+     * the editor does, so the two switchers sat at different
      * distances from the window's right edge. Making the switcher the last
      * control in the row closes that without reserving an empty spacer the
-     * width of the zoom controls — which W74 rejected, rightly: a spacer
+     * width of the zoom controls — which was rejected, rightly: a spacer
      * asserts the fix, and a test measuring one passes for the wrong reason.
      *
      * The distance itself is measured in a real browser
      * (`tests/e2e/10-report.spec.ts`); what is asserted here is the ordering
      * that makes it independent of the siblings, in both pages at once.
      *
-     * W83 gave the report its own zoom (D43), so its trailing control is no
+     * The report has its own zoom, so its trailing control is no
      * longer "Close" (the options row no longer opens or closes at all —
      * see ReportOptionsRow.vue) — it is `ReportZoomControls`, reading "100%"
      * the same way the editor's own zoom does. Both rows now carry a zoom
@@ -164,7 +165,9 @@ describe('the report chrome', () => {
         const report = mountReport();
         const editor = mountEditorToolbar();
 
-        const last = (wrapper: ReturnType<typeof mountReport>) => {
+        const last = (wrapper: {
+            get: ReturnType<typeof mountReport>['get'];
+        }) => {
             const group = wrapper.get('[data-testid="toolbar-row"] .ml-auto');
             const children = Array.from(group.element.children);
 
@@ -183,10 +186,10 @@ describe('the report chrome', () => {
     });
 
     /*
-     * W136, D106. Every report setting sits behind one of two buttons,
-     * Content (what the numbers are computed from) and Sections (what is added
-     * to the document), each group under a heading. Nothing is inline, and
-     * there is no Filters button on the report.
+     * Every report setting sits behind one of two buttons, Content
+     * (what the numbers are computed from) and Sections (what is added to the
+     * document), each group under a heading. Nothing is inline, and there is
+     * no Filters button on the report.
      */
     it('puts every setting behind a Content or a Sections button, under headings', async () => {
         const wrapper = mountReport();
@@ -219,7 +222,7 @@ describe('the report chrome', () => {
         expect(choices.findAll('[role="radiogroup"]')).toHaveLength(0);
         expect(wrapper.text()).not.toContain('Which state to report');
 
-        // W80: no figures control anywhere on the page, under either label
+        // No figures control anywhere on the page, under either label
         // it ever wore.
         expect(wrapper.text()).not.toContain('Full figures');
         expect(wrapper.text()).not.toContain('Qualitative only');
@@ -256,13 +259,13 @@ describe('the report chrome', () => {
         }
     });
 
-    it('carries one Export menu and no separate download or per-format buttons (D34, D35)', () => {
+    it('carries one Export menu and no separate download or per-format buttons', () => {
         const wrapper = mountReport();
         const text = wrapper.text();
 
         expect(text).toContain('Export');
 
-        // D35: the button goes, and its name goes with it. "Print as
+        // The button goes, and its name goes with it. "Print as
         // configured" drew a distinction against a Download button that no
         // longer exists.
         expect(text).not.toContain('Download report');
@@ -279,7 +282,7 @@ describe('the report chrome', () => {
         const wrapper = mount(ReportShow, {
             props: { assessment: { uuid: 'u' }, report: data },
             global: {
-                config: { globalProperties: { route } },
+                config: { globalProperties: routeProperties(route) },
                 stubs: { SummaryNarrative: true, teleport: true },
             },
         });

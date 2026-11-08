@@ -112,7 +112,7 @@ test('the old Bulk import tab opens the import dialog on the Users tab (2.5.1)',
         ->assertRedirect(route('admin.users.index', ['import' => 1]));
 });
 
-// W123 (D90): an uploaded spreadsheet export reaches the preview as valid
+// An uploaded spreadsheet export reaches the preview as valid
 // UTF-8 JSON and the preview-to-commit round trip creates the same accounts.
 test('an uploaded Excel file imports through preview and commit', function (string $content) {
     $admin = User::factory()->admin()->create();

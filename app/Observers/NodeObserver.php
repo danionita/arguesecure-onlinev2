@@ -11,16 +11,16 @@ use App\Observers\Concerns\TriggersRecalculation;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * PLAN.md Phase 6 item 4 — granular node broadcasts, carrying the changed
- * row rather than an id to re-fetch (CLAUDE.md, ui.md §6). Lives as a model
- * observer rather than inline in NodeController (outside this package's
- * ownership) so every path that creates/updates/deletes a node — today
- * only NodeController, but also whatever later packages add (catalogue
+ * Granular node broadcasts, carrying the changed
+ * row rather than an id to re-fetch (ui.md §6, Real-time). Lives as a model
+ * observer rather than inline in NodeController so every path that
+ * creates/updates/deletes a node — today
+ * only NodeController, but also whatever is added later (catalogue
  * insert, snapshot restore, bulk import) — broadcasts consistently without
  * each of them having to remember to.
  *
- * Also the single place that fires History\RevisionRecorder (W18b,
- * schema.md §3.9): every ordinary field save, from wherever it originates,
+ * Also the single place that fires History\RevisionRecorder
+ * (schema.md §3.9): every ordinary field save, from wherever it originates,
  * goes through `updated` here exactly once, so this is the one writer of
  * per-field history rather than duplicating that call in every controller
  * that saves a Node.

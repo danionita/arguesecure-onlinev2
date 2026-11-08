@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The tabbed node modal (ui.md §7, PLAN.md W13). "Opened by Space, the edit
+ * The tabbed node modal (ui.md §7). "Opened by Space, the edit
  * action, or clicking an indicator icon... non-blocking over the tree...
  * never becomes a route; deep-linking to a node uses a query parameter."
  *
@@ -10,10 +10,9 @@
  * scope TreeNode/NodeCard already render under — is enough to wire it up.
  * That single `<NodeModal />` mount, plus wiring NodeCard's pencil
  * IconButton and the tree's Space/Enter key handling to call
- * `useNodeModal().open(uuid)`, are the two integration points this package
- * could not make itself: NodeCard.vue lives in Components/Tree/** and
- * Show.vue in Pages/Assessment/**, both outside W13's file ownership. See
- * the W13 report for the exact lines needed in each.
+ * `useNodeModal().open(uuid)`, are the two integration points this component
+ * cannot make itself: NodeCard.vue lives in Components/Tree/** and
+ * Show.vue in Pages/Assessment/**.
  */
 import ConfirmDialog from '@/Components/UI/ConfirmDialog.vue';
 import Icon from '@/Components/UI/Icon.vue';
@@ -169,7 +168,7 @@ const TYPE_ICON_TINT: Record<CardType, string> = {
 
 /**
  * The modal is open on a uuid, but the store has no row for it. Two different
- * things, and the modal must say which (W71 item 1) — rendering nothing is
+ * things, and the modal must say which — rendering nothing is
  * indistinguishable from "the Details tab did not load", which is exactly how
  * this was reported:
  *
@@ -201,9 +200,10 @@ const modalTitle = computed(() => {
 
 /**
  * Only defences still have a link tab, so this only counts their edges. Risks
- * and attacks lost theirs in W39: structure is built by dragging (W38) and by
- * the add-child affordance, and a tab that duplicated both was a third way to
- * do the same thing with none of the spatial feedback of the other two.
+ * and attacks lost theirs when the tabs were renamed by type: structure is
+ * built by dragging and by the add-child affordance, and a tab that
+ * duplicated both was a third way to do the same thing with none of the
+ * spatial feedback of the other two.
  */
 const strengthLinkCount = computed(() =>
     node.value?.type === 'defence'
@@ -273,7 +273,7 @@ async function confirmDelete() {
 /**
  * "Values" told the reader nothing. Every type has exactly one thing it is
  * quantified by — a risk by its impact, an attack by its likelihood, a
- * defence by what it costs — and the tab now says which (W39, item 9), so a
+ * defence by what it costs — and the tab now says which, so a
  * workshop participant reads the answer off the tab strip instead of opening
  * it to find out. The panel behind it is unchanged; only the label is.
  */
@@ -301,7 +301,7 @@ const tabs = computed<TabItem[]>(() => {
         });
     }
 
-    // Renamed, not removed: this is W31's per-edge strength editor, and
+    // Renamed, not removed: this is the per-edge strength editor, and
     // "Strength" is what it edits. The key stays `links` — see the docblock
     // on NodeModalTab for why that is not an oversight.
     if (type === 'defence') {
@@ -316,19 +316,19 @@ const tabs = computed<TabItem[]>(() => {
     }
 
     /*
-     * W72 item 10. The root node is the assessment, so the settings that say
+     * The root node is the assessment, so the settings that say
      * what its figures *mean* — currency, tolerance, amortisation, and the
      * three qualitative scales — belong on it rather than only on a page at
      * another URL reachable from the sidebar.
      *
      * Gated on `manage`, matching UpdateAssessmentSettingsRequest exactly:
      * hiding a tab whose endpoint would 403 is courtesy, and the FormRequest
-     * is still the guard. This is a deliberate edit to W71's file — a tab
-     * cannot register itself — kept to these lines and reported as such.
+     * is still the guard. A tab cannot register itself, so this
+     * list has to know about it.
      */
     if (type === 'root' && store.abilities.manage) {
         // `settings`, not a ruler: the icon set is generated from Lucide and
-        // regenerating it to add one glyph is outside this package. It is
+        // regenerating it to add one glyph is not worth it. It is
         // also the icon the sidebar's "Assessment settings" item already
         // carries, which is the destination this tab absorbs.
         tabs.push({ key: 'scales', label: 'Scales', icon: 'settings' });
@@ -337,10 +337,10 @@ const tabs = computed<TabItem[]>(() => {
     tabs.push(
         // The root gets one too, and it is the only tab where the three
         // assessment totals appear together now that the baseline selector
-        // is gone (PLAN-2.2.md D8).
+        // is gone.
         { key: 'statistics', label: 'Statistics', icon: 'percent' },
         { key: 'references', label: 'References', icon: 'paperclip' },
-        // W46, item 16. On every type including the root — someone owns the
+        // On every type including the root — someone owns the
         // assessment as a whole as surely as they own a single defence.
         { key: 'assignees', label: 'Assignees', icon: 'users' },
         { key: 'comments', label: 'Comments', icon: 'message-square' },
@@ -352,9 +352,9 @@ const tabs = computed<TabItem[]>(() => {
 
 /**
  * A deep link can name a tab this node does not have — `?tab=links` on a risk
- * still arrives from a link shared before W39 removed it — and `Tabs` renders
- * an empty panel with nothing selected when that happens, which looks like a
- * broken node rather than a stale link.
+ * still arrives from a link shared before that tab was removed — and `Tabs`
+ * renders an empty panel with nothing selected when that happens, which
+ * looks like a broken node rather than a stale link.
  */
 const selectedTab = computed(() =>
     tabs.value.some((tab) => tab.key === activeTab.value)
@@ -371,7 +371,7 @@ const selectedTab = computed(() =>
         @close="requestClose"
     >
         <!--
-            W71 item 24. The type used to be a `<Badge tone="neutral">` in the
+            The type used to be a `<Badge tone="neutral">` in the
             #actions group, which put a piece of *identity* in the corner
             reserved for *verbs* — next to Delete, at the far end of the header
             from the title it describes. It reads as the node's type here, left
@@ -395,21 +395,20 @@ const selectedTab = computed(() =>
         </template>
 
         <!--
-            W37 put Delete here, in the header, visible on every tab.
+            Delete lives here, in the header, visible on every tab.
 
-            It is a deliberate edit to W39's file, for the reason W36 recorded
-            when it deleted TotalsPanel: an affordance cannot leave one surface
-            in one commit and arrive on another in the next without a broken
-            state in between. The chart card's hover panel lost Delete, and
-            without this the chart would have no way to delete a node at all.
+            It moved here from the chart card: an affordance cannot leave one
+            surface in one change and arrive on another in the next without a
+            broken state in between. The chart card's hover panel lost Delete,
+            and without this the chart would have no way to delete a node.
 
             The chart is used on a projector, where a destructive action
             reachable only by hovering a two-pixel icon is the wrong thing to
             have. Here it is deliberate: open the node, see what it is, then
             delete it — and the same confirm dialog still asks.
 
-            W71 moved the type chip out of this group and left Delete exactly
-            where W37 put it.
+            The type chip sits outside this group, so Delete stays exactly
+            where it was.
         -->
         <template v-if="node" #actions>
             <Tooltip
@@ -453,10 +452,10 @@ const selectedTab = computed(() =>
 
         <!--
             Keyed by uuid so switching straight from one node to another
-            without closing gets a fresh strip. Panels are lazy now (W71 item
-            1) and `Tabs` remembers which ones have been opened; without the
-            key, opening Comments on one node would eagerly mount Comments on
-            the next node the modal is pointed at.
+            without closing gets a fresh strip. Panels are lazy now and `Tabs`
+            remembers which ones have been opened; without the key, opening
+            Comments on one node would eagerly mount Comments on the next node
+            the modal is pointed at.
         -->
         <Tabs
             v-else-if="node"

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * W128 (D96–D100) — the stored security event log and its admin download.
+ * The stored security event log and its admin download.
  */
 
 use App\Domain\Audit\SecurityEvent;

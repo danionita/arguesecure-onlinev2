@@ -1,19 +1,19 @@
 <script setup lang="ts">
 /**
- * The **Strength** tab (W39, item 9) — still `LinksTab.vue`, still keyed
+ * The **Strength** tab — still `LinksTab.vue`, still keyed
  * `links`, and reachable now only from a defence.
  *
  * Renaming the file and the key would break every `?tab=links` deep link that
  * has already been shared, to buy nothing a reader sees; the label is the
  * part users read, and the label is what changed. The risk and attack
  * branches below are unreachable from the modal today and are kept rather
- * than deleted: W40 needs exactly this "add an existing node" machinery for
- * its autocomplete, and the risk_attack detach it also implements moved to
+ * than deleted: the title autocomplete needs exactly this "add an existing
+ * node" machinery, and the risk_attack detach it also implements moved to
  * DetailsTab, not away.
  *
  * ---
  *
- * Original W13/W31 docblock, still accurate for the defence branch:
+ * Original docblock, still accurate for the defence branch:
  *
  * Links tab (ui.md §7): "For attacks: which risks, which defences, with
  * per-link strength and reduction target. For defences: which attacks. Add
@@ -25,7 +25,7 @@
  * ever gain attacks by creating brand new ones (store.addChild()), never
  * by reusing one that already exists elsewhere in the assessment.
  *
- * W31 finishes that symmetry for the attack_defence edge: the strength,
+ * The symmetry is finished for the attack_defence edge: the strength,
  * reduction target and rationale are edited from **both** ends through the
  * same LinkStrengthEditor. A defence's tab used to show a read-only
  * percentage and tell the reader to go open the attack instead, which is

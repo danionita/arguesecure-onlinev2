@@ -9,8 +9,12 @@ import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SnapshotDiffData } from '../../../resources/js/Components/Snapshots/types';
 import SnapshotDiff from '../../../resources/js/Pages/Snapshots/Diff.vue';
+import { routeProperties } from '../support/routeProperties';
+
+const inertiaPage = { props: {} as Record<string, unknown> };
 
 vi.mock('@inertiajs/vue3', () => ({
+    usePage: () => inertiaPage,
     Head: { name: 'Head', template: '<div />' },
     Link: {
         name: 'Link',
@@ -44,7 +48,7 @@ function render(d: SnapshotDiffData) {
     return mount(SnapshotDiff, {
         props: { assessment: { uuid: 'a1', currency: 'EUR' }, diff: d },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: {
                 Money: {
                     props: ['value', 'currency'],
@@ -232,5 +236,15 @@ describe('link changes', () => {
 
     it('does not say "No changes." for a table that has any', () => {
         expect(render(edges).text()).not.toContain('No changes.');
+    });
+});
+
+describe('deployment notice', () => {
+    it('is shown above the page when the operator sets one', () => {
+        inertiaPage.props = { notice: 'Public demo' };
+        const wrapper = render(diff());
+        expect(wrapper.get('[role="status"]').text()).toBe('Public demo');
+        inertiaPage.props = {};
+        expect(render(diff()).find('[role="status"]').exists()).toBe(false);
     });
 });

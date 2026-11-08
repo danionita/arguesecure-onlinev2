@@ -6,7 +6,7 @@ import {
 } from './support/workedExampleGraph';
 
 /**
- * W11 mirror of tests/Unit/Calculation/WorkedExampleTest.php — the §14
+ * Mirror of tests/Unit/Calculation/WorkedExampleTest.php — the §14
  * worked example, built directly (not via the JSON fixture adapter) so this
  * suite and goldenVectors.spec.ts corroborate each other from two different
  * graph-construction paths.

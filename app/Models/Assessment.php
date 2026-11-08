@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
  * accessors proxying that node, never real columns.
  *
  * @property ?string $scale_set_key which admin-defined scale the bands were last
- *                                  set to (W126); NULL is Custom. A label, not an
+ *                                  set to; NULL is Custom. A label, not an
  *                                  input to any calculation, and assigned as a
  *                                  property by `AssessmentScaleApplier` only.
  */
@@ -33,7 +33,7 @@ class Assessment extends Model
 
     /**
      * uuid, owner_user_id, is_template (which the database ties to
-     * owner_user_id being null, W141), share_token(_created_at) and
+     * owner_user_id being null), share_token(_created_at, _hash) and
      * calc_version are deliberately absent — identity, ownership-transfer and cache-key
      * columns set only by services (security.md §7).
      *
@@ -46,7 +46,7 @@ class Assessment extends Model
         'likelihood_scale_id',
         'strength_scale_id',
         'amortization_years',
-        // W44. Display only (PLAN-2.2.md D14): a threshold the report and the
+        // Display only (the currency never converts anything): a threshold the report and the
         // ToS card draw a marker against. It never reaches RiskCalculator,
         // and it must never band-map a computed figure into low/medium/high,
         // which calculation-engine.md forbids outright.
@@ -56,7 +56,7 @@ class Assessment extends Model
 
     /**
      * Mirrors Node's own hook. `assessments.uuid` has no database default,
-     * and until W26 the only things that created an assessment were
+     * and until the create-assessment form the only things that created an assessment were
      * AssessmentFactory and AssessmentCloner, both of which set it
      * themselves — so the gap was invisible until a real creation path
      * existed and died on "Field 'uuid' doesn't have a default value".
@@ -67,6 +67,19 @@ class Assessment extends Model
     {
         static::creating(function (Assessment $assessment): void {
             $assessment->uuid ??= (string) Str::uuid();
+        });
+
+        // The lookup column follows the token wherever it is
+        // written through the model. A raw query-builder write must set it
+        // itself; a stale hash cannot open a link, because
+        // ShareTokenService::resolve() confirms the token, it can only make a
+        // valid link answer 404.
+        static::saving(function (Assessment $assessment): void {
+            if ($assessment->isDirty('share_token')) {
+                $assessment->share_token_hash = $assessment->share_token === null
+                    ? null
+                    : hash('sha256', $assessment->share_token);
+            }
         });
     }
 
@@ -81,7 +94,7 @@ class Assessment extends Model
             'risk_tolerance' => 'float',
             'is_public' => 'boolean',
             'is_template' => 'boolean',
-            // W54. Deliberately absent from $fillable, along with
+            // Deliberately absent from $fillable, along with
             // summary_narrative and summary_draft: the narrative is written
             // through one controller that assigns it as a property, and the
             // draft is written only by a queued job. Neither should be

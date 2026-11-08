@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * The revocable read-only link (PLAN.md Phase 3 item 5 / Phase 8 item 6).
- * Clearly badged read-only, per the brief, so no one mistakes it for an
+ * The revocable read-only link (security.md §3.2).
+ * Clearly badged read-only so no one mistakes it for an
  * edit invite — that badge is the whole point of the StatusPill below.
  */
 import Badge from '@/Components/UI/Badge.vue';

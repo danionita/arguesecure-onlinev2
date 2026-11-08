@@ -1,5 +1,5 @@
 /**
- * W35 — the report as the third position, and the two things that must not
+ * The report as the third position, and the two things that must not
  * follow from it: the report becoming a persisted editor mode, and the
  * switcher being useless to a reader who arrived by share link.
  */
@@ -87,7 +87,7 @@ describe('ViewSwitcher in the editor', () => {
     });
 });
 
-describe('ViewSwitcher label (W134)', () => {
+describe('ViewSwitcher label', () => {
     it('has no visible caption, and the group is still named "View"', () => {
         const wrapper = mount(ViewSwitcher, {
             props: { viewMode: editorMode(), reportHref: REPORT_HREF },

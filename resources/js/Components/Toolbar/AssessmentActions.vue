@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The one action bar every assessment view renders (W82, D40): **Settings ·
+ * The one action bar every assessment view renders: **Settings ·
  * History · Share · Export · Print**, always in that order.
  *
  * Five actions used to exist in four arrangements: Settings and History
@@ -8,8 +8,8 @@
  * prop; Share was a bare `Button` in the editor's `ChromeTitleRow` slot,
  * gated on `store.abilities.manage`; Export and Print were an `ExportMenu`
  * and a second `Button` in the report's own `ChromeTitleRow` slot. Four
- * places that had to agree by inspection is exactly the failure W81 records
- * for the toolbar band itself six pixels at a time — the fix is the same
+ * places that had to agree by inspection is exactly the failure the toolbar band itself
+ * showed, six pixels at a time (ui.md §2, Page chrome) — the fix is the same
  * one: render this from the chrome the three views already share
  * (`Components/Chrome/*`), not compose four different clusters per page.
  *
@@ -21,10 +21,10 @@
  * real, not decorative: it only changes the Print button's accessible name
  * today (`aria-label="Print chart"` etc., the same pattern
  * `ZoomControls.vue` uses for "Decrease chart size" vs "Decrease text
- * size"), but W83 and W84 are the reason it is a prop and not inferred —
- * the report is a fourth caller with no editor view-mode state of its own,
- * and a control that changes nothing per CLAUDE.md's own account of
- * `ReportOptions::$figures` is worse than no control, so this one earns its
+ * size"), but the report is the reason it is a prop and not inferred —
+ * the report is a third caller with no editor view-mode state of its own,
+ * and a control that changes nothing (see
+ * `ReportOptions::$figures`) is worse than no control, so this one earns its
  * keep from day one rather than waiting for a second reason to exist.
  *
  * `exportOptions` defaults to a plain reading of the current baseline: the
@@ -41,7 +41,7 @@
  * self-fetches collaborator state over axios and needs a page-level `show`
  * flag — so this emits `share` and the caller decides what opening it
  * means. Print calls `window.print()` itself, because that is the whole of
- * D42 in every caller ("print the current view" — the CSS pipeline decides
+ * the print rule in every caller ("print the current view" — the CSS pipeline decides
  * what that means per view), and also emits `print` first so a caller that
  * wants to layer something on — the report's one-time "Choose Save as PDF"
  * hint — can, without this component knowing that hint exists.
@@ -66,7 +66,7 @@ import { computed, nextTick } from 'vue';
 
 export interface AssessmentActionsAssessment {
     uuid: string;
-    /** W141: a template has no owner to share it from, so it has no Share. */
+    /** A template has no owner to share it from, so it has no Share. */
     is_template?: boolean;
 }
 
@@ -80,7 +80,7 @@ export interface AssessmentActionsAbilities {
     manage: boolean;
 }
 
-/** Which of the three surfaces this bar is rendered from (D40's "all three views"). */
+/** Which of the three surfaces this bar is rendered from (all three views). */
 export type AssessmentActionsView = 'chart' | 'list' | 'report';
 
 const props = withDefaults(
@@ -134,7 +134,7 @@ const exportOptions = computed<ReportOptions>(
 );
 
 /**
- * Current view first: the common case stays Print, then Enter (D109).
+ * Current view first: the common case stays Print, then Enter.
  */
 const printChoices = computed(() => {
     const all: { value: AssessmentActionsView; label: string }[] = [
@@ -154,8 +154,8 @@ function printNow() {
 }
 
 /**
- * Print is a CSS pipeline per view (D42), so the chosen view has to be on
- * screen before the dialog opens (D110). The current view prints in place; the
+ * Print is a CSS pipeline per view, so the chosen view has to be on
+ * screen before the dialog opens (ui.md §9, Print asks which view). The current view prints in place; the
  * other editor view is switched to client-side and printed after it has
  * rendered; anything else is visited with a one-shot `?print=` token that the
  * target prints on arrival (`usePrintOnArrival`).

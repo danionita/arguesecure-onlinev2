@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Statistics: everything the engine computed about this node, read-only, all
- * three baselines at once (W39, PLAN-2.2.md item 11).
+ * three baselines at once (ui.md §7, Statistics tab).
  *
  * The division of labour with the value tabs next door is the point. Impact,
  * Likelihood, Cost and Strength are where a human *enters* something.
@@ -118,8 +118,8 @@ const costNote = computed(() =>
 
 /**
  * Strength is per edge, so a defence has as many strengths as it has attacks
- * (CLAUDE.md: "one control may be 80% effective against one attack and 20%
- * against another"). Reading the cost-benefit rows above without seeing that
+ * ("one control may be 80% effective against one attack and 20%
+ * against another", schema.md). Reading the cost-benefit rows above without seeing that
  * spread invites the wrong conclusion about where the number came from.
  *
  * Read-only, deliberately: the Strength tab beside this one is the editor, and

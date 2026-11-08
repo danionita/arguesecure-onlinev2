@@ -44,11 +44,11 @@ class AssistantController extends Controller
                 'assistant_summary_enabled' => $settings['assistant_summary_enabled'],
             ],
             // Facts about the deployment, not settings: an admin cannot
-            // change them from here (D25).
+            // change them from here (docs/ASSISTANT.md).
             'assistant' => [
                 'configured' => $configured,
                 'state' => $configured ? $availability->state() : null,
-                // What the runtime says it loaded (D55), asked whether or not
+                // What the runtime says it loaded, asked whether or not
                 // an admin has switched the feature on: which model is
                 // installed is worth knowing *before* deciding to enable it.
                 // Nothing is asked of a deployment with no runtime.

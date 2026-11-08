@@ -57,9 +57,13 @@ The schema is a single `nodes` table using single-table inheritance on a `type` 
 | `name` | varchar(255) | no | display name |
 | `email` | varchar(255) | no | UNIQUE |
 | `email_verified_at` | timestamp | yes | |
+| `self_registered_at` | timestamp | yes | indexed; set when the account was created by following a registration link, and what the daily cap counts |
 | `password` | varchar(255) | no | hashed by the framework (`hashed` cast). 255 characters, so the algorithm can change without a migration. |
 | `is_admin` | boolean | no | default `0` |
 | `is_active` | boolean | no | default `1`. Deactivation preserves authorship attribution; deletion does not. |
+| `invited_at` | timestamp | yes | When the first invitation was mailed; the reminders count from it. |
+| `invitation_reminders_sent` | tinyint unsigned | no | default `0`; at most 2. |
+| `mail_notifications_off` | json | yes | The notification kinds this person turned off (`mention`, `assignment`, `summary`); null means none. |
 | `must_change_password` | boolean | no | default `0`. Set when an administrator creates an account or resets a password; cleared automatically whenever the password changes without the flag being set in the same save (`User::booted()`). |
 | `last_login_at` | datetime | yes | |
 | `two_factor_secret` | text | yes | The TOTP secret, **encrypted** with the app key (the model casts it). Null unless a second factor has been enrolled. |
@@ -227,13 +231,14 @@ Every generated value is editable; invariant 5 is re-validated on save.
 | `summary_draft` | text | yes | A draft produced by the optional assistant, awaiting a person's accept or discard. Written only by a queued job; not in `$fillable`. See [../ASSISTANT.md](../ASSISTANT.md). |
 | `is_public` | boolean | no | default `0`. Listed publicly and readable by anyone; read only. |
 | `share_token` | char(43) | yes | UNIQUE; base64url of 32 random bytes; unlisted revocable read-only link |
+| `share_token_hash` | char(64) | yes | UNIQUE; lower-case hex SHA-256 of `share_token`, kept in step by the model on every write; the redemption lookup uses it |
 | `share_token_created_at` | datetime | yes | |
 | `is_template` | boolean | no | default `0`. A template has no owner. Not in `$fillable`. |
 | `calc_version` | int unsigned | no | default `0`; bumped on any change affecting totals. The calculation cache key. |
 | timestamps | | | |
 | `deleted_at` | timestamp | yes | soft delete; a soft-deleted assessment is in the trash (§3.4, deletion semantics) |
 
-Indexes: `assessments_uuid_unique`, `assessments_share_token_unique`, `assessments_owner_index (owner_user_id, deleted_at)`, `assessments_public_index (is_public, deleted_at)`, `assessments_template_index (is_template)`.
+Indexes: `assessments_uuid_unique`, `assessments_share_token_unique`, `assessments_share_token_hash_unique`, `assessments_owner_index (owner_user_id, deleted_at)`, `assessments_public_index (is_public, deleted_at)`, `assessments_template_index (is_template)`.
 
 CHECK: `assessments_template_ownerless` is `(is_template = 1) = (owner_user_id IS NULL)`.
 
@@ -649,6 +654,14 @@ A deliberate **singleton row**, not a key/value table: there is exactly one inst
 | `oidc_issuer`, `oidc_client_id`, `oidc_button_label`, `oidc_allowed_domains` | varchar(255), varchar(255), varchar(100), text | yes | The OpenID Connect provider as stored on the Authentication tab; null means not set here. A same-named `OIDC_*` environment value wins (`OidcConfig`). Domains are lower-case, comma-separated. |
 | `oidc_client_secret` | text | yes | The client secret under the `encrypted` cast (`APP_KEY`), in `$hidden`, never returned to a page. |
 | `oidc_trust_email` | boolean | no | default `0` |
+| `registration_enabled` | boolean | no | default `0`. Self-registration on the Authentication tab; also needs working email. |
+| `registration_domains` | varchar(1000) | yes | exact, lower-case, comma-separated; empty allows any domain |
+| `registration_daily_cap` | int unsigned | no | default `50`; accounts created by following a registration link per UTC day |
+| `mail_host`, `mail_encryption`, `mail_username`, `mail_from_address`, `mail_from_name` | varchar(255), varchar(10), varchar(255), varchar(255), varchar(100) | yes | The SMTP server and sender set on the Email tab. Empty means "not set here"; the same fields in the environment win, field by field (`MailSettings`). |
+| `mail_port` | smallint unsigned | yes | 1 to 65535; empty means 587, or 465 with `tls` |
+| `mail_password` | text | yes | The SMTP password under the `encrypted` cast (`APP_KEY`), in `$hidden`, never returned to a page. |
+| `mail_notify_mentions`, `mail_notify_assignments`, `mail_notify_summaries`, `mail_notify_titles` | boolean | no | all default `0`. Which notification kinds may be emailed, and whether assessment titles may appear in the message. |
+| `mail_tested_fingerprint` | char(64) | yes | SHA-256 of the effective server, port, encryption, credentials and sender when a test message last delivered. Mail is on only while it equals the current one. |
 | timestamps | | | |
 
 Named CHECK:
@@ -661,6 +674,44 @@ chk_instance_settings_singleton:
 The scale a new assessment starts from is not an instance setting; it is chosen per assessment in the New assessment dialog (§3.2). There is no `registration_locked` setting: accounts are administrator-created, so there is no registration to lock (see [security.md](security.md)).
 
 ---
+
+### 3.17 `mail_templates`
+
+An administrator's wording for one kind of outgoing message. A kind with no row uses the default shipped in code (`MailTemplates`), so a fresh install has none and "reset to default" is a delete.
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+| `id` | bigint unsigned PK | no | |
+| `kind` | varchar(40) | no | unique; one of a fixed list in code (`invitation`, `reminder`, `verify-email`, `notification-digest`), never used to build a class, column or path |
+| `subject` | varchar(200) | no | one line |
+| `body` | text | no | at most 5,000 characters; plain text with `{{placeholders}}` from the kind's fixed list |
+| timestamps | | | |
+
+### 3.18 `mail_tokens`
+
+One-time emailed links. Only a hash of the token is stored.
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+| `id` | bigint unsigned PK | no | |
+| `purpose` | varchar(20) | no | `invite` or `verify` |
+| `user_id` | bigint unsigned FK | yes | cascade on delete; the account the link acts on |
+| `email` | varchar(255) | no | the address it was sent to |
+| `reference` | varchar(100) | yes | what a feature bound the link to (a pending registration); this table does not interpret it |
+| `token_hash` | char(64) | no | unique; SHA-256 of the 48-character token |
+| `expires_at` | timestamp | no | |
+| `used_at` | timestamp | yes | set by one conditional UPDATE when the link is spent |
+| timestamps | | | index on (`user_id`, `purpose`) |
+
+### 3.19 `pending_registrations`
+
+A request for an account whose address is not yet confirmed. No `users` row exists for it.
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+| `id` | bigint unsigned PK | no | the mail token's `reference` is `registration:<id>` |
+| `email` | varchar(255) | no | UNIQUE, lower-case; a new request for the same address replaces the earlier one. Nothing else is stored: no name, no password. |
+| timestamps | | | rows older than 24 hours are removed daily |
 
 ## 4. Eloquent models
 

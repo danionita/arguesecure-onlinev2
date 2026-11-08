@@ -3,7 +3,7 @@ import type { AssessmentGraph, ScaleLevel } from '../../../resources/js/calc';
 import { RiskCalculator } from '../../../resources/js/calc';
 
 /**
- * W11 mirror of tests/Unit/Calculation/CalculationRulesTest.php — the §15
+ * Mirror of tests/Unit/Calculation/CalculationRulesTest.php — the §15
  * checklist items that don't need the full §14 fixture. Uses the same
  * minimal one-risk/one-attack/one-defence graph shape, parameterised the
  * same way, so a diff between the two files reads as "same rule, same

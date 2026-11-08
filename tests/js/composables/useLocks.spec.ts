@@ -4,7 +4,7 @@ import { useLocks } from '../../../resources/js/composables/useLocks';
 import type { RealtimeConnection } from '../../../resources/js/composables/useRealtime';
 
 /**
- * W119: field locks are a display aid on the client and a real boundary on the
+ * Field locks are a display aid on the client and a real boundary on the
  * server (LockManager). What the client must get right is the bookkeeping:
  * whom to show as the holder, never letting a whisper claim a field this tab
  * holds, and stopping the 15 s heartbeat the moment it is no longer ours.

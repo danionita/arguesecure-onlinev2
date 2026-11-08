@@ -1,13 +1,12 @@
 <script setup lang="ts">
 /**
- * History tab content (PLAN.md Phase 8 item 2). Self-contained, matching
+ * History tab content (ui.md §7). Self-contained, matching
  * Comments/CommentThread.vue's own "no store dependency" pattern: takes
  * only the identifiers and ability flag it needs, so wiring this in from
- * HistoryTab.vue (W13) is a single
+ * HistoryTab.vue is a single
  * `<RevisionList :assessment-uuid="..." :node-uuid="..." :can-revert="..." @reverted="..." />`
- * — see the W18 report for what the `reverted` handler needs to do (patch
- * the reverted field into the assessment store's local node state; this
- * component does not touch that store itself).
+ * — the `reverted` handler patches the reverted field into the assessment
+ * store's local node state; this component does not touch that store itself.
  *
  * Revisions are grouped by `operation_id` (ui.md §7: "who changed which
  * field, from what to what, grouped by operation") — a null group (every

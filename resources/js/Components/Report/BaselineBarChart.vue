@@ -3,8 +3,8 @@
  * Inherent / current / target annual loss as a horizontal inline-SVG bar
  * chart (ui.md §9: "Charts are inline SVG — no canvas, no chart library
  * that renders to bitmap — so they survive printing at full resolution").
- * Deliberately no chart library: package.json ships none, and CLAUDE.md
- * forbids adding a new dependency for something a dozen lines of SVG does.
+ * Deliberately no chart library: package.json ships none, and a new dependency
+ * is not worth adding for something a dozen lines of SVG does.
  *
  * A partial total is still plotted at its (lower-bound) value — the "≥"
  * qualifier lives in the figure next to the bar (ReportTotal), not in the
@@ -18,7 +18,7 @@ const props = withDefaults(
         blocks: TotalBlock[];
         currency?: string;
         /**
-         * The assessment's risk tolerance (W44), drawn as a threshold line.
+         * The assessment's risk tolerance, drawn as a threshold line.
          * Null or absent when none is set — which is not the same as zero,
          * and a line at the axis on every unconfigured assessment would read
          * as "everything is over tolerance".
@@ -117,7 +117,7 @@ const chartHeight = computed(() => props.blocks.length * rowHeight);
         </g>
 
         <!--
-            The tolerance (W44). A dashed rule and a label, drawn over the
+            The tolerance. A dashed rule and a label, drawn over the
             bars — deliberately not a coloured region behind them, and
             deliberately not recolouring the bars it crosses:
             calculation-engine.md forbids band-mapping a computed figure, and

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
  * "Appears under" — the risks one attack belongs to, with detach and
- * link-under-another (W72 item 12, PLAN-2.4.md D31; ui.md §7).
+ * link-under-another (ui.md §7, The parent counter's popover).
  *
- * D31 is explicit that this is a *move*, not a deletion: this is the only
+ * This is a *move*, not a deletion: this is the only
  * place in the whole application that can detach an attack from one of the
- * several risks it belongs to. Dragging (W38) moves an edge and the add-child
+ * several risks it belongs to. Dragging moves an edge and the add-child
  * affordance creates a node; neither detaches one parent of many, and no card
  * carries an unlink action. Delete it and the capability goes with it.
  *
@@ -20,17 +20,16 @@
  * ## Why this is a component rather than markup in a card
  *
  * The counter exists twice — `Components/Tree/NodeCard.vue` and
- * `Components/Chart/ChartCard.vue` — and both are outside W72's file
- * ownership. So the popover is built here, self-contained and mounted from a
- * single `<AppearsUnderPopover :store :uuid />`, and W72's report names the
- * two lines each card needs. Until those land it renders from the Details
- * tab, because an affordance may not leave one surface in one commit and
- * arrive on another in the next: the W36/W37 rule, and the reason the Delete
- * button in NodeModal.vue's header was a deliberate cross-package edit too.
+ * `Components/Chart/ChartCard.vue`. So the popover is built here,
+ * self-contained and mounted from a single
+ * `<AppearsUnderPopover :store :uuid />`. Until both cards carry it, it
+ * renders from the Details tab, because an affordance may not leave one
+ * surface in one change and arrive on another in the next: the same rule
+ * that put the Delete button in NodeModal.vue's header.
  *
  * ## The popup is anchored, not nested
  *
- * Same constraint the combobox inside it has (ui.md §7, D29): every surface
+ * Same constraint the combobox inside it has (ui.md §7): every surface
  * this can be mounted on — the modal body, the chart's canvas, the tree's
  * scroller — is a clipping ancestor, so an absolutely-positioned child is cut
  * off rather than overlaid. The panel is therefore teleported to `body` and
@@ -85,7 +84,7 @@ async function detachFrom(riskUuid: string) {
 
 /**
  * The other half of the same question. Dragging a card onto a second risk and
- * choosing "Link it here as well" (W38) is the fast way to do this and the
+ * choosing "Link it here as well" is the fast way to do this and the
  * only way that shows you where the node lands; this is the way that works
  * when the other risk is scrolled off screen, collapsed, or filtered out —
  * which, in an assessment large enough to have shared attacks, it usually is.
@@ -176,7 +175,7 @@ onBeforeUnmount(() => {
 
 <template>
     <div v-if="node?.type === 'attack'" class="inline-block">
-        <!-- W85 item 1 / D31: the trigger now matches the defence counter
+        <!-- The trigger now matches the defence counter
              (icon + number chip) at the same size and with the same gap. -->
         <button
             ref="trigger"

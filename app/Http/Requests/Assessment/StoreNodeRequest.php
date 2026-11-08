@@ -11,8 +11,8 @@ use Illuminate\Validation\Rule;
  * Since 2.5.1 a node is created only when a person confirms the draft in the
  * node modal, so the client always sends a title; `title` stays nullable so
  * older clients and the API's existing contract keep working. `type` is a fixed three-way
- * whitelist and is never used to build a class name (security.md defect #7,
- * CLAUDE.md "No dynamic class instantiation... from request input") —
+ * whitelist and is never used to build a class name (security.md defect #7 and
+ * §7: no dynamic class instantiation from request input) —
  * NodeController maps it through an explicit match(), the same pattern
  * Node::$typeMap uses for hydration.
  */
@@ -35,7 +35,7 @@ class StoreNodeRequest extends FormRequest
         return [
             'type' => ['required', 'string', Rule::in(['risk', 'attack', 'defence'])],
             'title' => ['nullable', 'string', 'max:255'],
-            // W52: accepting an assistant suggestion carries a description as
+            // Accepting an assistant suggestion carries a description as
             // well as a title, and it comes through *this* endpoint rather
             // than a second write path of its own — same policy check, same
             // validation, same undo entry as a node anyone types by hand.

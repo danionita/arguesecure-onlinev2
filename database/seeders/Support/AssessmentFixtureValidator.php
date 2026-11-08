@@ -6,8 +6,8 @@ use App\Domain\References\ControlId;
 
 /**
  * Validates a `database/seeders/templates/*.json` fixture of
- * `"kind": "assessment"` against the schema frozen for W22 (see
- * database/seeders/TemplateAssessmentSeeder.php for the full shape
+ * `"kind": "assessment"` against the frozen fixture schema (schema.md
+ * §3.14; see database/seeders/TemplateAssessmentSeeder.php for the full shape
  * documentation and a worked example at
  * database/seeders/templates/demo-webshop.json).
  *
@@ -17,19 +17,19 @@ use App\Domain\References\ControlId;
  * database at all.
  *
  * Every failure throws SeederFixtureException with a message naming the
- * fixture key and the exact field at fault, per W22's "fail loudly, never
+ * fixture key and the exact field at fault, per the "fail loudly, never
  * silently" rule (the same rule CatalogInserter enforces at insert time).
  *
- * ## What W76 added, and why
+ * ## Content rules added after the fixtures shipped
  *
- * The schema froze in W22 with `description` optional and reachability
+ * The schema froze with `description` optional and reachability
  * checked downward only. Both are legal for the *database* — `description`
  * is nullable and an unlinked node is a valid row — and both let a fixture
  * pass validation and still seed something a reader would call empty: a
  * card with a title and nothing under it, or an attack that exists in the
- * node counts and appears nowhere in the tree. W76's brief is explicit
- * that "a fixture that passes validation and seeds an empty tree means the
- * validator is not checking the thing that matters", so a non-empty
+ * node counts and appears nowhere in the tree. The requirement
+ * is that a fixture which passes validation and seeds an empty tree means the
+ * validator is not checking the thing that matters, so a non-empty
  * `description` is now required on the root and on every risk, attack and
  * defence, and assertNothingIsOrphaned() checks the DAG upward as well as
  * down. These are content rules for *shipped fixtures*, deliberately
@@ -168,7 +168,7 @@ final class AssessmentFixtureValidator
     }
 
     /**
-     * Reachability, checked downward *and* upward (W76).
+     * Reachability, checked downward *and* upward.
      *
      * The rules above only ever look down the DAG — a risk must name at
      * least one attack, an attack at least one defence — which says nothing
@@ -177,9 +177,8 @@ final class AssessmentFixtureValidator
      * `risk_attack` edge, so it counts towards the fixture's totals, holds
      * a likelihood, contributes to no pair in the calculation, and is
      * invisible in a tree the reader navigates from the root down. Its
-     * defences go with it. That is the shape of the emptiness PLAN-2.4 item
-     * 2 reports — a fixture whose numbers look right and whose tree is not
-     * — and it is exactly what a validator checking only one direction
+     * defences go with it. That is the reported emptiness — a fixture whose numbers look right
+     * and whose tree is not — and it is exactly what a validator checking only one direction
      * cannot see.
      *
      * There is deliberately no matching check for defences; see the note
@@ -214,13 +213,13 @@ final class AssessmentFixtureValidator
 
         // No "defence no attack lists" check to match the attack one above,
         // and that is not an oversight. A defence's `links` must be
-        // non-empty (validateDefence), and validate()'s W22 cross-check
+        // non-empty (validateDefence), and validate()'s cross-check
         // already refuses any `links` key whose attack does not name the
         // defence back — so an unreferenced defence cannot get this far.
         // Writing the symmetric loop anyway produced a guard that could
         // never fire, which mutation-testing showed at once: neutering it
-        // left every test green. That is CLAUDE.md's "a presence assertion
-        // is not a guard" from the other side, and the honest answer is to
+        // left every test green. That is the rule that a presence assertion
+        // is not a guard, seen from the other side, and the honest answer is to
         // delete it and say why here. The behaviour is still asserted, in
         // FixtureStructuralHolesTest, which names the rule that does the
         // rejecting.
@@ -309,7 +308,7 @@ final class AssessmentFixtureValidator
                 $fail("{$path}.references[{$j}].kind is not a valid reference kind.");
             }
 
-            // PLAN-2.7 D64: a control is cited by a defence, and in the
+            // A control is cited by a defence, and in the
             // exact form the request path would store — a fixture is not
             // allowed a citation a user could not type.
             if ($kind === 'control') {

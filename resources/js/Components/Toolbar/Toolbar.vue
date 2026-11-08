@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Composes the W15 toolbar pieces — search, filters, view, zoom — into the
+ * Composes the toolbar pieces — search, filters, view, zoom — into the
  * single bar ui.md §5 describes sitting over the canvas.
  *
  * Takes its view state from the shared editor view provided by
@@ -9,29 +9,28 @@
  * toolbar setting a filter that the tree never sees — the two would silently
  * disagree. See composables/useEditorView.ts.
  *
- * ## W34: one row, and what came off it
+ * ## One row, and what came off it
  *
- * The baseline selector is **gone** (PLAN-2.2.md D8). W29 added it so that
- * every card and the totals panel could never show different baselines; 2.2
- * removes the disagreement at its source instead, by taking baseline-dependent
- * figures off the cards entirely (W36). A control that changes nothing visible
+ * The baseline selector is **gone**. It existed so that every card and the
+ * totals panel could never show different baselines; the disagreement is now
+ * removed at its source, by taking baseline-dependent figures off the cards
+ * entirely. A control that changes nothing visible
  * is worse than no control, so it goes rather than lingering as decoration.
  *
- * `TotalsPanel` is gone as of W36, which moved the three totals onto the ToS
+ * `TotalsPanel` is gone: the three totals live on the ToS
  * card as Base / Current / Target ALE. Two surfaces rendering the same three
  * numbers is one too many, and the docked strip cost a permanent row of
  * vertical space above the tree for figures that belong on the node they
- * describe. It survived W34 on purpose: deleting it there would have shipped
- * a commit with no totals anywhere.
+ * describe.
  *
  * The bar must hold **one row at 1280px**. That is not cosmetic: every pixel
  * of toolbar height is a pixel the chart view does not have for its two title
- * lines and three description lines at 1080p (W37 spends the budget this
- * package creates). `tests/e2e/16-toolbar-one-row.spec.ts` asserts the
+ * lines and three description lines at 1080p (the chart view spends the budget this
+ * creates). `tests/e2e/16-toolbar-one-row.spec.ts` asserts the
  * geometry in a real browser; the unit spec guards the `flex-wrap` that would
  * let it wrap again.
  *
- * ## W81: the band is not this file's any more
+ * ## The band is not this file's
  *
  * The row, its two paddings and the right-hand group now live in
  * `Components/Chrome/ChromeToolbarBand.vue`, which the report page renders
@@ -42,14 +41,13 @@
  * What remains here is which controls go in the bar, which is the only part
  * of it the report does not share.
  *
- * **The zoom controls moved to the left of the view switcher.** They sat
- * after it from W34 to W80, which put the editor's switcher one zoom-group
+ * **The zoom controls moved to the left of the view switcher.** They used to sit
+ * after it, which put the editor's switcher one zoom-group
  * further from the window's right edge than the report's — the horizontal
- * half of ui.md §9's "same screen position in all three views", which W74
- * could not close because it did not own this file. The switcher goes in the
+ * half of ui.md §9's "same screen position in all three views". The switcher goes in the
  * band's `anchor` slot, which is always last, so its distance from the right
  * edge no longer depends on what sits beside it. The two stay adjacent inside
- * the one group, which is what W34 put them together for.
+ * the one group, which is what keeps them together.
  */
 import ChromeToolbarBand from '@/Components/Chrome/ChromeToolbarBand.vue';
 import { EDITOR_VIEW_KEY } from '@/composables/useEditorView';
@@ -62,13 +60,13 @@ import ZoomControls from './ZoomControls.vue';
 
 defineProps<{
     /**
-     * All label names in this assessment. Optional since W15 because nothing
-     * could supply them; supplied since W43, from the store, by
+     * All label names in this assessment. Optional because the toolbar was built before anything
+     * could supply them; supplied from the store by
      * Pages/Assessment/Show.vue. Still optional so the several tests that
      * mount this without a store keep working.
      */
     availableTags?: string[];
-    /** The report route, which becomes the switcher's third position (W35). */
+    /** The report route, which becomes the switcher's third position. */
     reportHref?: string;
 }>();
 
@@ -81,7 +79,7 @@ defineExpose({ viewMode, canvas, search, filters, focus });
 <template>
     <div class="flex flex-col">
         <ChromeToolbarBand>
-            <!-- W49: the search box, the view switcher and the zoom controls
+            <!-- The search box, the view switcher and the zoom controls
                  are controls, not content, and do not print. The filter bar
                  stays: its active-filter chips are the only on-screen
                  statement of what the reader is looking at, and a printed
@@ -92,7 +90,7 @@ defineExpose({ viewMode, canvas, search, filters, focus });
             <FilterBar :filters="filters" :available-tags="availableTags" />
 
             <!-- View and zoom still sit together on the right: zoom is a
-                 property of the view you are in, and after W34 it does two
+                 property of the view you are in, and it does two
                  different things depending on which one that is. Zoom is in
                  `trailing` and the switcher in `anchor` so that the switcher
                  is last — see ChromeToolbarBand.vue. -->

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 /**
- * References tab (ui.md §7, schema.md §3.12, PLAN.md Phase 8 item 5). W13
- * shipped this as a deliberate read-only shell — see its docblock's own
- * hand-off note — with the intended shape (kind, identifier/URL, title)
+ * References tab (ui.md §7, schema.md §3.12). It began as a deliberate
+ * read-only shell with the intended shape (kind, identifier/URL, title)
  * rendered but disabled, because no controller/route existed yet. This is
- * that swap: a real list bound to `node.references` via useReferences.ts
+ * the real thing: a list bound to `node.references` via useReferences.ts
  * (loaded on mount, the same self-contained-composable pattern
  * CommentsTab.vue/CommentThread.vue already established for this modal —
  * references are not part of resources/js/stores/assessmentStore.ts's own

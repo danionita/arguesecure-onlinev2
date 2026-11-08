@@ -9,13 +9,13 @@ use App\Models\RiskAttack;
 
 /**
  * One run of `CatalogInserter::insert()` — everything the recursion needs that
- * is resolved once for the whole bundle rather than once per node (W64).
+ * is resolved once for the whole bundle rather than once per node.
  *
  * ## Why it exists
  *
- * W24 measured the inserter issuing three separate queries per descendant: the
- * children of each entry, a `MAX(position)` for each inserted node, and a scale
- * level lookup for each level code. Query count scaled with bundle size, which
+ * Measurement showed the inserter issuing three separate queries per
+ * descendant: the children of each entry, a `MAX(position)` for each
+ * inserted node, and a scale level lookup for each level code. Query count scaled with bundle size, which
  * is worst exactly where the catalogue earns its keep — an ISO entry shipping
  * dozens of controls. All three are now resolved up front, and this is where
  * the answers live.
@@ -42,7 +42,7 @@ final class CatalogInsertRun
 
     /**
      * Every entry this run has already turned into a node, as
-     * `[catalog_entry_id => Node]` (W78).
+     * `[catalog_entry_id => Node]`.
      *
      * `catalog_entry_links` is a DAG, and the recursion used to keep no memory
      * of what it had built, so an entry reachable from two parents inside one
@@ -50,7 +50,7 @@ final class CatalogInsertRun
      * `defence-access-control-policy` under two of one risk's attacks and got
      * ten defence nodes for nine distinct controls. Nothing errored and nothing
      * was missing, which is why it survived: the result was over-full, not
-     * empty. But CLAUDE.md's domain model says a defence may belong to several
+     * empty. But the domain model (schema.md §3.6) says a defence may belong to several
      * attacks precisely so one control is one node — counted once in a cost
      * rollup, and edited in one place.
      *

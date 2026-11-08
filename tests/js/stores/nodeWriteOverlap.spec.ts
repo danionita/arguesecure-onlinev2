@@ -6,7 +6,8 @@ import {
 } from '../../../resources/js/stores/assessmentStore';
 
 /**
- * W88 items 21 and 22, reproduced before they were fixed (D49).
+ * Two defects, reproduced before they were fixed: a node fighting its own
+ * keystrokes, and the Details tab reverting under the user.
  *
  * Everything in this file drives the store through a **fake server that
  * behaves like `NodeController::update()`** rather than through a mock that
@@ -199,7 +200,7 @@ async function settleMicrotasks() {
 let server: ReturnType<typeof fakeServer>;
 
 beforeEach(() => {
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn(
             (name: string, params: unknown) =>
                 `/${name}/${JSON.stringify(params)}`,
@@ -218,7 +219,7 @@ beforeEach(() => {
     };
 });
 
-describe('W88 item 21: a node fights its own keystrokes', () => {
+describe('a node fights its own keystrokes', () => {
     /**
      * `DetailsTab.vue` commits the title on `@input`, so this is two
      * keystrokes typed faster than one round trip. Before the fix, the second
@@ -288,7 +289,7 @@ describe('W88 item 21: a node fights its own keystrokes', () => {
     });
 });
 
-describe('W88 item 22: the Details tab reverting under the user', () => {
+describe('the Details tab reverting under the user', () => {
     /**
      * One half of item 22, and the reason it read as a separate defect. It
      * needs no reordering and no lost race: the responses arrive **in

@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
  * owner or an admin — never `manage` alone. This is what stops a
  * `manager` from promoting themselves to owner: they can reach every
  * other route in this controller, but not this one (security.md §3.1;
- * W9 brief, "classic privilege-escalation hole").
+ * a classic privilege-escalation hole).
  */
 class TransferOwnershipRequest extends FormRequest
 {

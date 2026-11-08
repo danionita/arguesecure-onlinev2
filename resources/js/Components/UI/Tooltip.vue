@@ -5,7 +5,7 @@
  * hover so it is reachable by keyboard, per the accessibility rules in
  * docs/specs/ui.md §11.
  *
- * ## Two slots, and which one you want (W69)
+ * ## Two slots, and which one you want
  *
  * The default slot is the **trigger** — the element being hovered. That is
  * the original, and every existing caller uses only that.
@@ -14,7 +14,7 @@
  * list things cannot do it in a `text` string: the bubble is one inline
  * element, so newlines in a prop collapse to spaces and the list reads as a
  * run-on sentence. The chart card's "appears in N places" counter is the
- * first caller that needs it (PLAN-2.4.md item 11).
+ * first caller that needs it.
  *
  * Deliberately a slot rather than a `white-space: pre-line` variant. Pre-line
  * would carry the line breaks and nothing else — no emphasis on the heading,

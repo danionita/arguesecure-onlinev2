@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * What a generation is doing, and how to stop it (W58).
+ * What a generation is doing, and how to stop it (docs/ASSISTANT.md).
  *
  * ## Two scopes, and they are not the same shape
  *

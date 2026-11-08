@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * W108. A redo pushes a new operation (schema.md §3.10), and the row it
+ * A redo pushes a new operation (schema.md §3.10), and the row it
  * consumed has to leave the stack in both directions: it is still undone, so
  * undo must skip it, and it has been redone, so redo must too. Before this
  * column the row's `undone_at` was cleared instead, which put it back on the

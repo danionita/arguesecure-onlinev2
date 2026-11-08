@@ -1,5 +1,5 @@
 /**
- * The chart's arithmetic, tested without a DOM (W32).
+ * The chart's arithmetic, tested without a DOM.
  *
  * `computeTreeLayout` is pure precisely so this file can exist: overlapping
  * siblings, a parent drifting off-centre, or a subtree that silently grows
@@ -16,7 +16,7 @@ import {
 const { cardWidth, cardHeight, gapX, gapY, tierWidthFactors } =
     TREE_LAYOUT_DEFAULTS;
 
-/** The width a card on `tier` occupies (W69). Root widest, defence narrowest. */
+/** The width a card on `tier` occupies. Root widest, defence narrowest. */
 function tierWidth(tier: number): number {
     return cardWidth * tierWidthFactors[tier];
 }
@@ -66,8 +66,8 @@ describe('tiers', () => {
 
     /**
      * ui.md §3.7 promises two title lines and three description lines visible
-     * at 1080p. That is a promise about a sum, and W37 spent most of the
-     * package's slack on it, so the sum is pinned here rather than left to be
+     * at 1080p. That is a promise about a sum, and the compact card design spent most of the
+     * slack on it, so the sum is pinned here rather than left to be
      * rediscovered by whoever next adds a toolbar row.
      *
      * 937px viewport at 1080p, minus ~193px of page chrome (the arithmetic is
@@ -182,7 +182,7 @@ describe('collapsing', () => {
 });
 
 /**
- * W69 / PLAN-2.4.md D27. The tiers do not carry comparable amounts of text, so
+ * The tiers do not carry comparable amounts of text, so
  * they stopped being the same width. The algorithm is unchanged — a parent
  * still occupies its children's span or its own card, whichever is greater —
  * and only the constant became a lookup.
@@ -200,7 +200,7 @@ describe('tier widths', () => {
             (key) => boxes.get(key)!.width,
         );
 
-        // The starting numbers from D27: root 2, risk 1.5, attack 1.25,
+        // The starting numbers: root 2, risk 1.5, attack 1.25,
         // defence 1 — asserted as the values, not merely as "descending", so
         // that flattening them back to a single constant turns this red.
         expect(widths).toEqual([2, 1.5, 1.25, 1].map((f) => cardWidth * f));
@@ -208,9 +208,9 @@ describe('tier widths', () => {
     });
 
     it('keeps a narrow child centred under a wide parent', () => {
-        // Impossible before W69: with one width a parent could never be wider
-        // than its only child, so nothing exercised the clamp. Now it is the
-        // ordinary case, and left-aligning would slant the connector.
+        // Impossible while every tier shared one width: a parent could never
+        // be wider than its only child, so nothing exercised the clamp. Now it
+        // is the ordinary case, and left-aligning would slant the connector.
         const { boxes } = computeTreeLayout([
             occurrence('root', null, 0, ['root/r']),
             occurrence('root/r', 'root', 1),
@@ -246,7 +246,7 @@ describe('tier widths', () => {
     });
 
     /**
-     * The promise being protected is D3's: at fit-to-width the chart scrolls
+     * The promise being protected: at fit-to-width the chart scrolls
      * horizontally and never vertically. `fitToWidth` divides the viewport by
      * `layout.width`, so anything that inflates that number inflates the zoom
      * the button picks. Widening the upper tiers does that **only** where a
@@ -318,8 +318,8 @@ describe('tier widths', () => {
 describe('a node in more than one place', () => {
     it('gets one box per occurrence, because that is what the reader sees', () => {
         // The same attack under both risks — the DAG case. It is drawn twice
-        // (PLAN-2.1.md D5), which is what keeps this a tiered tree rather than
-        // a general graph-layout problem.
+        // rather than sharing one box, which is what keeps this a tiered tree
+        // rather than a general graph-layout problem.
         const { boxes } = computeTreeLayout([
             occurrence('root', null, 0, ['root/riskA', 'root/riskB']),
             occurrence('root/riskA', 'root', 1, ['root/riskA/shared']),

@@ -2,11 +2,10 @@
 
 // Application-specific configuration that does not belong in any of
 // Laravel's own config/*.php files. `env()` is permitted here and nowhere
-// else outside a config file (CLAUDE.md: "env() outside a config file
-// returns null once config:cache runs"), though nothing under this key
-// currently needs it.
+// else outside a config file (it returns null once config:cache runs),
+// though nothing under this key currently needs it.
 //
-// References (schema.md §3.12, PLAN.md Phase 8 item 5): the per-kind
+// References (schema.md §3.12): the per-kind
 // validation pattern only. There is deliberately no link-template string
 // here — App\Domain\References\ReferenceValidator::deriveUrl() hardcodes
 // each derived kind's URL shape, because `attack_technique` needs to
@@ -15,7 +14,7 @@
 // outbound API call is ever made — every link is a pure string built from
 // the stored identifier, nothing is fetched or enriched.
 return [
-    // The running build (W124, W129, D90). An image built from a release tag
+    // The running build. An image built from a release tag
     // gets `ARGUESECURE_BUILD_VERSION` from the build; anything else (a source
     // build, `npm run dev`) falls back to the repository's `VERSION` file, the
     // last release, which the `release` skill rewrites with the tag; `dev` only
@@ -25,9 +24,19 @@ return [
     'version' => env('ARGUESECURE_BUILD_VERSION')
         ?: (is_readable(base_path('VERSION')) ? trim((string) file_get_contents(base_path('VERSION'))) : 'dev'),
 
-    // Single sign-on with OpenID Connect (W117, D74-D76): one provider. These
+    // A line every page shows, set by the operator: for a demo, "Do not
+    // enter real data". Plain text on one line, trimmed, cut at 300
+    // characters; unset or blank means off and the app is unchanged. Read here
+    // because `env()` is allowed in this file only.
+    'notice' => (static function (): ?string {
+        $text = mb_substr(trim((string) preg_replace('/[\p{Cc}\p{Cf}\s]+/u', ' ', (string) env('APP_NOTICE', ''))), 0, 300);
+
+        return $text === '' ? null : $text;
+    })(),
+
+    // Single sign-on with OpenID Connect: one provider. These
     // are the environment's values; the admin Authentication tab can store the
-    // same fields in the database (W133, D106), and a field set here wins over
+    // same fields in the database, and a field set here wins over
     // a stored one (App\Domain\Identity\Oidc\OidcConfig). Unset means null
     // or empty, which is how OidcConfig tells "not set" from "set to false".
     // Empty issuer everywhere = no SSO, and the two routes answer 404.
@@ -42,7 +51,23 @@ return [
         'trust_email' => in_array(env('OIDC_TRUST_EMAIL'), [null, ''], true) ? null : filter_var(env('OIDC_TRUST_EMAIL'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
     ],
 
-    // Scale calibration (W65, schema.md §3.2.1). The one number in the
+    // SMTP for the application's own email. Off by default. The same fields
+    // can be set on Admin -> Email (stored in the database); a field set here
+    // wins over a stored one (App\Domain\Mail\MailSettings). Unset is null.
+    // Only SMTP is supported; Laravel's MAIL_MAILER and the other transports
+    // are not used.
+    'mail' => [
+        'host' => env('MAIL_HOST'),
+        'port' => env('MAIL_PORT'),
+        // tls (implicit TLS, usually port 465), starttls (usually 587) or none.
+        'encryption' => env('MAIL_ENCRYPTION'),
+        'username' => env('MAIL_USERNAME'),
+        'password' => env('MAIL_PASSWORD'),
+        'from_address' => env('MAIL_FROM_ADDRESS'),
+        'from_name' => env('MAIL_FROM_NAME'),
+    ],
+
+    // Scale calibration (schema.md §3.2.1). The one number in the
     // default-representative rule that the spec itself marks configurable.
     'scales' => [
         // The open top band has no upper bound, so its geometric mean is
@@ -71,7 +96,7 @@ return [
                 'label' => 'MITRE ATT&CK technique',
                 'pattern' => '/^T\d{4}(\.\d{3})?$/',
             ],
-            // A framework control a defence implements (PLAN-2.7 D64):
+            // A framework control a defence implements:
             // `FRAMEWORK:CONTROL`, the framework from `frameworks` below and
             // the control part checked against that framework's pattern by
             // App\Domain\References\ControlId, so no single pattern here.
@@ -99,7 +124,7 @@ return [
         // "more" affordance (schema.md §3.12's last line).
         'primary_kind' => 'cve',
 
-        // The frameworks a `control` reference may cite (D64). A closed list
+        // The frameworks a `control` reference may cite. A closed list
         // is what makes the citation structured; adding a framework is a
         // config change, and a code here is never renamed once an
         // assessment may cite it. `pattern` matches the control part after
@@ -157,7 +182,7 @@ return [
     ],
 
     // Where the *browser* dials Reverb, shared onto every Inertia page by
-    // HandleInertiaRequests (W27 defect 1). Distinct from
+    // HandleInertiaRequests. Distinct from
     // `broadcasting.connections.reverb.options`, which is where the *server*
     // posts broadcasts to — in Docker that is the internal `reverb` service,
     // which no browser can resolve.
@@ -174,9 +199,9 @@ return [
     ],
 
     /*
-     * The currencies an assessment may be denominated in (W44, item 12).
+     * The currencies an assessment may be denominated in.
      *
-     * **Display only** (PLAN-2.2.md D14). Choosing one changes the symbol and
+     * **Display only**. Choosing one changes the symbol and
      * the grouping `Intl.NumberFormat` produces and nothing else: no
      * conversion, no exchange rates, no stored second figure. An assessment
      * whose currency is changed from EUR to JPY still holds exactly the
@@ -210,7 +235,7 @@ return [
     ],
 
     /*
-     * Longest period a capital cost may be spread over (W44).
+     * Longest period a capital cost may be spread over.
      *
      * `assessments.amortization_years` is an unsigned tinyint, so the column
      * itself tops out at 255; ten is the point past which the figure stops
@@ -222,7 +247,7 @@ return [
 
     /*
      * Days a deleted assessment stays restorable before the daily purge
-     * erases it for good (W113, security.md §12). At least one: a value of
+     * erases it for good (security.md §12). At least one: a value of
      * zero would let the purge erase an assessment the moment it was
      * deleted, which is not "retention", and the help promises a period.
      */
@@ -236,7 +261,7 @@ return [
 
     /*
      * Days a stored security event is kept before the daily purge removes it
-     * (W128, D98). At least one; a blank or non-numeric value falls back to
+     * At least one; a blank or non-numeric value falls back to
      * the default rather than the floor, as the trash retention does.
      */
     'security_log_retention_days' => (static function (): int {

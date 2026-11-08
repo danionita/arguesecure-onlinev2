@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Ranked defence list (PLAN.md Phase 7 §4/§5): three cost buckets, never
+ * Ranked defence list (ui.md §9): three cost buckets, never
  * one merged list (calculation-engine.md §10). `cbr` renders as "—" for the
  * free bucket (never `∞`) and is omitted entirely for the unpriced bucket
  * (never `0`, never a fabricated number) — `costBucket` already tells the

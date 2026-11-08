@@ -72,6 +72,7 @@ function makeInit(): AssessmentStoreInit {
             strength_fraction: null,
             strength_level_id: null,
             reduction_target: null,
+            rationale: null,
         },
     ];
 
@@ -127,7 +128,7 @@ function emptyResult(baseline: 'inherent' | 'current' | 'target') {
 }
 
 beforeEach(() => {
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn(
             (name: string, params: unknown) =>
                 `/${name}/${JSON.stringify(params)}`,
@@ -350,7 +351,7 @@ describe('deleteNode', () => {
     });
 });
 
-describe('a frozen store (W63): a snapshot being read, not an assessment being edited', () => {
+describe('a frozen store: a snapshot being read, not an assessment being edited', () => {
     /**
      * The structural half of the snapshot viewer's read-only guarantee.
      *

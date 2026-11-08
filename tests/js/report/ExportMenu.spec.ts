@@ -1,5 +1,5 @@
 /**
- * The one export menu (D34, D35, W74 item 15).
+ * The one export menu.
  *
  * jsdom has no layout engine, so nothing here asserts geometry — that is
  * `tests/e2e/10-report.spec.ts`'s job. What is asserted here is the part that
@@ -49,7 +49,7 @@ async function openMenu(props: { options: ReportOptions }) {
 }
 
 describe('ExportMenu', () => {
-    it('offers exactly the five formats D34 names, behind one trigger', async () => {
+    it('offers exactly the five formats, behind one trigger', async () => {
         const wrapper = await openMenu({ options: options() });
 
         const labels = wrapper
@@ -57,7 +57,7 @@ describe('ExportMenu', () => {
             .map((item) => item.text());
 
         // Five formats plus the forced-full item. PDF is deliberately absent
-        // — it is the browser print pipeline (D6), which is why dompdf stays
+        // — it is the browser print pipeline, which is why dompdf stays
         // gone — and its absence is asserted rather than assumed.
         expect(labels).toHaveLength(6);
         expect(labels.join(' ')).toContain('Web page');
@@ -91,7 +91,7 @@ describe('ExportMenu', () => {
             }),
         });
 
-        // W33's finding about the old download button, applied to all five:
+        // The finding about the old download button, applied to all five:
         // the file a reader takes away has to be the document they were
         // looking at, not a differently-configured one. The parameter names
         // are ReportOptions::fromQuery()'s, so a rename breaks here rather
@@ -105,7 +105,7 @@ describe('ExportMenu', () => {
             expect(href).toContain('include_shelved=1');
             expect(href).toContain('show_assignees=1');
 
-            // W80: and no `figures`. It was forwarded to all five formats
+            // And no `figures`. It was forwarded to all five formats
             // and read by none of them; a reappearance here is the dead
             // control coming back, since nothing server-side parses it any
             // more (see ReportOptions' docblock — computed results render as
@@ -115,7 +115,7 @@ describe('ExportMenu', () => {
         }
     });
 
-    it('keeps the forced-full path W33 defined, after the button that used to carry it', async () => {
+    it('keeps the forced-full path, after the button that used to carry it', async () => {
         const wrapper = await openMenu({
             options: options({ baseline: 'current', includeShelved: false }),
         });

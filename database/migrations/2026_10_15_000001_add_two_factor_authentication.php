@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Two-factor authentication with an authenticator app (W116, D77, D78).
+     * Two-factor authentication with an authenticator app (security.md §4).
      *
      * `two_factor_secret` and `two_factor_recovery_codes` hold ciphertext
      * (the model casts them with the app key), so they are `text`, not a
@@ -21,7 +21,7 @@ return new class extends Migration
      * what makes a code single-use inside its 30-second (plus one step either
      * side) validity.
      *
-     * `instance_settings.require_two_factor` is D78's switch. It defaults off:
+     * `instance_settings.require_two_factor` is the instance-wide switch. It defaults off:
      * turning it on for an existing instance would otherwise send every
      * account to enrolment at its next sign-in with no warning.
      */

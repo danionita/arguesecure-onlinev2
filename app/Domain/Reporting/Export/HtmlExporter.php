@@ -6,10 +6,10 @@ use App\Domain\Reporting\Money;
 use App\Domain\Reporting\ReportOptions;
 
 /**
- * The report as one self-contained HTML file (W74 item 25).
+ * The report as one self-contained HTML file.
  *
- * **Self-contained is the requirement, not a nicety.** The CSP rule in
- * CLAUDE.md — "nothing loads from a CDN, everything self-hosted" — binds a
+ * **Self-contained is the requirement, not a nicety.** The CSP rule
+ * (security.md §6) — "nothing loads from a CDN, everything self-hosted" — binds a
  * file that leaves the server at least as hard as a page served by it: this
  * one is opened from a mail attachment or a shared drive, on a machine this
  * deployment has never met, possibly years later. So: no stylesheet link, no
@@ -19,9 +19,8 @@ use App\Domain\Reporting\ReportOptions;
  * **Nothing is rendered as markup.** Every title, description, rationale and
  * paragraph of the written summary goes through `htmlspecialchars`. Node
  * text is user input, and the written summary may be model-drafted text a
- * person accepted (W54) — CLAUDE.md is explicit that no HTML renderer exists
- * in this codebase for generated output and that one must not be
- * reintroduced. This class writes HTML; it never renders any.
+ * person accepted — no HTML renderer exists in this
+ * codebase for generated output and none may be added. This class writes HTML; it never renders any.
  *
  * The print rules are the same ones `resources/css/print.css` applies to the
  * page — repeated table headers, no break inside a row, expanded link URLs —

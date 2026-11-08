@@ -1,5 +1,5 @@
 /**
- * Duplicate highlighting on hover (ui.md §5 / PLAN.md W15): "hovering or
+ * Duplicate highlighting on hover (ui.md §5): "hovering or
  * focusing a node that occupies more than one position highlights every
  * occurrence with a distinct outline and draws a connector between them.
  * An explicit 'appears in N places' chip does the same on click, and is
@@ -18,7 +18,7 @@
  * occurrences.ts's top comment and this file's test for the concrete case
  * (a defence linked to one attack that itself sits under two risks renders
  * three times total, not two). "Duplicate detection finds every occurrence
- * of a shared node and reports the right count" (the W15 brief) means
+ * of a shared node and reports the right count" (the ui.md §5 requirement) means
  * *this* count, not the link count.
  */
 import { computed, ref } from 'vue';

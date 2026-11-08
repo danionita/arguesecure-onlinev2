@@ -13,18 +13,17 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Per-node revision history (PLAN.md Phase 8 item 2, schema.md §3.9,
+ * Per-node revision history (schema.md §3.9,
  * ui.md §7). Originally shipped as two ~140-line route closures in
- * routes/web.php (the W18 "comments + history" block); moved here for
- * W18b per CLAUDE.md — "Business logic goes in app/Domain/, not in
- * controllers and never in views... Route closures are worse than either."
+ * routes/web.php (the "comments + history" block); moved here because
+ * business logic belongs in app/Domain/, not in controllers or route closures.
  * The actual revert business logic lives in
  * App\Domain\History\RevisionReverter; this controller is the thin HTTP
  * glue: authorization, request shape, response shape.
  *
  * `view` for listing (matching the comments read routes), `update` for
  * reverting a field — a revert is a real write to the node, gated exactly
- * like NodeController::update() gates any other one (CLAUDE.md: every
+ * like NodeController::update() gates any other one (security.md §3.1: every
  * route touching an assessment goes through AssessmentPolicy).
  */
 class NodeRevisionController extends Controller
@@ -50,8 +49,8 @@ class NodeRevisionController extends Controller
         // RootNode), so the guessed key is 'risk_id'/'attack_id'/etc., not
         // 'node_id', and the query 42S22s. Confirmed the identical defect
         // for Node::comments() — see App\Domain\Comments\CommentService::
-        // threadsForNode()'s docblock. app/Models/Node.php is W6's, not
-        // this package's, so this queries NodeRevision directly instead of
+        // threadsForNode()'s docblock. app/Models/Node.php is not
+        // part of this controller, so this queries NodeRevision directly instead of
         // editing the relation.
         $rows = NodeRevision::query()
             ->where('node_id', $node->id)
@@ -85,7 +84,7 @@ class NodeRevisionController extends Controller
         // §3.9) and is NOT scoped via Route::scopeBindings() — Node has no
         // singular revision() relation for that mechanism to guess — so
         // this re-asserts both memberships explicitly, the same pattern
-        // SnapshotController::assertBelongsTo() and the W12/W16 node
+        // SnapshotController::assertBelongsTo() and the node
         // routes already use.
         abort_unless(
             $revision->assessment_id === $assessment->id && $revision->node_id === $node->id,
@@ -115,8 +114,8 @@ class NodeRevisionController extends Controller
     }
 
     /**
-     * Explicit allowlist, never ->toArray() (CLAUDE.md "never
-     * over-serialise"): a revision's `user` relation must expose id and
+     * Explicit allowlist, never ->toArray() (never
+     * over-serialise): a revision's `user` relation must expose id and
      * name only — never email, never a password hash.
      *
      * @return array<string, mixed>

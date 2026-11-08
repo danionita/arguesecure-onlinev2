@@ -9,7 +9,7 @@
 #   weights changed underneath it between two runs compares nothing.
 # - `--fail --retry 5 --retry-all-errors -C -`, into a `.part` file. A plain
 #   `curl -sL` of the 2.49 GB baseline once produced a 1.36 GB file and exit 0
-#   (D18); resuming means a dropped connection costs the remainder, not the
+#   (the reason weights are verified); resuming means a dropped connection costs the remainder, not the
 #   whole file.
 # - Byte count *and* sha256, before the file gets its real name. Only a file
 #   that has passed both is ever visible to llama.cpp, so a container cannot be

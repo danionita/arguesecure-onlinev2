@@ -3,8 +3,8 @@
 namespace App\Domain\Reporting\Export;
 
 /**
- * One section of the report, in the shape all five exports render from
- * (W74 item 25): a heading, the prose that explains what the reader is
+ * One section of the report, in the shape all five exports render from:
+ * a heading, the prose that explains what the reader is
  * looking at, and — for most of them — one table.
  *
  * Prose without a table is legal and used: the cover, the written executive

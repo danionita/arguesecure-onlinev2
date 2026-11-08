@@ -30,7 +30,7 @@ class AssessmentPolicy
     ];
 
     /**
-     * A template has no owner and is not shared (W141, T2): every ability on
+     * A template has no owner and is not shared: every ability on
      * it is an admin's, whatever `is_public`, a share token or a stray
      * collaborator row says, except the two below. One hook for all of them, so
      * an ability added later cannot forget the rule and fall through to the
@@ -54,7 +54,7 @@ class AssessmentPolicy
         };
     }
 
-    /** Creating a template from nothing, on the Templates page (W141). */
+    /** Creating a template from nothing, on the Templates page. */
     public function createTemplate(?User $user): bool
     {
         return $this->isAdmin($user);
@@ -67,6 +67,22 @@ class AssessmentPolicy
             || $this->roleGrants($user, $assessment, 'view')
             || $assessment->is_public
             || $this->hasValidShareToken($assessment);
+    }
+
+    /**
+     * Whether the assessment is shared with this account: an admin, the owner
+     * or anyone with a collaborator row, whatever its role. This
+     * gates the live channel and the presence list, which show who is working
+     * on the assessment by name; `view` is wider (a public flag or a share
+     * link) and a stranger reading a public assessment is not one of its
+     * people.
+     */
+    public function collaborate(?User $user, Assessment $assessment): bool
+    {
+        return $user !== null
+            && ($this->isAdmin($user)
+                || $this->isOwner($user, $assessment)
+                || $this->roleFor($user, $assessment) !== null);
     }
 
     /**
@@ -104,7 +120,7 @@ class AssessmentPolicy
     }
 
     /**
-     * Publishing an assessment as a template (W45, D12; narrowed in 2.5.1).
+     * Publishing an assessment as a template (narrowed in 2.5.1).
      *
      * Admins only. A template is offered to every account on the instance —
      * anyone can create their own assessment from it, which is a full copy of
@@ -112,7 +128,7 @@ class AssessmentPolicy
      * contains is an instance-wide decision, the same kind an admin makes
      * about users and defaults. Through 2.5 the owner could publish too.
      *
-     * Since W141 publishing copies the assessment into a separate template
+     * Publishing copies the assessment into a separate template
      * and writes nothing to the original, so this gates the copy, not a flag.
      * A template itself is reachable only by admins (`view`, `update`,
      * `manage` and `delete` above), whatever `is_public` or a stray
@@ -189,7 +205,7 @@ class AssessmentPolicy
      * security.md §3.2: presenting a share token establishes a session flag
      * scoped to that assessment id; revocation invalidates existing sessions
      * by storing the token's created_at in the session and comparing it.
-     * The flag is written by the share-link resolver (a later package) as
+     * The flag is written by the share-link resolver (ShareTokenService) as
      * `share_token.{assessment_id} => ['token' => ..., 'created_at' => ...]`.
      */
     private function hasValidShareToken(Assessment $assessment): bool

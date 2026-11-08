@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * End-to-end configuration (W25, PLAN.md's Verification section).
+ * End-to-end configuration (the release-acceptance scenarios).
  *
  * These specs drive a real browser against a real running stack — they do
  * not boot one. Start it first, isolated from any local instance:
@@ -13,7 +13,7 @@ import { defineConfig, devices } from '@playwright/test';
  * the run is order-dependent by design: it creates the admin every later
  * scenario logs in as. Hence `fullyParallel: false` and a single worker —
  * these are release-acceptance scenarios in sequence, not isolated unit
- * tests, and the twelve in PLAN.md read as one narrative.
+ * tests, and the twelve read as one narrative.
  *
  * E2E_BASE_URL exists so the same specs can point at a staging deployment
  * without editing them.

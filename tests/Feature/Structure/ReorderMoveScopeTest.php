@@ -10,7 +10,7 @@ use App\Models\RiskAttack;
 use App\Models\User;
 
 /*
- * W104 — the reorder and move routes authorize `update` on the assessment
+ * The reorder and move routes authorize `update` on the assessment
  * in the URL, so every node uuid in the body must be resolved through that
  * assessment and no other. The caller below owns assessment A (so holds
  * `update` there) and can only read assessment B; each request names A in
@@ -238,7 +238,7 @@ test('reorder and move still work on the route\'s own assessment', function () {
     expect(AssessmentOperation::query()->where('assessment_id', $own->id)->count())->toBe(2);
 });
 
-test('W121: a move touching a soft-deleted endpoint is refused, and links and records nothing', function (string $trashed) {
+test('a move touching a soft-deleted endpoint is refused, and links and records nothing', function (string $trashed) {
     ['caller' => $caller, 'own' => $own] = scopeFixture();
     $from = Risk::factory()->create(['assessment_id' => $own->id]);
     $to = Risk::factory()->create(['assessment_id' => $own->id]);

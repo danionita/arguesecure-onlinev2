@@ -1,5 +1,5 @@
 /**
- * The short-form helpers the chart card's value row is built on (W69).
+ * The short-form helpers the chart card's value row is built on.
  *
  * These live with the chart rather than with the rest of `format.ts` because
  * the chart is the only thing that abbreviates: everywhere with room for the
@@ -73,7 +73,7 @@ describe('formatRateShort', () => {
 });
 
 /*
- * The `formatLevelCode` block was removed with the function in W87 (D44).
+ * The `formatLevelCode` block was removed with the function.
  *
  * A card renders a band's **label** now, never its code, so what used to be
  * asserted here — that `very_strong` becomes "very strong" — is a behaviour

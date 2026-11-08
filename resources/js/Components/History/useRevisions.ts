@@ -1,21 +1,9 @@
 /**
- * Per-node history (PLAN.md Phase 8 item 2, schema.md §3.9). Talks to the
- * W18 revision routes directly — see routes/web.php's "W18 — comments +
- * history" block for why those are closures rather than a dedicated
- * controller (this package's file-ownership list grants no
- * app/Http/Controllers/HistoryController.php path, and the exact same
- * gap-fill pattern W14's own reorder/move routes already established).
- *
- * IMPORTANT, read before wiring this in: because nothing in this codebase
- * currently writes to `node_revisions` on an ordinary field edit (see the
- * W18 report — App\Domain\History\RevisionRecorder does not exist and
- * NodeController::update() records nothing), `load()` will typically
- * return an empty list today. The revert path itself is fully functional
- * and end-to-end tested (tests/Feature/History/NodeRevisionRevertTest.php)
- * against directly-seeded rows, and correctly writes its own new revision
- * when used — there is simply nothing to revert *to* yet for a title/value
- * edit made through the tree editor, until a revision writer is wired into
- * that path by whichever package ends up owning it.
+ * Per-node history (schema.md §3.9). Talks to the comments and history
+ * routes in routes/web.php directly, which are closures rather than a
+ * dedicated controller. Revision rows are written by
+ * App\Domain\History\RevisionRecorder and reverted through
+ * App\Domain\History\RevisionReverter.
  */
 import { reactive, ref } from 'vue';
 import type { NodeRevision } from './types';
@@ -48,8 +36,7 @@ export function useRevisions(assessmentUuid: string, nodeUuid: string) {
     /**
      * Reverts one field from one revision. Returns the field's new value
      * so the caller can patch it into whatever holds the node's live state
-     * (the assessment store, outside this package's ownership — see the
-     * W18 report for the exact call HistoryTab.vue needs to make) and
+     * (the assessment store; HistoryTab.vue makes that call) and
      * prepends the new revision this write created, matching the server's
      * own "recorded as a normal edit" contract (schema.md §3.10) — never
      * touching the undo stack.

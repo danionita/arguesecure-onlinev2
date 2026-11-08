@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Schema;
  * 2.5.1: there is one default scale set — the one the admin Defaults tab
  * edits — so the setting that chose between seeded sets is gone.
  *
- * `default_scale_calibration` began as inert free text (W75 pinned it), was
- * made a real reference to a seeded set in W77 (D36), and then W87's Defaults
- * tab made the bands of the default set editable directly. From that point
+ * `default_scale_calibration` began as inert free text (a test pinned it), was
+ * made a real reference to a seeded set once scale sets existed, and then the
+ * Defaults tab made the bands of the default set editable directly. From that point
  * the select was a second, older way of answering "what does a new assessment
  * start with", naming a set nobody could see or edit from the screen that
  * named it. The `small-organisation` set is still seeded, so assessments

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * Chart, List, or Report (W32; third position added in W35).
+ * Chart, List, or Report.
  *
  * ## Why the report is a position here and not a link
  *
  * Chart / List / Report is the actual working order — sketch the shape, fill
  * in the values, read the answer — and the switcher is already where a user
- * goes to change what they are looking at. W33 put a **Report** link in the
+ * goes to change what they are looking at. An earlier version put a **Report** link in the
  * assessment page's own header instead, on the reasoning that the toolbar
  * holds view state and a link out of the page is not that. True of a link;
  * this is not one. Making it the third position says the three surfaces are

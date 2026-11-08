@@ -14,10 +14,9 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
- * Freezes a named version of an assessment (schema.md §3.13, PLAN.md Phase 8
- * item 3): the graph AND the computed results, with the scales inlined so a
+ * Freezes a named version of an assessment (schema.md §3.13): the graph AND the computed results, with the scales inlined so a
  * later recalibration cannot retroactively rewrite a report already sent to
- * a client (the entire reason this package exists — CLAUDE.md's W19 brief).
+ * a client (the entire reason this class exists).
  *
  * **Never reimplements any part of the engine.** This class only calls
  * AssessmentGraphLoader::load() and RiskCalculator::compute() — exactly the
@@ -35,7 +34,7 @@ use Illuminate\Support\Collection;
 final class SnapshotService
 {
     /**
-     * Bumped to 2 by W62, which added `tags` and `assignees` to every node.
+     * Bumped to 2 when snapshots started carrying labels, which added `tags` and `assignees` to every node.
      *
      * The number exists so a reader can tell what it is holding rather than
      * guess (schema.md §3.13). A v1 snapshot is still valid, still readable
@@ -79,7 +78,7 @@ final class SnapshotService
     /**
      * Eager-loaded, both of them: without the `with()` this is an N+1 by
      * construction over every node in the assessment, which is the exact
-     * defect CLAUDE.md names in the legacy tree render.
+     * defect of the legacy tree render.
      *
      * `assignees` is also narrowed to `id` and `name` here, but that is a
      * second line and **not** the thing keeping emails out of a snapshot —
@@ -158,7 +157,7 @@ final class SnapshotService
     }
 
     /**
-     * A node's labels, **by value** (W62).
+     * A node's labels, **by value**.
      *
      * By value and not by id, for the same reason the scales are inlined one
      * method above: a `tags` row can be renamed, recoloured or deleted after
@@ -188,7 +187,7 @@ final class SnapshotService
     }
 
     /**
-     * Who was responsible for a node when this was frozen (W62).
+     * Who was responsible for a node when this was frozen.
      *
      * The id is what a restore re-attaches by, because a person is their
      * account and not their name; the name is what lets this snapshot still
@@ -210,9 +209,9 @@ final class SnapshotService
 
     /**
      * Generic readonly-DTO -> array converter for CalculationResults, kept
-     * as this package's own private copy rather than a shared helper — this
-     * package owns no file the equivalent AssessmentJsonExporter copy lives
-     * in, and that class documents the same reasoning for its own copy.
+     * as a private copy rather than a shared helper, as the equivalent
+     * AssessmentJsonExporter copy is; that class documents the same
+     * reasoning for its own copy.
      *
      * @return array<string, mixed>
      */

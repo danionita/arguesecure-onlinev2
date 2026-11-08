@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Gate;
  *
  * Callers must eager-load `rootNode.tags`, `owner` and `members` — the per-row
  * Gate checks resolve roles through `members`, and without the eager load
- * every row costs a query (the N+1 CLAUDE.md names as the legacy tree
+ * every row costs a query (the N+1 that was the legacy tree
  * render's defining defect).
  */
 final class AssessmentListRows
@@ -40,7 +40,7 @@ final class AssessmentListRows
             'description' => $assessment->description,
             'is_public' => (bool) $assessment->is_public,
             // Names only; a per-assessment colour would make one list read as
-            // fifteen unrelated palettes (W43 item 18).
+            // fifteen unrelated palettes (ui.md §7, Labels).
             'tags' => $assessment->rootNode?->tags
                 ->pluck('name')->values()->all() ?? [],
             'is_owner' => $assessment->owner_user_id === $user->id,
@@ -50,7 +50,7 @@ final class AssessmentListRows
             'can_manage' => Gate::forUser($user)->allows('manage', $assessment),
             'can_delete' => Gate::forUser($user)->allows('delete', $assessment),
             // Display name only — an address on a page about other people's
-            // work is exactly where one leaks (security.md, W17 report cover).
+            // work is exactly where one leaks (security.md).
             'owner_name' => $assessment->owner?->name,
             'updated_at' => $assessment->updated_at?->toJSON(),
         ])->values()->all();

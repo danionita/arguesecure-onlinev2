@@ -3,7 +3,7 @@
 use App\Domain\Release\ReleaseInfo;
 
 /*
- * W124 (D90): the label and link the sidebar shows. The value comes from the
+ * The label and link the sidebar shows. The value comes from the
  * image build, but it ends up in a URL, so what matters is the specified
  * output for each shape and that nothing else reaches the path.
  */

@@ -2,7 +2,7 @@
 
 /**
  * Choosing a scale for an assessment, and what that does and does not do
- * (W126, D94; before W126 this file tested "Reset to default", W87 item 10).
+ * (this file used to test "Reset to default").
  *
  * There is no reset any more: the settings dropdown fills the editors with an
  * admin scale's bands and **Save** stores all three kinds in one request. The
@@ -180,7 +180,7 @@ test('an editor cannot save scales', function () {
 })->group('scales');
 
 test('Reset to default is gone: no route, no per-kind save, no screen', function () {
-    // D94: choosing a scale is the reset. D46: a route that still answers is
+    // Choosing a scale is the reset. A route that still answers is
     // how a second editor survives, so the assertion is on the route table.
     $routes = collect(app('router')->getRoutes()->getRoutes());
     $names = $routes->map(fn ($r) => $r->getName())->filter()->values();
@@ -230,13 +230,13 @@ test('the count of emptied values reaches the screen, not just the session', fun
         ->get(route('assessments.settings.edit', $assessment->uuid))
         ->viewData('page')['props'];
 
-    // Until W115 nothing passed the session's flash bag to the page, so the
+    // Until flash messages were shared nothing passed the session's flash bag to the page, so the
     // controller reads it and passes it as a prop, beside the editors.
     expect($props)->toHaveKey('flashSuccess')
         ->and($props['flashSuccess'])->toBe('Scales saved. 1 stored value(s) used a band you removed and are now unset — they will need choosing again.');
 })->group('scales');
 
-test('FIXED: a flash message reaches the page, so ->with(success) alone is visible (W115)', function () {
+test('FIXED: a flash message reaches the page, so ->with(success) alone is visible', function () {
     /*
      * Was the `DEFECT:` pin "a flash message is not a shared Inertia prop", and
      * is flipped in place rather than deleted so the reasoning survives.
@@ -247,13 +247,13 @@ test('FIXED: a flash message reaches the page, so ->with(success) alone is visib
      * restore summary, the template messages and — worst, and not on the
      * pin's list — the generated password an admin needs to hand over.
      *
-     * The pin proposed a shared `flash` prop. W115 used Inertia's own flash
+     * The pin proposed a shared `flash` prop. the fix used Inertia's own flash
      * data instead (`HandleInertiaRequests::handle()` says why: a prop is kept
      * in browser history and would toast again on Back), rendered once in the
      * shared chrome. So the assertion is on the page object's `flash`, and on
      * the exact sentence the controller wrote — not that a key is present.
      *
-     * The pin also asked whoever fixed it to decide whether W87's per-page
+     * The pin also asked whoever fixed it to decide whether the per-page
      * `flashSuccess` props become redundant. They do not: Settings and
      * Defaults show the message beside the card it describes, which a toast
      * at the foot of the window cannot, and the chrome defers to a page that

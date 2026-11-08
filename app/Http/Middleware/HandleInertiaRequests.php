@@ -17,7 +17,7 @@ class HandleInertiaRequests extends Middleware
 
     /**
      * The session flash keys a controller writes with `->with(…)` that the
-     * shared chrome shows as a toast (W115). An allowlist, not the whole bag:
+     * shared chrome shows as a toast. An allowlist, not the whole bag:
      * the bag also carries `restore`, `status` and `shareTokenAssessmentId`,
      * which are data for one page rather than sentences for a person.
      */
@@ -39,11 +39,11 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * W115: what a controller flashed with `->with('success', …)` reaches the
+     * What a controller flashed with `->with('success', …)` reaches the
      * page, as Inertia's own flash data rather than as a shared prop.
      *
-     * Until W115 nothing shared the flash bag, so every `->with('success', …)`
-     * stopped in the server-side session: "Version saved.", the restore
+     * Until this, nothing shared the flash bag, so every
+     * `->with('success', …)` stopped in the server-side session: "Version saved.", the restore
      * summary, a restore that failed and why, "Saved as a template." — all
      * written, all discarded (the `DEFECT:` pin in `ScaleResetTest`, now a
      * `FIXED:` guard).
@@ -63,7 +63,7 @@ class HandleInertiaRequests extends Middleware
      * when Laravel's flash bag holds what the previous request wrote. Only
      * GETs: a page is rendered on a GET, and the request a redirect leads to
      * is one. Anything else would move the message off the page it was
-     * written for. Reading does not consume Laravel's copy, so W87's two
+     * written for. Reading does not consume Laravel's copy, so the two
      * controllers that pass `session('success')` as their own prop still see
      * it.
      */
@@ -100,11 +100,14 @@ class HandleInertiaRequests extends Middleware
             ],
             'nav' => $this->nav($request),
             'reverb' => $this->reverb(),
+            // The operator's notice (APP_NOTICE), or null. Shared so the
+            // login and share-link pages, which a stranger sees first, carry it.
+            'notice' => config('arguesecure.notice'),
         ];
     }
 
     /**
-     * What the sidebar needs, on every authenticated page (W41, ui.md §2).
+     * What the sidebar needs, on every authenticated page (ui.md §2).
      *
      * The sidebar replaces a top bar whose only navigation was a product
      * mark and a user menu — everything else was a search box that searched
@@ -115,28 +118,27 @@ class HandleInertiaRequests extends Middleware
      *  - **Two queries, both capped.** Assessments are eager-loaded with
      *    `rootNode` (titles live there, schema.md) and `owner`, because the
      *    shared list names who shared it. Without the eager load this is the
-     *    N+1 that CLAUDE.md names as the legacy tree render's defining
+     *    N+1 that was the legacy tree render's defining
      *    defect, on every page in the application.
      *  - **Capped at ten, with the full list one click away.** A sidebar is
      *    scanned, not read, and someone with 400 assessments does not want
      *    them in a rail.
      *
      * Templates are *not* listed here. `templates.index` already applies its
-     * own visibility rules (W20) and a template list is neither short nor
+     * own visibility rules and a template list is neither short nor
      * personal; the sidebar links to that page instead of previewing it.
      *
      * `is_admin` decides whether the Admin item renders. It is not the
      * guard — `EnsureUserIsAdmin` is, and the route still 403s for anyone
      * who forges this prop or types the URL. Hiding a link the user cannot
-     * follow is courtesy, not authorization, and W41's tests assert both
+     * follow is courtesy, not authorization, and the sidebar's tests assert both
      * halves separately so nobody can mistake one for the other.
      *
-     * `currentAssessment` is gone as of W82 (D41): Settings and History left
+     * `currentAssessment` is gone: Settings and History left
      * this prop's only readers — `Sidebar.vue` gated both on it — for
      * `Toolbar/AssessmentActions.vue`, which reads `store.abilities` off the
      * page's own props instead. A prop nothing reads is exactly the dead
-     * control CLAUDE.md's `ReportOptions::$figures` write-up warns can
-     * survive a consolidation for releases at a time; this one is removed
+     * control, of the kind that can survive a consolidation for releases at a time; this one is removed
      * rather than left computing a query on every request inside an
      * assessment for nobody.
      *
@@ -182,20 +184,20 @@ class HandleInertiaRequests extends Middleware
                 // already follows.
                 'ownerName' => $assessment->owner?->name,
             ])->values(),
-            // W47. One indexed count per authenticated request — the badge is
+            // One indexed count per authenticated request — the badge is
             // on every page, so it is a shared prop rather than a fetch the
             // sidebar makes on mount, which would be the same query plus a
             // round trip and a frame of the badge showing the wrong number.
             // `notifications_unread_index` is what keeps it a seek.
             'notificationCount' => $user->unreadNotifications()->count(),
-            // W124. Authenticated pages only: a sign-in page does not tell a
+            // Authenticated pages only: a sign-in page does not tell a
             // stranger which release is running.
             'version' => ReleaseInfo::for(config('arguesecure.version')),
         ];
     }
 
     /**
-     * W27 defect 1: the browser's Reverb credentials, delivered at request
+     * The browser's Reverb credentials, delivered at request
      * time rather than baked into the bundle.
      *
      * `useRealtime.ts` used to read `import.meta.env.VITE_REVERB_APP_KEY`,

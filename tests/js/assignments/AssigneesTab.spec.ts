@@ -1,5 +1,5 @@
 /**
- * The Assignees tab (W46, item 16; PLAN-2.2.md D13).
+ * The Assignees tab.
  *
  * Two things are worth pinning here, and neither is that a list renders.
  *
@@ -7,7 +7,7 @@
  * path that shares an assessment with someone at `viewer` as part of an
  * assignment, and it exists for the Share dialog's benefit, not this
  * dropdown's — a picker that quietly grants read access to a whole assessment
- * is the silent disclosure D13 exists to prevent. That the field is absent
+ * is the silent disclosure the assignment design exists to prevent. That the field is absent
  * from the request is a security assertion, not a formatting one.
  *
  * The second is that a viewer is never asked for the candidate list. That

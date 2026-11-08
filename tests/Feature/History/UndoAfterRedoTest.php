@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 
 /*
- * W108. Undo, redo, undo, undo used to re-apply the change instead of
+ * Undo, redo, undo, undo used to re-apply the change instead of
  * undoing the operation before it. undo() replaces an operation's `inverse`
  * with the command that would redo it; redo() then cleared that row's
  * `undone_at` and pushed a new row, so the old row was back on the undo
@@ -72,7 +72,7 @@ test('undo, redo, undo, undo undoes the operation before the redone one', functi
     $this->actingAs($editor)->postJson(route('assessments.undo.store', $assessment))->assertOk();
     expect(redoRiskExists($second))->toBeTrue();
 
-    // Before W108 this re-deleted 'Ransomware' and left 'Phishing' deleted.
+    // Before the fix this re-deleted 'Ransomware' and left 'Phishing' deleted.
     $this->actingAs($editor)->postJson(route('assessments.undo.store', $assessment))
         ->assertOk()
         ->assertJsonPath('operation.summary', "deletion of 'Phishing'");
@@ -171,15 +171,15 @@ test('the History page shows the redone deletion once as live and the original a
         ->where('source', 'operation')
         ->where('summary', "deletion of 'Ransomware'");
 
-    // Before W108 both rows read as live: one deletion shown twice.
+    // Before the fix both rows read as live: one deletion shown twice.
     expect($entries->pluck('undone')->sort()->values()->all())->toBe([false, true]);
 });
 
 /*
- * W121 (D83). A new operation ends the redo stack: undo, make a different
+ * A new operation ends the redo stack: undo, make a different
  * change, redo used to replay the old inverse over the newer state.
  */
-test('W121: a new change after an undo leaves nothing to redo, and the undone rows stay undone', function () {
+test('a new change after an undo leaves nothing to redo, and the undone rows stay undone', function () {
     [$assessment, $editor, $first, $second] = redoTwoDeletions();
     $third = Risk::factory()->create(['assessment_id' => $assessment->id, 'title' => 'Insider']);
 
@@ -206,7 +206,7 @@ test('W121: a new change after an undo leaves nothing to redo, and the undone ro
         ->assertJsonPath('operation.summary', "deletion of 'Insider'");
 });
 
-test('W121: redo\'s own pushed row does not end the rest of the redo stack', function () {
+test('redo\'s own pushed row does not end the rest of the redo stack', function () {
     [$assessment, $editor, $first, $second] = redoTwoDeletions();
 
     $this->actingAs($editor)->postJson(route('assessments.undo.store', $assessment))->assertOk();

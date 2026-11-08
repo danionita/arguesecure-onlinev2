@@ -1,16 +1,17 @@
 /**
  * Currency and percentage formatting, in one place.
  *
- * Money.vue and Percent.vue formatted inline until W29, which was fine while
- * they were the only things rendering a figure. They no longer are: the node
- * card's tooltips (constants/valueHints.ts) quote the same numbers back in a
- * sentence — "18% of total annual loss (€22,500 of €125,000)" — and a tooltip
- * that rounds differently from the chip it explains reads as a second, wrong
+ * Money.vue and Percent.vue formatted inline until the node card's tooltips
+ * began quoting the same figures, which was fine while they were the only
+ * things rendering one. They no longer are: the node card's tooltips
+ * (constants/valueHints.ts) quote the same numbers back in a sentence —
+ * "18% of total annual loss (€22,500 of €125,000)" — and a tooltip that
+ * rounds differently from the chip it explains reads as a second, wrong
  * number rather than as an explanation of the first.
  *
  * `null`/`undefined` return `null` rather than a string: the display layer
  * renders missing as the grey `?` chip, never as `0` and never as blank
- * (CLAUDE.md / calculation-engine.md — a missing value is excluded from the
+ * (calculation-engine.md — a missing value is excluded from the
  * total, so showing it as zero would understate risk).
  */
 
@@ -65,7 +66,7 @@ export function formatRate(value: number | null | undefined): string | null {
 
 /*
  * ---------------------------------------------------------------------------
- * Short forms (W69)
+ * Short forms
  * ---------------------------------------------------------------------------
  *
  * The chart card's bottom row is a strip roughly forty pixels wide inside a
@@ -130,10 +131,10 @@ export function formatRateShort(
 }
 
 /*
- * `formatLevelCode()` was removed in W87.
+ * `formatLevelCode()` has been removed.
  *
  * It turned a level's `code` into card text (`very_strong` → `very strong`),
- * and its only callers were the chart and tree cards. D44 made
+ * and its only callers were the chart and tree cards. The scale design made
  * `scale_levels.code` internal — derived from the label on create and then
  * frozen, so a catalogue fixture naming `moderate` keeps resolving after
  * somebody renames the band — which means the code and the label diverge on
@@ -143,7 +144,7 @@ export function formatRateShort(
  * Deleted rather than kept, and this note is here instead of a deprecation:
  * a dead formatter whose name reads like the obvious way to put a level on a
  * card is an invitation to reintroduce the defect. `ReportOptions::$figures`
- * (CLAUDE.md) is what happens to a dead thing that is merely left alone —
+ * is what happens to a dead thing that is merely left alone —
  * four releases, and a control that stated something false about the document
  * it claimed to configure.
  */

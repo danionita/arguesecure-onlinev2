@@ -1,5 +1,5 @@
 /**
- * W130 follow-up: the hidden-children count is styled like the card's
+ * The hidden-children count is styled like the card's
  * collapse button (IconButton `subtle`): muted, same height, no ground at
  * rest. A grey pill looked foreign on the button bar. jsdom computes no CSS,
  * so the classes are asserted by name; each pair below is a value the design

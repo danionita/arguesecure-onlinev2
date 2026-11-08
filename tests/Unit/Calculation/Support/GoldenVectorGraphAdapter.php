@@ -9,9 +9,9 @@ use App\Domain\Graph\AssessmentGraph;
  * see tests/fixtures/README.md for the format) into an AssessmentGraph — the
  * only shape RiskCalculator accepts (calculation-engine.md §11.1).
  *
- * This is the fixture-to-graph boundary the W7 reconciliation brief asks to
- * keep "clearly separated and readable", since W11's TypeScript mirror will
- * need an equivalent translation of the same fixture.
+ * This is the fixture-to-graph boundary that is kept "clearly separated and
+ * readable", since the TypeScript mirror of the calculation will need an
+ * equivalent translation of the same fixture.
  *
  * Two deliberate adapter-only decisions, neither of which touches the
  * fixture or the engine:

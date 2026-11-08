@@ -11,9 +11,9 @@ use Inertia\Testing\AssertableInertia as Assert;
  * assessment" over AssessmentPolicy::view()'s resolution order (is_admin ->
  * owner -> assessment_user.role -> is_public -> share token). This is the
  * class of route legacy defect #4 lived in (security.md) — every case below
- * asserts a stranger with no share gets 403, on all three W17 routes
- * (report page, CSV export, JSON export), per the W17 task brief's explicit
- * requirement.
+ * asserts a stranger with no share gets 403, on all three report routes
+ * (report page, CSV export, JSON export), as the report's access rules
+ * explicitly require.
  */
 function reportMember(Assessment $assessment, User $user, string $role): void
 {
@@ -139,7 +139,7 @@ test('no report surface exposes the owner email to a public reader', function ()
 });
 
 /*
- * W83, D40/D41. AssessmentActions.vue gates Settings and Share on
+ * AssessmentActions.vue gates Settings and Share on
  * abilities.manage — ReportController resolves it once, the same
  * AssessmentPolicy::manage() the editor already reads off store.abilities
  * (assessmentStore.ts). A viewer collaborator has `view` but not `manage`

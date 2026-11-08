@@ -8,11 +8,11 @@ use App\Models\Risk;
 use Illuminate\Support\Facades\DB;
 
 /**
- * FIXED (W64): inserting a catalogue bundle costs a flat number of queries.
+ * FIXED: inserting a catalogue bundle costs a flat number of queries.
  *
  * ## What this used to pin, and why it was pinned rather than fixed
  *
- * W24's performance brief found `CatalogInserter` walking a bundle's
+ * A performance review found `CatalogInserter` walking a bundle's
  * `catalog_entry_links` tree one node at a time and issuing three separate
  * queries per descendant:
  *
@@ -25,10 +25,10 @@ use Illuminate\Support\Facades\DB;
  *    instead of counting in memory.
  *
  * Query count therefore scaled with bundle size — worst exactly where the
- * catalogue earns its keep, since an ISO entry ships dozens of controls. W24
- * did not own `app/Domain/Catalog/**`, so per its own rule it pinned the
- * behaviour that existed rather than editing another package's file, and it
- * could not measure the numbers either: that sandbox had no MariaDB.
+ * catalogue earns its keep, since an ISO entry ships dozens of controls. The
+ * performance work did not own `app/Domain/Catalog/**`, so per its own rule it
+ * pinned the behaviour that existed rather than editing another area's file,
+ * and it could not measure the numbers either: that sandbox had no MariaDB.
  *
  * ## What it pins now
  *
@@ -81,8 +81,8 @@ test('inserting a catalogue bundle costs a flat number of queries per extra desc
 
     // MEASURED, on MariaDB 11, with this exact fixture:
     //
-    //   before W64   n=1: 26   n=6: 81   → 11 queries per extra defence
-    //   after  W64   n=1: 25   n=6: 60   →  7 queries per extra defence
+    //   before the fix  n=1: 26   n=6: 81   → 11 queries per extra defence
+    //   after  the fix  n=1: 25   n=6: 60   →  7 queries per extra defence
     //
     // Written as a per-descendant rate rather than a fixed total, so it keeps
     // meaning something as the insert path changes: a total would go red on any
@@ -122,7 +122,7 @@ test('a batched insert still numbers positions the way a query per node did', fu
         ->pluck('position')
         ->all();
 
-    // The counter is the half of W64 that could have gone wrong silently. The
+    // The counter is the half of the batching fix that could have gone wrong silently. The
     // old `MAX(position) + 1` saw each previous insert already committed, so it
     // produced consecutive numbers; an in-memory counter has to reproduce that
     // exactly, and a batched insert that handed every defence the same position
@@ -165,12 +165,13 @@ test('a bundle inserts in the same order twice', function () {
 });
 
 /**
- * FIXED (W68): the observer layer no longer lazy-loads a relation per mutation.
+ * FIXED: the observer layer no longer lazy-loads a relation per mutation.
  *
- * ## What this pinned, and why it was pinned rather than fixed in W64
+ * ## What this pinned, and why it was pinned rather than fixed with the batching
  *
- * Found while fixing W64's own N+1, by dumping the query log rather than by
- * reading the source — which is also why W24 never named it. Per inserted node
+ * Found while fixing the bundle insert's own N+1, by dumping the query log
+ * rather than by reading the source — which is also why the
+ * performance review never named it. Per inserted node
  * and per inserted edge:
  *
  *  - `AttackDefenceObserver::debounce()` and `RiskAttackObserver::debounce()`
@@ -182,9 +183,9 @@ test('a bundle inserts in the same order twice', function () {
  *
  * Neither was CatalogInserter's, and neither was specific to the catalogue:
  * every bulk path in the application paid it — `AssessmentCloner`,
- * `SnapshotRestorer`, and undo. That was the reason W64 pinned it: fixing it
+ * `SnapshotRestorer`, and undo. That was the reason it was pinned then: fixing it
  * meant changing the mutation events every write path in the codebase runs
- * through, and doing that as an unplanned addition to a package about the
+ * through, and doing that as an unplanned addition to a change about the
  * catalogue is how a wide change lands without anyone having agreed to its
  * blast radius.
  *
@@ -207,8 +208,8 @@ test('a bundle inserts in the same order twice', function () {
  *
  * MEASURED, same fixture as the budget test above:
  *
- *   after W64   n=1: 25   n=6: 60   → 7 queries per extra defence
- *   after W68   n=1: 18   n=6: 33   → 3 queries per extra defence
+ *   after the batching fix        n=1: 25   n=6: 60   → 7 queries per extra defence
+ *   after the observer lookups    n=1: 18   n=6: 33   → 3 queries per extra defence
  *
  * Three is the floor this fixture can reach: the node INSERT, the edge INSERT,
  * and the `nodes` SELECT that LinkService's own `nextPosition()` runs. Those

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * The template list (schema.md §3.14, PLAN.md Phase 8 item 4).
+ * The template list (schema.md §3.14).
  * TemplateController::index() lists every template for every signed-in
  * account, so everything rendered here is usable. Administrators also create,
- * edit and delete templates here, and only here (W141).
+ * edit and delete templates here, and only here.
  */
 import TemplateCard from '@/Components/Catalog/TemplateCard.vue';
 import type { TemplateSummary } from '@/Components/Catalog/types';
@@ -97,8 +97,8 @@ async function useTemplate(template: TemplateSummary) {
                 instead). This page was the one place that put EmptyState
                 inside the bordered panel `TemplateCard` rows share, leaving
                 it flush against that panel's border with no breathing room
-                of its own — "a wrapper was assumed and never applied"
-                (PLAN-2.5.md), just applied to a panel rather than a dialog.
+                of its own — "a wrapper was assumed and never applied", just
+                applied to a panel rather than a dialog.
 
                 Fixed the way the sibling page is built: the bordered panel
                 now wraps populated rows only, and the empty state stands

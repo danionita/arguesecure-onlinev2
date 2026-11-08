@@ -3,7 +3,7 @@
  * Shown exactly once. `created[].password` exists only in this response —
  * it is never stored in plaintext, never re-derivable, never emailed
  * (ui.md §10). The print view below is an HTML print stylesheet, not a
- * PDF library — dompdf is permanently banned (CLAUDE.md).
+ * PDF library — dompdf is permanently banned (security.md §10).
  */
 import Button from '@/Components/UI/Button.vue';
 import AdminLayout from '@/Pages/Admin/AdminLayout.vue';

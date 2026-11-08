@@ -5,9 +5,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /*
- * Authorization matrix required by CLAUDE.md / security.md §3.3-style
- * coverage for every route this package adds: anonymous, non-admin, and
- * deactivated users must all be rejected from every /admin route.
+ * Authorization matrix, in the style of security.md §3.3, for every
+ * /admin user route: anonymous, non-admin, and deactivated users must all
+ * be rejected from every /admin route.
  */
 test('anonymous user is redirected away from the admin users index', function () {
     $this->get('/admin/users')->assertRedirect('/login');
@@ -214,4 +214,70 @@ test('deleting a user transfers their owned assessments instead of cascading', f
     $response->assertRedirect(route('admin.users.index'));
     $this->assertDatabaseMissing('users', ['id' => $target->id]);
     $this->assertDatabaseHas('assessments', ['id' => $assessment->id, 'owner_user_id' => $recipient->id]);
+});
+
+function insertSessionFor(User $user, string $id): void
+{
+    DB::table('sessions')->insert([
+        'id' => $id,
+        'user_id' => $user->id,
+        'ip_address' => '10.0.0.1',
+        'user_agent' => 'Test',
+        'payload' => base64_encode('irrelevant'),
+        'last_activity' => now()->timestamp,
+    ]);
+}
+
+test('changing an account\'s role ends its other sessions and remember-me cookies', function (bool $startsAdmin) {
+    $admin = User::factory()->admin()->create();
+    $target = User::factory()->create(['is_admin' => $startsAdmin, 'remember_token' => 'known-token']);
+    insertSessionFor($target, 'target-session-id');
+
+    $this->actingAs($admin)->put("/admin/users/{$target->id}", [
+        'name' => $target->name,
+        'email' => $target->email,
+        'is_admin' => ! $startsAdmin,
+        'is_active' => true,
+    ])->assertRedirect(route('admin.users.index'));
+
+    $this->assertDatabaseMissing('sessions', ['id' => 'target-session-id']);
+    expect($target->refresh()->remember_token)->not->toBe('known-token');
+})->with([true, false]);
+
+test('saving an account without changing its role keeps its sessions', function () {
+    $admin = User::factory()->admin()->create();
+    $target = User::factory()->create(['remember_token' => 'known-token']);
+    insertSessionFor($target, 'target-session-id');
+
+    $this->actingAs($admin)->put("/admin/users/{$target->id}", [
+        'name' => 'Renamed',
+        'email' => $target->email,
+        'is_admin' => false,
+        'is_active' => true,
+    ])->assertRedirect(route('admin.users.index'));
+
+    $this->assertDatabaseHas('sessions', ['id' => 'target-session-id']);
+    expect($target->refresh()->remember_token)->toBe('known-token');
+});
+
+test('an admin changing their own role keeps the session they are using', function () {
+    $admin = User::factory()->admin()->create();
+    // On the database driver the request's own session save would write the
+    // row back and hide a revocation; the array driver leaves the table alone.
+    config(['session.driver' => 'array']);
+    insertSessionFor($admin, 'other-device-id');
+    $this->startSession();
+    $currentId = session()->getId();
+    insertSessionFor($admin, $currentId);
+
+    $current = $this->actingAs($admin)->withCookie(config('session.cookie'), $currentId)->put("/admin/users/{$admin->id}", [
+        'name' => $admin->name,
+        'email' => $admin->email,
+        'is_admin' => false,
+        'is_active' => true,
+    ]);
+    $current->assertRedirect(route('admin.users.index'));
+
+    $this->assertDatabaseMissing('sessions', ['id' => 'other-device-id']);
+    $this->assertDatabaseHas('sessions', ['id' => $currentId]);
 });

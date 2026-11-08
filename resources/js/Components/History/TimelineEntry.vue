@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One entry in the assessment timeline (W48, item 21).
+ * One entry in the assessment timeline (ui.md §7, history).
  *
  * Two logs feed this component — `assessment_operations` for structural
  * changes and `node_revisions` for field edits — but a reader does not care

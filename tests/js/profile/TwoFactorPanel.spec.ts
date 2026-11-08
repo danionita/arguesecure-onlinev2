@@ -1,5 +1,5 @@
 /**
- * The profile page's two-factor panel (W116, D77, D78).
+ * The profile page's two-factor panel.
  *
  * Three states of one panel, and what each may and may not show:
  *
@@ -16,6 +16,7 @@ import { reactive } from 'vue';
 import TwoFactorPanel, {
     type TwoFactorState,
 } from '../../../resources/js/Components/Profile/TwoFactorPanel.vue';
+import { routeProperties } from '../support/routeProperties';
 
 interface Call {
     verb: string;
@@ -89,7 +90,7 @@ function render(
 ) {
     return mount(TwoFactorPanel, {
         props: { twoFactor, recoveryCodes },
-        global: { config: { globalProperties: { route } } },
+        global: { config: { globalProperties: routeProperties(route) } },
     });
 }
 

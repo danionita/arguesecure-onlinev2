@@ -4,8 +4,8 @@ use App\Models\Assessment;
 use App\Models\User;
 
 /*
- * The authorization matrix CLAUDE.md and security.md §3.3 require for
- * every route this package adds. Every mutating action is checked against
+ * The authorization matrix security.md §3.3 requires for
+ * every sharing route. Every mutating action is checked against
  * {guest, stranger, viewer, commenter, editor} — none of whom may change
  * sharing — and against {manager} for the privilege-escalation boundary
  * (manage != transferOwnership).
@@ -114,7 +114,7 @@ test('a manager can view the share dialog, add collaborators, toggle public and 
 
 /**
  * The classic sharing-feature privilege-escalation hole named explicitly
- * in the W9 brief: a manager can reach every other share route but not
+ * for sharing: a manager can reach every other share route but not
  * this one.
  */
 test('a manager cannot transfer ownership', function () {

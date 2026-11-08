@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Content Security Policy with per-request nonces, plus the rest of
- * security.md §6's header set. W24.
+ * security.md §6's header set.
  *
  * Before this middleware existed the application sent **no** security
  * headers at all — no CSP, no nosniff, no Referrer-Policy, no
@@ -41,9 +41,6 @@ use Symfony\Component\HttpFoundation\Response;
  * `route()` call sites in resources/js depend on — has no nonce and is
  * blocked by the policy below when it is enforced.
  *
- * `resources/views/**` is outside this package's file ownership, so this
- * is reported rather than patched (CLAUDE.md: "If you need to change a
- * file another package owns, stop and report rather than editing it").
  * The fix is one line in that template: pass the Vite CSP nonce as the
  * directive's second argument, i.e. `Vite::cspNonce()` in the position
  * after the null group. (Written out rather than shown literally because
@@ -55,7 +52,7 @@ use Symfony\Component\HttpFoundation\Response;
  * is presently un-nonced, and will go red the moment that template is
  * fixed, forcing whoever fixes it to flip the assertion and drop
  * `CSP_REPORT_ONLY` from `.env.example`. That is the same "pin the defect
- * you do not own as a passing test" convention W20 used in
+ * you do not own as a passing test" convention the template-cloning tests used in
  * tests/Feature/Catalog/AssessmentClonerTest.php.
  *
  * Until then `CSP_REPORT_ONLY=true` is set in `.env.example` so a fresh

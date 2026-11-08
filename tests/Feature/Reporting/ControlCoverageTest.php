@@ -16,7 +16,7 @@ use App\Models\Risk;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * The coverage view (PLAN-2.7 D65, D66). What it asserts is the rule, not
+ * The coverage view. What it asserts is the rule, not
  * the markup: a control reads implemented when any citing defence is,
  * planned when none is but one is todo, shelved otherwise; only what is
  * cited is listed, grouped by framework in config order and controls in

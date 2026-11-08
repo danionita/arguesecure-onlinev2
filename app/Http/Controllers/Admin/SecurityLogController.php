@@ -13,9 +13,9 @@ use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * The admin **Security log** tab (W128): the stored security event log, a
+ * The admin **Security log** tab (security.md §11.1): the stored security event log, a
  * preview of the last 50 matching rows, and a CSV or JSON download. The
- * application log is deliberately not here (D96).
+ * application log is deliberately not here.
  */
 class SecurityLogController extends Controller
 {

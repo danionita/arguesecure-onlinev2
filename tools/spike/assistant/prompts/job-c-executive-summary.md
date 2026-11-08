@@ -1,7 +1,7 @@
 <!--
 Job C — draft the report's executive summary. Spike version 1.
 
-Job C is the highest-risk of the three and the plan does not ship it until B
+Job C is the highest-risk of the three and the assistant does not ship it until B
 has been used enough to know whether the model is worth reading. It is
 benchmarked here only because it is the *largest* prompt the assistant will
 ever build — the whole assessment — and therefore the one that decides whether

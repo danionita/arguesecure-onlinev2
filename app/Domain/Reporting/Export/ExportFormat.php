@@ -3,10 +3,10 @@
 namespace App\Domain\Reporting\Export;
 
 /**
- * The five formats behind the one export menu (D34).
+ * The five formats behind the one export menu.
  *
  * PDF is deliberately absent and is not an omission: it is the browser's own
- * print pipeline (D6, not reopened), which is why `dompdf` — the most
+ * print pipeline (a settled choice), which is why `dompdf` — the most
  * dangerous dependency in the legacy repository — stays gone and no
  * headless-Chromium sidecar joins the deployment.
  *
@@ -44,7 +44,7 @@ enum ExportFormat: string
      *
      * CSV keeps `defences-` even though it now carries the whole report, for
      * the same reason its route path is still `defences.csv`: it has been
-     * that since W17, it is asserted in test files this package does not own,
+     * that since it was first built, it is asserted in existing tests,
      * and whatever scripts and bookmarks exist point at it. A filename is a
      * weaker claim than a class name — nobody reads `defences-<uuid>.csv` and
      * concludes the risk register is missing from a file whose first column

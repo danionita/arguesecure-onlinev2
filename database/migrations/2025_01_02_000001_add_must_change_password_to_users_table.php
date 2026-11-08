@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         // security.md §4: "Admin password reset sets a temporary password
-        // shown once on screen and forces a change on next login." W8
-        // could only do the "shown once" half — this column is the missing
-        // backing state (see the W8 report's gap #1). Never fillable from
+        // shown once on screen and forces a change on next login." The admin
+        // reset could only do the "shown once" half — this column is the missing
+        // backing state. Never fillable from
         // request input (App\Models\User::$fillable stays untouched); only
         // ever set by server-side code (an admin reset, or cleared when the
         // user sets their own password).

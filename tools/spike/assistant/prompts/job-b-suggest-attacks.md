@@ -5,7 +5,7 @@ This file is the prompt. It is not assembled from user input: the three
 `{{...}}` placeholders are filled with assessment text that is delimited and
 declared to be data, and nothing else about the prompt varies.
 
-The delimiter block is the guardrail PLAN-2.3-ai.md calls for. It is a
+The delimiter block is the guardrail the assistant design calls for. It is a
 mitigation, not a guarantee — the output is treated as untrusted regardless,
 and reaches the graph only when a human clicks accept.
 -->

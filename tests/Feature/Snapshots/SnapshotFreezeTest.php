@@ -12,11 +12,10 @@ use App\Models\Snapshot;
 use Illuminate\Testing\Fluent\AssertableJson;
 
 /*
- * The single most important property of a snapshot (CLAUDE.md's W19 brief):
- * "the scales must be inlined into the snapshot. If a snapshot referenced
- * scale_levels by id, an admin recalibrating a scale next year would
- * retroactively rewrite the numbers in a report that was already signed
- * off and sent to a client." This file proves it end to end: take a
+ * The single most important property of a snapshot: the scales
+ * must be inlined into the snapshot. If a snapshot referenced scale_levels by
+ * id, an admin recalibrating a scale next year would retroactively rewrite
+ * the numbers in a report that was already signed off and sent to a client. This file proves it end to end: take a
  * snapshot, mutate the underlying scale level, and assert the snapshot's
  * stored figures — both the frozen `results` and the inlined `graph` —
  * are byte-for-byte unchanged, while a fresh live computation over the

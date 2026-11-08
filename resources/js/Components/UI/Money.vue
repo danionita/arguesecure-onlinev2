@@ -1,13 +1,13 @@
 <script setup lang="ts">
 /**
  * Currency formatter. All computed results render as currency, never a
- * severity band (CLAUDE.md "Computed results are never band-mapped").
+ * severity band (calculation-engine.md).
  * `null`/`undefined` render as the missing-value chip, never `0` — the
  * calculation engine's own rule (calculation-engine.md) applies to the
  * display layer too.
  *
  * The formatting itself lives in format.ts so the node card's tooltips can
- * quote the identical string (W29 — see that file's docblock).
+ * quote the identical string (see that file's docblock).
  */
 import { computed } from 'vue';
 import Chip from './Chip.vue';

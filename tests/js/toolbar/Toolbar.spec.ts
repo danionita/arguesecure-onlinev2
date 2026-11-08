@@ -1,9 +1,9 @@
 /**
- * W34 — the top bar, as behaviour rather than as a screenshot.
+ * The top bar, as behaviour rather than as a screenshot.
  *
- * Two of these are absence assertions, which CLAUDE.md is rightly sceptical
- * of. They are here because removal *is* the change: the baseline selector no
- * longer drives anything a user can see (PLAN-2.2.md D8), and a well-meaning
+ * Two of these are absence assertions, which are rightly viewed with
+ * scepticism. They are here because removal *is* the change: the baseline selector no
+ * longer drives anything a user can see (the baseline moved onto the cards), and a well-meaning
  * later commit re-adding it would restore a control that changes nothing.
  * Each names the specific thing that must not come back, not "fewer controls".
  *
@@ -28,7 +28,7 @@ function mountToolbar(availableTags: string[] = []) {
     const view = createEditorView(store, { assessmentUuid: 'a1', userId: 1 });
     const wrapper = mount(Toolbar, {
         // The editor always supplies this — it is what puts Report in the
-        // switcher — and the switcher's third position is what W81's
+        // switcher — and the switcher's third position is what the
         // ordering assertion below is about.
         props: { reportHref: '/assessments/a1/report', availableTags },
         global: {
@@ -39,7 +39,7 @@ function mountToolbar(availableTags: string[] = []) {
     return { wrapper, view, store };
 }
 
-/** The category group whose accessible name is `title` — W132's pairing of heading and controls. */
+/** The category group whose accessible name is `title` — the pairing of heading and controls. */
 function categoryGroup(wrapper: VueWrapper, title: string) {
     const heading = wrapper.findAll('h3').find((h) => h.text() === title);
     expect(heading, `heading "${title}"`).toBeDefined();
@@ -64,7 +64,7 @@ describe('Toolbar', () => {
         // itself with. Named precisely so this fails on the selector coming
         // back and not on the word "Inherent" appearing anywhere — the
         // totals panel below the row legitimately still prints it, until
-        // W36 moves those figures onto the ToS card.
+        // those figures move onto the Target of Assessment card.
         expect(wrapper.find('#baseline-label').exists()).toBe(false);
         expect(
             wrapper.find('[aria-labelledby="baseline-label"]').exists(),
@@ -86,10 +86,10 @@ describe('Toolbar', () => {
     });
 
     /**
-     * W81, the horizontal half of ui.md §9's "same screen position in all
+     * The horizontal half of ui.md §9's "same screen position in all
      * three views".
      *
-     * Through W80 the zoom controls came after the switcher, so the editor's
+     * The zoom controls used to come after the switcher, so the editor's
      * switcher was one zoom-group further from the window's right edge than
      * the report's — and the report had no honest way to match it. Ordering
      * the switcher last makes its inset from the right edge the band's
@@ -200,7 +200,7 @@ describe('Toolbar filters', () => {
     });
 
     /**
-     * W132. Each set sits under a heading that names what it filters, and the
+     * Each set sits under a heading that names what it filters, and the
      * heading is the group's accessible name — so asserting on the group found
      * *by* its heading proves the pairing, where "the text appears somewhere"
      * would pass with the headings stacked at the top.

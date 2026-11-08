@@ -7,7 +7,7 @@
  *
  * There are two, and they are the reason this file exists. The band pads the
  * row away from the header (`py-3`) and from the window edges (`px-3`); the
- * row pads its own controls (`py-1.5`, `px-3`). Until W81 the outer one lived
+ * row pads its own controls (`py-1.5`, `px-3`). Until this component existed the outer one lived
  * in `Pages/Assessment/Show.vue` and the inner one in
  * `Components/Toolbar/Toolbar.vue`, and the report reproduced both by hand —
  * except that it reproduced only the outer one, so its switcher sat 6px above
@@ -23,18 +23,18 @@
  * not depend on what the page put in `trailing` beside it.
  *
  * That is why the editor's zoom controls now sit to the *left* of the
- * switcher rather than the right. Through W80 they sat after it, so the
+ * switcher rather than the right. They used to sit after it, so the
  * editor's switcher was one zoom-group further from the right edge than the
- * report's, and there was no honest way to close the gap: W74 considered
- * reserving an empty spacer the width of the zoom controls on the report and
- * rejected it, because a spacer asserts the fix rather than the property —
+ * report's, and there was no honest way to close the gap: an earlier attempt
+ * considered reserving an empty spacer the width of the zoom controls on the
+ * report and rejected it, because a spacer asserts the fix rather than the property —
  * it would have to be resized by hand every time the zoom group changed, and
  * a test measuring it would pass for the wrong reason. Ordering the slot last
  * makes the property true by construction instead, for any siblings.
  *
  * Zoom and the switcher stay adjacent inside one right-hand group, which is
- * what W34 put them there for: zoom is a property of the view you are in, and
- * after W34 it does two different things depending on which one that is.
+ * why they sit together: zoom is a property of the view you are in, and
+ * since the chart began to scroll both ways it does two different things depending on which one that is.
  *
  * `data-print-hide` sits on the group rather than on each control: everything
  * in it is chrome, and `print.css` hides the group as a whole (ui.md §9,

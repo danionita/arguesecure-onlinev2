@@ -9,7 +9,7 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * The timeline (W48, item 21; PLAN-2.2.md D15).
+ * The timeline.
  *
  * Two logs, one feed. `assessment_operations` holds structural changes and
  * `node_revisions` holds field edits (schema.md §3.9/§3.10); neither is a
@@ -33,7 +33,7 @@ function timelineMember(Assessment $assessment, string $role): User
 
 function writeRevision(Assessment $assessment, Risk $node, ?User $user, array $changes, ?int $operationId = null, ?string $at = null): NodeRevision
 {
-    // Direct property assignment for the identity columns, per CLAUDE.md —
+    // Direct property assignment for the identity columns —
     // and this model is deliberately never mass-assigned from a request.
     return NodeRevision::create([
         'assessment_id' => $assessment->id,
@@ -78,7 +78,7 @@ test('the timeline carries both logs, newest first', function () {
 });
 
 /*
- * The grouping D15 asks for. Several revisions sharing an `operation_id` were
+ * The grouping the timeline asks for. Several revisions sharing an `operation_id` were
  * one user action and must read as one entry — "Dana added 3 defences under
  * Phishing", not three lines.
  */
@@ -279,7 +279,7 @@ test('an unknown action filter is rejected rather than queried', function () {
 });
 
 /*
- * The absence asserted directly. D15 specifies a revert; this package audited
+ * The absence asserted directly. The timeline specifies a revert; its audit of
  * the revision log, found gaps that would make a reconstruction silently
  * wrong, and did not build one. If someone adds the route later, this goes red
  * — which is the signal to read RevisionCoverageTest and confirm the gaps were

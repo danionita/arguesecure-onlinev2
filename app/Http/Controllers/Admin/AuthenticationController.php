@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Domain\Accounts\InstanceSettings;
+use App\Domain\Accounts\SelfRegistration;
 use App\Domain\Audit\SecurityEvent;
 use App\Domain\Audit\SecurityLog;
 use App\Domain\Identity\Oidc\OidcClient;
 use App\Domain\Identity\Oidc\OidcConfig;
 use App\Domain\Identity\Oidc\OidcException;
+use App\Domain\Mail\EmailVerification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateAuthenticationRequest;
 use App\Models\InstanceSetting;
@@ -19,7 +21,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * W133, D105-D108. The sign-in settings: *Require two-factor authentication*,
+ * The sign-in settings (security.md §4): *Require two-factor authentication*,
  * *Sign in with SSO only* and the OpenID Connect provider. Enforcement of the
  * two switches is unchanged (EnsureTwoFactorEnrolled, InstanceSettings::ssoOnly);
  * only where they are edited moved here from Instance settings.
@@ -53,6 +55,13 @@ class AuthenticationController extends Controller
                 // Never the secret itself: only whether one is set, and where.
                 'client_secret' => ['set' => OidcConfig::clientSecret() !== '', 'source' => OidcConfig::source('client_secret')],
             ],
+            'registration' => [
+                'enabled' => (bool) $row->registration_enabled,
+                'domains' => (string) $row->registration_domains,
+                'daily_cap' => (int) $row->registration_daily_cap,
+                'completed_today' => SelfRegistration::completedToday(),
+                'mail_available' => EmailVerification::available(),
+            ],
             'enabled' => OidcConfig::enabled(),
             'redirectUri' => route('oidc.callback'),
         ]);
@@ -66,6 +75,7 @@ class AuthenticationController extends Controller
         DB::transaction(function () use ($validated, &$changed) {
             $row = InstanceSetting::singleton();
             $wasSsoOnly = $row->sso_only;
+            $wasRegistering = (bool) $row->registration_enabled;
 
             foreach (['require_two_factor', 'sso_only'] as $switch) {
                 if ($row->{$switch} !== (bool) $validated[$switch]) {
@@ -112,9 +122,44 @@ class AuthenticationController extends Controller
                 }
             }
 
+            if (array_key_exists('registration_enabled', $validated)) {
+                $enable = (bool) $validated['registration_enabled'];
+                if ((bool) $row->registration_enabled !== $enable) {
+                    $changed[] = 'registration_enabled';
+                }
+                $row->registration_enabled = $enable;
+            }
+
+            if (array_key_exists('registration_domains', $validated)) {
+                $domains = $this->normaliseDomains((string) $validated['registration_domains']);
+                $domains = $domains === '' ? null : $domains;
+                if ($row->registration_domains !== $domains) {
+                    $changed[] = 'registration_domains';
+                }
+                $row->registration_domains = $domains;
+            }
+
+            if (array_key_exists('registration_daily_cap', $validated)) {
+                $cap = (int) $validated['registration_daily_cap'];
+                if ((int) $row->registration_daily_cap !== $cap) {
+                    $changed[] = 'registration_daily_cap';
+                }
+                $row->registration_daily_cap = $cap;
+            }
+
             $row->save();
 
-            // D108: SSO-only with no working provider would refuse every
+            // Registration is proved by an emailed link, so it cannot be
+            // switched on while mail is off. Only the switch going on is
+            // refused, as with SSO-only below: one already on whose mail has
+            // since broken must not block saving the other settings.
+            if ($row->registration_enabled && ! $wasRegistering && ! EmailVerification::available()) {
+                throw ValidationException::withMessages([
+                    'registration_enabled' => 'Set up email on the Email tab before allowing registration.',
+                ]);
+            }
+
+            // SSO-only with no working provider would refuse every
             // non-admin password and offer nothing instead. Rolled back. Only
             // the switch going on is refused: one already on whose provider
             // has since gone must not block saving the other switch.
@@ -132,7 +177,7 @@ class AuthenticationController extends Controller
     }
 
     /**
-     * D107: fetch the saved provider's discovery document and say what was
+     * Fetch the saved provider's discovery document and say what was
      * found, or why not. Sends no credentials.
      */
     public function check(OidcClient $client): JsonResponse

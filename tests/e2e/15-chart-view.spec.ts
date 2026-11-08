@@ -4,7 +4,7 @@ import { adminEmail, adminPassword } from './support/env';
 import { assessmentTitle, mainContent, useListView } from './support/tree';
 
 /**
- * Scenario 15 (PLAN-2.1.md W32): the chart view — the assessment as an org
+ * Scenario 15: the chart view — the assessment as an org
  * chart, four tiers, no vertical scrolling.
  *
  * Deliberately does **not** use `openAssessment()`: that helper switches to
@@ -45,7 +45,7 @@ test.describe('the chart view', () => {
         await expect(
             page.getByRole('radio', { name: 'Chart' }),
         ).toHaveAttribute('aria-checked', 'true');
-        // W37 deleted the tier gutter, so "Defences" is no longer printed down
+        // The tier gutter is gone, so "Defences" is no longer printed down
         // the left edge. The defence tier is still there — it is announced on
         // the cards themselves now.
         await expect(
@@ -122,9 +122,9 @@ test.describe('the chart view', () => {
         // The structural claim behind the whole view: depth is bounded at
         // four by the schema, so the reader only ever manages one dimension.
         //
-        // W37 raised the card to 124px to fit three description lines, which
+        // The card is 124px tall to fit three description lines, which
         // is sized for 1080p — at this 800px viewport the four tiers exceed
-        // the space, and the chart's own container takes the scroll (W34).
+        // the space, and the chart's own container takes the scroll.
         // The *page* still must not, which is what this asserts: the toolbar
         // and the switcher stay put while the board moves under them.
         const overflowsVertically = await page.evaluate(
@@ -136,19 +136,17 @@ test.describe('the chart view', () => {
     });
 
     /**
-     * Reversed by 2.4 item 4 (D26), deliberately.
-     *
-     * W37 stripped every figure off the chart card, and this test pinned that.
+     * Reversed deliberately: the chart card first carried no figure at all, and this test pinned that.
      * The argument held while the alternative was four cue ramps in four
      * visual languages — a reader still had to hover each one to learn
-     * anything. D26 is a different proposition: one short figure, in one fixed
+     * anything. This is a different proposition: one short figure, in one fixed
      * slot, on every tier, where a checkmark used to say only whether someone
      * had filled the field in.
      *
      * So the assertion is inverted rather than deleted, and it asserts the
      * *abbreviated* form specifically. The card carries `€200k`, not
      * `€200,000.00` — full precision belongs to the list and the report, which
-     * is the part of W37's reasoning that survives.
+     * is the part of the original reasoning that survives.
      */
     test('carries the impact as a short figure, not at full precision', async ({
         page,
@@ -215,7 +213,7 @@ test.describe('the chart view', () => {
     });
 
     /**
-     * W127/D95. A collapsed card says how many children it hides, without
+     * A collapsed card says how many children it hides, without
      * hover, adds no height, and still does so after a reload.
      */
     test('a collapsed card shows how many children it hides', async ({
@@ -268,7 +266,7 @@ test.describe('the chart view', () => {
     });
 
     /**
-     * W130/D104. The count sits in the bottom bar, slides left as the actions
+     * The count sits in the bottom bar, slides left as the actions
      * open beside it on hover, and the bar is closed again at rest.
      */
     test('the count slides left on hover and the bar closes once the pointer leaves', async ({
@@ -310,7 +308,7 @@ test.describe('the chart view', () => {
     });
 
     /**
-     * W105. The template picker and the assistant's suggestions float below
+     * The template picker and the assistant's suggestions float below
      * the card that opened them, inside the chart's scroll container. That
      * container used to be only as tall as the chart, so on a card with
      * nothing beneath it — a new assessment's root, or any collapsed one —

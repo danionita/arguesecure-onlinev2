@@ -1,5 +1,5 @@
 /**
- * W39 item 9: the tab strip says what each type is quantified by, and the
+ * The tab strip says what each type is quantified by, and the
  * Links tab is gone from everything except defences.
  *
  * These are whole-set assertions, not absence checks. "Links is not present"
@@ -28,7 +28,7 @@ vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({ props: { scaleLevels: SCALE_LEVELS, scales: SCALES } }),
 }));
 
-// W71 made panels lazy, so the tabs that fetch on mount no longer mount at
+// Panels are lazy, so the tabs that fetch on mount no longer mount at
 // all unless a test opens them — these stubs are belt and braces now rather
 // than the only thing keeping the file off the network. Kept because a test
 // that clicks a tab should not become a network test by accident.
@@ -79,11 +79,11 @@ function selected(): string | undefined {
 }
 
 beforeEach(() => {
-    // W88: the Details tab now builds the assistant's ask-and-accept flow in
+    // The Details tab now builds the assistant's ask-and-accept flow in
     // setup, and useGenerationProgress resolves its two URLs there — so
     // mounting the modal at all needs Ziggy's global. Stubbed rather than
     // routed: nothing in this file presses the button.
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => '/' + name);
     useNodeModal().close();
     window.history.replaceState(null, '', '/assessments/abc');
@@ -164,7 +164,7 @@ describe('deep links survive the rename', () => {
     });
 
     it('falls back to Details when the link names a tab this type no longer has', () => {
-        // A pre-W39 `?tab=links` on an attack. Without the fallback, Tabs
+        // An old `?tab=links` on an attack. Without the fallback, Tabs
         // selects nothing and renders an empty modal body, which reads as a
         // broken node rather than as a stale link.
         open('attack1', 'links');
@@ -197,10 +197,10 @@ describe('the Strength tab badge', () => {
 
 describe('the risk_attack edge, now that the tab is gone', () => {
     /**
-     * W72 mounted the popover from `DetailsTab` as a temporary home, because
-     * both node cards were outside its ownership. Integration moved it onto
-     * the parent counter on the chart card and the list card and took it off
-     * the Details tab, which is what item 12 actually asks for — so rendering
+     * The popover was first mounted from `DetailsTab` as a temporary home,
+     * because both node cards were out of reach. It was then moved onto the
+     * parent counter on the chart card and the list card and taken off the
+     * Details tab, which is what was actually wanted — so rendering
      * `NodeModal` no longer puts this component on the page at all.
      *
      * These assertions are about the popover's own rules (the "not the last
@@ -279,8 +279,8 @@ describe('the risk_attack edge, now that the tab is gone', () => {
         input.dispatchEvent(new FocusEvent('focus'));
         await nextTick();
 
-        // Read off the listbox the input names, not off the section: W71
-        // teleported the popup to `body` so a scrolling modal stops clipping
+        // Read off the listbox the input names, not off the section: the
+        // popup is teleported to `body` so a scrolling modal stops clipping
         // it, which means it is no longer a descendant of the section that
         // owns the combobox. `aria-controls` is how the two are related now.
         const listbox = document.getElementById(
@@ -383,11 +383,11 @@ describe('the risk_attack edge, now that the tab is gone', () => {
     });
 });
 
-describe('the Cost tab is about cost (W72 item 9)', () => {
+describe('the Cost tab is about cost', () => {
     it('carries capex, opex and the annualised total, and nothing about strength', () => {
         open('mfa', 'values');
 
-        // Exactly one panel exists: W71 mounts a panel on first activation
+        // Exactly one panel exists: a panel mounts on first activation
         // and this modal was opened straight onto Cost.
         const text =
             document.querySelector('[role="tabpanel"]')?.textContent ?? '';

@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $unit
  * @property bool $is_system
  * @property ?string $set_key which shared system set this scale belongs to
- *                            (W77); NULL on every assessment-owned scale.
+ *                            NULL on every assessment-owned scale.
  *                            Deliberately absent from $fillable — see below.
  */
 class Scale extends Model
@@ -35,7 +35,7 @@ class Scale extends Model
      * for the same reason — it is the grouping identity of a shared system
      * set, written only by SystemScaleSeeder and assigned as a property, so
      * that a `firstOrCreate()` carrying it fails loudly at review rather than
-     * having Eloquent drop it and write a set-less trio (CLAUDE.md).
+     * having Eloquent drop it and write a set-less trio (an identity column is assigned as a property).
      *
      * @var list<string>
      */

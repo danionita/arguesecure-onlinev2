@@ -68,7 +68,7 @@ describe('useSearch', () => {
         expect(search.activeIndex.value).toBe(0);
     });
 
-    it('exposes an inputEl ref and a focus() function for W14 to bind "/" to', () => {
+    it('exposes an inputEl ref and a focus() function for the keyboard shortcut to bind "/" to', () => {
         const search = useSearch(makeFixtureStore());
         const input = document.createElement('input');
         document.body.appendChild(input);

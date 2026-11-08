@@ -225,7 +225,7 @@ beforeEach(() => {
     patch = vi.fn().mockResolvedValue({ data: {} });
     del = vi.fn().mockResolvedValue({ data: {} });
 
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get,
@@ -419,7 +419,7 @@ describe('Add creates the node once, with what was typed', () => {
     });
 });
 
-describe("link, don't duplicate (W40/W79) on the draft", () => {
+describe("link, don't duplicate, on the draft", () => {
     it('offers existing attacks not already under this risk', async () => {
         render(makeStore());
         modal.openDraft('risk', 'risk1', occurrencePath('root', 'risk1'));
@@ -493,7 +493,7 @@ describe("link, don't duplicate (W40/W79) on the draft", () => {
     });
 });
 
-describe('the assistant on a draft (W88 item 23, D24; 2.5.1)', () => {
+describe('the assistant on a draft', () => {
     function assistantStore() {
         return makeStore({ assistantAvailable: true });
     }
@@ -539,7 +539,7 @@ describe('the assistant on a draft (W88 item 23, D24; 2.5.1)', () => {
         );
 
         // No list to accept from: there is one suggestion, and the accept
-        // step D24 requires is the Add button, pressed by someone who can see
+        // step the ask-and-accept rule requires is the Add button, pressed by someone who can see
         // the text and the note beside it.
         expect(el('accept-suggestion')).toBeNull();
         expect(el<HTMLTextAreaElement>('new-node-description')!.value).toBe(
@@ -559,7 +559,7 @@ describe('the assistant on a draft (W88 item 23, D24; 2.5.1)', () => {
         });
     });
 
-    it('reads only title and description from a suggestion (D23)', async () => {
+    it('reads only title and description from a suggestion', async () => {
         post.mockImplementation((url: string) =>
             Promise.resolve(
                 url === '/assessments.assistant.suggestions'

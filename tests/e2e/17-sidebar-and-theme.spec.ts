@@ -4,9 +4,9 @@ import { adminEmail, adminPassword } from './support/env';
 import { assessmentTitle, mainContent } from './support/tree';
 
 /**
- * Scenario 17 (PLAN-2.2.md W41): the sidebar and the theme.
+ * Scenario 17: the sidebar and the theme.
  *
- * These live here rather than in `tests/js` because every claim W41 makes is
+ * These live here rather than in `tests/js` because every claim the sidebar makes is
  * either geometric or spans a real navigation, and jsdom has neither a layout
  * engine nor a router. The unit specs guard the *mechanism* — that the
  * reserved gutter is computed from `railed` alone, that the theme class is
@@ -67,7 +67,7 @@ test.describe('the sidebar', () => {
 
         // Walk until the last nav item is reached rather than a fixed number
         // of presses. The nav lists the account's own assessments under two
-        // of its groups (W41), so the number of stops before Profile grows
+        // of its groups, so the number of stops before Profile grows
         // with the fixture — a fixed 12 was enough when this was written and
         // stopped being enough as soon as earlier scenarios had created a
         // second assessment.
@@ -130,7 +130,7 @@ test.describe('the sidebar', () => {
 
         const after = await canvas.evaluate((el) => el.clientWidth);
 
-        // The one assertion D16 exists for. The chart lays out to the width
+        // The one assertion the floating panel exists for. The chart lays out to the width
         // it is given, and someone is usually pointing at it — so the panel
         // floats over the content rather than pushing it.
         expect(after).toBe(before);
@@ -199,14 +199,14 @@ test.describe('the admin item', () => {
     });
 });
 
-test.describe('the toggle has one location (W73 item 18)', () => {
+test.describe('the toggle has one location', () => {
     /**
      * The unit spec asserts the toggle's *row index* among the nav's
      * children, which is the mechanism. This asserts the consequence, and it
      * is the half jsdom cannot make: that the control is in the same place on
      * screen before and after the thing it controls changes.
      *
-     * W41 split it in two — `ml-auto` in the logo row when expanded, a
+     * It was once split in two — `ml-auto` in the logo row when expanded, a
      * dedicated full-width row when railed — for a reason that was sound
      * (two 16px targets in a 48px column is a coin toss) and had a
      * consequence that was not: the button that changes the width moved when
@@ -261,8 +261,8 @@ test.describe('the toggle has one location (W73 item 18)', () => {
             .boundingBox();
         const control = await toggle(page).boundingBox();
 
-        // Its own row, kept rather than merged upward — W41's reasoning for
-        // the dedicated row survives W73 intact.
+        // Its own row, kept rather than merged upward — the reasoning for
+        // the dedicated row still holds.
         expect(control!.y).toBeGreaterThanOrEqual(mark!.y + mark!.height);
     });
 });

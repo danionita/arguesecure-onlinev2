@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * The single linear per-assessment undo stack (ui.md §3.6, schema.md
  * §3.10). Every action here is fronted by a FormRequest whose authorize()
  * calls AssessmentPolicy via the `update` ability — no exceptions
- * (CLAUDE.md) — and any editor may undo, not only the operation's author.
+ * (security.md §3.1) — and any editor may undo, not only the operation's author.
  */
 class UndoController extends Controller
 {
@@ -80,8 +80,7 @@ class UndoController extends Controller
      * here, so ->created_at?->toJSON() reads as "call toJSON() on a
      * string" to PHPStan even though it is a Carbon instance at runtime.
      * getAttribute() (untyped) plus this explicit runtime check sidesteps
-     * that without touching app/Models/** (outside this package's
-     * ownership).
+     * that without touching app/Models/**.
      */
     private function toJson(mixed $value): ?string
     {

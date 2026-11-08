@@ -21,9 +21,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Node CRUD for the tree editor (ui.md §3.3-§3.5, PLAN.md W12). Every
+ * Node CRUD for the tree editor (ui.md §3.3-§3.5). Every
  * action is fronted by a FormRequest whose authorize() calls
- * AssessmentPolicy via NodePolicy — no exceptions (CLAUDE.md).
+ * AssessmentPolicy via NodePolicy — no exceptions (security.md §3.1).
  */
 class NodeController extends Controller
 {
@@ -41,7 +41,7 @@ class NodeController extends Controller
 
         $node = DB::transaction(function () use ($validated, $assessment, $userId, $links): Node {
             // Fixed three-way match, never a dynamic class lookup built
-            // from request input (security.md defect #7, CLAUDE.md) —
+            // from request input (security.md defect #7, §7) —
             // mirrors the hardcoded map Node::$typeMap uses for hydration.
             $node = match ($validated['type']) {
                 'risk' => new Risk,
@@ -57,7 +57,7 @@ class NodeController extends Controller
 
             $node->assessment_id = $assessment->id;
             $node->title = $validated['title'] ?? '';
-            // From the confirmed draft, or an accepted suggestion (W52).
+            // From the confirmed draft, or an accepted suggestion.
             $node->description = $validated['description'] ?? null;
             if ($node instanceof Defence) {
                 if (isset($validated['status'])) {
@@ -109,7 +109,7 @@ class NodeController extends Controller
     }
 
     /**
-     * Suggestions for the add-a-child field (ui.md §3.3, W40).
+     * Suggestions for the add-a-child field (ui.md §3.3).
      *
      * Adding a child used to mean creating a node, always, which is how an
      * assessment ends up with "Phishing" three times under three risks —
@@ -172,7 +172,7 @@ class NodeController extends Controller
 
         // A node already under this parent is not a suggestion — choosing it
         // would write a duplicate edge against the unique index and 500.
-        // Same reasoning as W38's `canLink`, applied one step earlier so the
+        // Same reasoning as the Links tab's `canLink`, applied one step earlier so the
         // option never appears rather than failing when taken.
         if ($parentUuid !== null) {
             $parentId = Node::withoutGlobalScopes()
@@ -223,7 +223,7 @@ class NodeController extends Controller
     /**
      * Every PATCH carries `updated_at` (ui.md §3.5); on mismatch this
      * returns 409 with the current server row rather than clobbering a
-     * concurrent edit. Locks are cooperative UX (W16); this check is the
+     * concurrent edit. Locks are cooperative UX (ui.md §6); this check is the
      * actual correctness guarantee and stands on its own without them.
      */
     public function update(UpdateNodeRequest $request, Assessment $assessment, Node $node, LockManager $locks): JsonResponse
@@ -305,7 +305,7 @@ class NodeController extends Controller
             'likelihood_mode' => $node->likelihood_mode,
             'likelihood_aro' => $node->likelihood_aro,
             'likelihood_level_id' => $node->likelihood_level_id,
-            // W43. Present on every node payload, including a brand-new one
+            // Labels (ui.md §7). Present on every node payload, including a brand-new one
             // that cannot have any yet, so the client never has to tell "no
             // labels" apart from "this response predates labels" — the store
             // writes these records straight into `nodes`, and an `undefined`

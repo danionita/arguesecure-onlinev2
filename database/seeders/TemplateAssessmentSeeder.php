@@ -23,10 +23,10 @@ use Illuminate\Support\Str;
 /**
  * Loads `database/seeders/templates/*.json` fixtures of `"kind":
  * "assessment"` — the demo web shop, the four system-archetype templates
- * (PLAN.md Phase 9 item 1) and the `standard-*` templates (2.5.1, W103) —
+ * (schema.md §3.14) and the `standard-*` templates (2.5.1) —
  * into real Assessment/Node rows.
  *
- * # Fixture schema (frozen for W22)
+ * # Fixture schema (frozen; schema.md §3.14)
  *
  * ```json
  * {
@@ -88,18 +88,19 @@ use Illuminate\Support\Str;
  *
  * # Editing a fixture does not reach a deployment that already seeded it
  *
- * That last sentence is the whole of it, and W76 is where it started
- * mattering. The `root_uuid` check is a check on *existence*, not on
- * content: once a fixture has seeded once, every later edit to its titles,
- * descriptions, numbers, nodes or edges is invisible to that instance
- * forever. `db:seed` reports it as skipped and exits successfully.
+ * That last sentence is the whole of it, and it started mattering when
+ * the fixtures were checked for empty trees. The `root_uuid` check is a
+ * check on *existence*, not on content: once a fixture has seeded once,
+ * every later edit to its titles, descriptions, numbers, nodes or edges is
+ * invisible to that instance forever. `db:seed` reports it as skipped and exits successfully.
  *
  * This is the correct default and should stay. A seeded template is one an
- * administrator may have edited since (W141), and quietly overwriting their
- * work on the next deploy would be far worse than leaving a stale copy. But it does mean a deployment can hold a version of an archetype
- * that no longer matches the file in this repository, which is exactly the
+ * administrator may have edited since (schema.md §3.14), and quietly
+ * overwriting their work on the next deploy would be far worse than leaving
+ * a stale copy. But it does mean a deployment can hold a version of an
+ * archetype that no longer matches the file in this repository, which is exactly the
  * "the fixtures are complete but the running instance looks wrong" shape
- * W76 was sent to diagnose — and it is diagnosed by comparing, not
+ * that check was written to diagnose — and it is diagnosed by comparing, not
  * assumed.
  *
  * ## The reseed, when the instance genuinely is stale
@@ -129,7 +130,7 @@ use Illuminate\Support\Str;
  *      `skipped=` lists, and the key you deleted must appear in the first.
  *
  * A deployment that has never seeded anything gets the current fixtures
- * by definition (first-run setup seeds them), so it needs none of this.
+ * by definition (first-run setup queues their seeding), so it needs none of this.
  *
  * This class does not call `App\Domain\Structure\AssessmentCloner` or
  * `App\Domain\Catalog\CatalogInserter` — both solve a different problem
@@ -206,7 +207,7 @@ class TemplateAssessmentSeeder extends Seeder
      */
     private function seedOne(array $fixture, ?User $owner, array $systemScales, array $levelIdsByKind): void
     {
-        // A template belongs to nobody (W141): the owner, if one was passed,
+        // A template belongs to nobody: the owner, if one was passed,
         // owns only a fixture that is not a template, and an instance without
         // an admin seeds the whole library all the same.
         $isTemplate = (bool) ($fixture['is_template'] ?? false);
@@ -223,7 +224,7 @@ class TemplateAssessmentSeeder extends Seeder
         $assessment->impact_scale_id = $systemScales['impact']->id;
         $assessment->likelihood_scale_id = $systemScales['likelihood']->id;
         $assessment->strength_scale_id = $systemScales['strength']->id;
-        // The default scale's rows, so the dropdown names it (W126).
+        // The default scale's rows, so the dropdown names it.
         $assessment->scale_set_key = ScaleSets::DEFAULT_KEY;
         $assessment->amortization_years = $fixture['amortization_years'] ?? 3;
         $assessment->is_public = $isTemplate ? false : (bool) ($fixture['is_public'] ?? false);
@@ -271,8 +272,8 @@ class TemplateAssessmentSeeder extends Seeder
         }
 
         // Collected and written in one insert at the end: the standards
-        // templates carry hundreds of citations, and first-run setup seeds
-        // them inline, so a query per citation is a visible wait (W102).
+        // templates carry hundreds of citations, and first-run setup queues the seeding of
+        // them in one job, so a query per citation is a visible wait.
         $referenceRows = [];
         $positions = ['risk' => 0, 'defence' => 0];
 
@@ -390,7 +391,7 @@ class TemplateAssessmentSeeder extends Seeder
             // system-scale code set, so this can only fire if
             // SystemScaleSeeder's bands and the validator's allowed-code
             // constants have drifted apart — fail loudly rather than
-            // silently writing a NULL level id (W22 non-negotiables).
+            // silently writing a NULL level id (schema.md §3.14).
             throw new SeederFixtureException("Level code '{$code}' does not resolve against the seeded system scale.");
         }
 

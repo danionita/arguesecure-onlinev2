@@ -4,15 +4,15 @@ import { adminEmail, adminPassword } from './support/env';
 import { mainContent } from './support/tree';
 
 /**
- * Scenario 2 of PLAN.md's end-to-end list, first half: "User A creates an
+ * Scenario 2 of the end-to-end scenario list, first half: "User A creates an
  * assessment".
  *
- * This scenario is the reason W26 exists. When these specs were first
+ * This scenario is the reason the assessment-creation route exists. When these specs were first
  * written the application had no route that could create an assessment â€”
  * every route was `assessments/{assessment}/...` and nothing produced the
  * assessment they presuppose, so a fresh deployment could be installed, set
  * up and logged into, and then did nothing at all. It stayed invisible for
- * 24 work packages because every test built assessments with a factory.
+ * many changes because every test built assessments with a factory.
  *
  * So this file is doing two jobs: it covers the scenario, and it is the
  * regression test for "the product is usable from a clean install".
@@ -23,7 +23,7 @@ test.describe('creating an assessment', () => {
     }) => {
         await login(page, adminEmail, adminPassword());
 
-        // W42 moved this. `/dashboard` was the assessment list under a second
+        // The dashboard moved. `/dashboard` was the assessment list under a second
         // URL; it is now a dashboard of its own, and the list lives at
         // `/assessments` alone. The claim this test makes â€” a new account
         // lands somewhere with a way forward rather than on Breeze's
@@ -80,7 +80,7 @@ test.describe('creating an assessment', () => {
         await login(page, adminEmail, adminPassword());
         await page.goto('/assessments');
 
-        // Scoped since W41: the sidebar lists it under the same title too.
+        // Scoped since the sidebar arrived: the sidebar lists it under the same title too.
         await expect(
             mainContent(page).getByRole('link', { name: 'Payment platform' }),
         ).toBeVisible();

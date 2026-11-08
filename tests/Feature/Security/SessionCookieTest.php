@@ -1,7 +1,7 @@
 <?php
 
 /**
- * W24 — legacy defect #6 (security.md §1 and §5).
+ * Legacy defect #6 (security.md §1 and §5).
  *
  * The v1 `config/session.php` had **no `http_only` key at all**, so the
  * session cookie was readable by `document.cookie`, and `secure` was
@@ -18,7 +18,7 @@
  * the variable is unset, and null resolves to not-secure. So half of
  * defect #6 — the half that had been ticked off as done — was still live
  * for any deployment that had not explicitly set the variable. Fixed in
- * config/session.php by this package; this test is what holds it.
+ * config/session.php; this test is what holds it.
  */
 
 use Illuminate\Testing\TestResponse;
@@ -78,7 +78,7 @@ it('leaves the CSRF cookie readable by JavaScript, which is deliberate', functio
 });
 
 it('never lets a non-local environment fall back to an insecure cookie', function () {
-    // The specific regression this package fixed: an unset
+    // The specific regression that was fixed: an unset
     // SESSION_SECURE_COOKIE used to mean "not secure". The config now
     // derives its default from APP_ENV, so forgetting the variable is
     // safe rather than silently insecure.
@@ -99,7 +99,7 @@ it('regenerates the session id on login', function () {
     // hold an authenticated session afterwards.
     // userWithKnownPassword() is tests/Pest.php's helper: it generates the
     // plaintext per call and returns it, so no credential literal is
-    // written into any file (CLAUDE.md).
+    // written into any file (no credential is ever committed).
     [$user, $password] = userWithKnownPassword();
 
     $this->get('/login');

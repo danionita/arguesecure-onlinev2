@@ -5,7 +5,7 @@ namespace App\Domain\Assistant;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Which model the runtime says it loaded (PLAN-2.6.md D55).
+ * Which model the runtime says it loaded.
  *
  * Asked of the runtime, not of `.env`. The old `assistant.model` config value
  * was a label an operator typed next to the file name; it could say one model
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
  * **For the admin tab only.** It is a network call, so it is cached for
  * `assistant.health_ttl` like the health probe — a failure included, so an
  * absent runtime costs one short timeout per interval rather than one per
- * render — and nothing on an editor's render path calls it (D25).
+ * render — and nothing on an editor's render path calls it.
  */
 class RuntimeModel
 {

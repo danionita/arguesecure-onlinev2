@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Job B's suggestions, and the accept step that is the actual guardrail
- * (W52, PLAN-2.3-ai.md D24).
+ * (docs/ASSISTANT.md §6).
  *
  * ## Why every suggestion is read before it lands
  *

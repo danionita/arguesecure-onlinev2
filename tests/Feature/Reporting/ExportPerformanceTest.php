@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\DB;
 /*
  * "Generation is not synchronous if it is slow."
  *
- * The brief sets the test: a 40-control assessment rendering five formats is
+ * The test is set by the requirement: a 40-control assessment rendering five formats is
  * fine; measure it, and if any format exceeds a second or two it goes to the
- * queue and reports back through the W47 notification path. This file is the
+ * queue and reports back through the notification path. This file is the
  * measurement, kept rather than run once and thrown away — the number is
  * what decides the architecture, and a decision made on a number nobody can
  * reproduce is a decision that gets re-litigated every time somebody adds a
@@ -110,7 +110,7 @@ test('a 40-control assessment renders all five formats well inside the synchrono
         expect($bytes)->not->toBeEmpty();
     }
 
-    // Printed rather than only asserted: the brief asks for the measurement,
+    // Printed rather than only asserted: the export is meant to be measured,
     // and `--display-output` (or a failure) shows it. The assertion is the
     // guard; the numbers are the evidence.
     fwrite(STDERR, "\n  export timings (ms): ".json_encode(array_map(
@@ -121,13 +121,13 @@ test('a 40-control assessment renders all five formats well inside the synchrono
     $renderTotal = array_sum($timings) - $assembleMs;
 
     // If this ever fails, the answer is not a bigger number here. It is the
-    // queue: dispatch the render as a job and deliver it through the W47
+    // queue: dispatch the render as a job and deliver it through the
     // notification path, which exists for exactly this.
     expect($renderTotal)->toBeLessThan(5000.0);
 })->group('performance');
 
 test('the report loads in a fixed number of queries regardless of how big it is', function () {
-    // The N+1 CLAUDE.md names as the legacy tree render's defining defect
+    // The N+1 that was the legacy tree render's defining defect
     // would not show up as a failure above — it would show up as a report
     // that is fine at 40 controls and unusable at 400. Counting queries
     // catches it at any size.

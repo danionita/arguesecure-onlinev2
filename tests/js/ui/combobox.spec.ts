@@ -1,5 +1,5 @@
 /**
- * `UI/Combobox.vue` — the teleported listbox (W71 item 6, PLAN-2.4.md D29).
+ * `UI/Combobox.vue` — the teleported listbox.
  *
  * The bug was that the popup was `absolute` inside `Modal`'s
  * `overflow-y-auto` body, so the two comboboxes that are the last element of

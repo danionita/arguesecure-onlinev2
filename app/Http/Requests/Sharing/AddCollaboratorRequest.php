@@ -39,7 +39,7 @@ class AddCollaboratorRequest extends FormRequest
             ],
             // Whitelisted enum — this is the field a privilege-escalation
             // attempt would target, so 'owner' is not, and can never be, a
-            // valid value here (security.md §7, CLAUDE.md sharing rules).
+            // valid value here (security.md §3.1 and §7).
             'role' => ['required', 'string', Rule::in(CollaboratorService::ROLES)],
         ];
     }

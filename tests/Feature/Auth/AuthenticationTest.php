@@ -4,7 +4,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 test('login screen can be rendered', function () {
-    // An empty users table redirects '/login' to first-run setup (W8) —
+    // An empty users table redirects '/login' to first-run setup —
     // seed one user so this test exercises the ordinary login screen.
     User::factory()->create();
 
@@ -19,12 +19,12 @@ test('login screen redirects to first-run setup when no user exists', function (
     $response->assertRedirect(route('setup'));
 });
 
-test('no self-service password reset route is exposed', function () {
-    // Accounts are admin-managed (docs/specs/security.md §4). Login.vue used to
-    // link at route('password.request'); Ziggy throws on an unknown route name,
-    // so a reappearing reference would break the login page at runtime.
-    expect(Route::has('password.request'))->toBeFalse();
-    expect(Route::has('register'))->toBeFalse();
+test('password reset by email and registration are exposed only behind their switches', function () {
+    // Login.vue links at route('password.request'); Ziggy throws on an unknown
+    // route name, so the route must exist, and answer 404 while mail is off.
+    expect(Route::has('password.request'))->toBeTrue();
+    // Registration is off by default: the route exists and answers 404.
+    expect(Route::has('register'))->toBeTrue();
 
     $this->get('/forgot-password')->assertNotFound();
     $this->get('/register')->assertNotFound();

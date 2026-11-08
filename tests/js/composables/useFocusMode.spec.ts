@@ -57,7 +57,7 @@ describe('useFocusMode', () => {
         ]);
     });
 
-    it('exit() restores full visibility — Escape (W14) calls this', () => {
+    it('exit() restores full visibility — the Escape shortcut calls this', () => {
         const store = makeFixtureStore();
         const focus = useFocusMode(store);
         focus.enter('root/riskA');

@@ -17,7 +17,7 @@
  *    tab's render and its content vanished, while the chart re-rendered the
  *    untitled card.
  *
- * W88 fixed the store's own write overlap and pinned (3) as item 22b; the
+ * The store's own write overlap was fixed and (3) pinned by a test; that
  * pin's two candidate fixes both addressed the echo and neither addressed
  * (1) or (2), which are the actual complaint: **no node should exist until a
  * person has said what it is.** So nothing here writes until Add is pressed.
@@ -27,14 +27,14 @@
  *
  * ## What survived from the placeholder flow
  *
- * - **"Link, don't duplicate" (W40/W79).** Typing a title for an attack or a
+ * - **"Link, don't duplicate" (ui.md §3.3).** Typing a title for an attack or a
  *   defence offers existing nodes of that type not already under this parent;
  *   choosing one links it and closes the modal. There is no placeholder to
- *   delete any more, which removes the ordering hazard W79 documented.
- * - **Ask the assistant (W88 item 23).** Offered while the title is empty.
+ *   delete any more, which removes the ordering hazard of deleting the placeholder.
+ * - **Ask the assistant (ui.md §7).** Offered while the title is empty.
  *   Since 2.5.1 it asks for one suggestion and puts it straight into the
  *   fields — it is not written anywhere — so the person still reads it and
- *   presses Add (D24: the accept step is the guardrail). Output renders as
+ *   presses Add (docs/ASSISTANT.md §6: the accept step is the guardrail). Output renders as
  *   text only: it lands in an input and a textarea, and AssistantPanel shows
  *   only progress and errors here.
  *
@@ -135,7 +135,7 @@ async function submit() {
     }
 }
 
-// --- link, don't duplicate (W40/W79) ------------------------------------------
+// --- link, don't duplicate ------------------------------------------------------
 
 const linkMutations = useLinkMutations(props.store);
 const nodeSuggestions = useNodeSuggestions(props.store);
@@ -211,7 +211,7 @@ function onTitleKeydown(event: KeyboardEvent) {
 
 /**
  * Set when the form was filled for the person rather than by them, so the form
- * can say so (the D24 rule that the reader must never have to remember which
+ * can say so (the rule that the reader must never have to remember which
  * words on screen a model wrote applies to the assistant; the template note is
  * the same courtesy). Cleared the moment they empty the title and start over.
  */
@@ -244,7 +244,7 @@ watch(titleEmpty, (empty) => {
     if (empty) filledFrom.value = null;
 });
 
-// --- ask the assistant for one (W88 item 23, D24; 2.5.1) --------------------------
+// --- ask the assistant for one (2.5.1) --------------------------------------------
 
 const assistantParentType = computed<'root' | 'risk' | 'attack' | undefined>(
     () =>
@@ -274,9 +274,9 @@ const assistantEmpty = ref(false);
 /**
  * The suggestion goes straight into the form — there is only one, so a list
  * to accept it from would be a click with nothing to decide. The accept step
- * D24 requires is still there: it is the Add button, pressed by a person who
+ * the assistant spec requires is still there: it is the Add button, pressed by a person who
  * can see the text and a note saying a model wrote it. Only `title` and
- * `description` are read (D23). If the person started typing while it ran,
+ * `description` are read. If the person started typing while it ran,
  * their words win and the suggestion is dropped.
  */
 watch(assistantItems, (items: AssistantSuggestion[] | null) => {

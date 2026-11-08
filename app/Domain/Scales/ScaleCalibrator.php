@@ -12,12 +12,12 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Applies a calibration to one of an assessment's three scales (W65, ui.md §8,
+ * Applies a calibration to one of an assessment's three scales (ui.md §8,
  * schema.md §3.2).
  *
- * The last specified-but-unbuilt feature. Until now the engine could emit an
- * `uncalibrated_scales` advisory that nobody could act on, and every package
- * that wanted a scale edited had to work around its absence.
+ * Until this existed the engine could emit an `uncalibrated_scales` advisory
+ * that nobody could act on, and anything that wanted a scale edited had to
+ * work around its absence.
  *
  * ## Clone on edit, and this is the whole reason the class exists
  *
@@ -57,7 +57,7 @@ use Illuminate\Support\Facades\DB;
  *
  * Every `ScaleLevel` write fires `ScaleLevelObserver`, which bumps
  * `calc_version` for every assessment using that scale. A five-band edit is
- * five saves. `TriggersRecalculation::coalesce()` (W64) collapses them into one
+ * five saves. `TriggersRecalculation::coalesce()` collapses them into one
  * bump per assessment — safe because `calc_version` is a cache key rather than
  * a counter anyone reads the value of.
  */
@@ -68,7 +68,7 @@ final class ScaleCalibrator
      *
      * A fixed map, looked up by an exact key match, rather than
      * `"{$kind}_scale_id"`. Building a column name from request input is a
-     * legacy defect this codebase forbids by name (CLAUDE.md, security.md
+     * legacy defect this codebase forbids by name (security.md
      * defect #7), and the fact that the interpolation would *happen* to be
      * safe here for the three valid values is not the point — it stops being
      * safe the moment the caller stops validating, which is a change nobody
@@ -132,7 +132,7 @@ final class ScaleCalibrator
     /**
      * @param  list<array{code: ?string, label: string, lower_bound: float, upper_bound: ?float, representative: float}>  $bands
      *                                                                                                                            in display order; ordinals are assigned from position, never taken from input, and a
-     *                                                                                                                            null or unrecognised `code` is a band the editor has just created (W87, D44)
+     *                                                                                                                            null or unrecognised `code` is a band the editor has just created
      *
      * @throws ScaleValidationException the bands break one of schema.md §3.2's five invariants
      */
@@ -255,7 +255,7 @@ final class ScaleCalibrator
      * `assessment_id` is assigned as a **property**: it is an identity column,
      * deliberately absent from `Scale::$fillable` for exactly this reason, and
      * a `create()` carrying one is dropped silently by Eloquent before dying on
-     * the NOT NULL constraint (CLAUDE.md — this has broken three packages).
+     * the NOT NULL constraint (this has broken several earlier changes).
      *
      * `is_system` becomes false. A copy that stayed marked as a system scale
      * would be offered to other assessments as a shared default and would keep

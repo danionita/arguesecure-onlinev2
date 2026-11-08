@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
- * The assessment-wide history feed (W48, item 21; PLAN-2.2.md D15).
+ * The assessment-wide history feed.
  *
  * ## Two logs, one timeline
  *
@@ -284,7 +284,7 @@ class TimelineReader
      * The `{field: {from, to}}` pairs inside one revision, whatever shape it
      * was written in.
      *
-     * A `link_update` (W56) carries the shape schema.md §3.9 reserves for link
+     * A `link_update` carries the shape schema.md §3.9 reserves for link
      * actions — `{"other_uuid":…, "other_title":…, "pivot": {…}}` — so its
      * fields are one level down, and the counterpart's title is folded into
      * the field name. "strength_fraction on MFA" reads as what it is; a bare
@@ -298,7 +298,7 @@ class TimelineReader
         /** @var array<string, mixed> $changes */
         $changes = (array) $revision->changes;
 
-        // An assessment-settings revision (W60) hangs off the root node and
+        // An assessment-settings revision hangs off the root node and
         // keeps its fields one level down under `fields`, beside a `scope`
         // marker — the same shape link actions use, and for the same reason:
         // a setting called `title` could otherwise not be told apart from the
@@ -327,7 +327,7 @@ class TimelineReader
         return $labelled;
     }
 
-    /** Whether this revision is about the assessment rather than its node (W60). */
+    /** Whether this revision is about the assessment rather than its node. */
     private function isAssessmentScoped(NodeRevision $revision): bool
     {
         /** @var array<string, mixed> $changes */

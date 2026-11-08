@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Drops `notes` from `nodes` and `catalog_entries` (PLAN-2.1.md W30, D2).
+ * Drops `notes` from `nodes` and `catalog_entries` (the decision that one description field is enough).
  *
  * `notes` duplicated `description` in everything but length and was surfaced
  * nowhere except as an indicator dot on the node card, while costing a field

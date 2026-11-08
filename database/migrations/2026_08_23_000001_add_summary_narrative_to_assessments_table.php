@@ -7,16 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * W54 — the report's written executive summary, and the draft waiting to
-     * become one (PLAN-2.3-ai.md).
+     * The report's written executive summary, and the draft waiting to
+     * become one (docs/ASSISTANT.md).
      *
      * Three columns, and the third is the reason for the other two.
      *
      * `summary_narrative` is prose the report prints above the figures. A
      * person may type it themselves and most will; nothing here is
      * assistant-specific and nothing about it stops working on a deployment
-     * that has no inference runtime, which is the overwhelmingly common case
-     * (D25).
+     * that has no inference runtime, which is the overwhelmingly common case.
      *
      * `summary_draft` holds what the model wrote, until a person accepts it,
      * edits it, or throws it away. It is deliberately **not** the same column

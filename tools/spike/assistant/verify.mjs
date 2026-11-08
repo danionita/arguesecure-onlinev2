@@ -1,12 +1,12 @@
 /**
- * What has to happen before D19 changes (PLAN-2.6.md W96), measured against
- * one running model.
+ * What has to happen before the assistant's default model changes, measured
+ * against one running model.
  *
  * Three things, each a condition docs/spikes/2.6-models.md set:
  *
  * 1. **The red-team cases.** `redteam.mjs`'s seven injections, sent the way
  *    the application sends a prompt — `/v1/chat/completions` — rather than
- *    through Ollama's `/api/generate`, which D17 retired. Run against the old
+ *    through Ollama's `/api/generate`, which the assistant no longer uses. Run against the old
  *    default as well as the new presets: if the old default does not
  *    reproduce the 2.3 record through this path, the port is what changed,
  *    not the models, and nothing here may be trusted.
@@ -16,7 +16,7 @@
  *    answer right, is the attack specific — is saved whole, to be read.
  * 3. **The help cache across other jobs.** Seed 2's first help question comes
  *    after seed 1's suggestions and summary took the only slot, so it shows
- *    whether `--cache-ram 2048` (D56) still keeps the corpus.
+ *    whether `--cache-ram 2048` still keeps the corpus.
  *
  *   node verify.mjs --host http://arsec-verify:8080 --host-label unraid --config small
  *
@@ -155,7 +155,7 @@ const run = async () => {
     // A re-run under a label that already has every step resumes into
     // nothing: it measures nothing and would look like it had. Say so, and
     // exit with a code the driver checks before it overwrites the server log
-    // that went with the earlier measurement (W96: exactly this happened once,
+    // that went with the earlier measurement (exactly this happened once,
     // and the evidence for the large preset's cache eviction was overwritten
     // with an idle log). Metadata is only stamped when something was measured.
     if (measured(data) === before) {

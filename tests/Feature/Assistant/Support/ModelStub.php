@@ -5,7 +5,7 @@ namespace Tests\Feature\Assistant\Support;
 use Illuminate\Support\Facades\Http;
 
 /**
- * The inference runtime, replaced by something deterministic (W53).
+ * The inference runtime, replaced by something deterministic.
  *
  * ## Why a stub and not a model
  *
@@ -53,8 +53,8 @@ final class ModelStub
         Http::fake([
             '*/health' => Http::response('', 200),
             '*/completions' => function ($request) use ($reply) {
-                // The prompt is the single user message since W59, where the
-                // client moved to the chat endpoint so the model's own chat
+                // The prompt is the single user message now that the
+                // client has moved to the chat endpoint so the model's own chat
                 // template gets applied. Read here rather than in each test so
                 // every existing assertion about "what was sent" keeps working.
                 $prompt = is_string($request['messages'][0]['content'] ?? null)
@@ -89,11 +89,11 @@ final class ModelStub
     /**
      * Formats text as the runtime's SSE stream, split across several events.
      *
-     * The OpenAI-compatible shape, because that is what the client reads since
-     * W59 — `{"choices":[{"delta":{"content":"…"}}]}`, terminated by the
+     * The OpenAI-compatible shape, because that is what the client reads
+     * now — `{"choices":[{"delta":{"content":"…"}}]}`, terminated by the
      * literal `data: [DONE]`. A stub that kept emitting the old flat shape
      * would have gone on passing while the application talked to an endpoint
-     * nobody had ever exercised, which is the exact failure W59 exists to fix.
+     * nobody had ever exercised, which is the exact failure the move to the chat endpoint fixed.
      */
     private static function stream(string $text): string
     {

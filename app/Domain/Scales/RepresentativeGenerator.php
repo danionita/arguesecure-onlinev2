@@ -3,7 +3,7 @@
 namespace App\Domain\Scales;
 
 /**
- * The default `representative` for a band (schema.md §3.2.1, W65).
+ * The default `representative` for a band (schema.md §3.2.1).
  *
  * The representative is the number every qualitative value actually resolves
  * to — `ScaleMapper::toNumber()` returns it unchanged — so it is not a display

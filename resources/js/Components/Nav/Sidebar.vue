@@ -1,20 +1,20 @@
 <script setup lang="ts">
 /**
- * The application's navigation (W41, ui.md §2, item 13).
+ * The application's navigation (ui.md §2, Navigation).
  *
  * It replaces `TopNav`, whose only real navigation was a product mark and a
  * user menu. The rest of that bar was a search box whose placeholder read
  * "Search this assessment…" on every page in the application, including the
  * ones with no assessment — and which, on the page that *did* have one, was
  * not wired to the tree's own search either. It searched nothing, anywhere.
- * The editor's working search lives in the toolbar (W34) and stays there.
+ * The editor's working search lives in the toolbar and stays there.
  *
  * ## Shape
  *
  * Destinations at the top, account at the bottom, in DOM order, so tabbing
  * through the sidebar walks it top to bottom exactly as it reads. Nothing is
  * inside a menu that could be a link: a dropdown is a click to reveal a
- * click, which CLAUDE.md names as the legacy defect this rewrite exists to
+ * click, which was a legacy defect this rewrite exists to
  * remove, and it applies to chrome as much as to node cards.
  *
  * ## Two widths
@@ -23,7 +23,7 @@
  * floats over the content rather than pushing it, because the chart lays out
  * to the width it is given and someone is usually pointing at it.
  *
- * ## What left (W82, D41)
+ * ## What left
  *
  * History and Assessment settings used to live here, gated on
  * `currentAssessment` — the tell that they never belonged: the sidebar is
@@ -32,10 +32,11 @@
  * open. They are now in `Toolbar/AssessmentActions.vue`, rendered from the
  * chrome above whichever of the three views is on screen, and this file no
  * longer takes a `currentAssessment` prop at all — nothing here reads it any
- * more. Removed in the same commit that adds them to the action bar, per
- * CLAUDE.md's rule that an affordance may not leave one surface in one
- * commit and arrive on another in the next (W36, broken once by W72).
+ * more. Removed in the same commit that adds them to the action bar, following
+ * the rule that an affordance may not leave one surface in one
+ * commit and arrive on another in the next.
  */
+import BrandMark from '@/Components/UI/BrandMark.vue';
 import Icon from '@/Components/UI/Icon.vue';
 import type { VersionProps } from '@/types';
 import { Link } from '@inertiajs/vue3';
@@ -56,7 +57,7 @@ const props = defineProps<{
     sharedWithMe: NavAssessment[];
     isAdmin: boolean;
     notificationCount: number;
-    /** W124: the running build and its release notes; absent on partial pages. */
+    /** The running build and its release notes; absent on partial pages. */
     version?: VersionProps;
     /** Icon-rail mode: labels move to accessible names, groups become links. */
     railed: boolean;
@@ -125,7 +126,7 @@ const toggleLabel = computed(() => {
             It holds a 20px icon in the rail and that icon plus a line of
             16px/24px text in the panel, so `py-2` alone made the panel's row
             6px taller — which pushed the toggle row below it down by exactly
-            that, and the toggle is the control W73 item 18 moved *because* it
+            that, and the toggle is the control that was moved here *because* it
             was moving. The end-to-end assertion caught it the first time it
             ran; unit tests cannot, since jsdom computes no layout.
             `h-9` is 36px: `py-2` (16px) plus the 20px icon, i.e. the rail's
@@ -140,11 +141,11 @@ const toggleLabel = computed(() => {
                 class="text-text-primary focus-visible:outline-focus-ring flex min-w-0 items-center gap-2 rounded font-semibold outline-none focus-visible:outline-2"
                 :aria-label="compact ? 'ArgueSecure — dashboard' : undefined"
             >
-                <Icon name="shield" :size="20" class="text-node-root-text" />
+                <BrandMark :size="20" />
                 <span v-if="!compact" class="truncate">ArgueSecure</span>
             </Link>
             <!--
-                W124/W129 (D90): the running version, small and muted, beside
+                The running version, small and muted, beside
                 the name; the label is the link to that release's notes. On
                 this row rather than under it, so neither width gains a row
                 and the toggle below keeps its place (e2e 17). Expanded only:
@@ -163,13 +164,13 @@ const toggleLabel = computed(() => {
         </div>
 
         <!--
-            One location for the toggle, at both widths (W73 item 18).
+            One location for the toggle, at both widths.
 
-            W41 gave the rail's control a dedicated row because two 16px
+            The rail's control got a dedicated row because two 16px
             targets side by side in a 48px column is a coin toss, and that
             reasoning is right — so the fix is not to merge this row upward
             into the logo row. It is to move the *other* control down into
-            this one. Before W73 the expanded state put it at `ml-auto`
+            this one. Before this the expanded state put it at `ml-auto`
             beside the logo, which meant the button that changes the width
             moved when the width changed: the click that collapses the panel
             and the click that expands it again were never in the same place,
@@ -237,16 +238,16 @@ const toggleLabel = computed(() => {
                 </li>
 
                 <!--
-                    W73 item 19. Below the list it adds to, inside the group
+                    Below the list it adds to, inside the group
                     it adds to, rather than floating between two groups where
                     it read as a third destination. And it lands on the
-                    creation dialog rather than on a list: until W73 this was a
+                    creation dialog rather than on a list: this used to be a
                     bare `href` to `assessments.index`, so the most-used verb
                     in the product was a link to a list where the user then had
                     to find the real control themselves.
 
                     `?new=1` opens the dialog `Pages/Assessment/Index.vue`
-                    already owns. W73's first version POSTed an untitled
+                    already owns. The first version POSTed an untitled
                     assessment straight from here, which put two buttons
                     reading "New assessment" on the list page doing two
                     different things — one asking for a title, one not. Same
@@ -316,7 +317,7 @@ const toggleLabel = computed(() => {
 
         <div class="border-border-subtle space-y-0.5 border-t p-2">
             <!--
-                W82 item 18. The help pages have existed since W51 and were
+                The help pages were built before this link and were
                 reachable only by typing the URL — built once, linked from
                 nowhere. Immediately above Notifications: the last item
                 someone reaches for before "how do I..." is "what just
@@ -334,9 +335,9 @@ const toggleLabel = computed(() => {
             />
 
             <!--
-                W47. No `href`: this one opens the feed rather than going
-                anywhere. Through W46 it pointed at the dashboard, which was
-                the closest true thing at the time and still a link that did
+                No `href`: this one opens the feed rather than going
+                anywhere. It once pointed at the dashboard, which was the
+                closest true thing at the time and still a link that did
                 not do what its label said.
             -->
             <NavItem
@@ -351,7 +352,7 @@ const toggleLabel = computed(() => {
 
             <!--
                 Hidden for a non-admin as a courtesy, never as a guard:
-                `EnsureUserIsAdmin` 403s the route regardless, and W41's tests
+                `EnsureUserIsAdmin` 403s the route regardless, and the sidebar's tests
                 assert that separately so the two are never confused.
             -->
             <NavItem

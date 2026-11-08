@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Domain\Accounts\SessionRegistry;
 use App\Domain\Accounts\TemporaryPassword;
+use App\Domain\Mail\Invitations;
+use App\Domain\Mail\MailSettings;
 use App\Domain\Retention\AssessmentEraser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DestroyUserRequest;
@@ -16,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -58,13 +61,18 @@ class UserController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Admin/Users/Create');
+        return Inertia::render('Admin/Users/Create', ['mailOn' => MailSettings::enabled()]);
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        $password = $validated['password'] ?? TemporaryPassword::generate();
+
+        // With mail on and no password typed, the person is mailed a one-time
+        // link and nobody ever sees a password: this one is random, unknown
+        // and replaced when the link is followed.
+        $invite = MailSettings::enabled() && ! isset($validated['password']) && (bool) ($validated['send_invitation'] ?? true);
+        $password = $validated['password'] ?? ($invite ? Str::random(64) : TemporaryPassword::generate());
 
         $user = new User;
         $user->name = $validated['name'];
@@ -72,12 +80,25 @@ class UserController extends Controller
         $user->password = Hash::make($password);
         $user->is_admin = $validated['is_admin'];
         $user->is_active = true;
-        // W115: a password the admin did not type is one they have read off
+        // A password the admin did not type is one they have read off
         // a screen, so it is good for one sign-in — the same rule a reset
         // follows (security.md §4). A typed one is the admin's choice to
         // hand over, and is left alone.
-        $user->must_change_password = ! isset($validated['password']);
+        $user->must_change_password = ! isset($validated['password']) && ! $invite;
         $user->save();
+
+        if ($invite) {
+            if (Invitations::send($user, $request->user())) {
+                return redirect()->route('admin.users.index');
+            }
+
+            // It could not go (SSO only, say): nobody must be left with an
+            // account and no way in, so fall back to a password shown once.
+            $password = TemporaryPassword::generate();
+            $user->password = Hash::make($password);
+            $user->must_change_password = true;
+            $user->save();
+        }
 
         return $this->toIndexShowing(isset($validated['password']) ? null : $password);
     }
@@ -87,13 +108,15 @@ class UserController extends Controller
         return Inertia::render('Admin/Users/Edit', [
             'targetUser' => [
                 ...$user->only(['id', 'name', 'email', 'is_admin', 'is_active']),
-                // W116: whether, never what — the secret and codes are hidden.
+                // Whether, never what — the secret and codes are hidden.
                 'two_factor_enabled' => $user->hasTwoFactorEnabled(),
             ],
-            // W117: the provider link, shown so it can be removed. Issuer and
+            // The provider link, shown so it can be removed. Issuer and
             // last use only; the subject is the provider's, not the admin's.
             'identity' => $user->identities()->first(['issuer', 'last_used_at']),
             'ownedAssessmentCount' => $user->ownedAssessments()->count(),
+            // Offer "Send invitation again" only where it would do something.
+            'canInvite' => MailSettings::enabled() && Invitations::pending($user),
         ]);
     }
 
@@ -101,6 +124,7 @@ class UserController extends Controller
     {
         $validated = $request->validated();
         $wasActive = (bool) $user->is_active;
+        $wasAdmin = (bool) $user->is_admin;
         $isActive = $validated['is_active'];
 
         $user->name = $validated['name'];
@@ -114,9 +138,29 @@ class UserController extends Controller
         // revoke their sessions immediately (security.md §4).
         if ($wasActive && ! $isActive) {
             SessionRegistry::revokeAllExcept($user->id);
+        } elseif ($wasAdmin !== (bool) $user->is_admin) {
+            // security.md §4: a role change ends the account's other
+            // sessions and remember-me cookies. Privilege is read from the row
+            // on each request, so this is about the stated rule and about a
+            // remember-me cookie issued before a promotion; an admin editing
+            // their own role keeps the session they are using.
+            SessionRegistry::revokeAllExcept(
+                $user->id,
+                $user->is($request->user()) ? $request->session()->getId() : null,
+            );
         }
 
         return redirect()->route('admin.users.index');
+    }
+
+    /** Mails the invitation again, with a new link that replaces the old one. */
+    public function resendInvitation(Request $request, User $user): RedirectResponse
+    {
+        if (! Invitations::send($user, $request->user())) {
+            return back()->withErrors(['invitation' => 'No invitation was sent. '.Invitations::whyNot($user)]);
+        }
+
+        return back()->with('status', 'Invitation sent.');
     }
 
     public function resetPassword(ResetPasswordRequest $request, User $user): RedirectResponse
@@ -148,7 +192,7 @@ class UserController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($user, $validated, $eraser) {
-            // D81: deleted assessments are neither counted by
+            // Deleted assessments are neither counted by
             // DestroyUserRequest nor reached by the default scope, but
             // owner_user_id cascades on the user's delete, and a calibrated
             // one cannot be cascaded (1451). Transfer them with the rest, or
@@ -169,7 +213,7 @@ class UserController extends Controller
     /**
      * Back to the users table, carrying a generated password to it once.
      *
-     * W115. This used to be `->with('generatedPassword', …)`, and nothing
+     * This used to be `->with('generatedPassword', …)`, and nothing
      * shared the session's flash bag with the page, so the table never
      * received it: an admin who left the password blank created an account
      * nobody knew the password of. Inertia's flash data reaches exactly the

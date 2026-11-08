@@ -21,7 +21,7 @@ use Illuminate\Support\Collection;
  * Invariant 5 is load-bearing: it is the only thing that makes the
  * qualitative -> numeric -> qualitative round trip lossless.
  *
- * Every message names a band by its **label** (W87, D44). It used to name it
+ * Every message names a band by its **label**. It used to name it
  * by `code`, which is internal, derived and frozen on rename — so the one
  * sentence a user read when a calibration was rejected pointed at a string the
  * band table no longer shows.

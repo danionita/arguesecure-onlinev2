@@ -6,11 +6,11 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * Node CRUD authorization matrix (CLAUDE.md "every route touching an
- * assessment goes through AssessmentPolicy") plus the 409 optimistic
+ * Node CRUD authorization matrix (every route touching an
+ * assessment goes through AssessmentPolicy) plus the 409 optimistic
  * concurrency path (ui.md §3.5). Every mutating action is checked against
  * {guest, stranger, viewer, commenter, editor}: only editor and above may
- * write; a viewer must not be able to mutate anything (W12 brief).
+ * write; a viewer must not be able to mutate anything.
  */
 function attachMember(Assessment $assessment, User $user, string $role): void
 {

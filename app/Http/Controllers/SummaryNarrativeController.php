@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Gate;
 
 /**
  * The report's written executive summary, and the draft waiting to become one
- * (W54).
+ * (docs/ASSISTANT.md).
  *
  * ## Not an assistant route
  *
  * Nothing here is behind the `assistant` middleware and nothing here needs a
  * runtime. The narrative is an ordinary field of the assessment: a person
  * types it, edits it, clears it. A deployment that has never had an inference
- * container — which is nearly all of them (D25) — gets the whole of this
+ * container — which is nearly all of them — gets the whole of this
  * screen and simply never sees a Draft button.
  *
  * That also settles what happens when an assistant is removed after use: the

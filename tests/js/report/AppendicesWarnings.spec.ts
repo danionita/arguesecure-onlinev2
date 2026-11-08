@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { report } from './support/reportFixture';
 
 /*
- * W136, D105. Leaving the warnings out is a choice, and a report without the
+ * Leaving the warnings out is a choice, and a report without the
  * appendix must not read as "the model raised none": it says how many it left
  * out, and carries none of their text.
  */

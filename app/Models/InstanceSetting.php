@@ -28,6 +28,21 @@ use Illuminate\Database\QueryException;
  * @property string|null $oidc_button_label
  * @property string|null $oidc_allowed_domains
  * @property bool $oidc_trust_email
+ * @property bool $registration_enabled
+ * @property string|null $registration_domains
+ * @property int $registration_daily_cap
+ * @property string|null $mail_host
+ * @property int|null $mail_port
+ * @property string|null $mail_encryption
+ * @property string|null $mail_username
+ * @property string|null $mail_password
+ * @property string|null $mail_from_address
+ * @property string|null $mail_from_name
+ * @property string|null $mail_tested_fingerprint
+ * @property bool $mail_notify_mentions
+ * @property bool $mail_notify_assignments
+ * @property bool $mail_notify_summaries
+ * @property bool $mail_notify_titles
  */
 class InstanceSetting extends Model
 {
@@ -43,7 +58,7 @@ class InstanceSetting extends Model
         'default_currency',
         'public_assessments_allowed',
         'assistant_enabled',
-        // W87, D48 — one switch per assistant feature, each subordinate to
+        // One switch per assistant feature, each subordinate to
         // Availability and able only to subtract from it.
         'assistant_help_enabled',
         'assistant_suggestions_enabled',
@@ -51,7 +66,7 @@ class InstanceSetting extends Model
         'session_lifetime_minutes',
         'require_two_factor',
         'sso_only',
-        // W133, D106. OidcConfig reads these only for a field the
+        // OidcConfig reads these only for a field the
         // environment leaves empty.
         'oidc_issuer',
         'oidc_client_id',
@@ -59,6 +74,23 @@ class InstanceSetting extends Model
         'oidc_button_label',
         'oidc_allowed_domains',
         'oidc_trust_email',
+        'registration_enabled',
+        'registration_domains',
+        'registration_daily_cap',
+        // SMTP, set on the Email tab. MailSettings reads them only for a
+        // field the environment leaves empty.
+        'mail_host',
+        'mail_port',
+        'mail_encryption',
+        'mail_username',
+        'mail_password',
+        'mail_from_address',
+        'mail_from_name',
+        'mail_tested_fingerprint',
+        'mail_notify_mentions',
+        'mail_notify_assignments',
+        'mail_notify_summaries',
+        'mail_notify_titles',
     ];
 
     /**
@@ -67,7 +99,7 @@ class InstanceSetting extends Model
      *
      * @var list<string>
      */
-    protected $hidden = ['oidc_client_secret'];
+    protected $hidden = ['oidc_client_secret', 'mail_password'];
 
     /**
      * @return array<string, string>
@@ -85,6 +117,12 @@ class InstanceSetting extends Model
             'sso_only' => 'boolean',
             'oidc_client_secret' => 'encrypted',
             'oidc_trust_email' => 'boolean',
+            'mail_password' => 'encrypted',
+            'mail_port' => 'integer',
+            'mail_notify_mentions' => 'boolean',
+            'mail_notify_assignments' => 'boolean',
+            'mail_notify_summaries' => 'boolean',
+            'mail_notify_titles' => 'boolean',
         ];
     }
 

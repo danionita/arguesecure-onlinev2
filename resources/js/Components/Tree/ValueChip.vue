@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One labelled figure on a node card: `Impact: €50,000` (W29, ui.md §3.2).
+ * One labelled figure on a node card: `Impact: €50,000` (ui.md §3.2).
  *
  * 2.0 put the numbers on the row bare. A risk carried three of them and a
  * defence five, in a fixed order the reader had to learn, with no way to tell

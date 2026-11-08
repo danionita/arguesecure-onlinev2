@@ -36,7 +36,7 @@ describe('PRIMARY_KIND / primaryKindMeta / moreKinds', () => {
     });
 });
 
-/** PLAN-2.7 D64: a control is cited by a defence and nothing else. */
+/** A control is cited by a defence and nothing else. */
 describe('kindsFor / primaryKindFor', () => {
     it('offers Control on a defence, first', () => {
         expect(primaryKindFor('defence')).toBe('control');

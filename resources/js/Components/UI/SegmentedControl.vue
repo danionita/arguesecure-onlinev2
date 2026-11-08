@@ -8,7 +8,7 @@
  */
 defineProps<{
     modelValue: string;
-    /** `hint` becomes the option's hover/focus title — W29's baseline selector needs each choice explained, not just named. */
+    /** `hint` becomes the option's hover/focus title — a baseline selector needs each choice explained, not just named. */
     options: { value: string; label: string; hint?: string; badge?: string }[];
 }>();
 

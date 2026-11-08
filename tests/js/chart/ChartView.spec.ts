@@ -270,7 +270,7 @@ function indicatorLabel(wrapper: VueWrapper, uuid: string): string {
 beforeEach(() => {
     localStorage.clear();
     useNodeModal().close();
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get: vi.fn().mockResolvedValue({ data: {} }),
@@ -299,7 +299,7 @@ describe('the tree survives being drawn as a chart', () => {
     });
 
     /**
-     * W37 deleted the tier gutter to buy 84px of horizontal width, which is
+     * The tier gutter was deleted to buy 84px of horizontal width, which is
      * the resource this view is short of. The tier is still announced — it
      * moved into each card's accessible name — so this asserts the
      * *replacement*, not merely the absence. Dropping the gutter without it
@@ -328,8 +328,8 @@ describe('what a chart card shows', () => {
     });
 
     /**
-     * W37 kept every figure off this card. W69 puts exactly one back
-     * (PLAN-2.4.md D26): the node's **own** value, abbreviated, in the bottom
+     * Cards used to keep every figure off. Exactly one is back now:
+     * the node's **own** value, abbreviated, in the bottom
      * row. What stays off is the *computed* readout — a card still never shows
      * an annual loss, a contribution or a residual, because those are answers
      * the list, the modal and the report give. So the assertion is not "no
@@ -358,7 +358,7 @@ describe('what a chart card shows', () => {
     });
 
     /**
-     * Strength lives on the `attack_defence` pivot (CLAUDE.md), so the same
+     * Strength lives on the `attack_defence` pivot (schema.md §3.6), so the same
      * defence under two attacks is two figures. A card reading the strength
      * off the node instead of off the edge would show one of them twice, and
      * the shape of that bug is a single number appearing where two differ.
@@ -417,7 +417,7 @@ describe('what a chart card shows', () => {
 
         const { wrapper } = mountChart(init);
 
-        // The **label** (W87, D44). This card used to render
+        // The **label**. This card used to render
         // `formatLevelCode(level.code)`, which was invisible only because the
         // seeded codes match the seeded labels: `scale_levels.code` is derived
         // from the label once and then frozen, so renaming "Major" to
@@ -503,7 +503,7 @@ describe('what a chart card shows', () => {
     });
 
     /**
-     * W37: the values indicator is present in **both** states, always. If it
+     * The values indicator is present in **both** states, always. If it
      * only appeared when something was missing, filling a value in would
      * change the card's layout, and the control that navigates to the values
      * would exist only while the values were absent — which is backwards.
@@ -664,13 +664,13 @@ describe('editing from the chart', () => {
         await indicators[2].trigger('click');
 
         expect(modal.openUuid.value).toBe('defence1');
-        // Strength lives on the attack_defence pivot (CLAUDE.md), so the tab
+        // Strength lives on the attack_defence pivot (schema.md §3.6), so the tab
         // that edits the pivot is the one that fixes it — not Values.
         expect(modal.activeTab.value).toBe('links');
     });
 
     /**
-     * W37 moved the hover panel to the bottom edge and cut it to two actions.
+     * The hover panel moved to the bottom edge and was cut to two actions.
      * It used to sit exactly where the permanent values indicator now lives,
      * covering the one thing the card must always show.
      */
@@ -687,12 +687,12 @@ describe('editing from the chart', () => {
 });
 
 /**
- * W69 item 11. "Appears in 3 places" was a statement a reader could do nothing
+ * "Appears in 3 places" was a statement a reader could do nothing
  * with — it counted the places and would not say which. The store already
  * knows both directions of the DAG's edges, so the counter names them.
  *
- * W72 builds the interactive popover on top of this (D31); W69 ships the
- * read-only tooltip.
+ * The interactive popover is built on top of this; this is the read-only
+ * tooltip.
  */
 describe('the parent counter names the places', () => {
     /** One attack under `count` risks, so the counter is showing. */
@@ -721,9 +721,9 @@ describe('the parent counter names the places', () => {
      * One defence under `count` attacks.
      *
      * The naming tooltip is a *defence* affordance now. At integration the
-     * attack's counter became W72's interactive `AppearsUnderPopover` (item
-     * 12, D31) — detaching an attack from one of several risks is the thing
-     * D31 is about, and the popover renders nothing for other types. So a
+     * attack's counter became the interactive `AppearsUnderPopover` —
+     * detaching an attack from one of several risks is the thing it is
+     * for, and the popover renders nothing for other types. So a
      * shared defence is what still gets the read-only tooltip, and these
      * assertions moved onto it rather than being deleted: the behaviour they
      * pin is unchanged, only the type that exercises it.
@@ -906,14 +906,14 @@ describe('collapsing', () => {
 });
 
 /**
- * W84: the chart's baseline moved from one shared `CANVAS_BASE_SCALE` number
- * to a per-view record, and CLAUDE.md is explicit that `scaledSize` and
+ * The chart's baseline moved from one shared `CANVAS_BASE_SCALE` number
+ * to a per-view record, and `scaledSize` and
  * `fitToWidth` have to keep using the *same* multiplier the chart's own
  * transform uses or fit-to-width silently lies. These pin that the three
- * still agree, and that D51's baseline change (chart unchanged at 1.1, only
+ * still agree, and that the baseline change (chart unchanged at 1.1, only
  * the list moved) did not accidentally touch the chart's own arithmetic.
  */
-describe('W84: the chart baseline stays consistent across canvasStyle, scaledSize and fitToWidth', () => {
+describe('the chart baseline stays consistent across canvasStyle, scaledSize and fitToWidth', () => {
     /**
      * The layout's own width, in layout units. The connectors' svg carries
      * it verbatim (`:width="layout.width"`) and is the only svg carrying
@@ -984,13 +984,13 @@ describe('W84: the chart baseline stays consistent across canvasStyle, scaledSiz
 });
 
 /**
- * W105: the scroll container is the window's height, not the chart's. The
+ * The scroll container is the window's height, not the chart's. The
  * template picker and the assistant's suggestions float below their card
  * inside it and are clipped by it; with `max-h-` a chart one card tall left
  * them a strip a few pixels high. jsdom has no layout, so this pins the
  * class; e2e scenario 15 shows the picker fitting.
  */
-describe('the scroll container (W105)', () => {
+describe('the scroll container', () => {
     it('has a fixed viewport-bounded height, not a maximum', () => {
         const { wrapper } = mountChart();
         const classes = wrapper
@@ -1003,7 +1003,7 @@ describe('the scroll container (W105)', () => {
     });
 });
 
-describe('the chart hands each card its child count (W127)', () => {
+describe('the chart hands each card its child count', () => {
     it('passes the number of children, which the card shows while collapsed', () => {
         const node = readFileSync(
             resolve(

@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
  *
  * It lives in the session as an account id and the *remember me* choice, and
  * nowhere else: the user is not authenticated while it exists, and it expires
- * after five minutes (W116 acceptance 4), after which the password step has
+ * after five minutes, after which the password step has
  * to be repeated.
  */
 final class PendingLogin

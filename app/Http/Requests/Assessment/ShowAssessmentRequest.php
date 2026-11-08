@@ -7,8 +7,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Gates the tree editor's read route (docs/specs/ui.md §3, CLAUDE.md
- * "Every route touching an assessment goes through AssessmentPolicy"). This
+ * Gates the tree editor's read route (docs/specs/ui.md §3, security.md
+ * §3.1: every route touching an assessment goes through AssessmentPolicy). This
  * is exactly the route the legacy app's defect #4 lived in (security.md) —
  * an authenticated stranger must get 403, not a rendered tree.
  *

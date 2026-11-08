@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
 /**
- * Helpers shared by the tree-editor scenarios (PLAN.md's end-to-end list,
+ * Helpers shared by the tree-editor scenarios (the end-to-end list,
  * scenarios 2–9). They exist because those scenarios are one narrative:
  * scenario 2 builds the graph, and 4–9 all read the same one back.
  *
@@ -26,10 +26,10 @@ import { expect, type Page } from '@playwright/test';
 export const assessmentTitle = 'Payment platform';
 
 /**
- * The page's own content, excluding the sidebar (W41).
+ * The page's own content, excluding the sidebar.
  *
  * The sidebar lists assessments by title, exactly as the list page does, so
- * from W41 onwards "click the link called X" is ambiguous unless it says
+ * "click the link called X" is ambiguous unless it says
  * where. Every list-page interaction below goes through this; a locator that
  * genuinely means the *navigation* should say so instead, with
  * `page.getByRole('navigation', { name: 'Main' })`.
@@ -58,7 +58,7 @@ export async function openAssessment(
     // Exact: scenario 10 leaves a template-derived copy in the list, whose
     // title starts with the same words.
     //
-    // Scoped to `main` since W41: the sidebar lists the same assessments by
+    // Scoped to `main`: the sidebar lists the same assessments by
     // the same titles, so an unscoped `getByRole('link')` now matches twice
     // and fails Playwright's strict mode. `mainContent()` is the one place
     // that boundary is written down.
@@ -79,7 +79,7 @@ export async function openAssessment(
         throw new Error(`Could not read an assessment uuid from ${page.url()}`);
     }
 
-    // W32 made the chart the default view. Every scenario below this helper
+    // The chart is the default view. Every scenario below this helper
     // reads the *list* — its rows, its value chips, its inline title field —
     // so the switch happens here, once, rather than being an unstated
     // precondition each spec would fail on mysteriously. Scenario 15 is the
@@ -209,8 +209,8 @@ export function cardFor(page: Page, title: string) {
 /**
  * The three assessment totals — Base, Current, Target ALE.
  *
- * W36 moved them off the docked `Toolbar/TotalsPanel.vue` and onto the ToS
- * card, which is the node they describe; the panel is deleted. They are still
+ * They sit on the ToS card, which is the node they describe, not in a docked
+ * panel. They are still
  * a polite live region, because a collaborator's edit changes them without
  * this reader touching anything. Every caller that asserted on the panel
  * asserts on the same three figures here, so this is a re-point, not a

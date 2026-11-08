@@ -3,7 +3,7 @@ import { ScaleMapper } from '../../../resources/js/calc';
 import { workedExampleScaleLevels } from './support/workedExampleGraph';
 
 /**
- * W11 mirror of tests/Unit/Calculation/ScaleMapperTest.php.
+ * Mirror of tests/Unit/Calculation/ScaleMapperTest.php.
  */
 describe('ScaleMapper', () => {
     // §15 item 5: round trip is lossless for every level of every scale.

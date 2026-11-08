@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Publish as template, inside the Share dialog (W45; reshaped by W141).
+ * Publish as template, inside the Share dialog.
  *
  * Publishing copies the assessment into a separate template on the Templates
  * page. It is a one-way action: the copy is not linked to this assessment, so

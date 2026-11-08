@@ -12,26 +12,24 @@ use App\Models\Tag;
 use App\Models\User;
 
 /*
- * app/Domain/Structure/AssessmentCloner.php was built in W6 but shipped
- * with no dedicated test (PLAN.md's W6 row: "AssessmentCloner has no
- * dedicated test — W20 (templates/catalogue) must add one, it is the
- * service that package leans on hardest"). This package uses it unmodified
- * for TemplateController::store() (PLAN.md Phase 8 item 4), so its own
- * correctness is load-bearing here even though this package does not own
- * the class itself (CLAUDE.md: "you own NEITHER [catalog tables nor
- * AssessmentCloner] — read them and conform. If either genuinely cannot
- * support what the spec requires, STOP and report; do not alter them").
+ * app/Domain/Structure/AssessmentCloner.php was built with the structure
+ * services but shipped with no dedicated test; the templates and catalogue
+ * work had to add one, because it leans on the class hardest. That work
+ * uses it unmodified for TemplateController::store() (schema.md §3.14), so
+ * its own correctness is load-bearing here even though it does not own
+ * the class itself: if the cloner cannot support what the spec requires, the
+ * defect is pinned here rather than altered.
  *
  * Writing this test found three genuine, independently-reproducible
  * defects in AssessmentCloner against a real MariaDB with the project's
- * actual strict SQL mode (STRICT_TRANS_TABLES). W20 pinned each as a
+ * actual strict SQL mode (STRICT_TRANS_TABLES). The templates work pinned each as a
  * "currently throws" test rather than patching a class it did not own, so
  * that fixing the class would turn them red and force this flip. All three
  * are now fixed, and these are ordinary success assertions.
  *
  * The middle one is the reason this test mattered: cloneAssessment() could
  * not clone anything at all, so "create a new assessment from a template" —
- * the whole point of W20 — was dead on arrival, and no other test in the
+ * the whole point of the templates work — was dead on arrival, and no other test in the
  * suite exercised the class.
  *
  * 1. cloneTags() mass-assigns `Tag::create(['assessment_id' => ..., ...])`,

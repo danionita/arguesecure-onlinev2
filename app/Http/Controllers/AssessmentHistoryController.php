@@ -15,8 +15,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * The assessment history page (W48, item 21; PLAN-2.2.md D15; reshaped in
- * 2.5.1).
+ * The assessment history page (reshaped in 2.5.1).
  *
  * `view`, the same audience as the assessment itself. History is a record of
  * what was done to something you can already read; gating it higher would mean

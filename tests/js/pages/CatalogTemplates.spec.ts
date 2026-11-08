@@ -1,12 +1,12 @@
 /**
- * The templates page's empty/populated pairing (W86 item 15).
+ * The templates page's empty/populated pairing.
  *
  * `EmptyState.vue` carries its own padding (`px-6 py-10`); this page used to
  * nest it inside the bordered panel `TemplateCard` rows share, which is the
  * one place in the codebase that put a self-padded `EmptyState` inside a
  * second container assumed to supply its own wrapper and never did — "an
  * unstyled container … a wrapper was assumed and never applied"
- * (PLAN-2.5.md), applied to a panel rather than a dialog. `Pages/Assessment
+ * (a finding from an earlier review), applied to a panel rather than a dialog. `Pages/Assessment
  * /Index.vue` is the sibling that shows the fix: it renders `EmptyState` bare
  * and gives its populated rows no shared group border at all.
  *
@@ -129,7 +129,7 @@ describe('with templates: the panel wraps rows only, not double-padded (item 15)
     });
 });
 
-describe('managing templates (W141)', () => {
+describe('managing templates', () => {
     it('shows an admin New, Edit and Delete, and a non-admin none of them', () => {
         const admin = page([template()], true);
         expect(admin.text()).toContain('New template');
@@ -183,7 +183,7 @@ describe('managing templates (W141)', () => {
     });
 });
 
-describe('W140: the "Use this template" label stays on one line', () => {
+describe('the "Use this template" label stays on one line', () => {
     it('the button cannot be squeezed or wrapped by a long description', () => {
         const wrapper = page([template()]);
         const button = wrapper

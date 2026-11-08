@@ -11,7 +11,7 @@ use Throwable;
 /**
  * The only thing in this application that talks to the inference runtime.
  *
- * ## It streams, and that is not a preference (PLAN-2.3-ai.md D20)
+ * ## It streams, and that is not a preference
  *
  * A non-streamed generation sends **no response headers at all** until it has
  * finished. CPU generations run for minutes — the spike measured 249s for a
@@ -32,7 +32,7 @@ use Throwable;
  * Guzzle's defaults are measured in seconds and are wrong here by one to two
  * orders of magnitude. Nothing below relies on a default.
  *
- * ## It talks to the chat endpoint, and that is a correctness fix (W59)
+ * ## It talks to the chat endpoint, and that is a correctness fix
  *
  * `/v1/chat/completions`, not llama.cpp's own `/completion`. The difference is
  * the model's **chat template**: an instruction-tuned model expects its turn
@@ -46,15 +46,15 @@ use Throwable;
  * only", and a JSON array is a plausible continuation. Measured both ways in
  * docs/spikes/2.3-threads.md: 1 token against 88 and 401.
  *
- * Prompt-prefix caching, which D21's whole no-retrieval design rests on,
- * survives the move — the runtime caches on the token prefix regardless of
+ * Prompt-prefix caching, which the no-retrieval design (the whole help
+ * corpus as a fixed prefix) rests on, survives the move — the runtime caches on the token prefix regardless of
  * which endpoint produced it.
  *
  * ## What this class does not do
  *
  * It does not build prompts, and it does not interpret replies. It takes a
- * prompt string and returns text. Prompt assembly lives with each job (W51,
- * W52, W54) because each has its own versioned prompt file and its own
+ * prompt string and returns text. Prompt assembly lives with each job
+ * (help, suggestions, summary) because each has its own versioned prompt file and its own
  * untrusted-content handling, and parsing lives with the job because only the
  * job knows what shape it asked for.
  */
@@ -224,7 +224,7 @@ class Client
      * RuntimeModel and CorpusWarmer each carried a copy of this). Not the
      * generous generation timeout: a runtime that is up answers a status
      * request immediately — `/health` returns 503 while it is still loading —
-     * so a slow answer means absent, and absent must degrade fast (D25).
+     * so a slow answer means absent, and absent must degrade fast.
      *
      * Any transport failure is null rather than an exception. A status probe
      * is not a request whose error anyone can act on, and letting a DNS

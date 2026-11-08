@@ -1,5 +1,5 @@
 /**
- * *Assessments shared with me* (W73 item 20, D33).
+ * *Assessments shared with me* (ui.md §8).
  *
  * The page's whole reason for existing is that `/assessments` does not
  * distinguish a shared row from an owned one, so the two things worth
@@ -15,6 +15,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Shared from '../../../resources/js/Pages/Assessment/Shared.vue';
+import { routeProperties } from '../support/routeProperties';
 
 vi.mock('@inertiajs/vue3', () => ({
     Head: { name: 'Head', template: '<div><slot /></div>' },
@@ -37,10 +38,10 @@ beforeEach(() => {
 function render(assessments: Record<string, unknown>[] = []) {
     return mount(Shared, {
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { AuthenticatedLayout: { template: '<div><slot /></div>' } },
         },
-        props: { assessments },
+        props: { assessments: assessments as never },
     });
 }
 

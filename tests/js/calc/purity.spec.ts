@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vitest';
 
 /**
- * W11 mirror of tests/Unit/Calculation/RiskCalculatorPurityTest.php (§15
+ * Mirror of tests/Unit/Calculation/RiskCalculatorPurityTest.php (§15
  * item 14). PHP checks "no Eloquent, no I/O, no clock, no randomness" via an
  * arch-dependency test plus a source-token scan; TypeScript has no Eloquent
  * to depend on, so this keeps only the source-token scan, adapted to the

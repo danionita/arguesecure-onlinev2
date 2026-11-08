@@ -1,9 +1,9 @@
 <?php
 
 /**
- * W24 — security.md §6, the response-header pass.
+ * security.md §6, the response-header pass.
  *
- * Before this package the application sent **no** security headers at all:
+ * Before it the application sent **no** security headers at all:
  * no CSP, no nosniff, no Referrer-Policy, no frame-ancestors, no
  * Permissions-Policy, no HSTS. `grep -rn "Content-Security-Policy"` over
  * app/, config/, routes/, bootstrap/ and resources/ returned nothing.

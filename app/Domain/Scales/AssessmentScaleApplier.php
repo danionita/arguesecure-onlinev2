@@ -8,7 +8,7 @@ use App\Observers\Concerns\TriggersRecalculation;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Stores bands for an assessment's scales together (W126, D94).
+ * Stores bands for an assessment's scales together.
  *
  * One transaction around `ScaleCalibrator::calibrate()` per kind: a rejected
  * likelihood leaves the impact bands unwritten too, where three requests left

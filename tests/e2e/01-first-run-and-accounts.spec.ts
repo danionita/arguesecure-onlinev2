@@ -10,7 +10,7 @@ import {
 } from './support/env';
 
 /**
- * Scenario 1 of PLAN.md's end-to-end list: "First-run setup creates an
+ * Scenario 1 of the end-to-end scenario list: "First-run setup creates an
  * admin; the admin creates two users and bulk-imports three more from CSV."
  *
  * This runs first and every later scenario depends on the account it

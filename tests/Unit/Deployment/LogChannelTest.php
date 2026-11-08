@@ -1,7 +1,7 @@
 <?php
 
 /*
- * FIXED (W112): neither .env.example nor the image set LOG_CHANNEL, so
+ * FIXED: neither .env.example nor the image set LOG_CHANNEL, so
  * Laravel fell back to `stack` -> `single`: an unrotated
  * storage/logs/laravel.log on the data volume, at debug, invisible to
  * `docker compose logs`. The image now sets the channel and level itself, so

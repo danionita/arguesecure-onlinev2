@@ -4,7 +4,7 @@ import { logout } from './support/auth';
 import { collaboratorEmail, collaboratorPassword } from './support/env';
 
 /**
- * Scenario 20 (PLAN-2.7-identity.md W116): two-factor authentication with an
+ * Scenario 20: two-factor authentication with an
  * authenticator app. Enrol, sign out, sign in with a code, sign in with a
  * recovery code.
  *

@@ -32,7 +32,7 @@ COPY composer.json composer.lock ./
 # no token and must not need one. They just get the anonymous limit, which
 # is fine for one machine making one build.
 #
-# `--ignore-platform-req=ext-gd` (W74): phpoffice/phpspreadsheet and
+# `--ignore-platform-req=ext-gd`: phpoffice/phpspreadsheet and
 # phpoffice/phpword require `ext-gd`, the `composer:2` image does not have it,
 # and this stage would otherwise refuse to resolve.
 #
@@ -78,7 +78,7 @@ FROM php:8.3-fpm-alpine AS runtime
 # boot (docker/nginx.conf) on a running host. See docker/nginx.conf for why
 # gzip stays enabled alongside brotli rather than replacing it.
 #
-# `gd` is here for W74's exports (D34): both phpoffice/phpspreadsheet and
+# `gd` is here for the spreadsheet and Word exports: both phpoffice/phpspreadsheet and
 # phpoffice/phpword declare `ext-gd` as a hard requirement, not a suggestion,
 # so `composer install` refuses to resolve without it and PHP fatals on the
 # first workbook if it were installed by an ignore. Neither exporter draws an
@@ -143,7 +143,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /var/www/html
 
-# W112: application logs go to stderr, where `docker compose logs` and any
+# Application logs go to stderr, where `docker compose logs` and any
 # log shipper read them. Unset, Laravel falls back to `stack` -> `single`: an
 # unrotated storage/logs/laravel.log on the data volume, at debug, which no
 # operator tool sees. Set here rather than only in .env.example so that a
@@ -162,7 +162,7 @@ RUN mkdir -p storage/framework/{cache,sessions,testing,views} storage/logs boots
     && mkdir -p /var/lib/nginx/tmp /var/log/nginx /run \
     && chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run
 
-# W124: the version the sidebar shows, from the release tag (image.yml passes
+# The version the sidebar shows, from the release tag (image.yml passes
 # it). Last, so a new value invalidates no layer above it. A plain `docker
 # build` leaves it empty and the app reads the VERSION file instead.
 ARG ARGUESECURE_BUILD_VERSION=

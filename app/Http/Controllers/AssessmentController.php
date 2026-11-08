@@ -15,8 +15,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * The tree editor's read route (ui.md Â§3, PLAN.md W12). Deliberately the
- * one place in this package that queries `nodes` beyond what
+ * The tree editor's read route (ui.md Â§3). Deliberately the
+ * one place in the editor that queries `nodes` beyond what
  * AssessmentGraphLoader already loads: the loader's DTO is calculation
  * input only (schema.md Â§4) and carries no `description`,
  * `position` or `updated_at` â€” all needed here for editing and for the
@@ -47,10 +47,10 @@ class AssessmentController extends Controller
         // Risk/Attack/Defence/RootNode and never on Node, so a base-class query
         // has none to strip, and SoftDeletingScope â€” the only global scope Node
         // does carry â€” is exactly the one that must stay on.
-        // `tags` eager-loaded (W43): two more queries for the whole graph,
+        // `tags` eager-loaded: two more queries for the whole graph,
         // constant in the number of nodes, which is the property the budget
-        // test asserts. A per-node tag lookup would be the N+1 CLAUDE.md
-        // names as the legacy tree render's defining defect.
+        // test asserts. A per-node tag lookup would be the N+1 that
+        // was the legacy tree render's defining defect.
         $nodes = Node::query()
             ->with('tags:id,name,slug,color')
             ->where('assessment_id', $assessment->id)
@@ -65,12 +65,12 @@ class AssessmentController extends Controller
                 'currency' => $assessment->currency,
                 'display_mode' => $assessment->display_mode,
                 'amortization_years' => $assessment->amortization_years,
-                // W44. Display only: the card renders a badge against it and
+                // Display only: the card renders a badge against it and
                 // nothing else reads it. It is deliberately absent from the
                 // AssessmentGraph the calculator receives.
                 'risk_tolerance' => $assessment->risk_tolerance,
                 'is_public' => (bool) $assessment->is_public,
-                // W141. A template opens in this same editor; the page only
+                // A template opens in this same editor; the page only
                 // hides what has no meaning without an owner (sharing).
                 'is_template' => (bool) $assessment->is_template,
             ],
@@ -98,15 +98,15 @@ class AssessmentController extends Controller
                 'update' => (bool) $user?->can('update', $assessment),
                 'manage' => (bool) $user?->can('manage', $assessment),
                 'transfer' => (bool) $user?->can('transferOwnership', $assessment),
-                // W141. Whether the Share dialog may offer "Publish as template".
+                // Whether the Share dialog may offer "Publish as template".
                 'publishTemplate' => (bool) $user?->can('saveAsTemplate', $assessment) && ! $assessment->is_template,
             ],
-            // W52. Sent with the page rather than fetched from
+            // Sent with the page rather than fetched from
             // /assistant/status on mount: the editor already makes one request
             // for the whole graph, and a second round trip on every load â€” on
             // the overwhelming majority of deployments that run no runtime at
             // all â€” buys nothing. A guest gets false without a probe.
-            // The suggestions switch by name (W87, D48): the editor's only
+            // The suggestions switch by name (ui.md Â§10, the assistant's four switches): the editor's only
             // assistant control suggests children, so this prop must answer
             // for that feature rather than for the assistant in general.
             'assistantAvailable' => $user !== null && app(Availability::class)->isAvailable(Availability::FEATURE_SUGGESTIONS),
@@ -128,7 +128,7 @@ class AssessmentController extends Controller
             'likelihood_mode' => $node->likelihood_mode,
             'likelihood_aro' => $node->likelihood_aro,
             'likelihood_level_id' => $node->likelihood_level_id,
-            // W43. Sent per node rather than as a separate `node_tag` map:
+            // Sent per node rather than as a separate `node_tag` map:
             // the store keys nodes by uuid and every consumer â€” the chip row,
             // the filter's `tagsForNode` â€” asks "what does this node carry?",
             // never the reverse.
@@ -148,7 +148,7 @@ class AssessmentController extends Controller
 
     /**
      * Generic readonly-DTO -> array converter for App\Domain\Calculation's
-     * result objects (outside this package's ownership). get_object_vars(),
+     * result objects. get_object_vars(),
      * called here from outside the DTO's own class, only ever sees public
      * properties â€” which is everything those classes declare (constructor
      * promoted, readonly) â€” so this stays correct without this controller

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
- * Everything that changes or checks an account's second factor (D77, D78).
+ * Everything that changes or checks an account's second factor.
  * Controllers call this; none of them touch the columns.
  */
 final class TwoFactor

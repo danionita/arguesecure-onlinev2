@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * The notification feed (W47, item 15).
+ * The notification feed (ui.md §2, Navigation; security.md §3.1c).
  *
  * Three sources, one list: you were mentioned in a comment, a node was
- * assigned to you, and (W54) an executive summary you asked for has finished
+ * assigned to you, and an executive summary you asked for has finished
  * drafting. Every row is a link to the thing it is about — the first two to
  * the node, through the modal's existing `?node=` deep link, the third to the
  * report, which is where the draft is read and accepted. That is the whole
@@ -48,7 +48,7 @@ interface NotificationRow {
     /** Assignments only. */
     node_type?: string;
     assigned_by?: string | null;
-    /** Summary drafts only (W54). Failure is notified as well as success. */
+    /** Summary drafts only. Failure is notified as well as success. */
     succeeded?: boolean;
     reason?: string | null;
 }
@@ -91,7 +91,7 @@ async function load() {
 function href(row: NotificationRow): string | null {
     if (row.assessment_uuid === null) return null;
 
-    // W54. A summary draft is about the whole assessment and carries no node,
+    // A summary draft is about the whole assessment and carries no node,
     // so it links to the report — the one page where the draft is shown and
     // can be accepted. The other two kinds still deep-link to their node.
     if (row.kind === 'summary') {

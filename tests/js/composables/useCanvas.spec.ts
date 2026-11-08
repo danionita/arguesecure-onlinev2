@@ -18,7 +18,7 @@ describe('clampZoom', () => {
 });
 
 /**
- * W84/D43: `view` is now required, since each instance is one view's zoom.
+ * `view` is now required, since each instance is one view's zoom.
  * The behaviour asserted in this block (clamping, stepping, panning) does not
  * depend on which view, so every call here fixes `view: 'chart'` — the
  * per-view-specific behaviour (independent persistence, the two baselines)
@@ -259,10 +259,9 @@ describe('useCanvas', () => {
 });
 
 /**
- * W34 / PLAN-2.2.md D9: the two views spend the *same-shaped* zoom number
- * differently. Since W84/D43 the number itself is no longer shared (see the
- * "independent persistence" block below); these assertions are about the
- * *properties chosen* — a `transform` on the list is the bug that was
+ * The two views spend the *same-shaped* zoom number differently (ui.md §5).
+ * The number itself is no longer shared (see the "independent persistence"
+ * block below); these assertions are about the *properties chosen* — a `transform` on the list is the bug that was
  * reported, so a regression to it has to turn one of these red rather than
  * sliding through as "a style is applied".
  */
@@ -321,17 +320,17 @@ describe('useCanvas zoom, per view', () => {
     });
 
     /**
-     * W84/D51. Chart and list get different, specified baselines — the list's
-     * is higher, because D51 says the list opens more zoomed in. Both are
+     * Chart and list get different, specified baselines — the list's is
+     * higher, because the list opens more zoomed in. Both are
      * pinned as exact values, not merely "list > chart", so a future change
      * to either constant has to come back and update this test deliberately.
      */
-    describe('the per-view baseline (W69, made per-view by W84/D51)', () => {
-        it('is exactly 1.1 for the chart, unchanged from W69', () => {
+    describe('the per-view baseline', () => {
+        it('is exactly 1.1 for the chart', () => {
             expect(CANVAS_BASE_SCALE.chart).toBe(1.1);
         });
 
-        it('is exactly 1.35 for the list — higher than the chart, per D51', () => {
+        it('is exactly 1.35 for the list — higher than the chart', () => {
             expect(CANVAS_BASE_SCALE.list).toBe(1.35);
             expect(CANVAS_BASE_SCALE.list).toBeGreaterThan(
                 CANVAS_BASE_SCALE.chart,
@@ -369,7 +368,7 @@ describe('useCanvas zoom, per view', () => {
     });
 
     /**
-     * Integration 2.5. The report (`Pages/Report/Show.vue`, W83) is a third
+     * Integration 2.5. The report (`Pages/Report/Show.vue`) is a third
      * `useCanvas.ts` caller with `view: 'report'` — a `CanvasView`, not an
      * `EditorViewMode` (see `CanvasView`'s docblock). Unlike the chart and
      * the list, the report must NOT open pre-zoomed: it is a document, and
@@ -415,11 +414,11 @@ describe('useCanvas zoom, per view', () => {
     });
 
     /**
-     * W84/D43: the storage key now carries the view, so the two views'
+     * The storage key now carries the view, so the two views'
      * persisted zoom is independent — setting the list to 70% must not touch
      * the chart's stored value or vice versa.
      */
-    describe('independent persistence per view (W84/D43)', () => {
+    describe('independent persistence per view', () => {
         it('persists the chart and the list separately, in the same assessment for the same user', () => {
             const storage = makeMemoryStorage();
             const chart = useCanvas({
@@ -475,11 +474,11 @@ describe('useCanvas zoom, per view', () => {
         });
 
         /**
-         * The pre-W84 key had no view component. A user who set 70% before
-         * this package shipped should not silently find 100% in either view
+         * The old key had no view component. A user who set 70% before
+         * the per-view keys shipped should not silently find 100% in either view
          * after the upgrade — both views read that legacy value once, as
          * their seed, and diverge from there. This is the "read once... then
-         * diverge" behaviour the brief specifies, not merely "the old value
+         * diverge" behaviour the upgrade requires, not merely "the old value
          * survives somewhere".
          */
         describe('seeding from the pre-upgrade key', () => {

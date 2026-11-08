@@ -219,7 +219,7 @@ class Node extends Model
     }
 
     /**
-     * Who is responsible for this node (W46, item 16).
+     * Who is responsible for this node.
      *
      * Ordered by name so the modal, the dashboard and the report list the
      * same people in the same order — a set with no order reads as a

@@ -8,15 +8,15 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W38: creating an edge is on the undo stack.
+ * Creating an edge is on the undo stack.
  *
- * It was not before. W14 recorded reorder and move from its own route
- * closures, and W13 built LinkController without touching UndoService, so a
+ * It was not before. Reorder and move were recorded from their own route
+ * closures, and LinkController was built without touching UndoService, so a
  * link created from the node modal's Links tab left no trace on the stack —
  * pressing Ctrl+Z after it would undo whatever unrelated thing came before,
  * which is worse than doing nothing.
  *
- * W38 makes linking a *drag gesture*: one drop, in front of a room, on a
+ * Linking is now a *drag gesture*: one drop, in front of a room, on a
  * projector. That turns a quiet inconsistency into a hazard, which is why the
  * gap is closed here rather than noted.
  *

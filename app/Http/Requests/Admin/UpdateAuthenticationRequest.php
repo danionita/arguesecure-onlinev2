@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * The admin **Authentication** tab (W133, D105-D108): the two sign-in
+ * The admin **Authentication** tab: the two sign-in
  * switches and the OpenID Connect provider's settings.
  *
  * The client secret is write-only. Blank keeps what is stored,
@@ -49,6 +49,19 @@ class UpdateAuthenticationRequest extends FormRequest
                 }
             }],
             'oidc_trust_email' => ['sometimes', 'boolean'],
+            'registration_enabled' => ['sometimes', 'boolean'],
+            'registration_domains' => ['nullable', 'string', 'max:1000', function (string $attribute, mixed $value, \Closure $fail): void {
+                foreach (explode(',', (string) $value) as $domain) {
+                    $domain = trim($domain);
+
+                    if ($domain !== '' && ! preg_match('/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i', $domain)) {
+                        $fail('Use domains such as example.org, separated by commas.');
+
+                        return;
+                    }
+                }
+            }],
+            'registration_daily_cap' => ['sometimes', 'integer', 'min:1', 'max:10000'],
         ];
 
         // A field the environment fixes is not validated: the controller

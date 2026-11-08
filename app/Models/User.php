@@ -24,7 +24,7 @@ class User extends Authenticatable
 
     /**
      * is_admin and is_active are deliberately absent: they are set by the
-     * admin area (a later package), never by a user editing their own
+     * admin area, never by a user editing their own
      * profile (security.md §7).
      *
      * @var list<string>
@@ -43,7 +43,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        // W116: the second factor never leaves the server — not in an Inertia
+        // The second factor never leaves the server — not in an Inertia
         // prop (auth.user is this model), not in JSON, not in a log context.
         'two_factor_secret',
         'two_factor_recovery_codes',
@@ -60,11 +60,14 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'self_registered_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_active' => 'boolean',
             'must_change_password' => 'boolean',
             'last_login_at' => 'datetime',
+            'invited_at' => 'datetime',
+            'mail_notifications_off' => 'array',
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
             'two_factor_confirmed_at' => 'datetime',
@@ -73,11 +76,10 @@ class User extends Authenticatable
     }
 
     /**
-     * W8b: clears the admin-set "must change password" flag the moment the
+     * Clears the admin-set "must change password" flag the moment the
      * password itself changes, without needing to touch every controller
-     * that can change a password (several — including
-     * App\Http\Controllers\Auth\PasswordController — are outside this
-     * package's file ownership). Only clears it when the flag wasn't *also*
+     * that can change a password (several, including
+     * App\Http\Controllers\Auth\PasswordController). Only clears it when the flag wasn't *also*
      * being set in the same save() call, so
      * UserController::resetPassword() can set password and
      * must_change_password=true together in one save without this
@@ -94,7 +96,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Whether a second factor is *confirmed* (D77). An enrolment that was
+     * Whether a second factor is *confirmed*. An enrolment that was
      * started and never finished leaves no trace in the row, so this cannot
      * be true for an account that has not proved it holds the secret.
      */

@@ -1,16 +1,16 @@
 /**
  * The tree card renders a qualitative value as the band's **label**, never as
- * its code (W87, D44).
+ * its code.
  *
  * ## Why this lives in `tests/js/scales/` rather than beside the card
  *
  * `tests/js/tree/NodeCard.spec.ts` fixes `impactLevelCode` and `aroLevelCode`
  * to `null` throughout, so the qualitative branch of the card has never been
- * rendered by a test at all. W87 changes exactly that branch, and a change
- * with no guard is the shape this whole package is about. The file is kept
- * here, in the directory this package owns, so that W85's restructuring of
- * `NodeCard.vue` — which moved its assistant handling out into
- * `Components/Node/**` — merges without a conflict in a file both packages
+ * rendered by a test at all. The change to show labels instead of codes
+ * touches exactly that branch, and a change with no guard is the shape this
+ * whole file is about. The file is kept here, in the scales directory, so that
+ * the restructuring of `NodeCard.vue` — which moved its assistant handling out
+ * into `Components/Node/**` — merges without a conflict in a file both changes
  * would otherwise have edited.
  *
  * ## What the card is resolving, and from where
@@ -233,7 +233,7 @@ beforeEach(() => {
     localStorage.clear();
     // NodeCard resolves two assistant URLs at setup through Ziggy's global
     // helper. Not this test's subject, but the card will not mount without it.
-    (globalThis as unknown as { route: (...args: unknown[]) => string }).route =
+    (globalThis as unknown as { route: (...args: never[]) => string }).route =
         vi.fn((name: string) => `/${name}`);
     (window as unknown as { axios: unknown }).axios = {
         get: vi.fn().mockResolvedValue({ data: {} }),

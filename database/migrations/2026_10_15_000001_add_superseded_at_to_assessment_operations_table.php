@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * W121 (D83). A new operation takes every undone one off the redo stack, or
+ * A new operation takes every undone one off the redo stack, or
  * undo, edit something else, redo replays an old inverse over newer work.
  * It cannot be derived: redo itself pushes a row, which would count as "newer
  * work" and invalidate the rest of the stack, so the row is stamped instead.

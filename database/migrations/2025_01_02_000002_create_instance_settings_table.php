@@ -12,10 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // W8's InstanceSettings persisted this durable configuration through
-        // Cache::forever() because no table existed and database/migrations
-        // was outside that package's ownership (see the W8 report's gap
-        // #2) — a cache flush silently reverted the instance to defaults.
+        // InstanceSettings first persisted this durable configuration through
+        // Cache::forever() because no table existed yet
+        // (schema.md §3.16) — a cache flush silently reverted the instance to defaults.
         // This is a deliberate singleton row, not a per-key table: there is
         // exactly one instance, so one row with a CHECK pinning its id is
         // simpler than a key/value table and gives every setting a real,

@@ -4,7 +4,7 @@ import { adminEmail, adminPassword } from './support/env';
 import { assessmentTitle, mainContent } from './support/tree';
 
 /**
- * Scenario 18 (PLAN-2.2.md W42): the dashboard, the list filter, and
+ * Scenario 18: the dashboard, the list filter, and
  * Duplicate.
  *
  * The filter is here rather than only in `tests/js` for one reason: its whole
@@ -12,15 +12,15 @@ import { assessmentTitle, mainContent } from './support/tree';
  * router mock was not called; only a browser can assert that nothing went over
  * the wire, which is what the request listener below does.
  *
- * Duplicate is here because it is the only W42 action that produces a second
+ * Duplicate is here because it is the only action here that produces a second
  * assessment, and the thing worth checking end to end is that the copy shows
  * up in the list under a name that tells it apart from its source.
  *
- * W73 reshapes the dashboard into two sections of tabs (D32) and adds two
+ * The dashboard is two sections of tabs and has two further
  * destinations — "New assessment", which now opens the creation dialog rather
- * than dropping the user on a list, and the shared page
- * (D33). Three claims here need a real browser rather than jsdom: that
- * `tabindex="-1"` genuinely keeps a tab out of the focus order, that the
+ * than dropping the user on a list, and the shared page. Three claims here
+ * need a real browser rather than jsdom: that `tabindex="-1"` genuinely keeps a
+ * tab out of the focus order, that the
  * create button produces an assessment the sidebar and the list then both
  * show, and that `/assessments/shared` is not swallowed by the unconstrained
  * `assessments/{assessment:uuid}` route registered beside it — a routing
@@ -38,7 +38,7 @@ test.describe('the dashboard', () => {
             page.getByRole('heading', { name: 'Dashboard', level: 1 }),
         ).toBeVisible();
 
-        // Two sections since W73 (D32), not four stacked lists: the two that
+        // Two sections, not four stacked lists: the two that
         // answer "what needs me" and the two that answer "where do I go"
         // were half a screen apart, and neither pair fit above the fold.
         for (const name of ['Notifications', 'Assessments']) {
@@ -100,8 +100,8 @@ test.describe('the dashboard', () => {
     });
 
     /**
-     * The four empty states survive D32 as tab-panel empty states — the point
-     * of that decision was that the two questions ("what needs me", "where do
+     * The four empty states survive as tab-panel empty states — the point
+     * of the two-section layout was that the two questions ("what needs me", "where do
      * I go") should be one screen apart rather than half a screen, not that
      * the explanations should go.
      *
@@ -255,14 +255,14 @@ test.describe('duplicate', () => {
     });
 });
 
-test.describe('New assessment opens the creation dialog (W73 item 19)', () => {
+test.describe('New assessment opens the creation dialog', () => {
     /**
      * Placed last in this file on purpose. It leaves a real, extra assessment
      * behind, and the suite is order-dependent — so it runs after everything
      * in scenario 18 that counts rows or filters them.
      *
-     * W73 first made this control POST an untitled assessment outright. That
-     * was removed at 2.4 integration: the list page already carries a button
+     * This control first POSTed an untitled assessment outright. That
+     * was removed: the list page already carries a button
      * with this exact name that asks for a title, so the page ended up with
      * two identically named controls doing two different things — which this
      * suite hit as an unresolvable locator, and a screen-reader user would hit
@@ -278,7 +278,7 @@ test.describe('New assessment opens the creation dialog (W73 item 19)', () => {
         await page.goto('/dashboard');
 
         // Inside the My assessments group, below the list it adds to. Until
-        // W73 this was an `href` at `assessments.index` with no query: a
+        // this was an `href` at `assessments.index` with no query: a
         // control named for an action that navigated to a list instead, where
         // the user then had to find the real create affordance themselves.
         await sidebar(page)
@@ -288,7 +288,7 @@ test.describe('New assessment opens the creation dialog (W73 item 19)', () => {
         await expect(page).toHaveURL(/\/assessments\?new=1$/);
 
         // The dialog is open on arrival — that is the whole difference from
-        // the pre-W73 control, and asserting the URL alone would not see it.
+        // the earlier control, and asserting the URL alone would not see it.
         await expect(
             page.getByRole('button', { name: 'Create assessment' }),
         ).toBeVisible();
@@ -328,7 +328,7 @@ test.describe('New assessment opens the creation dialog (W73 item 19)', () => {
     });
 });
 
-test.describe('the shared page (W73 item 20, D33)', () => {
+test.describe('the shared page', () => {
     test('is reachable from the sidebar group header', async ({ page }) => {
         await login(page, adminEmail, adminPassword());
         await page.goto('/dashboard');

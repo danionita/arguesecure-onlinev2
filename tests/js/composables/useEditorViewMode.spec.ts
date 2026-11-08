@@ -1,5 +1,5 @@
 /**
- * Which view the editor opens in (W32). The default is the assertion that
+ * Which view the editor opens in. The default is the assertion that
  * matters: the chart is the product's front door, and a regression that
  * quietly restored the list would change what every new user sees first
  * without changing a single visible pixel of either view.

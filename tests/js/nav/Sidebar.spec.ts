@@ -1,7 +1,7 @@
 /**
- * The sidebar's contract with a keyboard and a screen reader (W41).
+ * The sidebar's contract with a keyboard and a screen reader.
  *
- * Accessibility is the substance of this package, not a footnote, so most of
+ * Accessibility is the substance of the sidebar, not a footnote, so most of
  * what is asserted here is names and roles rather than pixels: a rail of
  * unlabelled glyphs is unusable, and a disclosure without `aria-expanded`
  * announces nothing at all.
@@ -14,6 +14,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Sidebar from '../../../resources/js/Components/Nav/Sidebar.vue';
+import { routeProperties } from '../support/routeProperties';
 
 vi.mock('@inertiajs/vue3', () => ({
     Link: {
@@ -55,7 +56,7 @@ beforeEach(() => {
 
 function render(over: Record<string, unknown> = {}) {
     return mount(Sidebar, {
-        global: { config: { globalProperties: { route } } },
+        global: { config: { globalProperties: routeProperties(route) } },
         props: {
             myAssessments: [{ uuid: 'a1', title: 'Web shop' }],
             sharedWithMe: [
@@ -207,7 +208,7 @@ describe('notifications', () => {
             railed: true,
             panelVisible: false,
         });
-        // A `<button>` since W47: this item opens the feed rather than going
+        // A `<button>`: this item opens the feed rather than going
         // anywhere. Everything else about it — the accessible name, the rail
         // dot — comes from the same NavItem as the destinations around it,
         // which is why that change is invisible to the assertion below.
@@ -246,7 +247,7 @@ describe('the overlay', () => {
     });
 });
 
-describe('the toggle has one location (W73 item 18)', () => {
+describe('the toggle has one location', () => {
     /**
      * The row index of the toggle among the sidebar's own direct children,
      * which is what "same row in both states" actually means. Asserted as a
@@ -272,7 +273,7 @@ describe('the toggle has one location (W73 item 18)', () => {
     });
 
     it('is in its own row, not sharing the logo’s', () => {
-        // W41's reasoning survives W73 intact — two 16px targets side by side
+        // The original reasoning still holds — two 16px targets side by side
         // in a 48px column is a coin toss — so the fix was to move the
         // expanded control down into the dedicated row, never to merge the
         // collapsed one upward into the logo row.
@@ -315,7 +316,7 @@ describe('the toggle has one location (W73 item 18)', () => {
     });
 });
 
-describe('New assessment creates one (W73 item 19)', () => {
+describe('New assessment creates one', () => {
     const createControl = (wrapper: ReturnType<typeof render>) =>
         wrapper
             .findAll('a, button')
@@ -330,7 +331,7 @@ describe('New assessment creates one (W73 item 19)', () => {
         // named for an action that navigated to a list, where the user then
         // had to find the real create affordance themselves.
         //
-        // W73's first answer was a POST to `assessments.new` that created an
+        // The first answer was a POST to `assessments.new` that created an
         // untitled assessment outright. That was removed at 2.4 integration:
         // the list page already carries a button reading "New assessment"
         // which asks for a title, so the page ended up with two identically
@@ -340,7 +341,7 @@ describe('New assessment creates one (W73 item 19)', () => {
         // path to `assessments.store`.
         //
         // Asserting the query parameter, not merely that the href points at
-        // the index: without `new` this is the pre-W73 control again, and a
+        // the index: without `new` this is the old control again, and a
         // test that only checked the path would not notice.
         const control = createControl(render())!;
         const href = control.attributes('href') ?? '';
@@ -401,7 +402,7 @@ describe('New assessment creates one (W73 item 19)', () => {
     });
 });
 
-describe('Shared with me points at its own page (W73 item 20, D33)', () => {
+describe('Shared with me points at its own page', () => {
     it('sends the group header to the shared page, not the combined list', () => {
         // `/assessments` mixes owned and shared rows and does not
         // distinguish them, so the header was a promise its destination
@@ -423,7 +424,7 @@ describe('Shared with me points at its own page (W73 item 20, D33)', () => {
 });
 
 /**
- * W82 item 41: History and Assessment settings left for `AssessmentActions`
+ * History and Assessment settings left for `AssessmentActions`
  * in the same commit that removed the `currentAssessment` prop this file
  * used to gate them on. Asserted by the *specific routes*, not by the item
  * count falling — a count assertion is a presence assertion inverted, and it
@@ -432,7 +433,7 @@ describe('Shared with me points at its own page (W73 item 20, D33)', () => {
  * pointed at, had it still known how (see git history for
  * `assessments.history.index` / `assessments.settings.edit`).
  */
-describe('History and Assessment settings are gone (D41)', () => {
+describe('History and Assessment settings are gone', () => {
     it('renders no link to either route, at any width', () => {
         for (const state of [{}, { railed: true, panelVisible: false }]) {
             const hrefs = render(state)
@@ -454,7 +455,7 @@ describe('History and Assessment settings are gone (D41)', () => {
 
     it('no longer accepts a currentAssessment prop to gate them with', () => {
         // Not merely unused — gone. A prop nothing reads is exactly the kind
-        // of dead control CLAUDE.md's `ReportOptions::$figures` write-up
+        // of dead control the `ReportOptions::$figures` incident
         // warns about, and re-adding it without a reader would be the same
         // mistake with an extra step.
         const wrapper = render({
@@ -470,7 +471,7 @@ describe('History and Assessment settings are gone (D41)', () => {
     });
 });
 
-/** W82 item 18: reachable only by typing the URL since W51. */
+/** Help was once reachable only by typing the URL. */
 describe('Help', () => {
     it('sits immediately above Notifications, in the bottom section', () => {
         // The bottom section (theme, admin, profile, log out) is the nav's
@@ -501,7 +502,7 @@ describe('Help', () => {
 });
 
 /**
- * W82 item 17: the rail's visible tooltip. `NavItem.vue` owns the mechanism
+ * The rail's visible tooltip. `NavItem.vue` owns the mechanism
  * — it wraps itself in the shared `Tooltip` component, and only when
  * `compact` — so this exercises it through a real `Sidebar` render rather
  * than restating the mechanism as a second, disagreeing description of it.
@@ -544,7 +545,7 @@ describe('the rail shows a visible tooltip, not only an accessible name', () => 
     });
 });
 
-describe('version and release notes (W124, W129)', () => {
+describe('version and release notes', () => {
     const version = {
         label: 'v2.6.3',
         notesUrl:

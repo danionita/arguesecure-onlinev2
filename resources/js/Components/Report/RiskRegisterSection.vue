@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Risk register (PLAN.md Phase 7 §3): every risk with impact, contributing
+ * Risk register (ui.md §9): every risk with impact, contributing
  * attacks, current and target ALE, and the reduction.
  */
 import Chip from '../UI/Chip.vue';

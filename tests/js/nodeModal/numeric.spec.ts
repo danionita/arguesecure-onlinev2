@@ -6,7 +6,7 @@ import {
 
 /**
  * The Values tab's blank-vs-zero contract (calculation-engine.md §6.1,
- * CLAUDE.md "blank is not zero"): an empty impact/likelihood/strength input
+ * "blank is not zero"): an empty impact/likelihood/strength input
  * must become `null` (missing — excluded from every total), never `0` (a
  * known value meaning "cannot happen"/"no loss"). This is the one piece of
  * client logic every numeric field in RiskValuesPanel, AttackValuesPanel,

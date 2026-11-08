@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
  * # There is no `db:seed` any more (2.5.1)
  *
  * `DatabaseSeeder` created an administrator with a fixed e-mail address —
- * a credential in a seeder, which CLAUDE.md forbids, and a second way into a
+ * a credential in a seeder, which is forbidden, and a second way into a
  * fresh instance beside first-run setup. It was deleted. Everything it
  * seeded that was worth having is here, and arrives through
  * `SetupController` the moment the first administrator exists: that is the
@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Log;
  *
  * # Owner resolution
  *
- * Templates have no owner (W141), so the library seeds whether or not an
+ * Templates have no owner (schema.md §3.14), so the library seeds whether or not an
  * administrator exists. An owner is passed only for a fixture that is not a
  * template; none ships today, and the seeder refuses one without it.
  *

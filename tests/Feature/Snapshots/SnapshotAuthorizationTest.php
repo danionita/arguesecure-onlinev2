@@ -9,7 +9,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 /*
  * Every route touching an assessment goes through AssessmentPolicy, no
- * exceptions (CLAUDE.md). Per the W19 task brief: creating and deleting a
+ * exceptions (security.md §3.1). Creating and deleting a
  * snapshot need `update`; listing, viewing and diffing need only `view` —
  * the same broad audience (owner, any collaborator role, admin, a public
  * assessment, a valid share-link session) ReportController's read routes

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 /**
- * History tab (PLAN.md Phase 8 item 2, schema.md §3.9, W18b). Thin wiring
- * around W18's self-contained RevisionList.vue, matching CommentsTab.vue's
+ * History tab (schema.md §3.9). Thin wiring around the self-contained
+ * RevisionList.vue, matching CommentsTab.vue's
  * identical shape.
  *
  * RevisionList emits `reverted(field, value)` after a successful revert
  * (see its own docblock: "this component does not touch that store
  * itself"). Patching the store here — rather than relying on a page
  * reload — keeps the node card and every other open tab in sync
- * immediately, the same as every other store mutation in this package.
+ * immediately, the same as every other store mutation.
  */
 import RevisionList from '@/Components/History/RevisionList.vue';
 import type { AssessmentStore } from '@/stores/assessmentStore';

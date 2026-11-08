@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * W44 (assessment settings, item 12).
+     * The assessment settings: a risk tolerance.
      *
-     * Only `risk_tolerance` is added. The package brief also listed `currency`,
-     * but `assessments` has carried `char(3) default 'EUR'` since the original
+     * Only `risk_tolerance` is added. The settings screen was also meant to expose
+     * `currency`, but `assessments` has carried `char(3) default 'EUR'` since the original
      * schema and `amortization_years` alongside it — both were already there
      * and simply had no screen. Verified before writing this rather than
      * adding a duplicate column.
@@ -24,7 +24,7 @@ return new class extends Migration
      *
      * decimal(20,2) matches `nodes.impact_amount` and the other money columns,
      * so a tolerance and the totals it is compared against are the same kind
-     * of number. It is **display only** (PLAN-2.2.md D14): it renders a marker
+     * of number. It is **display only**: it renders a marker
      * and a badge, and never enters RiskCalculator — see the pinned test in
      * tests/Feature/Assessment/SettingsTest.php.
      */

@@ -16,8 +16,8 @@ return [
     | directory and the mismatch is invisible. On Linux they are not, so
     | `inertia.view-finder` resolved nothing in CI and every
     | `assertInertia(...)->component(...)` failed with "page component file
-    | does not exist" — nine tests, red on every push from W12 onward while
-    | the identical run was green locally.
+    | does not exist" — nine tests, red on every push from the first page tests
+    | onward while the identical run was green locally.
     |
     | The application itself was never affected: app.ts resolves pages through
     | its own explicit glob rooted at `./Pages`, and `pages.ensure_pages_exist`

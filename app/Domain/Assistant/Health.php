@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 /**
  * Is the inference runtime answering?
  *
- * **Cached, and never on the render path** (PLAN-2.3-ai.md D25). An editor
+ * **Cached, and never on the render path**. An editor
  * that takes thirty seconds to paint because an inference container is wedged
  * is a worse outcome than having no assistant, so the probe result is trusted
  * for `assistant.health_ttl` seconds and a failure is cached exactly as an

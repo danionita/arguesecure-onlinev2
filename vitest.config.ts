@@ -7,7 +7,7 @@ export default defineConfig({
     resolve: {
         alias: {
             // Mirrors the `@` alias resources/js uses throughout (tsconfig
-            // paths / laravel-vite-plugin). Until W29 every spec here imported
+            // paths / laravel-vite-plugin). Originally every spec here imported
             // by relative path, so nothing needed it; a component spec that
             // mounts a real card does, because the card's own imports are
             // written with it.
@@ -17,7 +17,7 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         include: ['tests/js/**/*.spec.ts'],
-        // Read only by `vitest run --coverage` (checks.sh coverage, W119). A
+        // Read only by `vitest run --coverage` (checks.sh coverage). A
         // file no spec imports still counts, as 0%.
         coverage: {
             provider: 'v8',

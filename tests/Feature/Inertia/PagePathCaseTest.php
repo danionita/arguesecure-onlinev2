@@ -8,7 +8,7 @@
  * A plain is_dir()/file_exists() check cannot express this, because the
  * development machine here is case-insensitive — the wrong path resolves
  * perfectly locally and fails only on CI's Linux runner, which is exactly how
- * nine tests stayed red on every push from W12 onward without anything going
+ * nine tests stayed red on every push from the first Inertia pages onward without anything going
  * red on the machine they were written on. So these assertions compare against
  * the directory entry names the filesystem actually reports, which differ from
  * the requested string on every platform.

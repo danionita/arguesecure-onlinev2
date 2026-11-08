@@ -4,7 +4,7 @@ import { adminEmail, adminPassword } from './support/env';
 import { cardsFor, openAssessment } from './support/tree';
 
 /**
- * Scenario 5 of PLAN.md's end-to-end list: "Hovering the shared attack
+ * Scenario 5 of the end-to-end scenario list: "Hovering the shared attack
  * highlights both of its occurrences."
  *
  * Small on the page, load-bearing underneath. The whole reason the schema is
@@ -30,7 +30,7 @@ test.describe('duplicate highlighting', () => {
         await expect(cardsFor(page, SQLI)).toHaveCount(1);
 
         // The card also states the fact in words for anyone not hovering.
-        // W29 moved that from a native `title` attribute to the Tooltip
+        // That moved from a native `title` attribute to the Tooltip
         // component, so the count is asserted as text on the card and the
         // sentence itself on hover, below.
         await expect(
@@ -97,8 +97,8 @@ test.describe('duplicate highlighting', () => {
 });
 
 /**
- * W72 item 12 (D31). Highlighting says *that* a node appears twice; the
- * parent counter's popover is where a reader finds out *where*, and it is the
+ * The parent counter's popover (ui.md §7). Highlighting says *that* a node
+ * appears twice; the popover is where a reader finds out *where*, and it is the
  * only place in the application that can take one of those parents away.
  *
  * These read; they do not detach. The suite is one ordered narrative built by
@@ -110,10 +110,10 @@ test.describe('duplicate highlighting', () => {
  */
 test.describe('the parent popover', () => {
     /**
-     * W72 mounted the popover from the node modal's Details tab, because both
+     * The popover was first mounted from the node modal's Details tab, because both
      * node cards were outside its ownership, and these tests addressed it
      * there. 2.4 integration moved it onto the parent counter on the card —
-     * which is what item 12 asks for, and what D31 argues is where a reader
+     * which is where a reader
      * asks the question — so it is reached from the card now, not the dialog.
      */
     test('names both risks the shared attack appears under', async ({
@@ -152,10 +152,10 @@ test.describe('the parent popover', () => {
         await openAssessment(page);
 
         // The counter renders only above one occurrence — long-standing card
-        // behaviour, and D26 keeps chrome off the card deliberately. Since the
+        // behaviour, and chrome is kept off the card deliberately. Since the
         // popover carries the link control as well as detach, the consequence
         // is that a single-parent attack has no keyboard route to a second
-        // link; the W38 drag gesture is the only one, which scenario 3 drives.
+        // link; the drag gesture is the only one, which scenario 3 drives.
         //
         // This is a decision (a shared attack's other parents are managed from
         // its parent counter), not an oversight — so it is asserted rather than left to be rediscovered as

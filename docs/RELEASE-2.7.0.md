@@ -12,9 +12,10 @@ and a round of improvements to editing and reports.
   provider, then let people sign in with it. New accounts are created only for
   the email domains you allow, and administrators can turn password sign-in off
   for everyone else. An **Authentication** page in the admin area holds the
-  settings and a button to check the connection. Single sign-on is new: it has
-  been tested against a simulated provider, not yet against a real one, so try
-  it with yours before relying on it.
+  settings and a button to check the connection. Single sign-on is new. Only Keycloak has been tested
+  (a real sign-in on 2026-10-15). Other providers, Microsoft Entra ID
+  included, are expected to work but are unverified, so try it with yours
+  before relying on it.
 - **Log out other devices** now ends exactly the sessions that exist, and
   changing your password signs you out everywhere else.
 - **A security event log** records sign-ins, failures and administrative

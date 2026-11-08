@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * Assignees in the report, and the option that gates them (W46, item 16).
+ * Assignees in the report, and the option that gates them.
  *
  * A report is a document that leaves the room. Who was responsible for which
  * line is internal information, so it is off by default and — unlike every
@@ -68,7 +68,7 @@ test('the one-click download does not publish the names', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('report.options.download', true)
-            // Everything else expanded, as W33 requires…
+            // Everything else expanded, as the report defaults require…
             ->where('report.options.includeComments', true)
             ->where('report.options.includeShelved', true)
             // …and this one still off.
@@ -88,7 +88,7 @@ test('the report never carries an assignee’s email address', function () {
 
 /*
  * security.md §9: "Node and link mutations: 120/min per user". Assigning is a
- * node mutation. Asserted by *value*, not by presence — CLAUDE.md: a group
+ * node mutation. Asserted by *value*, not by presence: a group
  * whose limiter merely starts with `throttle` is not a guard, and the
  * enclosing 300/min group would satisfy a presence check on its own.
  */

@@ -1,5 +1,5 @@
 /**
- * W153, D120. The report's Content button is now "Defences": Implemented
+ * The report's Content button is now "Defences": Implemented
  * (always on), Planned (adds the target figures) and Shelved (listed only),
  * three rows that each say they are about defences. Planned maps onto the
  * baseline on the wire, Shelved onto `include_shelved`.
@@ -8,6 +8,7 @@ import { mount } from '@vue/test-utils';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import ReportOptionsRow from '../../../resources/js/Components/Report/ReportOptionsRow.vue';
 import type { ReportOptions } from '../../../resources/js/Components/Report/types';
+import { routeProperties } from '../support/routeProperties';
 import { report } from './support/reportFixture';
 
 vi.mock('@inertiajs/vue3', async () => {
@@ -46,7 +47,7 @@ async function mountRow(patch: Partial<ReportOptions> = {}) {
             userId: 1,
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { SearchBox: true, ViewSwitcher: true },
         },
     });

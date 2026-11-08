@@ -1,6 +1,6 @@
 /**
  * Collapse/expand per occurrence, plus expand-all/collapse-all, persisted
- * per user per assessment (ui.md §5 / PLAN.md W15).
+ * per user per assessment (ui.md §5).
  *
  * The per-occurrence expand/collapse *state itself* already lives in
  * assessmentStore.ts (`isExpanded`/`toggleExpanded`, keyed by occurrence
@@ -20,8 +20,8 @@
  * site, but a lone per-node click on the existing chevron does not persist
  * until TreeNode.vue's one-line `@toggle="store.toggleExpanded(pathKey)"`
  * is changed to call `useCollapseState().toggle(pathKey)` instead.
- * TreeNode.vue is W12-owned and outside this package's file list, so this
- * is reported rather than edited — see the W15 report.
+ * That template change belongs to the tree editor's own files, so this
+ * composable only exposes `toggle`.
  */
 import type { AssessmentStore } from '../stores/assessmentStore';
 import { enumerateOccurrences } from './occurrences';

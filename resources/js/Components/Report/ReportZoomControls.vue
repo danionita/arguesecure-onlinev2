@@ -1,16 +1,16 @@
 <script setup lang="ts">
 /**
- * Zoom for the report body only (W83, D43). `Ctrl+scroll` and `Ctrl +/-/0`
- * are the editor's shortcuts (`useCanvas.ts`'s `handleWheel` and W14's
- * bindings) — this is a static document with no canvas element to attach a
+ * Zoom for the report body only. `Ctrl+scroll` and `Ctrl +/-/0`
+ * are the editor's shortcuts (`useCanvas.ts`'s `handleWheel` and the
+ * keyboard bindings) — this is a static document with no canvas element to attach a
  * wheel handler to, so the report offers the button affordance alone.
  *
  * Deliberately not `Components/Toolbar/ZoomControls.vue`: that component's
  * `viewMode` prop is typed `EditorViewMode` (`'chart' | 'list'`,
  * `composables/useEditorViewMode.ts`) because its two label sets — "chart
  * size" / "text size" — are the only two this application has needed until
- * now. `Toolbar/ZoomControls.vue` is not this package's to extend a third
- * label onto (`Components/Toolbar/**` is not in W83's file ownership), and
+ * now. `Toolbar/ZoomControls.vue` is not the report's to extend with a third
+ * label, and
  * passing it `viewMode="list"` to borrow the "text size" wording would
  * describe a page this is not — the report has no list. This component
  * reuses the same layout and the same `IconButton`/`useCanvas.ts` contract,

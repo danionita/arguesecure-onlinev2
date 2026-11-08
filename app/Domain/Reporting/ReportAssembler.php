@@ -20,10 +20,10 @@ use Illuminate\Support\Collection;
 
 /**
  * Assembles the report payload from an already-computed CalculationResults
- * (PLAN.md Phase 7, ui.md §9). This class never touches the engine's math —
+ * (ui.md §9). This class never touches the engine's math —
  * it only selects, joins and formats what App\Domain\Calculation already
- * produced (CLAUDE.md: "Consume the existing RiskCalculator... Do not
- * reimplement or duplicate any part of the engine"). The one exception is
+ * produced: the engine is consumed, never reimplemented or duplicated. The
+ * one exception is
  * ScaleMapper::toNumber(), which is not a calculation but a pure lookup
  * (`representative` off a level row) already exposed as a reusable public
  * method on the engine's own mapper — reusing it here is the "do not
@@ -66,14 +66,14 @@ final class ReportAssembler
                 'uuid' => $assessment->uuid,
                 'currency' => $assessment->currency,
                 'amortizationYears' => $assessment->amortization_years,
-                // W44. Display only: the baseline chart draws a threshold
+                // Display only: the baseline chart draws a threshold
                 // line against it. It is not in the AssessmentGraph and no
                 // figure below is computed from it.
                 'riskTolerance' => $assessment->risk_tolerance,
                 'isPublic' => (bool) $assessment->is_public,
             ],
             'options' => $options->toArray(),
-            // W74. The author's own words, and the disclosure that goes with
+            // The author's own words, and the disclosure that goes with
             // them, on the assembled report rather than only on the Inertia
             // page prop — the HTML and Word exports carry the prose sections
             // in order, and reading the model a second time to get them would
@@ -83,7 +83,8 @@ final class ReportAssembler
             // `summary_narrative` is text a person wrote or accepted and is
             // already sent to every reader; `summary_draft` is un-reviewed
             // model output that the server withholds from anyone who could
-            // not accept it (D24), and an export is exactly the path by which
+            // not accept it (nothing model-drafted reaches another user
+            // unreviewed), and an export is exactly the path by which
             // it would reach them.
             'writtenSummary' => [
                 'text' => $assessment->summary_narrative,
@@ -177,7 +178,7 @@ final class ReportAssembler
             // and a share link grants it to anyone holding the URL
             // (security.md §3.1) — so anything placed here is published to
             // exactly that audience. The cover calls for the owner
-            // (PLAN.md Phase 7 §1), and the page only ever renders the name;
+            // (ui.md §9), and the page only ever renders the name;
             // shipping the address as well would have turned every public
             // report into a harvestable email address for no rendered
             // benefit. Collaborator emails stay where they belong, behind
@@ -259,7 +260,7 @@ final class ReportAssembler
     }
 
     /**
-     * What the plan costs and what it buys (W33).
+     * What the plan costs and what it buys.
      *
      * `executiveSummary()` counts implemented controls only, which answers
      * "what are we spending" and not the question a reader actually arrives
@@ -574,10 +575,10 @@ final class ReportAssembler
         // One query for the whole tree, and only when the option is on.
         // `loadMissing` batches across the collection; reading
         // `$node->assignees` inside the loops below would be one query per
-        // node, which is the N+1 CLAUDE.md names as the legacy tree render's
+        // node, which is the N+1 that was the legacy tree render's
         // defining defect. Doing it here rather than in the controller keeps
         // the cost inside the option that asks for it — a report with
-        // assignees off issues exactly the queries it did before W46, which
+        // assignees off issues exactly the queries it did before assignees became an option, which
         // is what the report's query-budget test measures.
         if ($options->showAssignees) {
             // Wrapped in an Eloquent collection because the caller hands us a
@@ -607,7 +608,7 @@ final class ReportAssembler
         }
         unset($links);
 
-        // W33: the inherent baseline joins the other two here. The tree
+        // The inherent baseline joins the other two here. The tree
         // section is the one place in the report that shows every node with
         // every figure, and "before any defence" is the reference the other
         // two are read against — without it a reader cannot see what the
@@ -696,7 +697,7 @@ final class ReportAssembler
     }
 
     /**
-     * The names on a node, or an empty list when the option is off (W46).
+     * The names on a node, or an empty list when the option is off.
      *
      * An empty list rather than a null or an absent key: the report payload's
      * shape must not depend on an option, or every consumer of it — the Vue
@@ -762,7 +763,7 @@ final class ReportAssembler
     }
 
     /**
-     * What the defences cite, per framework (PLAN-2.7 D64–D66). Status, not
+     * What the defences cite, per framework. Status, not
      * figures: whether a control is in place is what a framework asks, and
      * how much each defence reduces is already the rankings'. A control is
      * `implemented` when any citing defence is, `planned` when none is but
@@ -921,7 +922,7 @@ final class ReportAssembler
             }
         }
 
-        // W136: a report that leaves the section out carries only how many
+        // A report that leaves the section out carries only how many
         // warnings it left out, so the omission can be stated and the
         // messages are not in the payload of a document that omits them.
         return [

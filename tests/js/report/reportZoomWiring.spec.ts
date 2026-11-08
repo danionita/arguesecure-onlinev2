@@ -1,5 +1,5 @@
 /**
- * D43, wired end to end: `Pages/Report/Show.vue` must actually call
+ * Per-view zoom, wired end to end: `Pages/Report/Show.vue` must actually call
  * `useCanvas.ts` with `view: 'report'`, not just the plain `assessmentUuid`
  * the chart and list use. `reportZoomKey.spec.ts` proves `useCanvas.ts`
  * itself keeps a `report`-view key separate from `chart`/`list`; this file
@@ -11,6 +11,7 @@ import { mount } from '@vue/test-utils';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReportData } from '../../../resources/js/Components/Report/types';
 import ReportShow from '../../../resources/js/Pages/Report/Show.vue';
+import { routeProperties } from '../support/routeProperties';
 
 vi.mock('@inertiajs/vue3', async () => {
     const { defineComponent, h } = await import('vue');
@@ -124,7 +125,12 @@ function report(): ReportData {
         transfers: [],
         controlCoverage: { frameworks: [], hiddenShelved: 0 },
         tree: { risks: [], orphanAttacks: [], orphanDefences: [] },
-        appendices: { references: [], comments: [], warnings: [] },
+        appendices: {
+            references: [],
+            comments: [],
+            warnings: [],
+            warningsOmitted: 0,
+        },
     };
 }
 
@@ -136,13 +142,13 @@ function mountReport() {
             report: report(),
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { SummaryNarrative: true, teleport: true },
         },
     });
 }
 
-describe('D43 — the report writes zoom to a view-namespaced key', () => {
+describe('the report writes zoom to a view-namespaced key', () => {
     it('clicking the report zoom control writes a localStorage key for the "report" view, distinct from the chart/list key', async () => {
         const wrapper = mountReport();
 
@@ -165,7 +171,7 @@ describe('D43 — the report writes zoom to a view-namespaced key', () => {
         const wrapper = mountReport();
 
         // `ReportDocument.vue` applies `zoomStyle` to its own root `<main>`.
-        // Both the authenticated and the guest chrome mount it (D39), but
+        // Both the authenticated and the guest chrome mount it, but
         // only one branch is actually rendered — find the one that carries
         // a `style` attribute at all. At the default persisted zoom (1) it
         // must be exactly `CANVAS_BASE_SCALE.report` (1.0), not `.list`

@@ -6,9 +6,9 @@ use Database\Seeders\SystemScaleSeeder;
 use Database\Seeders\TemplateAssessmentSeeder;
 
 /*
- * W22's "every scale level code referenced by a fixture actually resolves
+ * Requirement: "every scale level code referenced by a fixture actually resolves
  * against the system default scales — a code that does not resolve must
- * fail loudly in a test, not silently at insert time" requirement.
+ * fail loudly in a test, not silently at insert time".
  *
  * This walks every fixture's ValueSpecs (assessment risks/attacks/links,
  * catalog entries/edges) collecting every `*_level_code` it uses, seeds

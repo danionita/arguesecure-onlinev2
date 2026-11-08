@@ -17,12 +17,14 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
- * Puts a frozen version back (W61, closing the last of W48's audit findings).
+ * Puts a frozen version back.
  *
- * W19 could create, read and diff a snapshot, and nothing could apply one.
- * That is the reason "revert to here" was never built: PLAN-2.2.md D15's own
- * fallback was "offer revert only back to the nearest snapshot", and there was
- * no path for a revert to go through. This is that path.
+ * Snapshots could be created, read and diffed, and nothing could apply one;
+ * this was the last gap in the history feature (schema.md §3.13).
+ * That is why "revert to here" could not be offered back to an arbitrary
+ * point: the fallback when a single change cannot be reversed is to offer
+ * revert only back to the nearest snapshot, and there was no path for that
+ * revert to go through. This is that path.
  *
  * ## In place, not as a copy
  *
@@ -48,7 +50,7 @@ use Illuminate\Support\Collection;
  * and recreated. That is what lets its comments — which a snapshot still does
  * not record — survive a restore on every node that still exists.
  *
- * ## Labels and assignees, from v2 onward (W62)
+ * ## Labels and assignees, from v2 onward
  *
  * A v1 snapshot holds no labels and no assignees, which made every restore
  * partly incomplete: a node this brought back came back bare, and the count
@@ -80,7 +82,7 @@ use Illuminate\Support\Collection;
  * row is recorded **first** and every revision is written inside
  * `RevisionRecorder::withinOperation()`, which stamps them with its id —
  * TimelineReader has folded revisions sharing an `operation_id` into one entry
- * since W48, and until now nothing ever produced any.
+ * already, and until now nothing ever produced any.
  */
 final class SnapshotRestorer
 {
@@ -91,7 +93,7 @@ final class SnapshotRestorer
      * is fine with anything from the past", which is only true while nothing
      * has ever been *removed* from the shape — and the moment something is,
      * a silently-partial restore is exactly the "looks restored and is
-     * quietly wrong" failure the W48 audit was run to prevent. Adding a
+     * quietly wrong" failure a restore must never be. Adding a
      * version here should mean someone has read what changed.
      *
      * @var list<int>
@@ -99,7 +101,7 @@ final class SnapshotRestorer
     private const READABLE_VERSIONS = [1, 2];
 
     /**
-     * The first version that carries labels and assignees (W62).
+     * The first version that carries labels and assignees.
      *
      * Below this, a restore has nowhere to read them from and says so; at or
      * above it, the frozen set is authoritative and is applied.
@@ -279,7 +281,7 @@ final class SnapshotRestorer
     }
 
     /**
-     * Puts a node's labels and assignees back (W62).
+     * Puts a node's labels and assignees back.
      *
      * `sync()`, not attach: a restore replaces, so a label added to this node
      * after the snapshot was taken has to come off it. That is the same
@@ -375,7 +377,7 @@ final class SnapshotRestorer
      * `assessment_id` is assigned as a **property**. It is an identity column
      * and is deliberately absent from Tag::$fillable — a create() carrying one
      * is dropped silently by Eloquent and then dies on the NOT NULL
-     * constraint, which has broken three packages here already (CLAUDE.md).
+     * constraint, which has broken earlier changes here already.
      *
      * @param  array<string, mixed>  $frozen
      */
@@ -468,7 +470,7 @@ final class SnapshotRestorer
      * never through create(): they are identity and audit columns, deliberately
      * absent from Node::$fillable, and a create() carrying one is dropped
      * silently by Eloquent and then dies on the NOT NULL constraint. That has
-     * broken three packages in this codebase already (CLAUDE.md).
+     * broken earlier changes in this codebase already.
      */
     private function make(Assessment $assessment, string $uuid, string $type, ?User $actor): Node
     {
@@ -531,7 +533,7 @@ final class SnapshotRestorer
     {
         // The whole node set, keyed by uuid — one query, as the `pluck` this
         // replaced was, but hydrated. The edges below hand each endpoint to the
-        // edge before saving it (W68), and the observer layer would otherwise
+        // edge before saving it, and the observer layer would otherwise
         // lazy-load all three of them per link, on a path that rebuilds every
         // edge in the assessment.
         /** @var Collection<string, Node> $nodes */
@@ -606,7 +608,7 @@ final class SnapshotRestorer
      * snapshot's shape (schema.md §3.13) and is left alone rather than guessed
      * at.
      *
-     * Written through RevisionRecorder (W60) so the change reads in the
+     * Written through RevisionRecorder so the change reads in the
      * timeline like any other settings edit, folded into this restore's
      * operation by the enclosing withinOperation().
      *

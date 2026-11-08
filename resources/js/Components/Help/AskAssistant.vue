@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * Job A's single action (W51, PLAN-2.3-ai.md).
+ * Job A's single action (docs/ASSISTANT.md §3).
  *
- * No chat bubble, no floating button, no unsolicited suggestion — the plan is
- * explicit that the assistant appears as **one action in the place where it
- * helps**, and for job A that place is the top of the help index, where
- * someone is already looking for an answer.
+ * No chat bubble, no floating button, no unsolicited suggestion — the
+ * assistant appears as **one action in the place where it helps**, and for
+ * job A that place is the top of the help index, where someone is already
+ * looking for an answer.
  *
  * Three things this deliberately does:
  *
@@ -15,9 +15,9 @@
  *   spinner that gives no hint of that reads as a hang.
  * - **Marks the answer as generated, at the point of use.** The reader must
  *   never have to remember which text on their screen came from a model.
- * - **Renders the answer as text.** `{{ }}`, never `v-html`: W30 deleted this
- *   codebase's only user-authored-HTML renderer, and model output is the last
- *   thing that should bring one back.
+ * - **Renders the answer as text.** `{{ }}`, never `v-html`: the
+ *   codebase's only user-authored-HTML renderer was deleted, and model output
+ *   is the last thing that should bring one back.
  */
 import GenerationProgress from '@/Components/Assistant/GenerationProgress.vue';
 import Button from '@/Components/UI/Button.vue';
@@ -27,7 +27,7 @@ import { computed, ref } from 'vue';
 const props = defineProps<{
     /**
      * From `HelpController`'s `assistant` page prop, which asks `Availability`
-     * for the **help** feature by name (W87, D48) — not from
+     * for the **help** feature by name — not from
      * `/assistant/status`, which answers for the assistant in general and
      * would offer this control on an instance that has switched help off.
      *
@@ -49,7 +49,7 @@ const canAsk = computed(
 );
 
 /**
- * W58. The first question of a session is the worst wait in the whole product
+ * The first question of a session is the worst wait in the whole product
  * — the entire corpus has to be processed before a single token comes back,
  * measured at 94 seconds — and it is the one place a person is most likely to
  * decide the feature is broken. So the wait is narrated, and it can be ended.
@@ -77,7 +77,7 @@ async function ask() {
             cancelled?: boolean;
         }>(route('assistant.help'), { question: question.value.trim() });
 
-        // A stopped answer comes back 200 with `{cancelled: true}` (W58). The
+        // A stopped answer comes back 200 with `{cancelled: true}`. The
         // person asked for that, so there is nothing to say about it: no
         // answer, no error, the box goes back to how it was.
         if (response.data.cancelled) return;
@@ -136,7 +136,7 @@ async function ask() {
             Answered on this server by a local model, from the help pages below.
             Nothing leaves the machine.
             <!--
-                2.6 (D57): the help pages are read into the model when its
+                2.6: the help pages are read into the model when its
                 server starts, so the slow first answer is now the one asked
                 in the minute or two after a restart, not every session's
                 first. Still said up front, because that wait is real and a

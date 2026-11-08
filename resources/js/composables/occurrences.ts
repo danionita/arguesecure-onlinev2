@@ -1,16 +1,16 @@
 /**
- * Shared DAG-walk used by every W15 composable (search, filters, focus
+ * Shared DAG-walk used by every canvas composable (search, filters, focus
  * mode, duplicate highlighting).
  *
- * assessmentStore.ts (W12) is explicit that "the renderer therefore keys on
+ * assessmentStore.ts is explicit that "the renderer therefore keys on
  * (node uuid, path), not on node uuid alone" (ui.md §3.1) and that the
  * store deliberately exposes only accessor functions — `risksOrder()`,
  * `attacksUnderRisk()`, `defencesUnderAttack()` — not the underlying edge
  * arrays walked as a tree. This module walks the DAG the exact same way
  * TreeNode.vue does (root -> risks -> attacks -> defences, using those same
- * accessors) so every occurrence W15 reasons about is guaranteed to be one
+ * accessors) so every occurrence they reason about is guaranteed to be one
  * TreeNode.vue would actually render — no parallel structure that can
- * drift out of sync with what W12 owns.
+ * drift out of sync with what the store owns.
  *
  * This is also why occurrence *counts* computed here can legitimately
  * exceed `store.occurrenceCount()`: that function counts distinct parent

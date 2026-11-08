@@ -30,6 +30,9 @@ class StoreUserRequest extends FormRequest
             // controller generates one and returns it once (ui.md §10).
             'password' => ['nullable', 'confirmed', PasswordPolicy::rule()],
             'is_admin' => ['required', 'boolean'],
+            // Mail the person a link to choose a password. Only has an effect
+            // with mail on and no password typed.
+            'send_invitation' => ['sometimes', 'boolean'],
         ];
     }
 }

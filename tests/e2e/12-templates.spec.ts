@@ -13,14 +13,14 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 10 of PLAN.md's end-to-end list: "Create a new assessment from
+ * Scenario 10 of the end-to-end list: "Create a new assessment from
  * the ISO 27001 template and confirm the catalogue defaults resolved against
  * that assessment's scales."
  *
  * ## Why not the ISO 27001 template
  *
  * The shipped templates are seeder fixtures
- * (`database/seeders/templates/*.json`, W22), and `TemplateAssessmentSeeder`
+ * (`database/seeders/templates/*.json`), and `TemplateAssessmentSeeder`
  * requires an owning `User` — every row it writes sets `owner_user_id`,
  * `created_by` and `updated_by`. A deployment's entrypoint runs
  * `migrate --force` and no seeders, and it cannot run this one either,
@@ -29,13 +29,13 @@ import {
  * already serving. So a fresh install has an empty template library, and
  * `DatabaseSeeder` cannot be used to fill it because it creates a test user,
  * which would break the empty-users-table precondition first-run setup
- * depends on. Reported with W25 rather than worked around here.
+ * depends on. Reported rather than worked around here.
  *
  * This scenario therefore exercises the same mechanism through the route a
  * user actually has: mark an existing assessment as a template, then create
  * a new assessment from it. That is `AssessmentCloner` — the service
- * CLAUDE.md singles out as having been broken twice by silently-dropped
- * identity columns, both times while the whole suite stayed green — so the
+ * broken twice before by silently-dropped identity columns, both times while
+ * the whole suite stayed green — so the
  * assertions below deliberately read every part of the copy back rather than
  * checking that a redirect happened.
  */
@@ -53,7 +53,7 @@ test.describe('templates', () => {
         await login(page, adminEmail, adminPassword());
         const uuid = await openAssessment(page);
 
-        // `saveAsTemplate` — admins only. Since W141 publishing copies the
+        // `saveAsTemplate` — admins only. Publishing now copies the
         // assessment into a separate, ownerless template and leaves the
         // assessment itself alone; the answer carries the copy's uuid.
         const published = await apiRequest(
@@ -67,7 +67,7 @@ test.describe('templates', () => {
         ).template.uuid;
 
         await page.goto('/templates');
-        // Scoped since W41: the sidebar lists the same assessment under the
+        // Scoped to the page content: the sidebar lists the same assessment under the
         // same name, so an unscoped match resolves to two elements.
         await expect(mainContent(page).getByText(ORIGINAL)).toBeVisible();
     });
@@ -76,7 +76,7 @@ test.describe('templates', () => {
         await login(page, adminEmail, adminPassword());
         await page.goto('/templates');
 
-        // Scoped to the row, not `.first()`. W27 made first-run setup seed
+        // Scoped to the row, not `.first()`. First-run setup seeds
         // the bundled ISO templates, so this list is no longer "the one
         // template the previous test just marked" — picking the first row
         // would silently copy an ISO fixture and every assertion below
@@ -95,7 +95,7 @@ test.describe('templates', () => {
         // Using a template lands in the editor for the *new* assessment.
         await expect(page).toHaveURL(/\/assessments\/[0-9a-f-]{36}$/);
 
-        // In the chart, since W32 made it the default — and this test does
+        // In the chart, which is the default view — and this test does
         // not go through `openAssessment()`, which is where every other
         // scenario's switch to the list happens. The rename below edits the
         // *list* card's inline title, so without this it waited for a button
@@ -178,7 +178,7 @@ test.describe('templates', () => {
 
         // Into the list: the three totals live on the ToS card, which is a
         // list-view card. The chart deliberately carries no currency at all
-        // (W32, scenario 15).
+        // (scenario 15).
         await useListView(page);
 
         // The strongest single check that the copy is complete: totals are a
@@ -202,7 +202,7 @@ test.describe('templates', () => {
         await useListView(page);
 
         // "Inserting is a copy: later edits do not propagate into
-        // assessments already signed off" (PLAN.md Phase 8 item 4). The
+        // assessments already signed off" (the template-insertion requirement). The
         // inverse matters just as much and is easier to get wrong — a clone
         // that reused rows rather than duplicating them would show this edit
         // in both places.
@@ -224,7 +224,7 @@ test.describe('templates', () => {
     });
 
     /*
-     * W141: the template is a copy, so the assessment it was published from
+     * The template is a copy, so the assessment it was published from
      * stays exactly as private and as editable as it was, and there is nothing
      * to unpublish — a template leaves the list when it is deleted.
      */

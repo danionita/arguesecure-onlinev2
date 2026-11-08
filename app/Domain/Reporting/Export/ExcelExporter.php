@@ -10,7 +10,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
- * The report as a real `.xlsx` workbook (D34, W74 item 25): one sheet per
+ * The report as a real `.xlsx` workbook: one sheet per
  * section, headers frozen, the same figures the report shows.
  *
  * **Numbers are written as numbers.** A money column written as the string
@@ -35,7 +35,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  *
  * **Text is written as text.** `setCellValue()`'s default binder reads a
  * string starting with `=` as a formula, so every string — prose, header,
- * text cell, the dash — goes in through `text()` with its type stated (W106).
+ * text cell, the dash — goes in through `text()` with its type stated.
  */
 final class ExcelExporter
 {

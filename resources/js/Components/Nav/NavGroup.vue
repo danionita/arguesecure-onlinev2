@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * A collapsible group in the sidebar — "My assessments", "Shared with me"
- * (W41).
+ * (ui.md §2, Navigation).
  *
  * A real disclosure: a `<button>` carrying `aria-expanded` and
  * `aria-controls`, with the list it controls given the matching id. Not a div
@@ -96,7 +96,7 @@ const toggleLabel = computed(() =>
                 Nothing here yet.
             </li>
             <!--
-                W73 item 19: a place for an action that belongs *to* the group
+                A place for an action that belongs *to* the group
                 rather than in it — "New assessment" under My assessments.
                 Last, after the emptiness notice, because it is what you do
                 about the emptiness and reads wrong above it.

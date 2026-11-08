@@ -6,7 +6,7 @@ use InvalidArgumentException;
 
 /**
  * Reads `tests/fixtures/assistant/injections.json` — the 2.3 spike's red-team
- * measurement (W53).
+ * measurement.
  *
  * The fixture is a *record*, not a configuration. Its `outcome` values say
  * what three model families did on a specific day on a specific machine, and

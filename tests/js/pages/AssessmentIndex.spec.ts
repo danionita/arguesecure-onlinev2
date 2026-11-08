@@ -1,6 +1,6 @@
 /**
- * The assessment list's two W42 additions: the filter (item 13) and the
- * per-row actions (item 20).
+ * The assessment list's two additions: the filter and the per-row
+ * actions.
  *
  * The filter is the one that has to be tested here rather than on the server,
  * because its whole claim is that it makes no request. The actions are tested
@@ -12,6 +12,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Index from '../../../resources/js/Pages/Assessment/Index.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const visit = vi.fn();
 const post = vi.fn();
@@ -66,7 +67,7 @@ function row(over: Record<string, unknown> = {}) {
 function render(assessments = [row()]) {
     return mount(Index, {
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { AuthenticatedLayout: { template: '<div><slot /></div>' } },
         },
         props: { assessments },
@@ -147,8 +148,8 @@ function actions(wrapper: ReturnType<typeof render>): string[] {
 
 describe('per-row actions', () => {
     /**
-     * W86 item 7: Settings, Share and Export, matching `AssessmentActions.vue`
-     * (D40) minus History and Print; plus Duplicate and Delete. 2.5.1 made
+     * Settings, Share and Export, matching `AssessmentActions.vue` minus
+     * History and Print; plus Duplicate and Delete. 2.5.1 made
      * all five icons, named in the tooltip and the accessible name.
      */
     it('offers Settings, Share, Export, Duplicate and Delete — never Report or Download', () => {
@@ -292,7 +293,7 @@ describe('the create-assessment dialog has the padding wrapper its siblings use 
     });
 });
 
-describe('labels on the row (W43 item 18)', () => {
+describe('labels on the row', () => {
     it('renders the root node’s labels as chips', () => {
         const wrapper = render([row({ tags: ['PCI', '2026 review'] })]);
 

@@ -8,7 +8,7 @@ use App\Models\User;
 
 /*
  * An independent end-to-end check of the recorder, written without reference
- * to the package's own tests: drive the real HTTP route a user actually hits
+ * to the recorder's own tests: drive the real HTTP route a user actually hits
  * and assert the history a user would actually see.
  */
 it('records a field edit made through the real update route', function () {

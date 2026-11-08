@@ -7,11 +7,11 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * The catalogue browser's query (schema.md §3.14, PLAN.md Phase 8 item 4).
+ * The catalogue browser's query (schema.md §3.14).
  * Visible entries are the system catalogue (owner_user_id IS NULL), any
  * entry marked `is_public`, and the caller's own private entries — the
  * same "system default vs owned, editable" shape Scale uses. Browsing
- * needs only an authenticated user (CLAUDE.md's W20 brief); no assessment
+ * needs only an authenticated user; no assessment
  * is involved here at all.
  */
 class CatalogSearch

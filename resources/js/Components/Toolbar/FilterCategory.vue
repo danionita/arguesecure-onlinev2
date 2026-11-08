@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * One titled group inside `FilterPopover.vue` (W132). The heading says what
+ * One titled group inside `FilterPopover.vue`. The heading says what
  * the controls under it filter, which a chip's colour and position do not —
  * "Defence status" in particular says the set leaves risks and attacks alone
  * — and is also the group's accessible name.

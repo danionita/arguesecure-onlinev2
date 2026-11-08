@@ -16,7 +16,7 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Job B — suggesting children for a node (PLAN-2.3-ai.md W52).
+ * Job B — suggesting children for a node (docs/ASSISTANT.md §3).
  *
  * ## It returns text. It does not touch the graph.
  *
@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Response;
  * that merely adds to the output costs the model nothing to obey. `title` is a
  * field the accept path legitimately reads, so no parser can tell an injected
  * title from a genuine one. **The person reading the suggestion is the
- * guardrail** (D24) — everything else is defence in depth behind them.
+ * guardrail** (docs/ASSISTANT.md §6) — everything else is defence in depth behind them.
  */
 class AssistantSuggestionController extends Controller
 {
@@ -43,7 +43,7 @@ class AssistantSuggestionController extends Controller
         GenerationMonitor $monitor,
         Suggester $suggester,
     ): JsonResponse {
-        // The feature's own switch (W87, D48), passed by name. Availability
+        // The feature's own switch, passed by name (ui.md §10). Availability
         // still requires the deployment runtime, the instance switch and a
         // healthy probe on top of it — this can only ever subtract.
         if (! $availability->isAvailable(Availability::FEATURE_SUGGESTIONS)) {

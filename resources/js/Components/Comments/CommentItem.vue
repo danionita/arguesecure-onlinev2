@@ -8,13 +8,11 @@
  *
  * The body is rendered through plain `{{ }}` text interpolation —
  * never `v-html` — so it is always HTML-escaped by Vue itself
- * (CLAUDE.md's W18 non-negotiable: "Escape comment bodies... Never use
- * v-html on a comment body"). `white-space: pre-wrap` preserves the
- * author's line breaks without needing to render any markup. See the W18
- * report for why this does not attempt full markdown rendering: no
+ * (security.md §7: never `v-html` unsanitized content). `white-space:
+ * pre-wrap` preserves the author's line breaks without needing to render
+ * any markup. It does not attempt full markdown rendering: no
  * sanitized-markdown-to-HTML dependency exists anywhere in this codebase
- * yet, and adding one means editing composer.json, which is outside this
- * package's file ownership.
+ * yet, and adding one means editing composer.json.
  */
 import Avatar from '@/Components/UI/Avatar.vue';
 import Badge from '@/Components/UI/Badge.vue';

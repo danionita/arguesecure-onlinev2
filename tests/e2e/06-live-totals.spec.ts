@@ -10,7 +10,7 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 4 of PLAN.md's end-to-end list: "Both users' totals update within
+ * Scenario 4 of the end-to-end scenario list: "Both users' totals update within
  * a second of a value change, and match a hand calculation."
  *
  * The hand calculation, from the graph scenario 2 built (see
@@ -36,7 +36,7 @@ import {
  * loader, Inertia and the browser, which no unit test covers.
  *
  * The "within a second" half is asserted as: the panel shows the new figure
- * without a reload, because W12 recomputes locally through the TypeScript
+ * without a reload, because the editor recomputes locally through the TypeScript
  * engine the instant an edit is made and reconciles against the server's
  * answer when it lands.
  */
@@ -115,7 +115,7 @@ test.describe('live totals', () => {
         await login(page, adminEmail, adminPassword());
         await openAssessment(page);
 
-        // calculation-engine.md, and CLAUDE.md's third easy-to-get-wrong
+        // calculation-engine.md, third easy-to-get-wrong
         // item: a missing impact or likelihood removes the pair from the
         // total entirely. Coercing it to zero would silently understate
         // risk, which is the dangerous direction — so clearing the breach
@@ -151,7 +151,7 @@ test.describe('live totals', () => {
  * authoritative server figure, because it is the only one that looks before
  * the server has been asked.
  *
- * Until W27 it asserted the opposite, as a pinned defect.
+ * Until it was fixed it asserted the opposite, as a pinned defect.
  * `assessmentStore.recomputeLocally()` assembled its graph with
  * `scaleLevels: {}` and `scales: {}` on the reasoning that qualitative
  * values could not be resolved client-side — but AssessmentController was

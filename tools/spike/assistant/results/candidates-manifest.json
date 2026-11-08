@@ -5,7 +5,7 @@
       "id": "gemma3-4b-q4km",
       "repo": "ggml-org/gemma-3-4b-it-GGUF",
       "file": "gemma-3-4b-it-Q4_K_M.gguf",
-      "why": "The shipped default (D19), from the repo the 2.3 spike verified.",
+      "why": "The shipped default, from the repo the 2.3 spike verified.",
       "sha": "d0976223747697cb51e056d85c532013931fe52e",
       "gated": false,
       "parts": [

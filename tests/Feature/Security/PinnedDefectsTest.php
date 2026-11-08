@@ -1,19 +1,19 @@
 <?php
 
 /**
- * W24 — defects this package found but does **not** own.
+ * Defects the security pass found but did **not** own.
  *
- * W24's declared file ownership is `config/**`, `app/Http/Middleware/**`
+ * The security pass owned `config/**`, `app/Http/Middleware/**`
  * and `tests/Feature/Security/**`. Every defect below lives outside those
- * paths, so CLAUDE.md's "if you need to change a file another package owns,
- * stop and report rather than editing it" applies.
+ * paths, so the rule was to pin each one as a test rather than edit a file
+ * outside the security pass.
  *
  * Each was pinned as a test asserting the **then-current, defective**
  * behaviour, with the fix written out in its docblock. Fixing a defect
  * turns its pin red, which forces whoever fixes it to come here, read the
  * reasoning and flip the assertion — so a fix can neither be forgotten nor
- * land silently. This is the convention W20 established in
- * tests/Feature/Catalog/AssessmentClonerTest.php ("W20 pinned each as a
+ * land silently. This is the convention set in
+ * tests/Feature/Catalog/AssessmentClonerTest.php ("pinned each as a
  * 'currently throws' test rather than patching a class it did not own, so
  * that fixing the class would turn them red and force this flip").
  *
@@ -55,7 +55,7 @@ it('gives the Ziggy route-table script a nonce, so the CSP can be enforced', fun
             && ! str_contains($tag, 'application/json'),
     ));
 
-    // W41 added a second one — the pre-paint theme script, which is the only
+    // The sidebar work added a second one — the pre-paint theme script, which is the only
     // code that can run before the browser paints and therefore the only
     // thing that can stop a dark-mode user seeing a white flash on every full
     // page load.
@@ -191,7 +191,7 @@ it('FIXED: node, link and comment mutations in routes/web.php are rate limited',
     // generation — every write endpoint the tree editor used was
     // unbounded.
     //
-    // THE FIX, applied: the W12/W13/W14 mutation groups in routes/web.php
+    // THE FIX, applied: the editor, link and undo mutation groups in routes/web.php
     // now carry `throttle:120,1`, and every other `auth`+`active` group in
     // that file carries `throttle:300,1` as its default.
     //
@@ -339,7 +339,7 @@ it('FIXED: the rate limiters are named, so §9\'s groups are independent buckets
 |--------------------------------------------------------------------------
 |
 | Owner: bootstrap/app.php (the exception-handling and global middleware
-| stack, not the `web` group W24 originally registered SecurityHeaders on)
+| stack, not the `web` group the security pass originally registered SecurityHeaders on)
 | Severity: was low
 */
 

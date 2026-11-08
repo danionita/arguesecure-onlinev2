@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The catalogue browser (schema.md §3.14, PLAN.md Phase 8 item 4). Opened
+ * The catalogue browser (schema.md §3.14). Opened
  * bare (`/catalog`) it is browse-only; opened with `?assessment=<uuid>`
  * from the tree editor's command palette (a caller with `update` on that
  * assessment — CatalogController::index() enforces that server-side) it

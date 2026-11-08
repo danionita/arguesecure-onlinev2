@@ -5,10 +5,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
- * `/assessments/shared` — *Assessments shared with me* (W73 item 20, D33,
- * ui.md §8).
+ * `/assessments/shared` — *Assessments shared with me* (ui.md §8,
+ * Assessments shared with me).
  *
- * Before W73 the sidebar's "Shared with me" group header and the dashboard's
+ * Before this page existed the sidebar's "Shared with me" group header and the dashboard's
  * shared section both pointed at `/assessments`, a list that mixes owned and
  * shared rows and does not distinguish them. This is the page they point at
  * now.
@@ -49,7 +49,7 @@ test('a deactivated account cannot reach it', function () {
 
 test('the route carries the authenticated rate limit by name', function () {
     // The specified value, not "it has something starting with throttle" —
-    // CLAUDE.md, and the defect W68 found behind exactly that mistake.
+    // a lax prefix match once hid exactly that defect.
     $middleware = Route::getRoutes()->getByName('assessments.shared')?->gatherMiddleware() ?? [];
 
     expect($middleware)->toContain('auth')
@@ -89,7 +89,7 @@ test('a public assessment I have nothing to do with is not advertised here', fun
 });
 
 test('a template someone else owns is not advertised here either', function () {
-    // A template is readable by every account on the instance (W45), which is
+    // A template is readable by every account on the instance (security.md §3.1a), which is
     // the same shape of grant as is_public and must be refused for the same
     // reason: readable is not shared-with-me.
     $user = User::factory()->create();
@@ -149,7 +149,7 @@ test('an assessment shared with me appears, naming its owner', function () {
 });
 
 test('the owner’s address never reaches the page', function () {
-    // security.md, and the W17 report cover: a page about other people's work
+    // security.md, and the report cover: a page about other people's work
     // is exactly where an address leaks.
     $user = User::factory()->create();
     $owner = User::factory()->create(['email' => 'dana@example.test']);

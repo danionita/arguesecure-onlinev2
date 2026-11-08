@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Moves a scale's existing ordinals out of the way before a calibration
- * rewrites them (W87).
+ * rewrites them.
  *
  * ## The collision this exists to prevent
  *
@@ -20,8 +20,9 @@ use Illuminate\Support\Facades\DB;
  * constraint the user cannot see and did not cause.
  *
  * It was reachable from both editors and from neither's first save, which is
- * why it survived W65: an assessment's *first* calibration clones the scale,
- * so the new scale starts with no levels and nothing has to be renumbered.
+ * why it went unnoticed when the calibration editor first shipped: an
+ * assessment's *first* calibration clones the scale, so the new scale starts
+ * with no levels and nothing has to be renumbered.
  * Only a second edit that removes or reorders a band reaches it — and the
  * admin Defaults tab, which never clones, reaches it on its first.
  *

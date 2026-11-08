@@ -8,12 +8,12 @@ use App\Models\Tag;
 use Illuminate\Support\Facades\DB;
 
 /*
- * W43. CLAUDE.md: "Eager-load everything... a whole assessment must load in
- * four queries", and the plan's own acceptance line for this package: the
- * budget holds with 200 tagged nodes.
+ * Labels and the query budget. Everything is eager-loaded, so a whole
+ * assessment loads in four queries; the budget must hold with 200 tagged
+ * nodes.
  *
  * A per-node tag lookup is the easiest possible way to reintroduce the N+1
- * that CLAUDE.md names as the legacy tree render's defining defect, and it
+ * that was the legacy tree render's defining defect, and it
  * would be invisible: the page would render correctly, every label in place,
  * and simply cost one query per node. So the assertion is on the query
  * *count*, and it is made against two assessments of very different sizes
@@ -59,7 +59,7 @@ test('the editor query count does not grow with the number of labelled nodes', f
 
     $small = $build(1);
     // 20 risks + 20 attacks + 20 defences + a root, three labels each: 183
-    // node_tag rows, which is the scale the plan asks about without making
+    // node_tag rows, which is a realistic scale without making
     // the test itself slow enough that someone deletes it.
     $large = $build(20);
 

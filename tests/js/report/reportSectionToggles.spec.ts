@@ -1,5 +1,5 @@
 /**
- * W139, D118. Every section of the report can be left out: the page omits it,
+ * Every section of the report can be left out: the page omits it,
  * the Sections pop-up carries one switch per section and sends the whole list,
  * and a report that leaves sections out names them.
  */
@@ -9,6 +9,7 @@ import AppendicesSection from '../../../resources/js/Components/Report/Appendice
 import ReportDocument from '../../../resources/js/Components/Report/ReportDocument.vue';
 import { REPORT_SECTIONS } from '../../../resources/js/Components/Report/reportSections';
 import ReportShow from '../../../resources/js/Pages/Report/Show.vue';
+import { routeProperties } from '../support/routeProperties';
 import { report } from './support/reportFixture';
 
 vi.mock('@inertiajs/vue3', async () => {
@@ -47,7 +48,7 @@ function mountDocument(omitted: string[]) {
             },
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { SummaryNarrative: true },
         },
     });
@@ -124,7 +125,7 @@ describe('the Sections pop-up', () => {
         const wrapper = mount(ReportShow, {
             props: { assessment: { uuid: 'u' }, report: base },
             global: {
-                config: { globalProperties: { route } },
+                config: { globalProperties: routeProperties(route) },
                 stubs: { SummaryNarrative: true, teleport: true },
             },
         });
@@ -176,7 +177,7 @@ describe('what an omitted section takes with it', () => {
                     },
                 },
                 global: {
-                    config: { globalProperties: { route } },
+                    config: { globalProperties: routeProperties(route) },
                     stubs: { SummaryNarrative: true },
                 },
             });

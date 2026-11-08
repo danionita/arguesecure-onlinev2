@@ -3,16 +3,16 @@
 namespace App\Domain\Reporting;
 
 /**
- * The options step before generating a report (PLAN.md Phase 7, ui.md §9):
+ * The options step before generating a report (ui.md §9):
  * baseline (current / target / both), include-or-exclude shelved defences,
  * include comments, include the methodology appendix. Parsed once from the
  * request's query string so every downstream consumer (ReportAssembler, the
  * CSV/JSON exporters) shares one resolved, validated set of choices instead
  * of re-reading the query bag.
  *
- * **`figures` was removed in W80** and the parameter is now ignored rather
+ * **`figures` has been removed** and the parameter is now ignored rather
  * than parsed. It offered "Full figures" / "Qualitative only", bound nothing
- * anywhere from W17 to W79, and was pinned as a defect by W74. Closing the
+ * anywhere while it existed, and a test pinned that as a defect. Closing the
  * pin meant deciding what a qualitative report *is*, and there was no
  * answer that both said something true and did not already happen:
  *
@@ -28,8 +28,8 @@ namespace App\Domain\Reporting;
  *   report's behaviour, and is per node rather than per report: a value
  *   renders as the level its author chose when `impact_mode` /
  *   `likelihood_mode` is `qualitative`, and as the amount they typed when it
- *   is `quantitative` (see `RiskRegisterSection.vue`, and PLAN-2.4 item 23
- *   for the same rule on the cards — "the chips are the *typed* values, not
+ *   is `quantitative` (see `RiskRegisterSection.vue`, and the cards,
+ *   which follow the same rule — "the chips are the *typed* values, not
  *   computed ones; computed figures keep their existing treatment").
  * - What is left for a global switch is dishonest in both directions.
  *   Forcing `qualitative` would band-map an amount its author elicited
@@ -48,14 +48,14 @@ namespace App\Domain\Reporting;
  * exactly as any other unknown parameter is, and produces the one rendering
  * a report has.
  *
- * `download=1` (W33) is the one-click path: no options step, everything
+ * `download=1` is the one-click path: no options step, everything
  * expanded, both states. It **overrides** every other parameter rather than
  * merging with them — a stale link carrying `baseline=current` must not be
  * able to produce a "full" report that silently omits the target state, and
  * the omission would be invisible on screen because the document still looks
  * complete.
  *
- * `show_assignees` (W46) is the one option `download=1` does **not** turn on.
+ * `show_assignees` is the one option `download=1` does **not** turn on.
  * Everything else it forces is a matter of showing more of the assessment;
  * that one adds people's names to a document about to leave the room, which
  * has to be chosen rather than inherited from a button labelled "Download".
@@ -65,7 +65,7 @@ final readonly class ReportOptions
     public const BASELINES = ['current', 'target', 'both'];
 
     /**
-     * Sections `omit_sections` can switch off (W139, D118), in document order,
+     * Sections `omit_sections` can switch off, in document order,
      * id => heading. The page's `reportSections.ts` carries the same list; a
      * test compares the two.
      */
@@ -91,28 +91,27 @@ final readonly class ReportOptions
         /** True when this report was requested through the Download button. */
         public bool $download = false,
         /**
-         * Names against nodes in the full-assessment section (W46, item 16).
+         * Names against nodes in the full-assessment section.
          *
          * Default **off**, and not turned on by `download=1` either. A report
          * is a document that leaves the room — it is attached to an email,
          * handed to a client, filed with an auditor — and who was responsible
          * for which line is internal information that the person exporting it
          * has to choose to include. Making the one-click Download carry it
-         * would be exactly the silent disclosure this package is otherwise
+         * would be exactly the silent disclosure this report is otherwise
          * careful to avoid.
          */
         public bool $showAssignees = false,
         /**
-         * The model-quality warnings appendix (W136, D105). Default **off**
-         * since W153 (all four optional appendices and details start off), and
+         * The model-quality warnings appendix. Default **off**
+         * (all four optional appendices and details start off), and
          * on for `download=1`: a report with no warnings section reads as "the
          * model raised none", so a report that leaves it out says how many
          * warnings it left out.
          */
         public bool $includeWarnings = false,
         /**
-         * Section ids (keys of `SECTIONS`) left out of the report (W139,
-         * D118). Default none, and none for `download=1`; the figures in the
+         * Section ids (keys of `SECTIONS`) left out of the report. Default none, and none for `download=1`; the figures in the
          * sections that remain are not recomputed, so hiding one never moves
          * another.
          *
@@ -158,7 +157,7 @@ final readonly class ReportOptions
             includeShelved: self::truthy($query['include_shelved'] ?? false),
             includeComments: self::truthy($query['include_comments'] ?? false),
             // Comments, methodology, warnings and assignees all default OFF
-            // (W153, D120, reopening D105 and ui.md §9's "methodology by
+            // (a change from ui.md §9's "methodology by
             // default"): the report opens as the body alone, and the exporter
             // adds an appendix. `download=1` still includes all but assignees.
             includeMethodology: self::truthy($query['include_methodology'] ?? false),

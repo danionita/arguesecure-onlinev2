@@ -23,9 +23,9 @@ use Inertia\Response;
 /**
  * Listing, creating, deleting, restoring and erasing assessments — the
  * entry point the application shipped without. Kept separate from
- * AssessmentController, which owns the tree editor's read route and belongs
- * to W12: this is a different concern (the lifecycle around an assessment
- * rather than the rendering of one) and a different package.
+ * AssessmentController, which owns the tree editor's read route: this is a
+ * different concern (the lifecycle around an assessment rather than the
+ * rendering of one).
  *
  * **The index deliberately does not list public assessments.** `is_public`
  * grants read to anyone holding the link (AssessmentPolicy::view(), and
@@ -42,8 +42,8 @@ use Inertia\Response;
 class AssessmentLifecycleController extends Controller
 {
     /**
-     * The arrival page (ui.md §8, W42 item 17). Four sections assembled by
-     * `DashboardData`, which is where W46 and W47 add theirs.
+     * The arrival page (ui.md §8, Dashboard). Four sections assembled by
+     * `DashboardData`, which is where assignments and notifications add theirs.
      */
     public function dashboard(Request $request, DashboardData $dashboard): Response
     {
@@ -51,7 +51,7 @@ class AssessmentLifecycleController extends Controller
     }
 
     /**
-     * Also carries the *Deleted* tab (W113): small by construction, since the
+     * Also carries the *Deleted* tab: small by construction, since the
      * purge empties it after `trash_retention_days`, so it rides along rather
      * than costing a route of its own. `?show=deleted` opens on it.
      */
@@ -98,7 +98,7 @@ class AssessmentLifecycleController extends Controller
     }
 
     /**
-     * Duplicate (W42 item 20): a private copy, owned by whoever asked for it.
+     * Duplicate: a private copy, owned by whoever asked for it.
      *
      * Gated on `view`, the same ability `templates.use` uses for the same
      * reason — the clone touches nothing in the source, so anyone who can
@@ -109,7 +109,7 @@ class AssessmentLifecycleController extends Controller
      * `AssessmentCloner` does the work unmodified. Read its docblock before
      * touching this: it has broken twice on silently mass-assigned identity
      * columns, and `nodes.root_marker` is a generated column that MariaDB
-     * rejects an INSERT for (CLAUDE.md).
+     * rejects an INSERT for.
      *
      * The copy is renamed on the way out. `cloneAssessment` reproduces the
      * root's title verbatim, which is right for a template — you name the new
@@ -148,7 +148,7 @@ class AssessmentLifecycleController extends Controller
 
     public function destroy(Request $request, Assessment $assessment): RedirectResponse
     {
-        // A template is deleted on the Templates page (W141), which erases it;
+        // A template is deleted on the Templates page (ui.md §3.3), which erases it;
         // soft-deleting it here would hide it from the library and leave it in a
         // trash it cannot be restored from.
         abort_if($assessment->is_template, 404);
@@ -160,14 +160,14 @@ class AssessmentLifecycleController extends Controller
         // Soft delete: the nodes stay, so a restore is possible and an
         // audit trail survives. Deleting the assessment is what removes it
         // from every list, since every query scopes through it. It stays
-        // under *Deleted* until restored, erased, or purged (W113).
+        // under *Deleted* until restored, erased, or purged.
         $assessment->delete();
 
         return redirect()->route('assessments.index');
     }
 
     /**
-     * Back from *Deleted* (W113). The `delete` ability, the one that put it
+     * Back from *Deleted*. The `delete` ability, the one that put it
      * there: whoever could delete it can take the decision back.
      *
      * The route binds trashed rows too (`withTrashed()`), so a live assessment
@@ -190,7 +190,7 @@ class AssessmentLifecycleController extends Controller
     }
 
     /**
-     * *Erase permanently* (W113): `forceDelete`, owner and admin only
+     * *Erase permanently*: `forceDelete`, owner and admin only
      * (security.md §3.1, schema.md §3.7) — a manager can delete and restore
      * but cannot destroy the owner's work. Only from *Deleted*: erasing is two
      * deliberate steps, never one click on a live assessment.

@@ -1,5 +1,5 @@
 /**
- * The report sections `omit_sections` can switch off (W139, D118), in
+ * The report sections `omit_sections` can switch off, in
  * document order. Mirrors `ReportOptions::SECTIONS`; a test compares them.
  */
 export interface ReportSectionInfo {

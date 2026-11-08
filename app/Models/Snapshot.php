@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * A frozen graph + frozen results (schema.md §3.13). `results` is never
  * recomputed once written, and scales are inlined into `graph` so a later
  * recalibration cannot retroactively rewrite a snapshot's numbers.
- * Written by a later package's snapshot service; not mass-assigned from a
+ * Written by the snapshot service; not mass-assigned from a
  * bare request body, so no $fillable restriction is meaningful.
  */
 class Snapshot extends Model

@@ -1,19 +1,19 @@
 <?php
 
 /**
- * One switch per assistant feature (W87, item 20, PLAN-2.5.md D48).
+ * One switch per assistant feature (docs/ASSISTANT.md §2, §3).
  *
- * D25's three conditions are unchanged — the deployment has a runtime, an
- * admin switched the assistant on, the runtime answers — and this adds a
- * fourth that **can only ever subtract**. That asymmetry is the whole of D48
- * and it is what most of this file asserts.
+ * The three conditions for the assistant are unchanged — the deployment has a
+ * runtime, an admin switched the assistant on, the runtime answers — and this
+ * adds a fourth that **can only ever subtract**. That asymmetry is the whole
+ * of the per-feature switch and it is what most of this file asserts.
  *
  * Three things are deliberately not folded together here:
  *
  * - **Each switch is asserted on its own**, both ways round: with it off the
  *   feature is refused, and with it off *the other two still work*. A single
  *   "the switches work" test passes with two of them deleted — the failure
- *   shape W68 wrote up and W85's brief repeats.
+ *   shape that has been seen before in review.
  * - **Every switch is asserted against an unconfigured deployment.** No value
  *   an admin can store may make a feature work where `config('assistant.enabled')`
  *   is false, at the endpoint or in the form.
@@ -237,7 +237,7 @@ test('a switched-off feature on an unconfigured deployment still says nothing at
      * result. This one switches the feature **off** as well, which is the only
      * arrangement where the order of those two branches is observable.
      *
-     * It has to stay `NOT_CONFIGURED`. D25: a deployment with no inference
+     * It has to stay `NOT_CONFIGURED`. A deployment with no inference
      * runtime shows *nothing at all* — no disabled control, no explanation, no
      * banner on an instance that never had the feature — and `reason()` is
      * deliberately silent for it. `FEATURE_DISABLED` says "switched off for

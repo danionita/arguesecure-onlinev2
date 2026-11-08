@@ -1,13 +1,9 @@
 /**
- * The dashboard (W42 item 17, reshaped by W73 item 21 / D32).
- *
- * Moved here from `tests/js/pages` by W73, which owns `tests/js/dashboard/**`
- * and the page itself: D32 replaced four stacked sections with two sections
- * of two tabs, so three of the assertions below had to change shape, and the
- * spec belongs beside the components it now exercises.
+ * The dashboard (ui.md §8): two sections of two tabs, which replaced four
+ * stacked sections. The spec lives beside the components it exercises.
  *
  * The empty case is still what most of this file tests, and that is not
- * padding. Every empty state survived D32 unchanged — they are as true inside
+ * padding. Every empty state survived the move to tabs unchanged — they are as true inside
  * a tab panel as they were under a heading — and "reads as an invitation, not
  * a set of blank boxes" is still the requirement, so it is still the thing
  * asserted. What is new is that a panel can be *hidden*, which is a way for
@@ -16,6 +12,7 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Dashboard from '../../../resources/js/Pages/Dashboard.vue';
+import { routeProperties } from '../support/routeProperties';
 
 vi.mock('@inertiajs/vue3', () => ({
     Head: { name: 'Head', template: '<div><slot /></div>' },
@@ -37,7 +34,7 @@ beforeEach(() => {
 function render(over: Record<string, unknown> = {}) {
     return mount(Dashboard, {
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: { AuthenticatedLayout: { template: '<div><slot /></div>' } },
         },
         props: {
@@ -82,7 +79,7 @@ const assignment = {
 const tabNames = (wrapper: ReturnType<typeof render>) =>
     wrapper.findAll('[role="tab"]').map((tab) => tab.text());
 
-describe('two sections of tabs (D32)', () => {
+describe('two sections of tabs', () => {
     it('pairs the four lists into Notifications and Assessments', () => {
         const wrapper = render();
 
@@ -102,7 +99,7 @@ describe('two sections of tabs (D32)', () => {
     });
 
     it('still puts work before inventory', () => {
-        // The one thing about W42's ordering that D32 keeps. A dashboard that
+        // The one thing about the original ordering that the tabs keep. A dashboard that
         // opens with a list of things you own has told you nothing you did
         // not know.
         const headings = render()
@@ -147,7 +144,7 @@ describe('two sections of tabs (D32)', () => {
 
 describe('counts on the tab labels', () => {
     it('puts the count where it can be seen without clicking', () => {
-        // D32: a tab whose count is hidden until you click it is a
+        // A tab whose count is hidden until you click it is a
         // notification you will not see. The number is plain text inside the
         // button, so it is part of the tab's accessible name rather than a
         // pill a screen reader walks past.
@@ -181,7 +178,7 @@ describe('counts on the tab labels', () => {
         expect(tab.text()).toContain('unresolved');
     });
 
-    it('counts every owned assessment on Mine, not the six-row excerpt (D91)', () => {
+    it('counts every owned assessment on Mine, not the six-row excerpt', () => {
         // The excerpt is six rows; the total is eight. The tab and the section
         // header must both say eight, or a count reads as the page's limit.
         const wrapper = render({
@@ -215,7 +212,7 @@ describe('empty states', () => {
     it('explains what will appear, in every one of the four panels', () => {
         // Rendered whether or not their panel is the visible one — `v-show`,
         // not `v-if` — so this is the whole set, and none of the copy
-        // mentions a work package.
+        // mentions how the product was built.
         const text = render().text();
 
         expect(text).toContain('When someone assigns');
@@ -240,7 +237,7 @@ describe('with data', () => {
         expect(wrapper.text().match(/Shared by/g)).toHaveLength(1);
     });
 
-    it('sends "See all" on the shared panel to the shared page, not the list (D33)', () => {
+    it('sends "See all" on the shared panel to the shared page, not the list', () => {
         // `/assessments` mixes owned and shared rows and does not
         // distinguish them, which made this link a promise the destination
         // could not keep.

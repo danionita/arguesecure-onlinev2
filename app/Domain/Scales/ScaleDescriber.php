@@ -7,23 +7,23 @@ use App\Models\Scale;
 use App\Models\ScaleLevel;
 
 /**
- * One shape for a scale's bands, for every screen that edits them (W87).
+ * One shape for a scale's bands, for every screen that edits them.
  *
  * Two screens edit bands now — the three cards on Assessment settings and the
- * admin **Defaults** tab (D46, D47) — and D47 is explicit that the admin wants
+ * admin **Defaults** tab — and that tab's design is explicit that the admin wants
  * "the same band editor the assessment gets, not a different one". A component
  * can only be the same if the payload behind it is, so the payload is built
  * here rather than twice in two controllers that would then drift.
  *
  * ## `code` is in the payload and is never rendered
  *
- * It is the round-trip token that freezes a code across a rename (D44). The
+ * It is the round-trip token that freezes a code across a rename. The
  * editor carries it back untouched on save and displays it nowhere; a band the
  * editor creates carries `null` and gets a derived code server-side. Sending
  * an id instead would not work: a custom scale is cloned per assessment, so a
  * band's id does not exist until the clone runs.
  *
- * `color` is deliberately **absent**. D45 stopped it being editable, and a
+ * `color` is deliberately **absent**. It stopped being editable, and a
  * value the editor cannot change and does not draw is a value it should not be
  * given.
  */
@@ -87,7 +87,7 @@ final class ScaleDescriber
     }
 
     /**
-     * Every admin scale with its three kinds in full, in list order (W126).
+     * Every admin scale with its three kinds in full, in list order.
      *
      * One payload for both screens that need the bands of every scale: the
      * admin list edits them, and Assessment settings loads one into its
@@ -141,7 +141,7 @@ final class ScaleDescriber
             // What the "uncalibrated" advisory is keyed on, both here and in
             // the engine: an assessment still pointing at a shared system scale
             // (RiskCalculator's warning block, useScales.ts's isUncalibrated).
-            // The banner it used to drive is gone (W87) — using the defaults is
+            // The banner it used to drive is gone — using the defaults is
             // the normal state — but the flag still says whether a save would
             // clone, which the card states as a fact rather than a warning.
             'is_system' => (bool) $scale->is_system,

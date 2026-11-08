@@ -1,12 +1,13 @@
 <script setup lang="ts">
 /**
- * Diffs two snapshots (PLAN.md Phase 8 item 3 "Diff two snapshots — match
- * nodes on uuid... show added, removed and changed nodes and edges, plus
- * the movement in each headline figure"). Everything here is exactly what
+ * Diffs two snapshots: nodes are matched on uuid, and the page shows added,
+ * removed and changed nodes and edges, plus the movement in each headline
+ * figure (schema.md §3.13). Everything here is exactly what
  * SnapshotDiffer::diff() computed server-side from the two snapshots'
  * already-frozen `graph`/`results` columns — no recomputation happens in
  * this component either.
  */
+import DeploymentNotice from '@/Components/Chrome/DeploymentNotice.vue';
 import type { SnapshotDiffData } from '@/Components/Snapshots/types';
 import Chip from '@/Components/UI/Chip.vue';
 import Money from '@/Components/UI/Money.vue';
@@ -34,6 +35,7 @@ function formatValue(value: unknown): string {
     <Head title="Compare versions" />
 
     <div class="bg-surface-0 min-h-screen">
+        <DeploymentNotice />
         <div class="mx-auto max-w-4xl px-4 py-6 sm:px-6">
             <Link
                 :href="route('assessments.history.index', assessment.uuid)"

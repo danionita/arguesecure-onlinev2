@@ -1,5 +1,5 @@
 /**
- * W83 addition to AssessmentTreeSection.vue: the search-match ring. See the
+ * The search-match ring on AssessmentTreeSection.vue. See the
  * component's own docblock — `activeMatchKey` is `useReportSearch.ts`'s
  * `activeMatch.value?.pathKey`, compared against the same keys the
  * template's own `:key`s already use.

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
- * Read-only view of one frozen snapshot (PLAN.md Phase 8 item 3 "View a
- * snapshot read-only"). Renders `results` exactly as stored — never
- * recomputes (CLAUDE.md: "never recompute a stored snapshot's figures on
- * read — a snapshot is frozen output, that is the whole point").
+ * Read-only view of one frozen snapshot (schema.md §3.13). Renders
+ * `results` exactly as stored — never recomputes (calculation-engine.md: snapshots
+ * never recompute — a snapshot is frozen output, that is the whole point).
  */
+import DeploymentNotice from '@/Components/Chrome/DeploymentNotice.vue';
 import RestoreSnapshotDialog from '@/Components/Snapshots/RestoreSnapshotDialog.vue';
 import SnapshotTotal from '@/Components/Snapshots/SnapshotTotal.vue';
 import type { SnapshotDetail } from '@/Components/Snapshots/types';
@@ -19,7 +19,7 @@ const props = defineProps<{
     canRestore: boolean;
 }>();
 
-// W61. The second of the two restore entry points — the one someone reaches
+// The second of the two restore entry points — the one someone reaches
 // after actually reading a version. Same dialog as the list's.
 const restoring = ref(false);
 
@@ -42,6 +42,7 @@ const nodeCounts = computed(() => {
     <Head :title="`Snapshot — ${snapshot.name}`" />
 
     <div class="bg-surface-0 min-h-screen">
+        <DeploymentNotice />
         <div class="mx-auto max-w-3xl px-4 py-6 sm:px-6">
             <Link
                 :href="route('assessments.history.index', assessment.uuid)"
@@ -56,7 +57,7 @@ const nodeCounts = computed(() => {
                 </h1>
                 <div class="flex shrink-0 items-center gap-2">
                     <Chip>Read-only</Chip>
-                    <!-- W63. This page has the figures; that one has the graph
+                    <!-- This page has the figures; that one has the graph
                          they came from. -->
                     <Link
                         :href="

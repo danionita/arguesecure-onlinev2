@@ -8,7 +8,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * The dashboard's own pages (ui.md §8, W73 item 20, D33).
+ * The dashboard's own pages (ui.md §8, Assessments shared with me).
  *
  * Today that is one page: *Assessments shared with me*. It lives here rather
  * than beside the assessment list because it is the dashboard tab's "see
@@ -17,7 +17,7 @@ use Inertia\Response;
  * would eventually disagree about whether a removed collaborator or a
  * soft-deleted root still counts.
  *
- * Until W73 the sidebar's *Shared with me* group header and the dashboard
+ * Until this page existed the sidebar's *Shared with me* group header and the dashboard
  * section both pointed at `/assessments`, a list that does not distinguish a
  * shared row from an owned one — so the one collection whose defining
  * property is *whose it is* was reachable only as part of a list that does
@@ -31,7 +31,7 @@ use Inertia\Response;
  * it the wrong way round.
  *
  * `/dashboard` itself is still rendered by AssessmentLifecycleController,
- * which W73 does not own. Moving it would be a route rewrite for no
+ * which this controller does not own. Moving it would be a route rewrite for no
  * behavioural gain; `DashboardData` is the seam either way.
  */
 class DashboardController extends Controller

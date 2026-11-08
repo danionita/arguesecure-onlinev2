@@ -15,6 +15,7 @@ import type {
 } from '../../../resources/js/Components/Catalog/types';
 import { useToast } from '../../../resources/js/Components/UI/useToast';
 import Index from '../../../resources/js/Pages/Catalog/Index.vue';
+import { routeProperties } from '../support/routeProperties';
 
 const routerGet = vi.fn();
 const post = vi.fn();
@@ -58,7 +59,7 @@ function render(over: Record<string, unknown> = {}) {
             ...over,
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: {
                 AuthenticatedLayout: {
                     template: '<div><slot name="header" /><slot /></div>',

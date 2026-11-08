@@ -12,12 +12,12 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 /*
- * W76 — the template content audit, steps 1-3.
+ * The template content audit, steps 1-3.
  *
- * PLAN-2.4 item 2 reported seeded templates arriving structurally present
+ * A report from the 2.4 cycle described seeded templates arriving structurally present
  * but empty of children. The fixtures were audited twice (once writing the
  * plan, once by the author) and found structurally complete, so this file
- * is the reproduce-first half of the package: it compares what actually
+ * is the reproduce-first half of the audit: it compares what actually
  * lands in the database against the fixture that produced it, node for
  * node and edge for edge, at the three points the emptiness could enter.
  *
@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\DB;
  * themselves, not on literals: a fixture edited later re-derives its own
  * expectation, so the test keeps testing the seeder rather than freezing
  * today's content. What it must never do is pass while a tree is empty —
- * that is precisely the failure the plan says the existing validators did
+ * that is precisely the failure the existing validators did
  * not catch, so every count is compared to a fixture-derived number and
  * separately asserted to be non-zero.
  */
@@ -42,7 +42,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @return array<string, array<string, mixed>>
  */
-function w76AssessmentFixtures(): array
+function shippedAssessmentFixtures(): array
 {
     $out = [];
     foreach (glob(database_path('seeders/templates').'/*.json') ?: [] as $path) {
@@ -61,7 +61,7 @@ function w76AssessmentFixtures(): array
  *
  * @return array<string, array<string, mixed>>
  */
-function w76CatalogFixtures(): array
+function shippedCatalogFixtures(): array
 {
     $out = [];
     foreach (glob(database_path('seeders/templates').'/*.json') ?: [] as $path) {
@@ -84,7 +84,7 @@ function w76CatalogFixtures(): array
  *
  * @return array{risks: int, attacks: int, defences: int, roots: int, risk_attack: int, attack_defence: int, tags: int, references: int}
  */
-function w76CountRows(Assessment $assessment): array
+function countSeededRows(Assessment $assessment): array
 {
     $nodeIds = Node::withoutGlobalScopes()->where('assessment_id', $assessment->id)->pluck('id');
 
@@ -111,7 +111,7 @@ function w76CountRows(Assessment $assessment): array
  * @param  array<string, mixed>  $fixture
  * @return array{risks: int, attacks: int, defences: int, roots: int, risk_attack: int, attack_defence: int, tags: int, references: int}
  */
-function w76CountFixture(array $fixture): array
+function countFixtureRows(array $fixture): array
 {
     $riskAttack = 0;
     foreach ($fixture['risks'] as $risk) {
@@ -124,7 +124,7 @@ function w76CountFixture(array $fixture): array
         $attackDefence += count($attack['defence_refs']);
         $references += count($attack['references'] ?? []);
     }
-    // W102: defences carry their control citations (PLAN-2.7 D64).
+    // Defences carry their control citations (the standards-template citation work).
     foreach ($fixture['defences'] as $defence) {
         $references += count($defence['references'] ?? []);
     }
@@ -147,14 +147,14 @@ test('step 1: every fixture seeds exactly the nodes and edges it declares', func
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    foreach (w76AssessmentFixtures() as $key => $fixture) {
+    foreach (shippedAssessmentFixtures() as $key => $fixture) {
         $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->first();
         expect($root)->not->toBeNull("fixture '{$key}' seeded no root node at all");
 
         $assessment = Assessment::findOrFail($root->assessment_id);
 
-        $expected = w76CountFixture($fixture);
-        expect(w76CountRows($assessment))->toBe($expected, "fixture '{$key}' seeded a different shape than it declares");
+        $expected = countFixtureRows($fixture);
+        expect(countSeededRows($assessment))->toBe($expected, "fixture '{$key}' seeded a different shape than it declares");
 
         // The emptiness guard proper. A tree can only be "structurally
         // present but empty of children" if one of these is zero, and a
@@ -172,7 +172,7 @@ test('step 1: every seeded node carries the fixture title, description and value
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    foreach (w76AssessmentFixtures() as $key => $fixture) {
+    foreach (shippedAssessmentFixtures() as $key => $fixture) {
         foreach (['risks', 'attacks', 'defences'] as $bucket) {
             foreach ($fixture[$bucket] as $spec) {
                 $node = Node::withoutGlobalScopes()->where('uuid', $spec['uuid'])->first();
@@ -184,8 +184,8 @@ test('step 1: every seeded node carries the fixture title, description and value
 
         // Values, the half a count comparison cannot see: a node present
         // but unvalued renders as an empty card and excludes its pair from
-        // every total (CLAUDE.md — a missing impact or likelihood excludes
-        // the pair, it is never coerced to zero).
+        // every total (calculation-engine.md: a missing impact or likelihood
+        // excludes the pair, it is never coerced to zero).
         foreach ($fixture['risks'] as $spec) {
             $risk = Node::withoutGlobalScopes()->where('uuid', $spec['uuid'])->firstOrFail();
             expect($risk->impact_mode)->toBe($spec['impact']['mode'], "{$key}: {$spec['ref']} impact_mode");
@@ -212,7 +212,7 @@ test('step 1: every seeded attack_defence edge carries the strength the fixture 
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    foreach (w76AssessmentFixtures() as $key => $fixture) {
+    foreach (shippedAssessmentFixtures() as $key => $fixture) {
         $uuidToId = Node::withoutGlobalScopes()
             ->whereIn('uuid', collect([...$fixture['attacks'], ...$fixture['defences']])->pluck('uuid'))
             ->pluck('id', 'uuid');
@@ -229,7 +229,7 @@ test('step 1: every seeded attack_defence edge carries the strength the fixture 
                 expect($pivot)->not->toBeNull("{$key}: edge {$attackRef} -> {$defenceSpec['ref']} was not created");
                 expect($pivot->strength_mode)->toBe($linkSpec['strength']['mode']);
 
-                // Strength is the one value CLAUDE.md says defaults the
+                // Strength is the one value that defaults the
                 // *unsafe* way round when absent (a missing strength is
                 // read as zero reduction), so a silently-dropped pivot
                 // column here would overstate residual risk rather than
@@ -258,14 +258,14 @@ test('step 1: every seeded attack_defence edge carries the strength the fixture 
  * second.
  *
  * Pinned here so the trade-off cannot be changed by accident: if a future
- * package makes the seeder update in place, this test goes red and
+ * change makes the seeder update in place, this test goes red and
  * whoever did it has to read the reasoning first.
  */
 test('a fixture already seeded is skipped whole, so later content edits never reach the instance', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    $fixture = w76AssessmentFixtures()['demo-webshop'];
+    $fixture = shippedAssessmentFixtures()['demo-webshop'];
     $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
 
     // Stand in for an edited fixture by editing the seeded row instead:
@@ -289,16 +289,16 @@ test('step 2: instantiating a seeded template reproduces the whole tree, not jus
     $user = User::factory()->create();
     $cloner = app(AssessmentCloner::class);
 
-    foreach (w76AssessmentFixtures() as $key => $fixture) {
+    foreach (shippedAssessmentFixtures() as $key => $fixture) {
         $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
         $source = Assessment::findOrFail($root->assessment_id);
 
         $clone = $cloner->cloneAssessment($source, $user);
 
-        // `references` was excluded here while W76's pin below held, because
-        // it was the one count cloneAssessment() did not reproduce. W78 fixed
-        // that, so the whole shape is compared — references included.
-        expect(w76CountRows($clone))->toBe(w76CountRows($source), "cloning '{$key}' did not reproduce its shape");
+        // `references` was excluded here while the pin below held, because
+        // it was the one count cloneAssessment() did not reproduce. the cloner fix
+        // closed that, so the whole shape is compared — references included.
+        expect(countSeededRows($clone))->toBe(countSeededRows($source), "cloning '{$key}' did not reproduce its shape");
         expect($clone->id)->not->toBe($source->id);
 
         $clonedUuids = Node::withoutGlobalScopes()->where('assessment_id', $clone->id)->pluck('uuid');
@@ -308,11 +308,11 @@ test('step 2: instantiating a seeded template reproduces the whole tree, not jus
 });
 
 /**
- * FIXED (W78): Structure\AssessmentCloner::cloneAssessment() silently
- * discarded every `node_references` row. Found and pinned by W76 step 2,
- * fixed by W78; this block is the pin rewritten in place as a regression
+ * FIXED: Structure\AssessmentCloner::cloneAssessment() silently
+ * discarded every `node_references` row. Found and pinned by audit step 2,
+ * then fixed; this block is the pin rewritten in place as a regression
  * guard rather than deleted, so the reasoning survives and the fix cannot be
- * quietly reverted (CLAUDE.md, as W24's security pins and W68's observer pin
+ * quietly reverted (as the earlier security pins and the observer pin
  * were handled).
  *
  * ## What happens
@@ -332,12 +332,12 @@ test('step 2: instantiating a seeded template reproduces the whole tree, not jus
  * assessment from that template, leaving the attack card's reference list
  * empty while the rest of the node looked intact. That is content loss that
  * shows up as "the structure is there but part of it is not", and it is
- * the closest thing W76's investigation found to the emptiness PLAN-2.4
- * item 2 reports.
+ * the closest thing the investigation found to the emptiness the 2.4
+ * report describes.
  *
  * `cloneSubtree()` dropped them too — the same omission, reached from the
  * editor's duplicate affordance — and is fixed and guarded here as well.
- * W76's pin also named `insertCatalogEntry()`; that turned out to be wrong,
+ * The original pin also named `insertCatalogEntry()`; that turned out to be wrong,
  * and deliberately no assertion was invented for it. Its source is a
  * `CatalogEntry`, and catalogue entries carry no references at all
  * (schema.md §3.14 — kind, title, description, `defaults`, and no relation
@@ -350,13 +350,14 @@ test('step 2: instantiating a seeded template reproduces the whole tree, not jus
  * ids, carrying `kind`, `identifier`, `url`, `title` and `position`. One
  * SELECT and one INSERT for the whole clone, **not** `replicate()` and not
  * an Eloquent `create()` — `node_id` is an identity column deliberately
- * absent from NodeReference's `$fillable` (CLAUDE.md), and the query builder
+ * absent from NodeReference's `$fillable` (identity columns are never
+ * mass-assigned), and the query builder
  * never consults `$fillable` at all. The N+1 guard below is the other half
  * of that choice.
  *
- * The trade-off W76 named is that `node_references_unique (node_id, kind,
+ * The trade-off the pin named is that `node_references_unique (node_id, kind,
  * identifier)` turns a duplicated reference from a silent no-op into a hard
- * insert failure that rolls the clone back. W78 took that direction
+ * insert failure that rolls the clone back. The fix took that direction
  * deliberately — a faithful copy is the contract, and a source holding a
  * pair the index forbids means something wrote around the index, which is
  * worth stopping for rather than papering over with insertOrIgnore().
@@ -369,7 +370,7 @@ test('step 2: instantiating a seeded template reproduces the whole tree, not jus
  * identifier, and NULL never collides in a unique index — is exercised
  * end-to-end rather than reasoned about.
  */
-test('FIXED (W78): cloning an assessment carries every external reference on its nodes', function () {
+test('FIXED: cloning an assessment carries every external reference on its nodes', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
@@ -381,13 +382,13 @@ test('FIXED (W78): cloning an assessment carries every external reference on its
 
     // All five fixtures, not the one the pin measured: the defect was that
     // the clone held zero, and zero is equally wrong at every size.
-    foreach (w76AssessmentFixtures() as $key => $fixture) {
+    foreach (shippedAssessmentFixtures() as $key => $fixture) {
         $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
         $source = Assessment::findOrFail($root->assessment_id);
 
         $clone = app(AssessmentCloner::class)->cloneAssessment($source, User::factory()->create());
 
-        $expected = w76CountFixture($fixture)['references'];
+        $expected = countFixtureRows($fixture)['references'];
 
         // The source genuinely has references — otherwise this test would
         // pass for the wrong reason the day someone empties the fixture.
@@ -400,7 +401,7 @@ test('FIXED (W78): cloning an assessment carries every external reference on its
     }
 });
 
-test('FIXED (W78): a cloned reference keeps its payload and its node, not just its count', function () {
+test('FIXED: a cloned reference keeps its payload and its node, not just its count', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
@@ -430,13 +431,13 @@ test('FIXED (W78): a cloned reference keeps its payload and its node, not just i
     // Every fixture, not one: `archetype-public-web-app` happens to carry
     // exactly one reference per attack, so every `position` in it is 0 and
     // a clone that hardcoded 0 would satisfy this test on that fixture
-    // alone. W78 found that by mutation-testing it and watching the
+    // alone. The fix found that by mutation-testing it and watching the
     // mutation survive. `archetype-iot-embedded` and
     // `archetype-internal-network` have nodes carrying two, so the
     // precondition below is what keeps the ordering genuinely asserted.
     $multiReference = 0;
 
-    foreach (w76AssessmentFixtures() as $key => $fixture) {
+    foreach (shippedAssessmentFixtures() as $key => $fixture) {
         $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
         $source = Assessment::findOrFail($root->assessment_id);
 
@@ -458,11 +459,11 @@ test('FIXED (W78): a cloned reference keeps its payload and its node, not just i
     expect($multiReference)->toBeGreaterThan(0);
 });
 
-test('FIXED (W78): duplicating an attack carries its references too', function () {
+test('FIXED: duplicating an attack carries its references too', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    $fixture = w76AssessmentFixtures()['archetype-public-web-app'];
+    $fixture = shippedAssessmentFixtures()['archetype-public-web-app'];
     $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
     $source = Assessment::findOrFail($root->assessment_id);
 
@@ -484,11 +485,11 @@ test('FIXED (W78): duplicating an attack carries its references too', function (
     expect($duplicate->id)->not->toBe($attack->id);
 });
 
-test('FIXED (W78): copying references costs one query, not one per node', function () {
+test('FIXED: copying references costs one query, not one per node', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    $fixture = w76AssessmentFixtures()['demo-webshop'];
+    $fixture = shippedAssessmentFixtures()['demo-webshop'];
     $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
     $source = Assessment::findOrFail($root->assessment_id);
     $owner = User::factory()->create();
@@ -512,17 +513,17 @@ test('FIXED (W78): copying references costs one query, not one per node', functi
     app(AssessmentCloner::class)->cloneAssessment($source, $owner);
 
     // Exactly the SELECT and the bulk INSERT — the shape cloneNodeTags()
-    // has used since W43. A per-node read or a per-row save() would scale
-    // this with the assessment, which is the N+1 CLAUDE.md forbids and W68
-    // spent a package removing from the observer layer.
+    // has used since labels were added. A per-node read or a per-row save() would scale
+    // this with the assessment, which is the N+1 an assessment load must never have and a later
+    // change removed from the observer layer.
     expect($touched)->toBe(2);
 });
 
-test('FIXED (W78): several url references on one node survive the clone, NULL identifiers and all', function () {
+test('FIXED: several url references on one node survive the clone, NULL identifiers and all', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    $fixture = w76AssessmentFixtures()['demo-webshop'];
+    $fixture = shippedAssessmentFixtures()['demo-webshop'];
     $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
     $source = Assessment::findOrFail($root->assessment_id);
 
@@ -554,11 +555,11 @@ test('FIXED (W78): several url references on one node survive the clone, NULL id
     expect($clonedUrls)->toBe(['https://example.test/a', 'https://example.test/b', 'https://example.test/c']);
 });
 
-test('FIXED (W78): the unique index is what makes the clone-time collision unreachable', function () {
+test('FIXED: the unique index is what makes the clone-time collision unreachable', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    $fixture = w76AssessmentFixtures()['demo-webshop'];
+    $fixture = shippedAssessmentFixtures()['demo-webshop'];
     $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
     $source = Assessment::findOrFail($root->assessment_id);
 
@@ -585,7 +586,7 @@ test('step 2: the cloned tree keeps its edge payload, not only its edges', funct
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    $fixture = w76AssessmentFixtures()['demo-webshop'];
+    $fixture = shippedAssessmentFixtures()['demo-webshop'];
     $root = Node::withoutGlobalScopes()->where('uuid', $fixture['root_uuid'])->firstOrFail();
     $source = Assessment::findOrFail($root->assessment_id);
 
@@ -619,7 +620,7 @@ test('step 3: inserting a seeded catalogue bundle builds the subtree the fixture
     $owner = User::factory()->create();
     $inserter = app(CatalogInserter::class);
 
-    foreach (w76CatalogFixtures() as $key => $fixture) {
+    foreach (shippedCatalogFixtures() as $key => $fixture) {
         $entriesByRef = collect($fixture['entries'])->keyBy('ref');
 
         // Every risk-kind entry is a bundle root; inserting one must bring
@@ -627,7 +628,7 @@ test('step 3: inserting a seeded catalogue bundle builds the subtree the fixture
         // fixture's own transitive closure counted by **distinct ref** for
         // nodes and by **occurrence** for edges — which is what a DAG means:
         // an entry reachable from two parents inside one bundle is one node
-        // with two edges into it. Until W78 the inserter made a fresh node
+        // with two edges into it. Until the fix the inserter made a fresh node
         // per edge it walked, and this walk had to count nodes by occurrence
         // to match; the guard for that is directly below.
         foreach ($fixture['entries'] as $entrySpec) {
@@ -668,7 +669,7 @@ test('step 3: inserting a seeded catalogue bundle builds the subtree the fixture
 
             $inserter->insert($entry, $assessment, null, $owner->id);
 
-            $counts = w76CountRows($assessment);
+            $counts = countSeededRows($assessment);
 
             expect($counts['risks'])->toBe($expectedNodes['risk'], "{$key}/{$entrySpec['ref']}: risks");
             expect($counts['attacks'])->toBe($expectedNodes['attack'], "{$key}/{$entrySpec['ref']}: attacks");
@@ -685,10 +686,10 @@ test('step 3: inserting a seeded catalogue bundle builds the subtree the fixture
 });
 
 /**
- * FIXED (W78): Catalog\CatalogInserter::insertRecursive() instantiated a
+ * FIXED: Catalog\CatalogInserter::insertRecursive() instantiated a
  * fresh node for every edge it walked, so a catalogue entry reachable from
  * two parents inside one bundle landed as two separate nodes instead of one
- * node linked from both. Found and pinned by W76 step 3, fixed by W78; the
+ * node linked from both. Found and pinned by audit step 3, then fixed; the
  * pin is rewritten in place as a regression guard rather than deleted.
  *
  * ## What happened
@@ -704,8 +705,8 @@ test('step 3: inserting a seeded catalogue bundle builds the subtree the fixture
  *
  * ## Why it mattered
  *
- * CLAUDE.md's domain model is explicit that this is a DAG and that "a
- * defence [may belong] to several attacks" precisely so one control is one
+ * The domain model is explicit (schema.md §1) that this is a DAG and that a
+ * defence may belong to several attacks, precisely so one control is one
  * node — its cost is counted once and editing it changes it everywhere.
  * Two copies meant the defence library showed the same control twice, and
  * `capex_amount` / `opex_annual_amount` were counted twice in any
@@ -729,13 +730,13 @@ test('step 3: inserting a seeded catalogue bundle builds the subtree the fixture
  * `catalog_entries.defaults`) are the first occurrence's. That is the right
  * answer for a DAG and the wrong answer for anyone relying on per-parent
  * copies, so this was a behaviour change rather than a pure repair — which
- * is why W76 pinned it for a decision instead of fixing it quietly.
+ * is why it was pinned for a decision instead of fixing it quietly.
  */
-test('FIXED (W78): a catalogue entry shared by two parents in one bundle inserts as one node with two edges', function () {
+test('FIXED: a catalogue entry shared by two parents in one bundle inserts as one node with two edges', function () {
     User::factory()->admin()->create();
     (new SampleContentSeeder)->run();
 
-    $fixture = w76CatalogFixtures()['iso27001-27002'];
+    $fixture = shippedCatalogFixtures()['iso27001-27002'];
     $shared = collect($fixture['entries'])->firstWhere('ref', 'defence-access-control-policy');
     $bundleRoot = collect($fixture['entries'])->firstWhere('ref', 'risk-unauthorized-access-info');
 
@@ -795,7 +796,7 @@ test('step 3: every seeded catalogue entry and bundle link the fixtures declare 
     $expectedByKind = ['risk' => 0, 'attack' => 0, 'defence' => 0];
     $expectedLinks = 0;
 
-    foreach (w76CatalogFixtures() as $fixture) {
+    foreach (shippedCatalogFixtures() as $fixture) {
         foreach ($fixture['entries'] as $entrySpec) {
             $expectedByKind[$entrySpec['kind']]++;
             $expectedLinks += count($entrySpec['children'] ?? []);

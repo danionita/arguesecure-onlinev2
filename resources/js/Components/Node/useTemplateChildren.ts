@@ -18,7 +18,7 @@ import { computed, reactive, ref, type ComputedRef } from 'vue';
  * template's values: they are its example's calibration, not this
  * assessment's (see app/Domain/Templates/TemplateNodes.php).
  *
- * ## Link, don't duplicate (W40)
+ * ## Link, don't duplicate (ui.md §3.3)
  *
  * A template node whose title already exists here, as the same type, is
  * offered as **Link** rather than Add — or as "Already here" when it is under

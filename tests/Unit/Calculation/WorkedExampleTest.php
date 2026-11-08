@@ -6,7 +6,7 @@ use Tests\Unit\Calculation\Support\WorkedExampleGraph;
 
 // §15 item 1: the §14 worked example reproduces exactly: inherent €187,000,
 // current €65,500, target €36,700. Independently re-derived by hand in the
-// W7 report — these totals match the document exactly.
+// the reconciliation report — these totals match the document exactly.
 test('the §14 worked example totals reproduce exactly', function () {
     $results = (new RiskCalculator)->compute(WorkedExampleGraph::build());
 
@@ -92,7 +92,7 @@ test('a shelved defence never affects any baseline total', function () {
 
 // §15 item 4: log-share attribution sums exactly to Total(inherent) -
 // Total(current). This holds regardless of the disagreement with §14's
-// printed per-defence split (see the W7 report).
+// printed per-defence split (see the reconciliation report).
 test('log-share attribution sums exactly to the inherent-to-current reduction', function () {
     $results = (new RiskCalculator)->compute(WorkedExampleGraph::build());
     $defences = collect($results->current->defences)->keyBy('uuid');
@@ -104,7 +104,7 @@ test('log-share attribution sums exactly to the inherent-to-current reduction', 
     expect($expectedReduction)->toEqualWithDelta(121500.0, 1e-6);
 });
 
-// Independently re-derived by hand (W7 report): the precise, unrounded
+// Independently re-derived by hand (reconciliation report): the precise, unrounded
 // log-share split is Attr(D1) ~= 72,343.40 and Attr(D2) ~= 49,156.60 — not
 // the document's printed 72,347 / 49,153. The document rounds each pair's
 // 0.6990/0.3010 share to 4 decimals *before* multiplying and summing,

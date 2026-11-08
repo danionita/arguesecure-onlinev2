@@ -17,14 +17,14 @@ use Illuminate\Support\Facades\Auth;
  * single source of ownership — so every method defends against a caller
  * accidentally treating the owner as an ordinary collaborator, which is
  * exactly the shape of the classic sharing-feature privilege-escalation
- * bug this package is required not to reproduce (see the W9 brief).
+ * bug this class must not reproduce.
  *
  * There is no accept/decline step: `assessment_user.accepted_at` stays
- * nullable in the schema for a future invite-workflow package, but
- * nothing in Phase 3 item 5 asks for a pending state, and CLAUDE.md rules
- * out an SMTP dependency that a real invite notification would need.
+ * nullable in the schema for a future invite workflow, but
+ * nothing asks for a pending state, and there is no SMTP dependency that
+ * a real invite notification would need.
  * Adding a collaborator here is immediate and self-accepted
- * (`accepted_at` = now()) — a judgement call, noted in the W9 report.
+ * (`accepted_at` = now()) — a judgement call.
  */
 class CollaboratorService
 {
@@ -88,7 +88,7 @@ class CollaboratorService
      * @throws \InvalidArgumentException if $collaborator's user is the
      *                                   assessment's owner — structurally shouldn't happen (add() refuses
      *                                   to create such a row) but this is the second, independent check
-     *                                   the brief asks for: a manager must not be able to demote the owner.
+     *                                   that is required: a manager must not be able to demote the owner.
      */
     public static function updateRole(Assessment $assessment, AssessmentUser $collaborator, string $role): void
     {

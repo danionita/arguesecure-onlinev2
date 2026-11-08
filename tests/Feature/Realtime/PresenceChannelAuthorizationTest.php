@@ -1,10 +1,13 @@
 <?php
 
+use App\Domain\Sharing\ShareTokenService;
 use App\Events\NodeCreated;
 use App\Models\Assessment;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+
+require_once __DIR__.'/../Audit/Capture.php';
 
 /*
  * routes/channels.php's `assessment.{assessmentUuid}` presence channel is
@@ -12,10 +15,9 @@ use Illuminate\Support\Facades\Queue;
  * assessment to any anonymous socket, filtering privacy client-side. Every
  * case here is "who may join the socket", mirroring
  * tests/Feature/Assessment/AssessmentShowTest.php's coverage of "who may
- * see the HTTP route" — this package deliberately reuses AssessmentPolicy
- * rather than inventing a parallel authorization scheme (CLAUDE.md "every
- * route touching an assessment goes through AssessmentPolicy. No
- * exceptions").
+ * see the HTTP route" — the channel deliberately reuses AssessmentPolicy
+ * rather than inventing a parallel authorization scheme (every route touching an
+ * assessment goes through AssessmentPolicy, no exceptions).
  *
  * phpunit.xml pins BROADCAST_CONNECTION=null for the suite (so nothing
  * requires a live Reverb process), but Laravel's NullBroadcaster's auth()
@@ -23,7 +25,7 @@ use Illuminate\Support\Facades\Queue;
  * POST /broadcasting/auth would return an empty 200 for every caller under
  * it regardless of authorization. Swapping the *resolved* config to the
  * real `reverb` connection (Pusher-protocol) here, rather than editing
- * phpunit.xml (outside this package's ownership), exercises the actual
+ * phpunit.xml, exercises the actual
  * authorization path: Reverb's broadcaster signs presence/private auth
  * responses entirely locally (HMAC over the request), so this needs no
  * network call and no running Reverb process — only the app's own
@@ -46,7 +48,7 @@ beforeEach(function () {
     // NodeCreated a *real* queued broadcast (QUEUE_CONNECTION=sync in
     // phpunit.xml runs it inline) attempting an actual HTTP call to a
     // Reverb server that isn't running. These tests are about channel
-    // *authorization*, not about App\Events\** or W16 stage 4's
+    // *authorization*, not about App\Events\** or the
     // recalculation job, so both are faked off here; the events and the
     // debounced recompute each have their own dedicated test files.
     Event::fake([NodeCreated::class]);
@@ -135,11 +137,60 @@ test('an unrelated user is rejected even when the assessment does not exist', fu
         ->assertForbidden();
 });
 
-test('is_public grants presence access to any authenticated user, matching read-only HTTP access', function () {
+test('is_public does not admit a stranger to the presence channel, though they may read the assessment', function () {
     $assessment = Assessment::factory()->create(['is_public' => true]);
-    $anyUser = User::factory()->create();
+    $stranger = User::factory()->create();
 
-    $this->actingAs($anyUser)
+    $this->actingAs($stranger)->get(route('assessments.show', $assessment))->assertOk();
+
+    $this->actingAs($stranger)
+        ->postJson('/broadcasting/auth', presenceAuthPayload($assessment))
+        ->assertForbidden();
+});
+
+test('a share-link session does not admit a signed-in account to the presence channel', function () {
+    $assessment = Assessment::factory()->create();
+    $token = ShareTokenService::generate($assessment->fresh());
+    $stranger = User::factory()->create();
+
+    $this->actingAs($stranger)->get(route('share.resolve', $token))->assertRedirect();
+    $this->actingAs($stranger)->get(route('assessments.show', $assessment))->assertOk();
+
+    $this->actingAs($stranger)
+        ->postJson('/broadcasting/auth', presenceAuthPayload($assessment))
+        ->assertForbidden();
+});
+
+test('an admin is authorized to join the presence channel', function () {
+    $assessment = Assessment::factory()->create();
+
+    $this->actingAs(User::factory()->admin()->create())
         ->postJson('/broadcasting/auth', presenceAuthPayload($assessment))
         ->assertOk();
+});
+
+test('every collaborator role is authorized to join the presence channel', function (string $role) {
+    $assessment = Assessment::factory()->create();
+    $member = User::factory()->create();
+    $assessment->members()->attach($member->id, [
+        'role' => $role,
+        'invited_by' => $assessment->owner_user_id,
+        'invited_at' => now(),
+        'accepted_at' => now(),
+    ]);
+
+    $this->actingAs($member)
+        ->postJson('/broadcasting/auth', presenceAuthPayload($assessment))
+        ->assertOk();
+})->with(['viewer', 'commenter', 'editor', 'manager']);
+
+test('a refused subscription is not written to the security log as a denial', function () {
+    $assessment = Assessment::factory()->create(['is_public' => true]);
+    $log = captureSecurityLog();
+
+    $this->actingAs(User::factory()->create())
+        ->postJson('/broadcasting/auth', presenceAuthPayload($assessment))
+        ->assertForbidden();
+
+    expect(array_column(securityLines($log), 'event'))->not->toContain('authz.denied');
 });

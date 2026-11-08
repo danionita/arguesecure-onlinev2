@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * W133, D106: the OpenID Connect provider can be set on the admin
+     * The OpenID Connect provider can be set on the admin
      * Authentication tab instead of in the environment. Every column is
      * nullable and empty means "not set here"; an environment value for the
      * same field wins (OidcConfig). The client secret is `text` because the

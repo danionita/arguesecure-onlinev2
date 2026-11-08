@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\DB;
  *
  * Storage: PLAINTEXT, not hashed, and that is a deliberate reading of an
  * already-fixed contract rather than a choice made fresh here.
- * `AssessmentPolicy::hasValidShareToken()` (owned by W6, not touched by
- * this package) does
+ * `AssessmentPolicy::hasValidShareToken()` (not touched here) does
  * `hash_equals($assessment->share_token, $flag['token'])` — a direct
  * constant-time comparison against the column value. If this column held
  * a hash, that comparison would only ever match a session flag that also
@@ -37,6 +36,10 @@ use Illuminate\Support\Facades\DB;
  * guessing, not database exfiltration of a comparison table, so the
  * plaintext-with-CSPRNG-and-revocation design is the one that matches
  * the policy code already shipped.
+ *
+ * The redemption lookup goes through
+ * `share_token_hash`, the SHA-256 of the token, which `Assessment` keeps in
+ * step on every write; the plaintext is still what the policy compares.
  */
 class ShareTokenService
 {
@@ -73,17 +76,24 @@ class ShareTokenService
     /**
      * Resolves a presented token to its assessment. This is the redemption
      * lookup (ShareController::resolveToken), so it is where the attempt is
-     * logged; it is not a general "is this token valid" check. Looked up by exact
-     * column match — the 32-byte CSPRNG token space makes SQL-level
-     * timing variance an immaterial side channel compared to the token's
-     * guess-resistance, and comparing every row in application code would
-     * cost a full table scan for no real security gain.
+     * logged; it is not a general "is this token valid" check. Looked up by the
+     * SHA-256 of the token, so the database never compares the visitor's own
+     * bytes, which is what security.md says. This is conformity with that rule,
+     * not protection against a database read (the plaintext stays) and the
+     * residual risk of an exact-match lookup on a 256-bit random value was
+     * already small.
      */
     public static function resolve(string $token): ?Assessment
     {
         $assessment = strlen($token) === 43
-            ? Assessment::query()->where('share_token', $token)->first()
+            ? Assessment::query()->where('share_token_hash', hash('sha256', $token))->first()
             : null;
+
+        // The row is found by the hash, which is not a prefix-comparable
+        // function of the guess, and confirmed against the token itself.
+        if ($assessment !== null && ! hash_equals((string) $assessment->share_token, $token)) {
+            $assessment = null;
+        }
 
         // A refused link is logged as a warning: a run of them from one
         // address is someone guessing. Neither line carries the token.

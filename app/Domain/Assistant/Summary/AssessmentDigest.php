@@ -9,7 +9,7 @@ use App\Domain\Calculation\RiskResult;
 use App\Domain\Graph\AssessmentGraph;
 
 /**
- * The assessment, written out for a model to read (W54, job C).
+ * The assessment, written out for a model to read (job C).
  *
  * ## It reports figures, it does not produce them
  *
@@ -28,8 +28,8 @@ use App\Domain\Graph\AssessmentGraph;
  * also remove the only thing that makes a drafted summary worth reading: the
  * figures alone produce a paragraph that names no system and says nothing a
  * table does not. So they go in, inside the fence, and the controls are the
- * ones W53 pinned: the draft is never published, a person reads it, and the
- * report discloses that a model wrote it.
+ * ones every generated text gets: the draft is never published, a person
+ * reads it, and the report discloses that a model wrote it.
  *
  * ## Everything is bounded
  *

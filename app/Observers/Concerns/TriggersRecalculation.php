@@ -7,10 +7,9 @@ use App\Models\Assessment;
 use Illuminate\Support\Facades\Redis;
 
 /**
- * calculation-engine.md §11.4 / PLAN.md Phase 6 item 4: every observer that
+ * calculation-engine.md §11.4: every observer that
  * changes something the calculation depends on (a node, a risk_attack or
- * attack_defence edge — scale changes are schema.md territory this
- * package does not own a model for) bumps `assessments.calc_version` and
+ * attack_defence edge, or a scale level via ScaleLevelObserver) bumps `assessments.calc_version` and
  * debounces one recompute, rather than each doing its own version of
  * either.
  *
@@ -21,14 +20,14 @@ use Illuminate\Support\Facades\Redis;
  *
  * `calc_version` is bumped via a query-builder `increment()`, never
  * `$assessment->save()`: the latter would fire Assessment's own model
- * events for a column this package has no business writing through
+ * events for a column that has no business being written through
  * Eloquent's normal change-tracking (and `calc_version` is deliberately
  * absent from Assessment::$fillable — schema.md, security.md §7).
  */
 final class TriggersRecalculation
 {
     /**
-     * PLAN.md Phase 6 item 4: "debounced 250ms per assessment". The
+     * Debounced 250ms per assessment. The
      * `SET NX EX` below is the debounce: whichever mutation in a burst
      * arrives first claims the flag and schedules the one delayed job that
      * will eventually run for the whole burst; every mutation after it
@@ -41,7 +40,7 @@ final class TriggersRecalculation
      */
     /**
      * Assessment ids collected while a coalescing block is open, or null when
-     * none is (W64).
+     * none is.
      *
      * Static for the same reason RevisionRecorder's operation flag is: the
      * observers that call in here are resolved by Laravel independently of
@@ -54,7 +53,7 @@ final class TriggersRecalculation
 
     /**
      * Runs `$work` with the per-write version bump collapsed into one bump per
-     * assessment at the end (W64).
+     * assessment at the end.
      *
      * ## Why this is safe
      *

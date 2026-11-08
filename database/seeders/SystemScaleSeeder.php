@@ -13,21 +13,21 @@ use Illuminate\Database\Seeder;
  * strength; `is_system = 1`, `assessment_id = NULL`).
  *
  * schema.md §3.2 says these belong in "a seeder, not a migration", but no
- * prior work package actually wrote one — every existing test builds its
+ * earlier change actually wrote one — every existing test builds its
  * own throwaway copy via `Scale::factory()->systemImpact()` etc.
  * (database/factories/ScaleFactory.php), so a real `db:seed` run has never
- * produced a persistent, is_system=1 row. W22 needs real system scales to
+ * produced a persistent, is_system=1 row. The fixture seeders need real system scales to
  * exist (both to calibrate the assessments TemplateAssessmentSeeder
  * builds, and to resolve the level codes CatalogLibrarySeeder's entries
  * store), so this fills that gap. It is plain Eloquent row creation from
  * the same bands ScaleFactory already encodes — no new business rule, and
  * nothing that belongs in app/Domain.
  *
- * ## Two sets, from W77
+ * ## Two sets
  *
  * There is now a second set, `small-organisation`, so that
  * `instance_settings.default_scale_calibration` is a choice rather than a
- * text box with one legal answer (PLAN-2.4.md D36). It is a **different
+ * text box with one legal answer. It is a **different
  * calibration, not a copy**: same qualitative vocabulary, different numbers
  * behind it.
  *
@@ -41,7 +41,7 @@ use Illuminate\Database\Seeder;
  *
  * A scale is looked up by (`kind`, `is_system`, `assessment_id`, `set_key`)
  * — running `db:seed` twice never duplicates a scale or its levels. Before
- * W77 the lookup omitted `set_key`, which is exactly what a second set
+ * the second set existed the lookup omitted `set_key`, which is exactly what a second set
  * shares with the first, so this seeder could not have written one at all:
  * `firstOrCreate` would have matched the default set's row and returned it
  * under the second set's name.
@@ -50,8 +50,8 @@ use Illuminate\Database\Seeder;
  * because `set_key` is an identity column deliberately absent from
  * `Scale::$fillable`. A `firstOrCreate()` carrying it would match correctly
  * and then, on the create path, have Eloquent drop the value silently and
- * write a system trio belonging to no set — the failure mode CLAUDE.md
- * describes, and one this very file caused once already in W22.
+ * write a system trio belonging to no set — the identity-column
+ * mass-assignment failure, and one this very file caused once already.
  */
 class SystemScaleSeeder extends Seeder
 {
@@ -76,7 +76,7 @@ class SystemScaleSeeder extends Seeder
     }
 
     /**
-     * The original system default (schema.md §3.2), unchanged by W77.
+     * The original system default (schema.md §3.2), unchanged by the second set.
      *
      * @return array{impact: array{name: string, unit: string, bands: list<array{0: string, 1: string, 2: float, 3: ?float, 4: float}>}, likelihood: array{name: string, unit: string, bands: list<array{0: string, 1: string, 2: float, 3: ?float, 4: float}>}, strength: array{name: string, unit: string, bands: list<array{0: string, 1: string, 2: float, 3: ?float, 4: float}>}}
      */
@@ -121,7 +121,7 @@ class SystemScaleSeeder extends Seeder
 
     /**
      * A calibration for an organisation two orders of magnitude smaller than
-     * the one the default set assumes (W77, PLAN-2.4.md D36).
+     * the one the default set assumes.
      *
      * Why a real assessor would pick it, kind by kind:
      *
@@ -191,7 +191,7 @@ class SystemScaleSeeder extends Seeder
     }
 
     /**
-     * The built-in scale's name (W126, D93). Only created when missing, so an
+     * The built-in scale's name. Only created when missing, so an
      * admin's edits to a name or order are never undone by a re-seed; a
      * built-in cannot be renamed in the interface, so this only matters to a
      * hand-edited database.

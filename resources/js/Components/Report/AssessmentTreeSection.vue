@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * The full assessment, indented, with everything (W33 — PLAN.md Phase 7 §7).
+ * The full assessment, indented, with everything (ui.md §9).
  *
- * This is the report's answer to the editor's list view, and after W33 it
+ * This is the report's answer to the editor's list view, and it now
  * carries what the list carries and more: for every node, the entered values
  * *and* the computed ones, under inherent, current and target. The 2.0
  * version printed a title and two ALEs, which made it a table of contents
@@ -20,14 +20,14 @@
  * impact or likelihood excludes the pair from the total rather than counting
  * as nothing).
  *
- * Assignee names (W46) arrive already empty unless the **Show assignees**
+ * Assignee names arrive already empty unless the **Show assignees**
  * option is on — the assembler decides that, not this component, so there is
  * one place where "does this report name people?" is answered and the JSON
  * export cannot disagree with the page. A node with nobody on it renders
  * nothing either way, so an empty list and a switched-off option look the
  * same here on purpose.
  *
- * ## Search highlighting (W83)
+ * ## Search highlighting
  *
  * `activeMatchKey` is `useReportSearch.ts`'s `activeMatch.value?.pathKey` —
  * built the same way this template's own `:key`s are (`risk.uuid`,

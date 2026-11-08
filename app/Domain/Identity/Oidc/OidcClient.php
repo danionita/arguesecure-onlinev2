@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Http;
 use Throwable;
 
 /**
- * A narrow OpenID Connect client for the authorization-code flow with PKCE
- * (D74, D75): discovery, the authorization URL, the code exchange and the
+ * A narrow OpenID Connect client for the authorization-code flow with PKCE:
+ * discovery, the authorization URL, the code exchange and the
  * ID-token checks. Nothing else. Built on Laravel's HTTP client so tests fake
  * the provider with `Http::fake()`, and on `firebase/php-jwt` for the
  * signature only: every claim check is written out here.
@@ -42,7 +42,7 @@ final class OidcClient
             return $response->successful() ? (array) $response->json() : [];
         };
 
-        // W133, D107: the admin's "Check provider" must see the provider as it
+        // The admin's "Check provider" must see the provider as it
         // is now, not as it was an hour ago. Fetched directly and stored, not
         // forgotten and re-remembered, so a sign-in between the two cannot
         // refill the key with the old document.
@@ -70,7 +70,7 @@ final class OidcClient
     }
 
     /**
-     * @param  array<string, string>  $extra  e.g. prompt=login, max_age=0 (D79)
+     * @param  array<string, string>  $extra  e.g. prompt=login, max_age=0
      */
     public function authorizationUrl(string $redirectUri, string $state, string $nonce, string $verifier, array $extra = []): string
     {

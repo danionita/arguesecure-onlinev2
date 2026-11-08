@@ -1,12 +1,12 @@
 /**
- * `AssessmentActions` mounted where it actually lives (W82, D40):
+ * `AssessmentActions` mounted where it actually lives:
  * `Pages/Assessment/Show.vue`'s title row, both view modes.
  *
  * `AssessmentActions.spec.ts` (tests/js/toolbar/) proves the component's own
  * contract in isolation — five actions, in order, gated on `abilities`. That
  * is necessary but not sufficient: a component that is correct in isolation
- * and never mounted is exactly what shipped through this package's first
- * commit, and the brief's own W36 citation is precisely "an affordance
+ * and never mounted is exactly what once shipped in the toolbar's first
+ * commit, and the rule it broke is precisely "an affordance
  * cannot leave one surface in one commit and arrive on another in the
  * next." This file is the "arrived" half — it mounts the real page, with
  * its real `store.abilities`, and asserts the bar renders from there, that
@@ -25,6 +25,7 @@ import { mount } from '@vue/test-utils';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import type { Abilities } from '../../../resources/js/stores/assessmentStore';
 import { makeFixtureInit } from '../composables/support/fixture';
+import { routeProperties } from '../support/routeProperties';
 
 const route = (name: string, param?: string | Record<string, unknown>) => {
     if (param === undefined) return `/${name}`;
@@ -113,7 +114,7 @@ function mountShow(abilities: Partial<Abilities> = {}) {
             abilities: { ...init.abilities, ...abilities },
         },
         global: {
-            config: { globalProperties: { route } },
+            config: { globalProperties: routeProperties(route) },
             stubs: {
                 // Real: ChromeTitleRow, AssessmentActions, ExportMenu,
                 // Toolbar and its children — everything this file asserts
@@ -142,7 +143,7 @@ function mountShow(abilities: Partial<Abilities> = {}) {
     });
 }
 
-describe('the action bar is mounted, not merely built (W82, D40/D41)', () => {
+describe('the action bar is mounted, not merely built', () => {
     it('renders AssessmentActions in the title row, for a manager, in both view modes', async () => {
         const wrapper = mountShow({ manage: true });
         const assertBarComplete = () => {
@@ -200,7 +201,7 @@ describe('the action bar is mounted, not merely built (W82, D40/D41)', () => {
      * restatement of `AssessmentActions.spec.ts`'s own gating test, which
      * proves the component is correct in isolation and says nothing about
      * whether `Show.vue` actually passes it real abilities. Neutering
-     * `store.abilities` at the mount (see the W82 report) turns this red;
+     * `store.abilities` at the mount turns this red;
      * restored afterwards.
      */
     it('hides Settings and Share from a viewer, here, with the page-level store.abilities', () => {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * Initials-based avatar (no external avatar image service — CLAUDE.md
- * "nothing loads from a CDN"). `ring` renders the coloured presence ring
- * W16 uses to show who has a field focused (docs/specs/ui.md §6).
+ * Initials-based avatar (no external avatar image service — nothing
+ * loads from a CDN, security.md §6). `ring` renders the coloured presence ring
+ * real-time editing uses to show who has a field focused (docs/specs/ui.md §6).
  */
 import { computed } from 'vue';
 

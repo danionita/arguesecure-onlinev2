@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * The three-way light / dark / system control at the bottom of the sidebar
- * (W41, item 4).
+ * (ui.md §2, Theme).
  *
  * Three options, not a two-state switch, because `system` is a real choice
  * and the default: it is the only one that keeps up when the machine changes

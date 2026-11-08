@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
- * The assessment history page (W48, item 21; PLAN-2.2.md D15; reshaped in
- * 2.5.1).
+ * The assessment history page (reshaped in 2.5.1).
  *
  * ## Versions are the page, changes are inside them
  *
@@ -451,7 +450,7 @@ const pendingRestore = ref<VersionSnapshot | null>(null);
                             </Link>
                             <!-- Labelled, not an icon: the one action that
                                  can throw away everybody's work does not sit
-                                 behind a guess (W61). -->
+                                 behind a guess. -->
                             <button
                                 v-if="abilities.canRestore"
                                 type="button"

@@ -7,7 +7,7 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W40's suggestion endpoint: `GET /assessments/{uuid}/nodes/search`.
+ * The suggestion endpoint: `GET /assessments/{uuid}/nodes/search`.
  *
  * It exists so that adding a child can offer a node that already exists
  * instead of creating a same-titled twin. Two properties matter more than the
@@ -57,7 +57,7 @@ test('a viewer is rejected, because suggestions feed an edit they cannot make', 
 });
 
 test('a public assessment does not open the endpoint to the world', function () {
-    // CLAUDE.md: `is_public` grants read only. The v1 defect was treating it
+    // `is_public` grants read only (security.md). The v1 defect was treating it
     // as world-writable; enumerating titles to feed a link is a write path.
     $assessment = Assessment::factory()->create(['is_public' => true]);
 

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 /**
- * The profile page's *Two-factor authentication* panel (W116, D77, D78).
+ * The profile page's *Two-factor authentication* panel (security.md §4).
  *
  * Starting, regenerating and turning off all take the account's current
  * password: a stolen session cookie must not be enough to make an attacker

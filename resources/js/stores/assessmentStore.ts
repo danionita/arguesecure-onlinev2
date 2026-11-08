@@ -1,5 +1,5 @@
 /**
- * The tree editor's client-side store (docs/specs/ui.md §3, PLAN.md W12).
+ * The tree editor's client-side store (docs/specs/ui.md §3).
  *
  * ## The load-bearing decision: keying by (node uuid, path), not node alone
  *
@@ -23,24 +23,22 @@
  *     recursive call carries a `path` — the array of uuids from the root
  *     down to that occurrence — and `path.join('/')` becomes both the Vue
  *     `:key` for that render and the key into `occurrenceState` below.
- *   - `occurrenceState` (expand/collapse, and later focus/selection — W14/
- *     W15) is keyed by that *path*, never by uuid. This is what ui.md §3.1
+ *   - `occurrenceState` (expand/collapse, and later focus/selection) is keyed by that *path*, never by uuid. This is what ui.md §3.1
  *     means by "expansion, focus and selection state belong to the
  *     occurrence, not the node": collapsing one occurrence of a shared
  *     defence must not collapse its other occurrences, because they are
  *     different entries in this map even though they read the same
  *     `NodeRecord`.
  *
- * This shape is deliberately the thing W13 (node modal), W14 (keyboard,
- * drag-drop, undo) and W15 (canvas, search, focus mode, duplicate
- * highlighting) build on rather than replace: W13's modal opens against a
- * uuid (a node has one detail record regardless of how many places it
- * appears); W14/W15's per-occurrence UI (focus mode, duplicate outlines,
- * collapse-all) all key off the same path strings this store already
+ * This shape is deliberately the thing the node modal, the keyboard, drag-drop
+ * and undo, and the canvas, search, focus mode and duplicate highlighting
+ * build on rather than replace: the modal opens against a uuid (a node has
+ * one detail record regardless of how many places it appears); the
+ * per-occurrence UI (focus mode, duplicate outlines, collapse-all) all keys
+ * off the same path strings this store already
  * produces via `occurrencePath()`.
  */
-// Relative, not '@/calc': vitest.config.ts (outside this package's
-// ownership) has no '@' alias — only vite.config.js's laravel plugin
+// Relative, not '@/calc': vitest.config.ts has no '@' alias — only vite.config.js's laravel plugin
 // provides one, for the production bundle — and resources/js/calc/**
 // itself only ever imports relatively for exactly this reason (it must
 // stay importable from tests/js/**). Matching that keeps this store
@@ -71,7 +69,7 @@ export type DefenceStatus = 'implemented' | 'todo' | 'shelved';
 export type ReductionTarget = 'likelihood' | 'impact';
 
 /**
- * A label as the server sends it (W43). Assessment-scoped, so the same name
+ * A label as the server sends it. Assessment-scoped, so the same name
  * in two assessments is two rows with two ids — which is why nothing here
  * caches tags across assessments.
  */
@@ -106,9 +104,9 @@ export interface NodeRecord {
     capex_amount: number | null;
     opex_annual_amount: number | null;
     /**
-     * W43. Eager-loaded with the graph, never fetched per node — that is the
-     * N+1 CLAUDE.md forbids, and it is what closed useFilters.ts's "tag gap":
-     * the filter has been fully implemented since W15 with nothing to filter.
+     * Eager-loaded with the graph, never fetched per node — that is the
+     * N+1 the eager-loading rule forbids, and it is what closed useFilters.ts's "tag gap":
+     * the filter has been fully implemented since the search work with nothing to filter.
      */
     tags: TagRecord[];
     /** The optimistic-concurrency token (ui.md §3.5). ISO 8601. */
@@ -131,7 +129,7 @@ export interface AttackDefenceLink {
     reduction_target: ReductionTarget | null;
     /**
      * Why this strength was chosen — displayed and edited on the Links tab
-     * (W31). Not read by the engine; AssessmentGraphLoader carries it
+     * (ui.md §7, Tabs, by type). Not read by the engine; AssessmentGraphLoader carries it
      * through purely so the modal can show a saved rationale after a
      * reload, which it could not do while this field was absent here.
      */
@@ -144,8 +142,8 @@ export interface AssessmentSummary {
     display_mode: string;
     amortization_years: number;
     /**
-     * An annual-loss threshold to compare totals against (W44, item 12).
-     * **Display only** — PLAN-2.2.md D14. It draws a marker and a badge and
+     * An annual-loss threshold to compare totals against (ui.md §8, Assessment settings).
+     * **Display only**, by decision. It draws a marker and a badge and
      * never enters the calculation: `recomputeLocally()` does not read it,
      * and `calculation-engine.md` forbids band-mapping a computed figure into
      * low/medium/high on the strength of it. Null means none is set, which is
@@ -153,12 +151,12 @@ export interface AssessmentSummary {
      */
     risk_tolerance?: number | null;
     is_public: boolean;
-    /** W141: opened from the Templates page; no owner, no sharing. */
+    /** Opened from the Templates page; no owner, no sharing. */
     is_template?: boolean;
 }
 
 /**
- * One assistant suggestion (W52).
+ * One assistant suggestion.
  *
  * Exactly two fields, and that is the security content rather than a
  * convenience: `SuggestionParser` constructs these two keys and discards
@@ -178,7 +176,7 @@ export interface Abilities {
     manage: boolean;
     /** Whether the current user may transfer ownership (owner or admin) — AssessmentPolicy::transferOwnership(). */
     transfer: boolean;
-    /** W141: whether the Share dialog offers "Publish as template" (admins). */
+    /** Whether the Share dialog offers "Publish as template" (admins). */
     publishTemplate?: boolean;
 }
 
@@ -224,7 +222,7 @@ export interface AssessmentStoreInit {
     results: CalculationResults;
     abilities: Abilities;
     /**
-     * W52: whether the assistant is usable right now — the deployment has a
+     * Whether the assistant is usable right now — the deployment has a
      * runtime, an admin switched it on, and it is answering. Optional and
      * defaulting to false so every existing test that builds a store without
      * it simply gets an editor with no assistant actions, which is also the
@@ -232,7 +230,7 @@ export interface AssessmentStoreInit {
      */
     assistantAvailable?: boolean;
     /**
-     * The assessment's whole label vocabulary (W43), which is a superset of
+     * The assessment's whole label vocabulary, which is a superset of
      * what the nodes carry: a label removed from its last node stays here so
      * the autocomplete can offer it again instead of watching someone retype
      * a near-duplicate. Optional for the same reason `scaleLevels` is — the
@@ -240,7 +238,7 @@ export interface AssessmentStoreInit {
      */
     tags?: TagRecord[];
     /**
-     * W63: this store holds a **frozen** graph — a snapshot being read, not an
+     * This store holds a **frozen** graph — a snapshot being read, not an
      * assessment being edited — and every method of it that would reach the
      * network returns without doing so.
      *
@@ -295,7 +293,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
     }
 
     /**
-     * The label vocabulary (W43). Reactive and appended to as labels are
+     * The label vocabulary. Reactive and appended to as labels are
      * created, so a name invented on one node is offered by the autocomplete
      * on the next one without a reload — which is how a shared vocabulary
      * actually forms during a workshop.
@@ -345,7 +343,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
     const occurrenceExpanded = reactive<Record<string, boolean>>({});
 
     /**
-     * The node card's unresolved-comment badge (ui.md §3.2, W18b). Keyed by
+     * The node card's unresolved-comment badge (ui.md §3.2). Keyed by
      * node uuid, not occurrence path — like `nodes` itself, a shared node's
      * comment count is one number regardless of how many places it
      * occurs. Populated by loadUnresolvedCommentCounts() below rather than
@@ -358,7 +356,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
     let commentCountsRequested = false;
 
     const saveState = ref<SaveState>('idle');
-    /** Conflicts are keyed by node uuid — a node being edited in only one place at a time is a safe simplification for W12 (locking/presence is W16). */
+    /** Conflicts are keyed by node uuid — a node being edited in only one place at a time is a safe simplification (locking and presence are in ui.md §6). */
     const conflicts = reactive<Record<string, ConflictInfo>>({});
 
     function rootUuid(): string | null {
@@ -418,11 +416,11 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
     }
 
     /**
-     * Instant, optimistic recompute using W11's TypeScript mirror
+     * Instant, optimistic recompute using the TypeScript mirror of the calculation engine
      * (resources/js/calc/**, ui.md §3.5's "the numbers are always on
      * screen" applied to the moment right after an edit, before the
      * server round-trip returns). PHP's broadcast result — here, simply
-     * whatever the PATCH/POST response would carry once W16 adds it — is
+     * whatever the PATCH/POST response would carry once real-time adds it — is
      * always what wins; this function only ever fills the gap between an
      * edit and that response landing.
      */
@@ -485,7 +483,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
             }
         }
 
-        // W27 defect 2. This used to assemble `scaleLevels: {}` on the
+        // A past defect: this used to assemble `scaleLevels: {}` on the
         // reasoning that qualitative values could not be resolved without
         // shipping the scale definitions down — but AssessmentController
         // was already sending them and Show.vue simply dropped them. With
@@ -545,7 +543,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
      * instant and the local calc mirror reacts), then sent to the server
      * carrying the node's `updated_at` at the moment the request is built.
      *
-     * ## One write in flight per node (W88, items 21 and 22)
+     * ## One write in flight per node (ui.md §7, Saving the title and description)
      *
      * Callers fire this per keystroke — `DetailsTab.vue` commits the title on
      * `@input`, and `RevisionRecorder`'s 120-second coalescing window is what
@@ -742,7 +740,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
         parentType: 'root' | 'risk' | 'attack',
         parentUuid: string,
         /**
-         * The confirmed draft, or an accepted assistant suggestion (W52): both
+         * The confirmed draft, or an accepted assistant suggestion: both
          * go through this one write path rather than growing a second one.
          */
         content?: {
@@ -801,7 +799,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
     }
 
     /**
-     * Asks the assistant for children of a node (W52, job B).
+     * Asks the assistant for children of a node (docs/ASSISTANT.md).
      *
      * Returns text and changes nothing. Accepting a suggestion is a separate,
      * deliberate act by a person and goes through `addChild` — the same write
@@ -827,7 +825,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
             count,
         });
 
-        // W58: a stopped generation answers 200 with `{cancelled: true}` and no
+        // A stopped generation answers 200 with `{cancelled: true}` and no
         // suggestions. It is not an error — the person asked for it — so it
         // must not travel the error path and produce a red message about the
         // assistant being unreachable.
@@ -866,7 +864,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
 
     /**
      * Fetches the whole assessment's unresolved-comment counts once
-     * (ui.md §3.2's node-card indicator, W18b) and caches them locally.
+     * (ui.md §3.2's node-card indicator) and caches them locally.
      * Idempotent and safe to call from every NodeCard occurrence's
      * onMounted — the same node can render many times in the DAG, but
      * this issues at most one request per store instance. On failure,
@@ -891,7 +889,7 @@ export function createAssessmentStore(init: AssessmentStoreInit) {
     /**
      * The label names on one node, which is exactly the shape
      * useFilters.ts's `tagsForNode` injection has been waiting for since
-     * W15. Names, not ids: the filter chips are the vocabulary as a person
+     * the search work. Names, not ids: the filter chips are the vocabulary as a person
      * reads it, and a name is stable across the assessment while an id means
      * nothing outside it.
      */
@@ -1000,8 +998,7 @@ export type AssessmentStore = ReturnType<typeof createAssessmentStore>;
 
 /**
  * provide()/inject() key: Assessment/Show.vue creates the store once and
- * provides it; every Tree/** component (TreeNode, NodeCard, and W13/W14/
- * W15's later additions) injects it rather than receiving it prop-drilled
+ * provides it; every Tree/** component (TreeNode, NodeCard, and the later modal, keyboard and canvas additions) injects it rather than receiving it prop-drilled
  * through every recursion level.
  */
 export const ASSESSMENT_STORE_KEY: InjectionKey<AssessmentStore> =

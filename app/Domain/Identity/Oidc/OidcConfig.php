@@ -6,10 +6,9 @@ use App\Models\InstanceSetting;
 use Illuminate\Contracts\Encryption\DecryptException;
 
 /**
- * The one identity provider an instance can have (D74, D75). Each field comes
+ * The one identity provider an instance can have. Each field comes
  * from the environment, through config/arguesecure.php, when it is set there,
- * and otherwise from what an admin stored on the Authentication tab (W133,
- * D106). The environment wins field by field, so a deployment that already
+ * and otherwise from what an admin stored on the Authentication tab. The environment wins field by field, so a deployment that already
  * configures SSO there is unchanged and `.env` stays the way back in.
  *
  * The client secret is stored encrypted under the app key (InstanceSetting's

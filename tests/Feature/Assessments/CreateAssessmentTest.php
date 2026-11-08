@@ -5,7 +5,7 @@
  *
  * ## What this file used to guard, and why it changed
  *
- * W73 gave the control its own endpoint, `POST assessments/new`
+ * The control once had its own endpoint, `POST assessments/new`
  * (`AssessmentController::create`), which created an untitled assessment and
  * redirected into the editor. That endpoint is **gone**, removed at 2.4
  * integration, and these tests changed with it.
@@ -39,8 +39,8 @@ use App\Models\User;
 use Database\Seeders\SystemScaleSeeder;
 use Illuminate\Support\Facades\Route;
 
-// AssessmentCreator calibrates a new assessment from the system scale set
-// (W77), so creation needs them present. Without this the route 500s and
+// AssessmentCreator calibrates a new assessment from the system scale set,
+// so creation needs them present. Without this the route 500s and
 // every assertion below fails for a reason that has nothing to do with what
 // it is testing.
 beforeEach(function () {

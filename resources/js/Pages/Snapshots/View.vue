@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Browsing a frozen version in the editor's own views (W63).
+ * Browsing a frozen version in the editor's own views.
  *
  * `Snapshots/Show.vue` answers "what did this version total?". This answers
  * "what did it *look* like?" — which is the question people actually have when
@@ -41,6 +41,7 @@
  * the snapshot id goes into the key and the two never touch.
  */
 import ChartView from '@/Components/Chart/ChartView.vue';
+import DeploymentNotice from '@/Components/Chrome/DeploymentNotice.vue';
 import RestoreSnapshotDialog from '@/Components/Snapshots/RestoreSnapshotDialog.vue';
 import type { SnapshotSummary } from '@/Components/Snapshots/types';
 import ZoomControls from '@/Components/Toolbar/ZoomControls.vue';
@@ -137,6 +138,7 @@ function setMode(mode: string): void {
     <Head :title="`${snapshot.name} — ${title}`" />
 
     <div class="bg-surface-0 flex min-h-screen flex-col">
+        <DeploymentNotice />
         <!--
             The banner is the whole safety story of this page. Someone arriving
             from a link, or returning to a tab left open, has to be able to tell

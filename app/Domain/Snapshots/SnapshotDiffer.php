@@ -7,7 +7,7 @@ use DateTimeInterface;
 use Illuminate\Support\Carbon;
 
 /**
- * Diffs two snapshots (schema.md §3.13, PLAN.md Phase 8 item 3): "Diffing
+ * Diffs two snapshots (schema.md §3.13): "Diffing
  * two snapshots is pure PHP: match nodes by uuid, produce added/removed/
  * changed field sets and added/removed edges, and diff the results totals.
  * Snapshot reports never recompute."
@@ -66,8 +66,7 @@ final class SnapshotDiffer
      * `results` is cast to `array` on the model (Snapshot::casts()), but
      * that Laravel-11-style method-based cast declaration isn't picked up
      * by static analysis here (`parseModelCastsMethod` defaults to false
-     * in vendor/larastan/larastan/extension.neon, a file this package does
-     * not own), so ->results reads as `string` to PHPStan even though it
+     * in vendor/larastan/larastan/extension.neon, a vendor file), so ->results reads as `string` to PHPStan even though it
      * is already an array at runtime. getAttribute() (untyped, `mixed`)
      * plus this runtime check sidesteps that without touching
      * app/Models/** — the same pattern UndoService::inverseOf() and
@@ -224,7 +223,7 @@ final class SnapshotDiffer
     }
 
     /**
-     * The movement in each headline figure (PLAN.md Phase 8 item 3),
+     * The movement in each headline figure (schema.md §3.13),
      * read straight off the two snapshots' frozen `results` columns —
      * never recomputed.
      *

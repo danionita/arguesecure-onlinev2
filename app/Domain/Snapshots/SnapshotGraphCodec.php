@@ -12,8 +12,7 @@ use RuntimeException;
  * engine or Eloquent, so the same codec can decode a snapshot taken years
  * ago regardless of what the schema or scales look like today.
  *
- * The whole point of a snapshot is that it is readable byte-for-byte later
- * (CLAUDE.md §W19 brief), so this class never partially decodes or
+ * The whole point of a snapshot is that it is readable byte-for-byte later, so this class never partially decodes or
  * "upgrades" old data in place — SnapshotService is the only place a
  * `schema_version` mismatch would ever be handled, and today there is only
  * one version.

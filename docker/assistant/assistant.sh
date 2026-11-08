@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # The assistant runtime's entrypoint: install a model, or serve one
-# (PLAN-2.6.md D53, D54, D56).
+# (docs/ASSISTANT.md).
 #
 # Runs inside the pinned llama.cpp image, which already carries bash, curl and
 # sha256sum — so installing needs Docker and nothing else, on any host.
@@ -11,7 +11,7 @@
 #   docker compose run --rm assistant-install list      # what exists, what is installed
 #   docker compose --profile assistant up -d            # serve (the default command)
 #
-# Which model `serve` runs (D54), first match wins:
+# Which model `serve` runs, first match wins:
 #   1. ASSISTANT_MODEL_FILE — any GGUF in the models directory, by file name.
 #   2. ASSISTANT_MODEL=small|large — a preset from models.conf.
 #   3. ASSISTANT_MODEL=<name> with <name>.gguf present — 2.5's label form.
@@ -198,7 +198,7 @@ select_preset() {
 
 cmd_serve() {
     # A custom file has no catalogue entry to size its cache from; 2 GiB held
-    # the small models' working set with nothing evicted (W96).
+    # the small models' working set with nothing evicted.
     local file="" label="" cache=2048 name="${ASSISTANT_MODEL:-}"
 
     if [ -n "${ASSISTANT_MODEL_FILE:-}" ]; then
@@ -208,7 +208,7 @@ cmd_serve() {
     elif [ -n "$name" ] && ! preset "$name"; then
         # In 2.5, ASSISTANT_MODEL was a *label* for the file, and the README
         # set it to the file's name without `.gguf`. Honour that rather than
-        # refuse: an upgrade must not strand a deployment that worked (D54).
+        # refuse: an upgrade must not strand a deployment that worked.
         [ -f "$MODELS/$name.gguf" ] || refuse "ASSISTANT_MODEL is '$name', which is not a preset; choose one of: $(presets | paste -sd' ')"
         file="$name.gguf"
         label="custom model $file (named by a 2.5-style ASSISTANT_MODEL)"
@@ -238,7 +238,7 @@ cmd_serve() {
     cache="${ASSISTANT_CACHE_RAM_MIB:-$cache}"
 
     say "assistant: serving $label (prompt cache up to $cache MiB)"
-    # D56. One slot: the application serialises generations per user and
+    # One slot: the application serialises generations per user and
     # never needs the context divided. --reasoning off: the presets can think
     # aloud, and on a CPU that spends the whole token budget on deliberation
     # (2.3's qwen3:4b returned nothing). --cache-ram bounds the host-RAM prompt

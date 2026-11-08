@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Gates POST .../undo and .../redo. Undo is available to any editor, not
- * only the operation's author (ui.md §3.6, PLAN.md W14) — the `update`
+ * only the operation's author (ui.md §3.6) — the `update`
  * ability is per-assessment role, not per-operation authorship, so no
  * additional "am I the author" check belongs here or in UndoService.
  */

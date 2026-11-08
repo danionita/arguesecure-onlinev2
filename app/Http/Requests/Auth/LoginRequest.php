@@ -44,13 +44,19 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // W117 (D79): in SSO-only mode a non-admin has no password sign-in.
+        $isAdmin = User::query()->where('email', $this->input('email'))->where('is_admin', true)->exists();
+
+        // In SSO-only mode a non-admin has no password sign-in.
         // Refused exactly like a wrong password, before the password is even
         // checked, and counted against the same limiters.
-        $ssoOnlyRefusal = InstanceSettings::ssoOnly()
-            && ! User::query()->where('email', $this->input('email'))->where('is_admin', true)->exists();
+        $ssoOnlyRefusal = InstanceSettings::ssoOnly() && ! $isAdmin;
 
-        if ($ssoOnlyRefusal || ! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // security.md §4: an admin account gets no remember-me cookie,
+        // so its sessions end with the session lifetime. The toggle is
+        // ignored, not rejected: the login page cannot know the role.
+        $remember = $this->boolean('remember') && ! $isAdmin;
+
+        if ($ssoOnlyRefusal || ! Auth::attempt($this->only('email', 'password'), $remember)) {
             RateLimiter::hit($this->throttleKey());
             RateLimiter::hit($this->ipThrottleKey());
 
@@ -60,8 +66,8 @@ class LoginRequest extends FormRequest
             // none of those cases is distinguishable from outside.
             // Written inline rather than via trans('auth.failed') because
             // this repository ships no lang/en/auth.php — lang/** is
-            // outside W8's file ownership, so adding one is not this
-            // package's call to make.
+            // outside this class's remit, so adding one is not its call
+            // to make.
             throw ValidationException::withMessages([
                 'email' => 'These credentials do not match our records.',
             ]);

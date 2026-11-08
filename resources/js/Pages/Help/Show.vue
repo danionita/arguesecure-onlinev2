@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * A single rendered help page (PLAN.md Phase 9 item 2, W23). The chrome is
+ * A single rendered help page (ui.md §2, Navigation). The chrome is
  * `HelpShell.vue`'s: the sidebar for someone signed in, a standalone header
  * for a guest.
  *

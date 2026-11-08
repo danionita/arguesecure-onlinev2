@@ -12,7 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
 /*
- * PLAN.md Phase 6 item 4 / ui.md §6: every node and link mutation
+ * ui.md §6 (Real-time): every node and link mutation
  * broadcasts the changed data itself, not merely an id — the explicit
  * "do not repeat" of the legacy id-then-refetch design. These events are
  * dispatched from App\Observers\NodeObserver/RiskAttackObserver/
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Event;
  * every path that mutates a node or an edge through Eloquent, not just
  * NodeController/LinkController specifically.
  */
-function w16Editor(Assessment $assessment): User
+function broadcastEditor(Assessment $assessment): User
 {
     $editor = User::factory()->create();
     $assessment->members()->attach($editor->id, [
@@ -36,7 +36,7 @@ function w16Editor(Assessment $assessment): User
 test('creating a node broadcasts NodeCreated carrying the full node, not just an id', function () {
     Event::fake([NodeCreated::class]);
     $assessment = Assessment::factory()->create();
-    $editor = w16Editor($assessment);
+    $editor = broadcastEditor($assessment);
 
     $this->actingAs($editor)
         ->postJson(route('assessments.nodes.store', $assessment), ['type' => 'risk', 'title' => 'New risk'])
@@ -53,7 +53,7 @@ test('creating a node broadcasts NodeCreated carrying the full node, not just an
 test('updating a node broadcasts NodeUpdated carrying the updated row', function () {
     $assessment = Assessment::factory()->create();
     $risk = Risk::factory()->create(['assessment_id' => $assessment->id, 'title' => 'Old title']);
-    $editor = w16Editor($assessment);
+    $editor = broadcastEditor($assessment);
 
     Event::fake([NodeUpdated::class]);
 
@@ -72,7 +72,7 @@ test('updating a node broadcasts NodeUpdated carrying the updated row', function
 test('deleting a node broadcasts NodeDeleted carrying only its identity', function () {
     $assessment = Assessment::factory()->create();
     $risk = Risk::factory()->create(['assessment_id' => $assessment->id]);
-    $editor = w16Editor($assessment);
+    $editor = broadcastEditor($assessment);
 
     Event::fake([NodeDeleted::class]);
 
@@ -88,7 +88,7 @@ test('creating a risk-attack link broadcasts LinkChanged', function () {
     $assessment = Assessment::factory()->create();
     $risk = Risk::factory()->create(['assessment_id' => $assessment->id]);
     $attack = Attack::factory()->create(['assessment_id' => $assessment->id]);
-    $editor = w16Editor($assessment);
+    $editor = broadcastEditor($assessment);
 
     Event::fake([LinkChanged::class]);
 
@@ -109,7 +109,7 @@ test('editing an attack-defence link field broadcasts LinkChanged as updated', f
     $assessment = Assessment::factory()->create();
     $attack = Attack::factory()->create(['assessment_id' => $assessment->id]);
     $defence = Defence::factory()->create(['assessment_id' => $assessment->id]);
-    $editor = w16Editor($assessment);
+    $editor = broadcastEditor($assessment);
 
     $this->actingAs($editor)
         ->postJson(route('assessments.attack-defence-links.store', $assessment), [

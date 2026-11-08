@@ -1,5 +1,5 @@
 /**
- * The "Sign in with ..." control on the login page (W117, D74).
+ * The "Sign in with ..." control on the login page.
  *
  * It must be a plain anchor. `Button`'s `href` renders an Inertia `<Link>`,
  * which fetches by XHR; the redirect to the identity provider is another
@@ -9,6 +9,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import Login from '../../../resources/js/Pages/Auth/Login.vue';
+import { routeProperties } from '../support/routeProperties';
 
 vi.mock('@inertiajs/vue3', async () => {
     const actual =
@@ -41,7 +42,7 @@ const pageProps: Record<string, unknown> = {};
 function render(sso: { label: string; url: string; only: boolean } | null) {
     return mount(Login, {
         props: { sso },
-        global: { config: { globalProperties: { route } } },
+        global: { config: { globalProperties: routeProperties(route) } },
     });
 }
 

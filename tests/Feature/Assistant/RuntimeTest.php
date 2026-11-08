@@ -1,10 +1,10 @@
 <?php
 
 /**
- * W50 — the assistant runtime, its off switch, and its degradation path.
+ * The assistant runtime, its off switch, and its degradation path.
  *
- * This package ships **no feature**: a client, a health probe, a setting and
- * the states in between. These tests are therefore the package, not a check on
+ * The runtime ships **no feature**: a client, a health probe, a setting and
+ * the states in between. These tests are therefore the whole deliverable, not a check on
  * it, and they are written around the three things that are easy to get wrong
  * and invisible when they are:
  *
@@ -13,13 +13,13 @@
  *    installation does not have should 404.
  * 2. **An unreachable runtime must not break the application.** Every page
  *    still renders; nothing is slower than the probe's own cached miss.
- * 3. **The explicit timeout must be explicit.** It is the defect D20 exists
- *    for, it is invisible on a small assessment, and it is mutation-tested
+ * 3. **The explicit timeout must be explicit.** It is the defect the explicit
+ *    timeout exists for, it is invisible on a small assessment, and it is mutation-tested
  *    below.
  *
  * Nothing here contacts a real model. `Http::fake()` stands in for the runtime
  * so the suite stays deterministic and CI-safe — the same discipline
- * PLAN-2.3-ai.md requires of W53's red-team fixtures.
+ * the red-team fixtures follow.
  */
 
 use App\Domain\Assistant\Availability;
@@ -239,11 +239,11 @@ test('the status endpoint reports unavailability without failing', function () {
 });
 
 // ---------------------------------------------------------------------------
-// 5. The client, and the timeout that is the whole point of D20
+// 5. The client, and the timeout that is the whole point of the explicit timeout
 // ---------------------------------------------------------------------------
 
 /*
- * FIXED (W59): the client used to post a raw prompt to `/completion`, which
+ * FIXED: the client used to post a raw prompt to `/completion`, which
  * applies no chat template. `gemma-3-4b-it` read a finished document and
  * stopped, so **job A and job C returned an empty string on every run** while
  * the whole suite stayed green — a stub answers whatever it is asked. Measured
@@ -320,11 +320,11 @@ test('the client sets an explicit timeout far larger than any HTTP default', fun
     // **Mutation-test this one.** Drop `->timeout(...)` from
     // App\Domain\Assistant\Client::complete() and confirm it goes red before
     // trusting it. Assert the *value*, never that some timeout is present:
-    // CLAUDE.md's "a presence assertion is not a guard" was learned on exactly
+    // A presence assertion is not a guard; that was learned on exactly
     // this shape, where a laxer setting still satisfied a test looking only
     // for the option's existence.
     //
-    // This is the defect D20 exists for, and it is invisible until an
+    // This is the defect the explicit timeout exists for, and it is invisible until an
     // assessment is large enough to generate for longer than the client's
     // default — at which point the request dies while the server is still
     // working and the failure looks like a server fault. It is not. It cost
@@ -350,7 +350,7 @@ test('the client passes the generation budget through, because it is the latency
 
     app(Client::class)->complete('a prompt', 321);
 
-    // `max_tokens` since W59, where the client moved to the chat endpoint so
+    // `max_tokens` now, since the client moved to the chat endpoint so
     // that the model's own chat template gets applied — `n_predict` is the raw
     // endpoint's spelling of the same dial.
     Http::assertSent(fn ($request) => $request['max_tokens'] === 321);
@@ -414,7 +414,7 @@ test('saving other settings on a deployment without a runtime still works', func
 });
 
 test('the assistant is off on a fresh instance', function () {
-    // D25. A deployment that adds the container does not thereby hand the
+    // A deployment that adds the container does not thereby hand the
     // feature to its users; somebody decides.
     expect(InstanceSetting::singleton()->assistant_enabled)->toBeFalse();
 });

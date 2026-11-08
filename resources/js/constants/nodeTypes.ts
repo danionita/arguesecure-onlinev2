@@ -1,9 +1,9 @@
 /**
- * Ported from the legacy `config/nodes.php` (deleted in W2; recovered from
+ * Ported from the legacy `config/nodes.php` (since deleted; recovered from
  * git history: `git show master:config/nodes.php`). That file was the one
  * place the old app wrote down "what a node type is allowed to do" — which
- * icon, which label, what it may contain. CLAUDE.md calls this "distilled
- * product knowledge" and requires it survive the rewrite as a typed
+ * icon, which label, what it may contain. It is distilled
+ * product knowledge and had to survive the rewrite as a typed
  * constant rather than be re-invented ad hoc in components.
  *
  * Mapping notes from the legacy config:
@@ -13,8 +13,7 @@
  *   Defence  -> defence   (icon-securityalt-shieldalt -> shield)
  *   Transfer -> transfer  (icon-arrow-right    -> arrow-left-right)
  *
- * `transfer` is NOT a database type (schema.md, CLAUDE.md "Domain model in
- * one screen"): it is a defence row with `is_transfer = 1`. It keeps its
+ * `transfer` is NOT a database type (schema.md §3.4): it is a defence row with `is_transfer = 1`. It keeps its
  * own entry here — same as in the legacy config, which also listed it
  * separately with `type: 'defence'` — purely so the UI has a label, icon
  * and colour token to render the presentation variant with.

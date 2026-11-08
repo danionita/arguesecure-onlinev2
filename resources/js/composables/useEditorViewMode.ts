@@ -1,5 +1,5 @@
 /**
- * Which shape the editor is drawn in (W32, ui.md §3): the chart, or the
+ * Which shape the editor is drawn in (ui.md §3.7): the chart, or the
  * indented list.
  *
  * The list is the better reading surface and it is what reports are built
@@ -43,7 +43,7 @@ function isMode(value: unknown): value is EditorViewMode {
 }
 
 /**
- * Write the persisted mode without instantiating the composable (W35).
+ * Write the persisted mode without instantiating the composable.
  *
  * The report page is not the editor: it has no store, no editor view and no
  * `EDITOR_VIEW_KEY`, and it is reachable by anonymous share-link guests. But

@@ -17,7 +17,7 @@
  * to the operator, which is why the sweep varies them together.
  *
  * It speaks llama.cpp's own `/completion` rather than Ollama's `/api/generate`,
- * unlike `bench.mjs`, because llama.cpp is what D17 actually ships. The
+ * unlike `bench.mjs`, because llama.cpp is what the application actually ships. The
  * `timings` object it returns carries the same two rates.
  *
  *   node tools/spike/assistant/threads.mjs --host http://localhost:11436 --label t4
@@ -52,7 +52,7 @@ const LABEL = arg('label', 'unlabelled');
 const PREDICT = { helpFirst: 320, helpRepeat: 320, suggest: 512, summary: 700 };
 
 /**
- * Streamed, always, for the reason D20 exists: a non-streamed generation sends
+ * Streamed, always, for the reason every runtime call streams: a non-streamed generation sends
  * no response headers until it has finished, and undici's `headersTimeout`
  * defaults to 300 seconds. Job C runs longer than that on a constrained host —
  * which is the case this script exists to measure — so a non-streamed run
@@ -69,7 +69,7 @@ async function completion(prompt, nPredict) {
             n_predict: nPredict,
             temperature: 0,
             seed: 42,
-            // The whole point of D21's fixed-prefix design. Leaving this off
+            // The whole point of the fixed-prefix design. Leaving this off
             // would measure a runtime the application does not run.
             cache_prompt: true,
             stream: true,
@@ -140,8 +140,8 @@ const run = async () => {
      * Job A twice, and the pair is the measurement rather than either number.
      * The corpus is a fixed prefix, so the first question pays for processing
      * all 4,819 tokens of it and the second pays for almost none — 94s against
-     * 6.5s on eight cores. If a constrained host loses that ratio, D21's "send
-     * the whole corpus" stops being free and job A needs rethinking, which is
+     * 6.5s on eight cores. If a constrained host loses that ratio, the "send
+     * the whole corpus" decision stops being free and job A needs rethinking, which is
      * the single most consequential thing this sweep can find.
      */
     console.log('[' + LABEL + '] job A, cold prefix...');

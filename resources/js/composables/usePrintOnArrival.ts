@@ -1,5 +1,5 @@
 /**
- * Print once on arrival (W138, D110).
+ * Print once on arrival.
  *
  * The Print menu's *Chart*, *List* and *Report* items print a view the user
  * is not on by visiting it with a one-shot `?print=<token>`. The target page

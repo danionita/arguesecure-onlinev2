@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 
 /*
- * W68 — the observer layer stops re-reading what its caller already held.
+ * The observer layer stops re-reading what its caller already held.
  *
  * Two lookups fired on every single mutation in the application: the broadcast
  * channel's assessment uuid, and an edge's two endpoint nodes. Both were
  * invisible in the source of any one mutation and only showed up in a query
- * log, which is why they survived from W16 to W64 unnamed. See
- * CatalogInsertQueryBudgetTest for the pin that held them and the measurement
+ * log, which is why they went unnamed until the bundle insert was batched.
+ * See CatalogInsertQueryBudgetTest for the pin that held them and the measurement
  * that closed it.
  *
  * The tests below split into two halves that must both hold, and the second is
@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Queue;
  *
  * @return array{0: mixed, 1: list<array<string, mixed>>}
  */
-function w68Measure(callable $work): array
+function observerBudgetMeasure(callable $work): array
 {
     DB::flushQueryLog();
     DB::enableQueryLog();
@@ -59,7 +59,7 @@ function w68Measure(callable $work): array
  *
  * @param  list<array<string, mixed>>  $log
  */
-function w68SelectsAgainst(array $log, string $table): int
+function observerBudgetSelectsAgainst(array $log, string $table): int
 {
     $pattern = '/^select\b.*\bfrom\s+`?'.preg_quote($table, '/').'`?/is';
 
@@ -78,11 +78,11 @@ test('resolving an assessment uuid queries once however many times it is asked',
     app()->forgetInstance(AssessmentUuids::class);
     $uuids = app(AssessmentUuids::class);
 
-    [$answers, $log] = w68Measure(
+    [$answers, $log] = observerBudgetMeasure(
         fn (): array => array_map(fn (): string => $uuids->forId($assessment->id), range(1, 20)),
     );
 
-    expect(w68SelectsAgainst($log, 'assessments'))->toBe(1)
+    expect(observerBudgetSelectsAgainst($log, 'assessments'))->toBe(1)
         ->and(array_unique($answers))->toBe([$assessment->uuid]);
 });
 
@@ -91,7 +91,7 @@ test('resolving an assessment uuid costs nothing when the caller already loaded 
     $risk = Risk::factory()->create(['assessment_id' => $assessment->id]);
     $risk->setRelation('assessment', $assessment);
 
-    [$answer, $log] = w68Measure(fn (): string => app(AssessmentUuids::class)->forNode($risk));
+    [$answer, $log] = observerBudgetMeasure(fn (): string => app(AssessmentUuids::class)->forNode($risk));
 
     expect($log)->toBe([])
         ->and($answer)->toBe($assessment->uuid);
@@ -140,14 +140,14 @@ test('linking an edge does not re-read the nodes or the assessment the caller he
     // it has already loaded the assessment to authorize the route.
     app(AssessmentUuids::class)->forId($assessment->id);
 
-    [, $log] = w68Measure(fn () => app(LinkService::class)->linkRiskToAttack($risk, $attack));
+    [, $log] = observerBudgetMeasure(fn () => app(LinkService::class)->linkRiskToAttack($risk, $attack));
 
     // `nodes` is what the observer and LinkChanged used to lazy-load three
     // times per edge; `assessments` is the channel lookup. What is left is the
     // edge INSERT, LinkService's own MAX(position) against `risk_attack`, and
     // the calc_version UPDATE — writes and one genuine lookup.
-    expect(w68SelectsAgainst($log, 'nodes'))->toBe(0)
-        ->and(w68SelectsAgainst($log, 'assessments'))->toBe(0)
+    expect(observerBudgetSelectsAgainst($log, 'nodes'))->toBe(0)
+        ->and(observerBudgetSelectsAgainst($log, 'assessments'))->toBe(0)
         ->and($log)->toHaveCount(3);
 });
 
@@ -160,10 +160,10 @@ test('linking a defence does not re-read its endpoints either', function () {
 
     app(AssessmentUuids::class)->forId($assessment->id);
 
-    [, $log] = w68Measure(fn () => app(LinkService::class)->linkAttackToDefence($attack, $defence));
+    [, $log] = observerBudgetMeasure(fn () => app(LinkService::class)->linkAttackToDefence($attack, $defence));
 
-    expect(w68SelectsAgainst($log, 'nodes'))->toBe(0)
-        ->and(w68SelectsAgainst($log, 'assessments'))->toBe(0)
+    expect(observerBudgetSelectsAgainst($log, 'nodes'))->toBe(0)
+        ->and(observerBudgetSelectsAgainst($log, 'assessments'))->toBe(0)
         ->and($log)->toHaveCount(3);
 });
 

@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Loads `database/seeders/templates/*.json` fixtures of `"kind":
- * "catalog"` — ISO/IEC 27001+27002 and ISO/IEC 42001+EU AI Act (PLAN.md
- * Phase 9 item 1) — into `catalog_entries` / `catalog_entry_links`.
+ * "catalog"` — ISO/IEC 27001+27002 and ISO/IEC 42001+EU AI Act
+ * (schema.md §3.14) — into `catalog_entries` / `catalog_entry_links`.
  *
- * # Fixture schema (frozen for W22)
+ * # Fixture schema (frozen; schema.md §3.14)
  *
  * ```json
  * {

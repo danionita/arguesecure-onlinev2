@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * What a running generation is doing, and the button that stops it (W58).
+ * What a running generation is doing, and the button that stops it.
  *
  * One component for all three jobs, because the thing a person needs to know
  * is the same in each: it is still going, this is how long it has been going,

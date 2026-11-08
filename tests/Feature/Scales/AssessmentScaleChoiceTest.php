@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Which scale an assessment has, and how that is chosen (W126, D93, D94;
- * docs/PLAN-2.7-scales.md criteria 2, 12, 16, 18a, 19, 20, 21).
+ * Which scale an assessment has, and how that is chosen.
  */
 
 use App\Domain\Scales\ScaleDescriber;
@@ -225,7 +224,7 @@ test('the migration labels an assessment on Standard\'s bands as Standard and an
 
     expect($same->fresh()->scale_set_key)->toBe('default')
         ->and($edited->fresh()->scale_set_key)->toBeNull()
-        // Only the default is compared: it is the only scale choosable before W126.
+        // Only the default is compared: it is the only scale choosable before admins could define scales.
         ->and($small->fresh()->scale_set_key)->toBeNull()
         // A label, not a calculation input: nothing was recalculated.
         ->and(array_map(fn (Assessment $x): int => (int) DB::table('assessments')->where('id', $x->id)->value('calc_version'), $calc))

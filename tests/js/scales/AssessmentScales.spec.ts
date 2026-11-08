@@ -1,5 +1,5 @@
 /**
- * The Scales section of Assessment settings (W126, D94).
+ * The Scales section of Assessment settings (admin-defined scales).
  *
  * Each test is one rule the owner listed: the dropdown lists every admin
  * scale and Custom; choosing a scale overwrites the editors without saving;

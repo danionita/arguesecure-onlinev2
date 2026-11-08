@@ -6,8 +6,8 @@ use Illuminate\Log\Logger;
 use Monolog\Logger as Monolog;
 
 /**
- * A `tap` (config/logging.php) that stores what the `security` channel writes
- * (W128, D97). A handler on the channel rather than a second call in
+ * A `tap` (config/logging.php) that stores what the `security` channel writes.
+ * A handler on the channel rather than a second call in
  * SecurityLog, so a row is built from the record after RedactSensitiveData
  * and no caller can forget to.
  */

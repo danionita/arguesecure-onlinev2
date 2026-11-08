@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 
 /**
- * The notification feed (W47, item 15).
+ * The notification feed (security.md §3.1c).
  *
  * ## Authorization is the notifiable, not a policy
  *
@@ -21,8 +21,9 @@ use Illuminate\Notifications\DatabaseNotification;
  *
  * ## In-app only
  *
- * No email. That needs a mail configuration, a digest policy and an
- * unsubscribe path, and a half-built one is worse than none (PLAN-2.2.md).
+ * This is the in-app feed. Email for the same notifications, when an
+ * administrator allows it, is `App\Domain\Mail\NotificationMail`, which
+ * listens for the sent notification; nothing here changes for it.
  */
 class NotificationController extends Controller
 {

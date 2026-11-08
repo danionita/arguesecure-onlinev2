@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * The chart view (W32, ui.md §3.7): the assessment as an org chart, four
+ * The chart view (ui.md §3.7): the assessment as an org chart, four
  * tiers deep. At fit-to-width it scrolls horizontally only; zoomed in past
- * the viewport it scrolls both ways (W34, PLAN-2.2.md D9).
+ * the viewport it scrolls both ways.
  *
  * This is the default view because it is what the product is *for*. The
  * indented list is the better reading surface and it is what reports are
@@ -17,7 +17,7 @@
  * unit-tested. This component decides only *which* occurrences are visible
  * (collapse and focus mode), hands them over, and paints the result.
  *
- * ## Centring (W84, item 11)
+ * ## Centring
  *
  * The sized wrapper below (`:style="scaledSize"`) carries `mx-auto` rather
  * than any conditional class. That is deliberate, not an oversight: CSS
@@ -102,7 +102,7 @@ function fitToWidth() {
     const available = container.value.clientWidth;
     if (available <= 0 || layout.value.width <= 0) return;
     // Divided by the *painted* width, not the layout width: `zoom` is a
-    // multiplier on CANVAS_BASE_SCALE.chart (W69, made per-view by W84), so
+    // multiplier on CANVAS_BASE_SCALE.chart (per view), so
     // the chart is already 1.1× its layout units before this button touches
     // anything.
     view.canvas.setZoom(
@@ -131,7 +131,7 @@ defineExpose({ fitToWidth });
 <template>
     <div class="relative">
         <!--
-            W49: landscape, suggested only while the chart is the mounted
+            Landscape, suggested only while the chart is the mounted
             view. `@page` cannot be scoped by a selector, so it is teleported
             into <head> here and removed with the component rather than living
             in print.css, where it would also rotate the list view — which is
@@ -159,7 +159,7 @@ defineExpose({ fitToWidth });
             </Button>
         </div>
 
-        <!-- W34 / PLAN-2.2.md D9. W32 scrolled horizontally only, on the
+        <!-- This once scrolled horizontally only, on the
              grounds that four tiers always fit the height — true at
              fit-to-width, which is still the default and still does not
              scroll vertically. It stops being true the moment someone zooms
@@ -168,7 +168,7 @@ defineExpose({ fitToWidth });
              height so the scrolling happens here rather than dragging the
              whole page down.
 
-             W105: that height is fixed, not a maximum. The template picker
+             That height is fixed, not a maximum. The template picker
              and the assistant's suggestions float below the card that opened
              them, inside this container, which clips them. With `max-h` the
              container was only as tall as the chart, so below a card with
@@ -188,7 +188,7 @@ defineExpose({ fitToWidth });
                  docblock above for why no conditional logic is needed. -->
             <div class="mx-auto" :style="scaledSize">
                 <!--
-                    W37 deleted the tier gutter. It cost 84px of horizontal
+                    The tier gutter was deleted. It cost 84px of horizontal
                     space, permanently, to name four things that are fixed by
                     the schema and never change — and horizontal space is the
                     one resource this view is short of. The information it

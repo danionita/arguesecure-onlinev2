@@ -5,10 +5,9 @@ use App\Models\Assessment;
 use App\Models\Scale;
 use App\Models\ScaleLevel;
 use App\Models\User;
-use Illuminate\Support\Facades\Schema;
 
 /*
- * FIXED (W78): AssessmentCloner::cloneScaleIfCustom() mass-assigned both of
+ * FIXED: AssessmentCloner::cloneScaleIfCustom() mass-assigned both of
  * its identity columns — `assessment_id` on Scale and `scale_id` on
  * ScaleLevel — each of which is deliberately absent from its model's
  * `$fillable`, and each of whose model docblocks says so in as many words.
@@ -17,9 +16,9 @@ use Illuminate\Support\Facades\Schema;
  *     SQLSTATE[HY000]: General error: 1364
  *     Field 'scale_id' doesn't have a default value
  *
- * Measured by W77; fixed by W78 under an explicit scope addition, because
- * W78 was already inside this file with the identity-column rule in hand and
- * the file is better touched once than twice.
+ * Measured first, then fixed together with the reference-copying work, because
+ * that work was already inside the cloner with the identity-column rule in hand
+ * and the file is better touched once than twice.
  *
  * ## Why it survived this long
  *
@@ -30,22 +29,20 @@ use Illuminate\Support\Facades\Schema;
  *
  * Nothing caught it because every seeded fixture uses *system* scales, and
  * cloneScaleIfCustom() returns the shared scale id early for those without
- * ever reaching the mass-assignment below. W78's own reference-copying work
+ * ever reaching the mass-assignment below. The reference-copying work
  * ran entirely over those fixtures and stayed green over this defect for
  * exactly that reason. Closing that coverage gap is the point of this file,
  * not a side effect of it: the assessments here are deliberately calibrated.
  *
  * This is the third and fourth time this same trap has fired in this one
  * class — see tests/Feature/Catalog/AssessmentClonerTest.php's header for
- * the first two (cloneTags() in W6, cloneSubtree()'s RiskAttack in W6).
+ * the first two (cloneTags() and cloneSubtree()'s RiskAttack, both in the original cloner).
  *
  * ## Note on file placement
  *
- * W77 pinned this defect at tests/Feature/Structure/ClonedCustomScaleTest.php
- * on its own branch. That path is inside W78's ownership but the file is not
- * in W78's lineage (W78 branched from W76), so this deliberately takes a
- * different name to keep the integration merge clean. The two want
- * reconciling into one file at integration.
+ * The defect was first pinned at tests/Feature/Structure/ClonedCustomScaleTest.php,
+ * which keeps the pair of failure modes; this file covers the fixed behaviour
+ * in depth, so the two deliberately stay separate.
  */
 
 /**
@@ -54,7 +51,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @return array{0: Assessment, 1: array<string, Scale>}
  */
-function w78CalibratedAssessment(): array
+function calibratedSourceAssessment(): array
 {
     $assessment = Assessment::factory()->create();
 
@@ -113,8 +110,8 @@ function w78CalibratedAssessment(): array
     return [$assessment->fresh(), $scales];
 }
 
-test('FIXED (W78): an assessment with calibrated scales can be cloned at all', function () {
-    [$source] = w78CalibratedAssessment();
+test('FIXED: an assessment with calibrated scales can be cloned at all', function () {
+    [$source] = calibratedSourceAssessment();
 
     // The whole defect in one assertion: this threw QueryException 1364
     // before the fix, so "new from template" was dead for any assessment
@@ -125,8 +122,8 @@ test('FIXED (W78): an assessment with calibrated scales can be cloned at all', f
         ->and($clone->id)->not->toBe($source->id);
 });
 
-test('FIXED (W78): a cloned custom scale is owned by the clone, not shared with the source', function () {
-    [$source, $scales] = w78CalibratedAssessment();
+test('FIXED: a cloned custom scale is owned by the clone, not shared with the source', function () {
+    [$source, $scales] = calibratedSourceAssessment();
 
     $clone = app(AssessmentCloner::class)->cloneAssessment($source, User::factory()->create());
 
@@ -146,8 +143,8 @@ test('FIXED (W78): a cloned custom scale is owned by the clone, not shared with 
     }
 });
 
-test('FIXED (W78): every level of a cloned scale survives with its bands intact', function () {
-    [$source, $scales] = w78CalibratedAssessment();
+test('FIXED: every level of a cloned scale survives with its bands intact', function () {
+    [$source, $scales] = calibratedSourceAssessment();
 
     $clone = app(AssessmentCloner::class)->cloneAssessment($source, User::factory()->create());
 
@@ -181,7 +178,7 @@ test('FIXED (W78): every level of a cloned scale survives with its bands intact'
     }
 });
 
-test('FIXED (W78): a system scale is shared by reference, never copied', function () {
+test('FIXED: a system scale is shared by reference, never copied', function () {
     // The early-return half of the method, asserted so that a future
     // "fix" cannot start deep-copying the shared system scales — which
     // would give every assessment its own drifting copy of the defaults.
@@ -197,27 +194,16 @@ test('FIXED (W78): a system scale is shared by reference, never copied', functio
     expect(Scale::query()->count())->toBe($before, 'cloning copied a shared system scale');
 });
 
-test('FIXED (W78): a cloned custom scale belongs to no system scale set', function () {
-    // `scales.set_key` is W77's grouping column for system scale sets. It
-    // does not exist in W78's lineage — W78 branched from W76 and W77's
-    // migration is on a sibling branch, merged at integration — so this
-    // assertion is guarded rather than faked, and activates the moment the
-    // column lands. It is asserted at all because the consequence is
-    // severe: a clone inheriting the source's set_key would look like a
-    // member of a system set, and ScaleSets::resolve() would then find two
-    // scales of the same kind in that set and throw on *every* assessment
-    // creation using it.
+test('FIXED: a cloned custom scale belongs to no system scale set', function () {
+    // `scales.set_key` groups the system scale sets. A clone that inherited
+    // the source's set_key would look like a member of a system set, and
+    // ScaleSets::resolve() would then find two scales of the same kind in
+    // that set and throw on *every* assessment creation using it.
     //
-    // The fix needs no line to satisfy this. cloneScaleIfCustom() builds
-    // the clone field by field rather than replicate()ing it, so any column
-    // it does not name — set_key included — is left at its column default.
-    if (! Schema::hasColumn('scales', 'set_key')) {
-        expect(true)->toBeTrue();
-
-        test()->markTestSkipped('scales.set_key arrives with W77; this assertion activates at integration.');
-    }
-
-    [$source] = w78CalibratedAssessment();
+    // cloneScaleIfCustom() builds the clone field by field rather than
+    // replicate()ing it, so any column it does not name — set_key included —
+    // is left at its column default.
+    [$source] = calibratedSourceAssessment();
 
     $clone = app(AssessmentCloner::class)->cloneAssessment($source, User::factory()->create());
 

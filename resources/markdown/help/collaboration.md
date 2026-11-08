@@ -41,6 +41,6 @@ rather than overwriting it, and you choose **Keep mine**, **Take theirs** or
 
 ## Who sees what
 
-Presence and live updates go only to people allowed to view that assessment.
-Someone reading through a read-only link does not appear in presence and
-receives nothing that identifies anyone else.
+Presence and live updates go only to an assessment's owner, collaborators and
+administrators. Readers of a public assessment or a read-only link reload the
+page to see changes.

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * One generation per user at a time (PLAN-2.3-ai.md, W51).
+ * One generation per user at a time.
  *
  * ## Why a rate limit is not enough on its own
  *
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Cache;
  * accounting stays comfortable while the machine becomes unusable for
  * everybody, including the users who are not asking the assistant anything.
  *
- * That is the shape of the denial-of-service surface the plan calls out:
+ * That is the shape of the denial-of-service surface of local inference:
  * inference is a shared, easily exhausted resource, and on a shared instance
  * one person can exhaust it for everyone. The rate limit and this lock guard
  * different halves of it and neither replaces the other.

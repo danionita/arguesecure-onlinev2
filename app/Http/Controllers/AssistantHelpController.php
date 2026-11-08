@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Job A — answering a question about ArgueSecure from its help pages
- * (PLAN-2.3-ai.md W51).
+ * (docs/ASSISTANT.md §3).
  *
  * ## This route requires a login, and the help pages it reads do not
  *
@@ -45,7 +45,7 @@ class AssistantHelpController extends Controller
         GenerationMonitor $monitor,
         HelpAnswerer $answerer,
     ): JsonResponse {
-        // The feature's own switch (W87, D48), passed by name. Availability
+        // The feature's own switch, passed by name (ui.md §10). Availability
         // still requires the deployment runtime, the instance switch and a
         // healthy probe on top of it — this can only ever subtract.
         if (! $availability->isAvailable(Availability::FEATURE_HELP)) {
@@ -102,8 +102,8 @@ class AssistantHelpController extends Controller
 
         return response()->json([
             // Plain text, and it stays plain text all the way to the screen.
-            // W30 deleted this codebase's only user-authored-HTML renderer
-            // along with `notesPreview.ts`; model output is the last thing
+            // This codebase's only user-authored-HTML renderer was
+            // deleted along with `notesPreview.ts`; model output is the last thing
             // that should reintroduce one, and the prompt asks for prose
             // precisely so there is no markup to render.
             'answer' => $answer,

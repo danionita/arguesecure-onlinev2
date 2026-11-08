@@ -101,7 +101,7 @@ describe('a defence that is on screen but not counting', () => {
 
 /**
  * `BASELINE_OPTIONS` fed the toolbar's baseline selector and is deleted with
- * it (W37; PLAN-2.2.md D8). The three *descriptions* survive as
+ * it. The three *descriptions* survive as
  * `BASELINE_HINTS`, because the Statistics tab and the report still have to
  * explain what the three baselines mean — the vocabulary outlives the control.
  */

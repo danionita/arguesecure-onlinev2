@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * The default currency a new assessment starts with (W87, D47).
+ * The default currency a new assessment starts with.
  *
  * Validated against the fixed list in `config/arguesecure.php` — the same list
  * the assessment's own currency is validated against, read through the same
@@ -16,8 +16,8 @@ use Illuminate\Validation\Rule;
  * throws on an unknown code and would blank every figure on the page, so a
  * free string here would be a way to break every report on the instance.
  *
- * Instance settings no longer validates `default_currency` at all (W87, D47
- * — see `UpdateSettingsRequest`, which carries no rule for the key any
+ * Instance settings no longer validates `default_currency` at all
+ * (see `UpdateSettingsRequest`, which carries no rule for the key any
  * more). The free-text input that used to live on that form was removed
  * along with it; the control lives only on the Defaults tab now, validated
  * here, and this request is the sole writer of the key.

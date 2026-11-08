@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
- * W110 (D70). The report page and the exports are limited separately.
+ * The report page and the exports are limited separately.
  *
- * Every option toggle on the report re-requests the page. Until W110 the page
+ * Every option toggle on the report re-requests the page. Until the split the page
  * shared `reports` — security.md §9's "Report generation: 10/min per user" —
  * with the five exports, so the eleventh toggle in a minute answered 429.
- * Signed-in users now get 60/min on the page; guests keep 10 (D70).
+ * Signed-in users now get 60/min on the page; guests keep 10.
  *
  * Asserted by value, not presence (.claude/rules/pinned-tests.md): the page
  * carrying *a* throttle would stay green if it fell back to `reports`, and
@@ -40,7 +40,7 @@ test('the report-views limiter allows a signed-in user 60 a minute and a guest 1
     expect($limit->maxAttempts)->toBe(60)
         ->and($limit->decaySeconds)->toBe(60);
 
-    // Assembling the page costs about what an export does (D70), so an
+    // Assembling the page costs about what an export does, so an
     // anonymous public or share-link reader keeps the 10/min it always had.
     $guest = Request::create('/');
     $guest->setUserResolver(fn () => null);

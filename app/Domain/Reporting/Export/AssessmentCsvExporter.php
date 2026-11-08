@@ -5,9 +5,9 @@ namespace App\Domain\Reporting\Export;
 use App\Domain\Reporting\ReportOptions;
 
 /**
- * CSV of the whole report (W74 item 25).
+ * CSV of the whole report.
  *
- * This is W17's `DefenceCsvExporter`, widened — and renamed with it. The
+ * This is the earlier `DefenceCsvExporter`, widened — and renamed with it. The
  * report is risks, attacks, defences *and the edges between them*; a CSV
  * that carried the ranked defence list alone was a quarter of it under a
  * name that promised the whole, and the class was mislabelled for exactly
@@ -30,7 +30,7 @@ use App\Domain\Reporting\ReportOptions;
  * starting with `=`, `+`, `-` or `@` — or a tab or carriage return, which
  * some strip before looking — as a formula. Every text cell, header and
  * section name starting with one gets a leading `'`, OWASP's CSV-injection
- * advice (W106). Numbers come from `raw()` and are left alone: a negative
+ * advice. Numbers come from `raw()` and are left alone: a negative
  * figure is a number, and quoting it would make it text.
  */
 final class AssessmentCsvExporter

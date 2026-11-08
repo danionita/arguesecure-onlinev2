@@ -5,6 +5,7 @@ import TwoFactorPanel, {
 import Button from '@/Components/UI/Button.vue';
 import ConfirmDialog from '@/Components/UI/ConfirmDialog.vue';
 import Input from '@/Components/UI/Input.vue';
+import Toggle from '@/Components/UI/Toggle.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
@@ -18,13 +19,14 @@ interface SessionRow {
     is_current: boolean;
 }
 
-defineProps<{
+const props = defineProps<{
     mustVerifyEmail?: boolean;
     status?: string;
     sessions: SessionRow[];
     ownedAssessmentCount: number;
     twoFactor: TwoFactorState;
     recoveryCodes?: string[] | null;
+    mailNotifications?: { kind: string; label: string; on: boolean }[];
 }>();
 
 const page = usePage();
@@ -93,6 +95,19 @@ function revoke(sessionId: string) {
 // Delete account ------------------------------------------------------
 const showDeleteConfirm = ref(false);
 const deleteForm = useForm({ password: '' });
+
+// Which of the notification emails the administrator allows this person wants.
+const mailForm = useForm({
+    kinds: Object.fromEntries(
+        (props.mailNotifications ?? []).map((n) => [n.kind, n.on]),
+    ) as Record<string, boolean>,
+});
+
+function saveMailNotifications() {
+    mailForm.patch(route('profile.mail-notifications'), {
+        preserveScroll: true,
+    });
+}
 
 function submitDelete() {
     deleteForm.delete(route('profile.destroy'), {
@@ -256,6 +271,36 @@ function submitDelete() {
                         </Button>
                     </li>
                 </ul>
+            </section>
+
+            <!-- Notification emails -->
+            <section
+                v-if="mailNotifications && mailNotifications.length > 0"
+                class="border-border-subtle bg-surface-1 rounded-lg border p-6"
+                data-testid="mail-notifications"
+            >
+                <h3 class="text-text-primary mb-2 text-base font-semibold">
+                    Email me when
+                </h3>
+                <p class="text-text-muted mb-4 text-sm">
+                    You see these in the application either way. Emails gather
+                    for ten minutes and go out as one, with a link and no
+                    comment text.
+                </p>
+                <form class="space-y-3" @submit.prevent="saveMailNotifications">
+                    <div v-for="n in mailNotifications" :key="n.kind">
+                        <Toggle
+                            v-model="mailForm.kinds[n.kind]"
+                            :label="n.label"
+                        />
+                    </div>
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        :loading="mailForm.processing"
+                        >Save</Button
+                    >
+                </form>
             </section>
 
             <!-- Delete account -->

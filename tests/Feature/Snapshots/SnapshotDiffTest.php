@@ -9,7 +9,7 @@ use App\Models\Defence;
 use App\Models\Risk;
 
 /*
- * SnapshotDiffer (PLAN.md Phase 8 item 3): "Diff two snapshots — match
+ * SnapshotDiffer: "Diff two snapshots — match
  * nodes on uuid (not id, not title), show added, removed and changed nodes
  * and edges, plus the movement in each headline figure (inherent / current
  * / target)." Everything here reads only the two snapshots' already-frozen
@@ -108,11 +108,9 @@ test('diffing detects a removed node', function () {
 
     $attackUuid = $attack->uuid;
     // Detach the edge before soft-deleting the node: AssessmentGraphLoader
-    // (app/Domain/Graph/**, outside this package's ownership) does not
-    // currently tolerate a live risk_attack row whose attack side has been
-    // soft-deleted while the risk side survives — see this package's final
-    // report. Detaching first keeps this test scoped to what it actually
-    // exercises: SnapshotDiffer's node-removal detection, not that loader.
+    // does not currently tolerate a live risk_attack row whose attack side
+    // has been soft-deleted while the risk side survives. Detaching first
+    // keeps this test scoped to what it actually exercises: SnapshotDiffer's node-removal detection, not that loader.
     $risk->attacks()->detach($attack->id);
     $attack->delete();
 
@@ -124,10 +122,10 @@ test('diffing detects a removed node', function () {
     expect($removedUuids)->toContain($attackUuid);
 });
 
-test('a snapshot taken before W30 still decodes and diffs, with its notes reported as a field that went away', function () {
+test('a snapshot taken before the notes field was dropped still decodes and diffs, with its notes reported as a field that went away', function () {
     // The point of a snapshot is that it is readable years later
     // (SnapshotGraphCodec's docblock: "never partially decodes or upgrades
-    // old data in place"). Dropping `nodes.notes` in W30 left every
+    // old data in place"). Dropping `nodes.notes` left every
     // pre-existing snapshot carrying a key nothing writes any more, so the
     // thing worth pinning is that a legacy key is *data*, not a schema
     // expectation: it decodes, it diffs, and it surfaces honestly as a

@@ -9,12 +9,10 @@ use App\Models\Node;
 use Illuminate\Support\Collection;
 
 /**
- * JSON export of a whole assessment (PLAN.md Phase 7: "Also provide... JSON
- * export/import of a whole assessment — the latter doubles as backup and as
- * a way to hand an assessment to someone on another instance").
+ * JSON export of a whole assessment (meant to double as a backup and as a
+ * way to hand an assessment to someone on another instance).
  *
- * **Export only.** JSON *import* is a separate, later package per PLAN.md's
- * task graph — nothing here parses or applies this shape back onto an
+ * **Export only.** JSON *import* is a separate, later feature — nothing here parses or applies this shape back onto an
  * assessment. This is a plain data dump: the graph exactly as
  * AssessmentGraphLoader produced it (so a re-import, when built, has an
  * unambiguous source of truth), the descriptive columns the calculation DTO
@@ -73,8 +71,7 @@ final class AssessmentJsonExporter
     /**
      * Generic readonly-DTO -> array converter, matching the same pattern
      * AssessmentController already uses for the tree editor's read route —
-     * kept as its own private copy here rather than a shared helper, since
-     * this package owns no file either of those live in.
+     * kept as its own private copy here rather than a shared helper.
      */
     private function toArray(mixed $value): mixed
     {

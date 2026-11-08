@@ -9,7 +9,7 @@ import {
 } from './support/tree';
 
 /**
- * Scenario 16 (PLAN-2.2.md W34): the top bar, the width it leaves behind, and
+ * Scenario 16: the top bar, the width it leaves behind, and
  * the two things zoom now means.
  *
  * These assertions are here rather than in `tests/js` because every one of
@@ -96,18 +96,16 @@ test.describe('the top bar', () => {
 });
 
 /**
- * W82 (D40, D41, D42): the action bar this whole file is named after was
- * built and tested in isolation first, and mounted into `Show.vue` in a
- * follow-up fix round the same day — the ownership rule that produced that
- * split is `docs/PLAN-2.5/task-W82-brief.md`'s own citation of W36: an
- * affordance may not leave one surface in one commit and arrive on another
- * in the next. These are the geometric/real-browser claims `tests/js`
+ * The action bar this whole file is named after was built and tested in
+ * isolation first, and mounted into `Show.vue` in a follow-up fix round the
+ * same day — an affordance may not leave one surface in one commit and
+ * arrive on another in the next. These are the geometric/real-browser claims `tests/js`
  * cannot make: that the five actions are actually on screen together, that
  * History and Settings are reachable *only* from the bar now that they have
  * left the sidebar, and that a real print renders the canvas without the
  * chrome around it.
  */
-test.describe('the action bar (W82, D40/D41/D42)', () => {
+test.describe('the action bar', () => {
     test('renders Settings, History, Share, Export and Print together, in order', async ({
         page,
     }) => {
@@ -124,7 +122,7 @@ test.describe('the action bar (W82, D40/D41/D42)', () => {
                 els.map((el) => el.textContent?.trim() ?? ''),
             );
 
-        // Present, and in D40's order — not merely "somewhere in the row".
+        // Present, and in the specified order — not merely "somewhere in the row".
         const positions = labels.map((label) =>
             names.findIndex((name) => name === label),
         );
@@ -164,7 +162,7 @@ test.describe('the action bar (W82, D40/D41/D42)', () => {
 
         // The specified rule (`.no-print { display: none !important }`),
         // not merely that a class name appears somewhere — this is exactly
-        // the trap the W82 brief names, so the assertion is on what the
+        // the trap an action bar can fall into, so the assertion is on what the
         // browser actually computes under the real stylesheet.
         await expect(page.getByTestId('assessment-actions')).toBeHidden();
         await expect(
@@ -207,7 +205,7 @@ test.describe('zoom', () => {
         const tree = page.getByRole('tree');
         // The height of a real line of text on a card, not the container's
         // computed font-size. The list zooms with the CSS `zoom` property
-        // (D9), which gives the element its own coordinate space rather than
+        // (a deliberate choice), which gives the element its own coordinate space rather than
         // rewriting any descendant's font-size — so `getComputedStyle` reads
         // the same 14px before and after while the text on screen has
         // plainly grown, and asserting on it can only ever fail.
@@ -318,16 +316,14 @@ test.describe('zoom', () => {
         // cap is expressed in.
         //
         // A 1px tolerance, not exact equality (Integration 2.5): `measure` is
-        // `Math.round(rect.width / zoom)`, and W84 raised the list's baseline
+        // `Math.round(rect.width / zoom)`, and the list's baseline
         // zoom to 1.35 — a divisor that was not in play when this assertion
         // was written and that now produces sub-pixel rounding differences
         // between the two reads. The thing this test exists to catch is the
         // measure *shrinking away* under zoom, which reads as tens of pixels,
         // not one — a tolerance this tight still fails on that and stops
         // failing on rounding noise.
-        expect(Math.abs(after.measure - before.measure)).toBeLessThanOrEqual(
-            1,
-        );
+        expect(Math.abs(after.measure - before.measure)).toBeLessThanOrEqual(1);
     });
 
     test('in the chart, scales the picture and lets the reader scroll down to it', async ({
@@ -347,9 +343,9 @@ test.describe('zoom', () => {
                 .click();
         }
 
-        // W32 pinned `overflow-y-hidden` here, which cropped the defence tier
-        // with no way to reach it once zoomed. PLAN-2.2.md D9 reverses that
-        // for the zoomed case only.
+        // `overflow-y-hidden` used to be pinned here, which cropped the defence
+        // tier with no way to reach it once zoomed. That is reversed for the
+        // zoomed case only.
         const scrollable = await page.getByRole('tree').evaluate((el) => {
             const box = el.closest('.overflow-auto') as HTMLElement | null;
             if (!box) return null;
@@ -366,13 +362,13 @@ test.describe('zoom', () => {
 });
 
 /**
- * W84/D43: zoom is persisted per view. Scenario 16 already exercises the
+ * Zoom is persisted per view. Scenario 16 already exercises the
  * list's and the chart's zoom controls separately (the `zoom` describe block
  * above); what is new here is that changing one must leave the other
- * exactly where it was — before D43 there was one shared number, so setting
+ * exactly where it was — before that there was one shared number, so setting
  * the chart's zoom moved the list's control too.
  */
-test.describe('zoom is independent per view (W84/D43)', () => {
+test.describe('zoom is independent per view', () => {
     test('zooming the chart does not move the list, and vice versa', async ({
         page,
     }) => {
@@ -471,7 +467,7 @@ test.describe('zoom is independent per view (W84/D43)', () => {
 });
 
 /**
- * W84, items 11/12: the list always centres in its (capped) viewport; the
+ * The list always centres in its (capped) viewport; the
  * chart centres only when it is narrower than the page and left-aligns when
  * it is wider, so a chart wider than the window never starts with its root
  * off-screen. Both are asserted at two viewport widths — one where the
@@ -486,7 +482,7 @@ test.describe('zoom is independent per view (W84/D43)', () => {
  * from a narrow viewport guarantees the reverse, regardless of how many
  * risks the shared assessment currently has.
  */
-test.describe('centring (W84, items 11/12)', () => {
+test.describe('centring', () => {
     /** Left/right gap, in the *container's* coordinate space, for `el`. */
     async function gaps(el: import('@playwright/test').Locator) {
         return el.evaluate((node) => {

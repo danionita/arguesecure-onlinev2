@@ -1,5 +1,5 @@
 /**
- * The theme control (W41, item 4).
+ * The theme control.
  *
  * `system` is the reason this is three options rather than a switch: it means
  * "follow the OS", it is the default, and a binary toggle pins the theme the

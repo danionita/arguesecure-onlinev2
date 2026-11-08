@@ -3,8 +3,7 @@
 namespace App\Domain\Release;
 
 /**
- * What the sidebar shows about the running build, and where its notes are
- * (W124, D90).
+ * What the sidebar shows about the running build, and where its notes are.
  *
  * Pure: a string in, two strings out. The input is `config('arguesecure.version')`,
  * which the image build sets from the release tag; it is operator-controlled

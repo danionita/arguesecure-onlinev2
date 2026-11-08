@@ -19,16 +19,14 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * The catalogue browser and inserter (schema.md §3.14, PLAN.md Phase 8
- * item 4). Per CLAUDE.md's W20 non-negotiables: browsing needs only an
+ * The catalogue browser and inserter (schema.md §3.14). Browsing needs only an
  * authenticated user; inserting an entry into a specific assessment needs
  * `update` on that assessment — the same ability NodeController gates
  * node creation with, since an insert is exactly a node (or small tree of
  * nodes) create.
  *
- * No FormRequest class here — this package owns only this controller, not
- * app/Http/Requests/**, matching SnapshotController's/LockController's own
- * documented reason for doing authorization and validation inline.
+ * No FormRequest class here, matching SnapshotController and LockController,
+ * which do authorization and validation inline.
  */
 class CatalogController extends Controller
 {
@@ -133,8 +131,8 @@ class CatalogController extends Controller
     }
 
     /**
-     * Never emits owner_user_id or any user field — see CLAUDE.md's
-     * over-serialisation warning.
+     * Never emits owner_user_id or any user field, so a payload
+     * never over-serialises.
      *
      * @return array<string, mixed>
      */

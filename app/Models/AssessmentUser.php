@@ -28,10 +28,9 @@ class AssessmentUser extends Pivot
     public $incrementing = true;
 
     /**
-     * Removing a collaborator removes their assignments (W46).
+     * Removing a collaborator removes their assignments.
      *
-     * This is the decision the brief asked to be made explicitly rather than
-     * left to whatever happened. The alternative — orphaning them — keeps a
+     * This is a deliberate choice rather than left to whatever happened. The alternative — orphaning them — keeps a
      * row saying "assigned to Dana" on a node Dana can no longer open. Either
      * the dashboard then shows her work she cannot reach, or it filters her
      * out and the assessment goes on naming her indefinitely to everyone
@@ -43,7 +42,7 @@ class AssessmentUser extends Pivot
      * why the hook is on `deleted` rather than on `saved`.
      *
      * It lives on the model rather than in `CollaboratorService::remove()`
-     * for two reasons — that class belongs to W9, and a hook here fires
+     * for two reasons — that class is the collaborator service, and a hook here fires
      * however the row is deleted, including from a future bulk path that
      * never learns to call the service.
      */

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Makes the admin-configured `session_lifetime_minutes` (ui.md §10) govern
- * the session's actual lifetime, closing the W8 gap where the setting was
+ * the session's actual lifetime, closing the gap where the setting was
  * stored and displayed but nothing read it back (security.md §5's
  * `'lifetime' => 480, // minutes, configurable` is exactly this value).
  *
@@ -20,9 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
  * therefore registered with `prepend`, not `append`, in bootstrap/app.php,
  * ahead of the framework's own default web-group middleware.
  *
- * config/session.php itself is outside this package's file ownership, so
- * this is the only available hook: override the value it resolves to at
- * runtime rather than changing the file.
+ * Overriding the value config/session.php resolves to at runtime, rather
+ * than changing that file, is the hook that works with the instance
+ * setting being stored in the database.
  */
 class ApplyInstanceSessionLifetime
 {
@@ -31,7 +31,7 @@ class ApplyInstanceSessionLifetime
         $settings = InstanceSettings::all();
 
         config(['session.lifetime' => $settings['session_lifetime_minutes']]);
-        // W116: EnsureTwoFactorEnrolled reads this instead of querying the
+        // EnsureTwoFactorEnrolled reads this instead of querying the
         // settings row a second time on every request (the report page's
         // query budget counts it).
         config(['arguesecure.require_two_factor' => $settings['require_two_factor']]);

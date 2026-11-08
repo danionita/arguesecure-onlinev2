@@ -32,7 +32,7 @@ class ConfirmablePasswordController extends Controller
             throw ValidationException::withMessages([
                 // Inline rather than __('auth.password') — see the note
                 // in LoginRequest::authenticate(): this repo ships no
-                // lang/en/auth.php and lang/** is outside W8's ownership.
+                // lang/en/auth.php and lang/** is not part of the sign-in code.
                 'password' => 'The provided password does not match your current password.',
             ]);
         }

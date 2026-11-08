@@ -7,7 +7,7 @@ use App\Models\Risk;
 use App\Observers\Concerns\TriggersRecalculation;
 
 /**
- * Collapsing the per-write calculation-version bump into one per block (W64).
+ * Collapsing the per-write calculation-version bump into one per block.
  *
  * `calc_version` is a cache key, not a counter anyone reads the value of
  * (calculation-engine.md §11.4): what has to hold is that it *differs* after a

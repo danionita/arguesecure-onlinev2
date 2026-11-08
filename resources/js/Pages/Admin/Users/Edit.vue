@@ -18,6 +18,7 @@ const props = defineProps<{
     };
     ownedAssessmentCount: number;
     identity?: { issuer: string; last_used_at: string | null } | null;
+    canInvite?: boolean;
 }>();
 
 const form = useForm({
@@ -33,7 +34,7 @@ function submit() {
     form.put(route('admin.users.update', props.targetUser.id));
 }
 
-// W116: a lost phone. The account signs in on its password again and enrols
+// A lost phone. The account signs in on its password again and enrols
 // afresh; its other sessions end.
 const showRemoveTwoFactor = ref(false);
 const removeTwoFactorForm = useForm({});
@@ -45,7 +46,16 @@ function removeTwoFactor() {
     );
 }
 
-// W117: unlink from the identity provider.
+// Mail the invitation again; the new link replaces the old one.
+const inviteForm = useForm<{ invitation?: string }>({});
+
+function sendInvitation() {
+    inviteForm.post(route('admin.users.invitation', props.targetUser.id), {
+        preserveScroll: true,
+    });
+}
+
+// Unlink from the identity provider.
 const unlinkForm = useForm({});
 
 function unlink() {
@@ -106,6 +116,32 @@ function submitReset() {
                 >
             </div>
         </form>
+
+        <div
+            v-if="canInvite"
+            class="border-border-subtle mt-8 max-w-lg border-t pt-6"
+            data-testid="invitation"
+        >
+            <p class="text-text-muted mb-2 text-xs">
+                This account has never been used. Sending again emails a new
+                one-time link and cancels the old one.
+            </p>
+            <Button
+                variant="secondary"
+                size="sm"
+                :loading="inviteForm.processing"
+                @click="sendInvitation"
+            >
+                Send invitation again
+            </Button>
+            <p
+                v-if="inviteForm.errors.invitation"
+                class="text-danger mt-2 text-xs"
+                role="alert"
+            >
+                {{ inviteForm.errors.invitation }}
+            </p>
+        </div>
 
         <div class="border-border-subtle mt-8 max-w-lg border-t pt-6">
             <p

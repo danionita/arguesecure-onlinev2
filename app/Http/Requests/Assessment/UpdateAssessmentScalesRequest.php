@@ -6,7 +6,7 @@ use App\Http\Requests\Admin\UpdateScaleBandsRequest;
 use App\Models\Assessment;
 
 /**
- * Saving an assessment's bands (W126). `manage`, as it has been since W65:
+ * Saving an assessment's bands. `manage`, as it has always been:
  * editing a scale moves every figure computed from it
  * (calculation-engine.md §8.4 pitfall 6) and has no undo entry.
  */

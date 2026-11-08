@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\File;
 use RuntimeException;
 
 /**
- * Job A: answer a question about ArgueSecure from its own help pages
- * (PLAN-2.3-ai.md W51).
+ * Job A: answer a question about ArgueSecure from its own help pages.
  *
  * ## The prompt is a file, and it is never built from user input
  *
@@ -41,7 +40,7 @@ class HelpAnswerer
     ) {}
 
     /**
-     * @param  (callable(string): void)|null  $onToken  W58's progress and
+     * @param  (callable(string): void)|null  $onToken  The progress and
      *                                                  cancellation observer.
      *                                                  Job A's *first* answer
      *                                                  of a session measured
@@ -71,7 +70,7 @@ class HelpAnswerer
 
     /**
      * Reads the help corpus into the runtime's cache without answering
-     * anything (PLAN-2.6.md D57).
+     * anything.
      *
      * Built by the same method as a real answer, so the cached prefix is
      * byte-for-byte the one the next real question will reuse — which is the
@@ -132,8 +131,8 @@ class HelpAnswerer
         if ($promptTokens > $budget * 0.9) {
             throw new RuntimeException(
                 'The help documentation no longer fits the assistant\'s context window. '.
-                'See PLAN-2.3-ai.md D21: past roughly 8,000 tokens the no-retrieval '.
-                'decision needs revisiting.'
+                'The corpus is sent whole as a fixed prefix; past roughly 8,000 tokens '.
+                'the no-retrieval design needs revisiting.'
             );
         }
     }

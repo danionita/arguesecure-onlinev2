@@ -20,26 +20,25 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Templates (schema.md §3.14, PLAN.md Phase 8 item 4): publish an assessment
+ * Templates (schema.md §3.14): publish an assessment
  * as a template, manage templates, and create a new assessment from one. Creation reuses
- * Structure\AssessmentCloner::cloneAssessment() unmodified (W6) — it
+ * Structure\AssessmentCloner::cloneAssessment() unmodified — it
  * already produces exactly the required behaviour, a genuine copy that
  * remaps every uuid, so later edits to the template can never propagate
  * into an assessment already created from it (proved in
  * tests/Feature/Catalog/TemplateTest.php — see that file's own note on
- * the AssessmentCloner defect this package found and does not own).
+ * the AssessmentCloner defect it records).
  *
  * Since 2.5.1: publishing a template is an admin's decision
  * (`saveAsTemplate`), and every signed-in account can list the templates
  * and build its own private copy of one (`useAsTemplate`). The template
  * library is instance-wide reference material, like the catalogue.
  *
- * Since W141 (2.7.0) a template is not anyone's assessment: it has no owner,
+ * Since 2.7.0 a template is not anyone's assessment: it has no owner,
  * admins create, edit (in the ordinary editor) and delete it from the
  * Templates page, and publishing copies an assessment into one.
  *
- * No FormRequest class here — this package owns only this controller, not
- * app/Http/Requests/**, matching SnapshotController's own documented
+ * No FormRequest class here, matching SnapshotController's own documented
  * reason for doing authorization and validation inline.
  */
 class TemplateController extends Controller
@@ -109,7 +108,7 @@ class TemplateController extends Controller
     }
 
     /**
-     * Publishes an assessment as a template (W141; PLAN-2.7-admin-templates.md T3).
+     * Publishes an assessment as a template.
      *
      * A copy, never a flag: the template is a separate, ownerless assessment
      * made by AssessmentCloner, and nothing is written to the original or
@@ -143,7 +142,7 @@ class TemplateController extends Controller
     }
 
     /**
-     * A new, empty template (W141, T4). It opens in the ordinary editor, where
+     * A new, empty template It opens in the ordinary editor, where
      * its title and everything else are set, so this asks for nothing.
      */
     public function create(Request $request, AssessmentCreator $creator): RedirectResponse
@@ -163,7 +162,7 @@ class TemplateController extends Controller
     }
 
     /**
-     * Deletes a template for good (W141, T5): there is no owner to restore it
+     * Deletes a template for good : there is no owner to restore it
      * for and nothing depends on it, because every assessment made from it is
      * an independent copy. Soft-deleted first so AssessmentEraser, the one
      * place that knows how to take an assessment's scales and nodes apart,

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * W113 — the *Deleted* list, Restore and Erase permanently.
+ * The *Deleted* list, Restore and Erase permanently.
  *
  * Restore is the `delete` ability (owner, admin, manager): whoever could put
  * an assessment in the trash can take it back out. Erase is `forceDelete`

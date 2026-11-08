@@ -6,12 +6,15 @@ import AdminLayout from '@/Pages/Admin/AdminLayout.vue';
 import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { Head, useForm } from '@inertiajs/vue3';
 
+defineProps<{ mailOn: boolean }>();
+
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
     is_admin: false,
+    send_invitation: true,
 });
 
 useUnsavedChanges(() => form.isDirty);
@@ -55,6 +58,18 @@ function submit() {
                 label="Confirm password"
                 autocomplete="new-password"
             />
+
+            <div v-if="mailOn && !form.password">
+                <Toggle
+                    v-model="form.send_invitation"
+                    label="Email an invitation"
+                />
+                <p class="text-text-muted mt-1 text-xs">
+                    The person gets a one-time link to choose their own
+                    password, and no password is generated or shown. Turn it off
+                    to generate one here instead.
+                </p>
+            </div>
 
             <Toggle
                 v-model="form.is_admin"

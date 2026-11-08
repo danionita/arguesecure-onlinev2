@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
- * Authentication (W133, D105-D108): the sign-in settings, in one place.
+ * Authentication (docs/specs/security.md §4): the sign-in settings, in one
+ * place.
  *
  * Two switches that used to sit on Instance settings, and the OpenID Connect
  * provider that used to be reachable only through the server's environment.
@@ -34,6 +35,13 @@ const props = defineProps<{
         trust_email: Field<boolean>;
         client_secret: { set: boolean; source: Source };
     };
+    registration?: {
+        enabled: boolean;
+        domains: string;
+        daily_cap: number;
+        completed_today: number;
+        mail_available: boolean;
+    };
     enabled: boolean;
     redirectUri: string;
 }>();
@@ -51,6 +59,9 @@ const form = useForm({
             : props.oidc.button_label.value,
     oidc_allowed_domains: props.oidc.allowed_domains.value,
     oidc_trust_email: props.oidc.trust_email.value,
+    registration_enabled: props.registration?.enabled ?? false,
+    registration_domains: props.registration?.domains ?? '',
+    registration_daily_cap: props.registration?.daily_cap ?? 50,
 });
 
 useUnsavedChanges(() => form.isDirty);
@@ -275,6 +286,64 @@ async function check() {
                         </template>
                     </p>
                 </div>
+            </section>
+
+            <section
+                v-if="registration"
+                class="space-y-4"
+                data-testid="registration-section"
+            >
+                <div>
+                    <h3 class="text-text-primary text-base font-semibold">
+                        Registration
+                    </h3>
+                    <p class="text-text-muted mt-1 text-xs">
+                        Lets anyone create an account with an email address and
+                        a password. Nothing exists until they follow the link
+                        mailed to them. Off by default.
+                    </p>
+                </div>
+
+                <div>
+                    <Toggle
+                        v-model="form.registration_enabled"
+                        label="Allow new registrations"
+                        :disabled="
+                            !registration.mail_available &&
+                            !form.registration_enabled
+                        "
+                    />
+                    <p class="text-text-muted mt-1 text-xs">
+                        <template v-if="!registration.mail_available">
+                            Needs email set up on the Email tab first.
+                        </template>
+                        <template v-else>
+                            Not available while sign-in is limited to SSO.
+                        </template>
+                    </p>
+                    <p
+                        v-if="form.errors.registration_enabled"
+                        class="text-danger mt-1 text-xs"
+                        role="alert"
+                    >
+                        {{ form.errors.registration_enabled }}
+                    </p>
+                </div>
+
+                <Input
+                    v-model="form.registration_domains"
+                    label="Allowed email domains"
+                    help-text="Comma-separated, exact (example.org). Empty allows any address."
+                    :error="form.errors.registration_domains"
+                />
+
+                <Input
+                    v-model.number="form.registration_daily_cap"
+                    type="number"
+                    label="New accounts per day"
+                    :help-text="`${registration.completed_today} so far today (UTC). Counts accounts created, not requests.`"
+                    :error="form.errors.registration_daily_cap"
+                />
             </section>
 
             <div class="flex items-center justify-end gap-3 pt-2">

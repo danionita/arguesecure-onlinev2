@@ -3,8 +3,7 @@
 namespace App\Domain\Assistant\Suggestions;
 
 /**
- * Turns a model's reply into suggestions, discarding everything else
- * (PLAN-2.3-ai.md D23).
+ * Turns a model's reply into suggestions, discarding everything else.
  *
  * ## This class is the mitigation, not tidiness
  *
@@ -31,7 +30,7 @@ namespace App\Domain\Assistant\Suggestions;
  * as well, and no parser can distinguish that from a genuine suggestion —
  * `title` is `title`. That is why nothing here writes to the graph. Every
  * suggestion is shown to a person, who accepts it or does not, through the
- * ordinary validated node-create endpoint. D24: the human accept step is the
+ * ordinary validated node-create endpoint. The human accept step is the
  * guardrail, not a net behind one.
  */
 class SuggestionParser

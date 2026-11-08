@@ -1,19 +1,22 @@
 <script setup lang="ts">
 /**
- * Login only — no self-service registration exists anywhere in the app
- * (CLAUDE.md, security.md §4) and no self-service reset: accounts are
- * admin-managed, so an admin resets passwords instead.
+ * Login. Self-registration is off unless an admin switches it on
+ * (security.md §4); its link appears only then. "Forgot password?" appears
+ * only while email is on; otherwise an administrator resets passwords.
  */
 import Button from '@/Components/UI/Button.vue';
 import Input from '@/Components/UI/Input.vue';
 import Toggle from '@/Components/UI/Toggle.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 defineProps<{
     status?: string;
-    /** W117: the provider link, present only when one is configured. */
+    canReset?: boolean;
+    /** Self-registration is on (an admin switched it on and mail works). */
+    canRegister?: boolean;
+    /** The provider link, present only when one is configured. */
     sso?: { label: string; url: string; only: boolean } | null;
 }>();
 
@@ -63,7 +66,7 @@ const submit = () => {
         <div v-if="sso" class="mb-4">
             <!--
                 A plain anchor: a link, not a form (CSP form-action 'self',
-                D74), and not Button's `href`, which renders an Inertia <Link>
+                security.md), and not Button's `href`, which renders an Inertia <Link>
                 that fetches the redirect by XHR and cannot follow it to
                 another origin.
             -->
@@ -101,7 +104,15 @@ const submit = () => {
 
             <Toggle v-model="form.remember" label="Remember me" />
 
-            <div class="flex items-center justify-end pt-2">
+            <div class="flex items-center justify-between pt-2">
+                <Link
+                    v-if="canReset"
+                    :href="route('password.request')"
+                    class="text-sm underline"
+                    data-test="forgot-password-link"
+                    >Forgot password?</Link
+                >
+                <span v-else />
                 <Button
                     type="submit"
                     variant="primary"
@@ -111,5 +122,15 @@ const submit = () => {
                 </Button>
             </div>
         </form>
+
+        <p v-if="canRegister" class="mt-4 text-center text-sm">
+            No account?
+            <Link
+                :href="route('register')"
+                class="underline"
+                data-test="register-link"
+                >Create one</Link
+            >
+        </p>
     </GuestLayout>
 </template>

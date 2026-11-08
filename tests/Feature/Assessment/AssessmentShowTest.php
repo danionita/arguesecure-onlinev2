@@ -136,8 +136,7 @@ test('a soft-deleted node does not reappear in the node list', function () {
 });
 
 /**
- * CLAUDE.md: "Eager-load everything... a whole assessment must load in four
- * queries." This controller adds exactly one query beyond
+ * Eager-load everything: a whole assessment must load in four queries. This controller adds exactly one query beyond
  * AssessmentGraphLoader's own four (schema.md §4) — the full node rows
  * needed for editing, which the loader's calculation-only DTO doesn't carry
  * — so the total must stay flat as the graph grows, not scale with node

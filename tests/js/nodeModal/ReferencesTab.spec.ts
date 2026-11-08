@@ -7,7 +7,7 @@ import { useToast } from '../../../resources/js/Components/UI/useToast';
 import type { AssessmentStore } from '../../../resources/js/stores/assessmentStore';
 
 /**
- * W119: the References tab sends what the person typed to a server that
+ * The References tab sends what the person typed to a server that
  * validates identifiers (security.md §7), so the client's job is narrow and
  * easy to get subtly wrong: send the right kind with only the fields that kind
  * uses, never send blank input, show the server's own reason on a 422, and
@@ -316,7 +316,7 @@ describe('ReferencesTab add form', () => {
         await button(wrapper, 'More kinds')!.trigger('click');
         const select = wrapper.find('select');
         expect(select.exists()).toBe(true);
-        // A control can only be cited on a defence (PLAN-2.7 D64).
+        // A control can only be cited on a defence.
         const values = select.findAll('option').map((o) => o.element.value);
         expect(values).toContain('cwe');
         expect(values).not.toContain('control');

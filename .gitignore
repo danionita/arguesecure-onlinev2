@@ -9,11 +9,11 @@
 !.env.example
 # Default DATA_PATH for the local stack: MariaDB and Redis persistent data.
 /data/
-# DATA_PATH for the isolated end-to-end stack (W25). Kept separate from
+# DATA_PATH for the isolated end-to-end stack. Kept separate from
 # /data/ on purpose: the e2e run starts from an empty users table to
 # exercise first-run setup, which must never touch a real local instance.
 /data-e2e/
-# Model weights, anywhere in the tree (D58). Multiple gigabytes per file,
+# Model weights, anywhere in the tree. Multiple gigabytes per file,
 # separately licensed, fetched from the publisher at a pinned revision by
 # `docker compose run --rm assistant-install` — never committed. `/models/` is
 # docker-compose.yml's default ASSISTANT_MODEL_PATH, inside the checkout, and
@@ -47,7 +47,7 @@ Thumbs.db
 
 # Claude Code: agent worktrees and local session state stay out; the
 # project's shared skills, sub-agent definitions and path-scoped rules are
-# committed, so every agent working here follows the same process (W98, W99).
+# committed, so every agent working here follows the same process.
 # CLAUDE.local.md holds a
 # maintainer's private context — host names, paths, deployment details — and
 # is never committed; CLAUDE.local.md.example shows its shape.

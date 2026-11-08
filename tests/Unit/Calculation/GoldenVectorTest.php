@@ -8,7 +8,7 @@ use Tests\Unit\Calculation\Support\GoldenVectorChecker;
 use Tests\Unit\Calculation\Support\GoldenVectorGraphAdapter;
 
 /**
- * W7 reconciliation (see docs/PLAN.md and the W7 task brief): runs every
+ * Reconciliation of the engine with the spec: runs every
  * vector in tests/fixtures/calculation-vectors.json — derived independently
  * from docs/specs/calculation-engine.md, without ever reading this engine —
  * against App\Domain\Calculation\RiskCalculator.
@@ -17,7 +17,7 @@ use Tests\Unit\Calculation\Support\GoldenVectorGraphAdapter;
  * failing vector here is the single most valuable output of the exercise:
  * it means the engine and an independent reading of the spec disagree, and
  * that disagreement needs a human to adjudicate, not a quiet edit. See the
- * W7 reconciliation report for the resolution of every failure at the time
+ * reconciliation report for the resolution of every failure at the time
  * this file was written.
  *
  * Two vectors don't fit the "build a graph, run RiskCalculator, check
@@ -367,7 +367,7 @@ function assertGoldenLogShareAttribution(GoldenVectorChecker $checker, string $v
  * DefenceResult (each tagged with its costBucket) — the three-bucket,
  * per-bucket-sorted presentation §10 describes is reconstructed here from
  * that flat list, the way a serializer/UI layer would, rather than being a
- * distinct engine output. See the W7 report for whether that split of
+ * distinct engine output. See the reconciliation report for whether that split of
  * responsibility is a finding.
  *
  * @param  array<string, mixed>  $expected

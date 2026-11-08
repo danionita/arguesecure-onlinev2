@@ -12,8 +12,8 @@ use App\Models\User;
 
 /*
  * The single linear per-assessment undo stack (ui.md §3.6, schema.md
- * §3.10, PLAN.md W14). CLAUDE.md: "every route touching an assessment goes
- * through AssessmentPolicy" — undo is no exception, and is available to
+ * §3.10). Every route touching an assessment goes
+ * through AssessmentPolicy (security.md) — undo is no exception, and is available to
  * any editor, not only the operation's author.
  */
 function attachHistoryMember(Assessment $assessment, User $user, string $role): void

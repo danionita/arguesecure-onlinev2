@@ -8,13 +8,12 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * Templates (schema.md §3.14, PLAN.md Phase 8 item 4). Per CLAUDE.md's
- * W20 non-negotiables: every route touching an assessment goes through AssessmentPolicy, no
- * exceptions. Creating from a template must be a genuine copy — later
+ * Templates (schema.md §3.14). Every route touching an assessment goes
+ * through AssessmentPolicy, no exceptions. Creating from a template must be a genuine copy — later
  * edits to the template must never propagate into an assessment already
  * created from it — proved directly, not just asserted, below.
  */
-// Marking an assessment as a template is gone (W141): publishing copies it
+// Marking an assessment as a template is gone: publishing copies it
 // into a separate, ownerless template. That and who may do it are covered in
 // tests/Feature/Templates/TemplatePublishTest.php.
 
@@ -79,7 +78,7 @@ test('an assessment that is not a template 404s when used as one, even if viewab
 /*
  * The two tests below exercise TemplateController::store(), which
  * delegates entirely to Structure\AssessmentCloner::cloneAssessment() —
- * exactly as this package's spec requires ("Creating from a template is a
+ * exactly as the spec requires ("Creating from a template is a
  * copy... reuses Structure\AssessmentCloner unmodified"). Building
  * tests/Feature/Catalog/AssessmentClonerTest.php against that class
  * directly found that cloneAssessment() currently throws for every
@@ -87,9 +86,8 @@ test('an assessment that is not a template 404s when used as one, even if viewab
  * cloneNodes() step replicates the generated `root_marker` column without
  * excluding it, which every assessment's own root node trips over
  * immediately — see that file's docblock for the full defect writeup and
- * why this package does not patch AssessmentCloner itself (CLAUDE.md /
- * the W20 brief: "if cloning is broken, STOP and report rather than
- * fixing AssessmentCloner yourself").
+ * why the template tests do not patch AssessmentCloner themselves: a broken
+ * clone is reported and pinned, not fixed from the template side.
  *
  * TemplateController's own logic (the view/is_template gate, the
  * response shape) is therefore proved correct up to the point where it

@@ -1,6 +1,6 @@
 /**
  * The red-team cases, as the spike's throwaway version of what
- * PLAN-2.3-ai.md wants living in `tests/Feature/Assistant/`.
+ * the assistant design wants living in `tests/Feature/Assistant/`.
  *
  * Every string here goes into a *node description* — the field a user holding
  * `editor` on a shared assessment types into freely. That is the whole threat:

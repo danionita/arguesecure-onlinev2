@@ -2,8 +2,8 @@
 /**
  * General-purpose button, folding what Breeze shipped as
  * Primary/Secondary/DangerButton into a single typed component with a
- * `variant`. W10 replaced every use of that trio; W55 deleted the three
- * files, which had sat unreferenced ever since.
+ * `variant`. It replaced every use of that trio, and the three files were
+ * deleted once unreferenced.
  */
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';

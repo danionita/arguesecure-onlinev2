@@ -1,14 +1,12 @@
 /**
- * Minimal Pusher-protocol client for Laravel Reverb (PLAN.md W16,
+ * Minimal Pusher-protocol client for Laravel Reverb (ui.md §6,
  * docs/specs/security.md §8, docs/specs/deployment.md §2.1).
  *
- * Deliberately hand-rolled rather than `laravel-echo`/`pusher-js`: this
- * package's file ownership does not include `package.json` (see the W16
- * session brief — "stop and report" rather than add a dependency outside
- * ownership), and Reverb speaks the same wire protocol those libraries
- * wrap, so a small subscriber is enough for what this app needs: one
+ * Deliberately hand-rolled rather than `laravel-echo`/`pusher-js`: Reverb
+ * speaks the same wire protocol those libraries wrap, so no extra
+ * dependency is needed and a small subscriber is enough for what this app needs: one
  * presence channel per assessment, server-broadcast app events, and
- * outgoing "client events" (Pusher's term for what PLAN.md calls a
+ * outgoing "client events" (Pusher's term for what ui.md §6 calls a
  * "whisper" — see useLocks.ts for why those are never used for anything
  * that requires authorization).
  *
@@ -18,7 +16,7 @@
  * in local dev without the proxy, the REVERB_CLIENT_* overrides point at
  * the standalone `reverb:start` process directly, which is also fine.
  *
- * W27 defect 1: the credentials arrive as a `ReverbConfig` argument, read
+ * The credentials arrive as a `ReverbConfig` argument, read
  * by the caller from the `reverb` shared Inertia prop
  * (HandleInertiaRequests::reverb()). They used to come from
  * `import.meta.env.VITE_REVERB_APP_KEY`, which Vite substitutes at image
@@ -29,8 +27,7 @@
  * Inertia dependency, which is what lets Vitest mount it with no page.
  */
 import { onScopeDispose, reactive, ref, type InjectionKey } from 'vue';
-// Relative, not '@/stores/assessmentStore': vitest.config.ts (outside this
-// package's ownership) has no '@' alias — see assessmentStore.ts's own
+// Relative, not '@/stores/assessmentStore': vitest.config.ts has no '@' alias — see assessmentStore.ts's own
 // docblock for the same reasoning applied to its '../calc' import. Matching
 // it keeps this file testable by Vitest without needing a change to that
 // config file.
@@ -93,7 +90,7 @@ interface PusherFrame {
 /**
  * One connection, one presence channel. Assessment/Show.vue creates a
  * single instance and provides it alongside the assessment store and the
- * W15 editor view, for the same reason those are singletons (useEditorView
+ * editor view, for the same reason those are singletons (useEditorView
  * .ts's docblock): the toolbar, the tree and the presence UI all need to
  * observe the same socket rather than each opening their own.
  */
@@ -110,7 +107,7 @@ export function useRealtime(
     let subscribed = false;
     let closedByUs = false;
     let reconnectDelay = 1000;
-    let reconnectTimer: ReturnType<typeof window.setTimeout> | null = null;
+    let reconnectTimer: number | null = null;
 
     const channelName = `presence-assessment.${assessmentUuid}`;
 
@@ -133,7 +130,7 @@ export function useRealtime(
         if (!socketId || subscribed) return;
 
         // POST /broadcasting/auth (registered by Broadcast::routes() in
-        // routes/web.php's W16 block). window.axios already carries the
+        // routes/web.php's broadcasting block). window.axios already carries the
         // session cookie and X-XSRF-TOKEN header for same-origin requests
         // (the store's autosave path relies on the same setup).
         const response = await window.axios.post<{
@@ -179,7 +176,17 @@ export function useRealtime(
                 const data = parseData(frame.data);
                 socketId = String(data.socket_id ?? '');
                 setSocketHeader(socketId);
-                void subscribe();
+                subscribe().catch((error: unknown) => {
+                    // 403: a reader of a public assessment or a share link is
+                    // not one of its collaborators and gets no live channel.
+                    // The page works without it; a reload shows what changed.
+                    // Anything else (419, 500, a dropped network) is reported.
+                    const status = (error as { response?: { status?: number } })
+                        .response?.status;
+                    if (status !== 403) {
+                        console.error('Live updates are unavailable', error);
+                    }
+                });
                 break;
             }
             case 'pusher:ping':
@@ -286,7 +293,7 @@ export function useRealtime(
     }
 
     /**
-     * Sends a Pusher "client event" (PLAN.md's "whisper"). Reverb relays
+     * Sends a Pusher "client event" (ui.md §6's "whisper"). Reverb relays
      * this directly between subscribed clients — it never touches this
      * app's Laravel process, which is exactly why nothing that requires
      * authorization (a lock refresh, a save) is ever built on it. It is
@@ -333,19 +340,17 @@ export const REALTIME_KEY: InjectionKey<RealtimeConnection> = Symbol(
 );
 
 /**
- * Applies W16's granular broadcast events directly to the assessment
+ * Applies the granular broadcast events directly to the assessment
  * store (ui.md §6: "carry the changed data so the client patches its
  * store... do not repeat the legacy pattern of broadcasting an id and
  * re-fetching a rendered HTML fragment"). Kept in this file rather than a
- * separate composable module: this package's file ownership for the
- * frontend is exactly `useRealtime.ts`, `usePresence.ts` and
- * `useLocks.ts` — no fourth composable file — and this function is a
- * consumer of `useRealtime`'s own event stream, not a new piece of state
- * of its own, so it belongs alongside the connection it patches from.
+ * separate composable module: this function is a consumer of
+ * `useRealtime`'s own event stream, not a new piece of state of its own, so
+ * it belongs alongside the connection it patches from.
  *
  * Mutates the store's already-reactive `nodes`/`riskAttackLinks`/
- * `attackDefenceLinks`/`results` in place (outside this package's
- * ownership — assessmentStore.ts — but exposed as live references, which
+ * `attackDefenceLinks`/`results` in place (they belong to
+ * assessmentStore.ts but are exposed as live references, which
  * is exactly what lets this function update them without a new store
  * method).
  */
@@ -460,7 +465,7 @@ export function applyRealtimeUpdatesToStore(
             notify(actor_id, actor_name, 'changed a link');
         }),
 
-        // PLAN.md Phase 6 item 4's fifth named event: "totals recomputed".
+        // The "totals recomputed" event.
         // Replaces store.results.value outright — the server-computed
         // figure always wins over the client's own optimistic recompute
         // (assessmentStore.ts's recomputeLocally() docblock says as much

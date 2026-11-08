@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 use RuntimeException;
 
 /**
- * Job C: draft the report's executive summary (PLAN-2.3-ai.md W54).
+ * Job C: draft the report's executive summary.
  *
  * ## This one is not a button, and the reason is a number
  *
@@ -45,7 +45,7 @@ class Summarizer
 
     /**
      * @param  array<string, string|null>  $descriptions  node uuid => description
-     * @param  (callable(string): void)|null  $onToken  W58's progress and
+     * @param  (callable(string): void)|null  $onToken  The progress and
      *                                                  cancellation observer.
      *
      * @throws RuntimeException if the digest would not fit, or the runtime fails
@@ -63,7 +63,7 @@ class Summarizer
         return trim($this->client->complete(
             $prompt,
             (int) config('assistant.max_tokens.summary'),
-            // W58. Job C is the one that runs for minutes, so it is the one
+            // Job C is the one that runs for minutes, so it is the one
             // where a person needs to see movement and be able to stop it.
             $onToken,
         ));

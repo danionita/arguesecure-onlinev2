@@ -14,9 +14,8 @@ use Illuminate\Validation\Rule;
  * CHECK exactly — `strength_fraction`/`strength_level_id` must each be
  * blank when the other mode is active — so a request that would trip that
  * constraint fails validation with a clean 422 instead of a raw database
- * error. UpdateNodeRequest (W12, not owned by this package) does not do the
- * equivalent for impact/likelihood mode; flagged in the W13 report rather
- * than edited, per this package's file ownership.
+ * error. UpdateNodeRequest does not do the equivalent for impact/likelihood mode;
+ * it was flagged rather than edited, as another file's concern.
  */
 class UpdateAttackDefenceLinkRequest extends FormRequest
 {

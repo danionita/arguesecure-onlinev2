@@ -8,7 +8,7 @@ use App\Models\Risk;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * W33 — the programme summary and the one-click download.
+ * The programme summary and the one-click download.
  *
  * The same worked example ReportContentTest builds (calculation-engine.md
  * §14: inherent €187,000, current €65,500, target €36,700), rebuilt here
@@ -119,7 +119,7 @@ test('a plan with no cost recorded is counted, never totalled, and returns null 
 
 /*
  * The download path. `download=1` overriding the rest of the query string is
- * the assertion that matters most in this package: a link carrying
+ * the assertion that matters most for downloads: a link carrying
  * `baseline=current` that merged instead would produce a document which looks
  * complete while silently omitting the target state and every shelved
  * control — invisible on screen, and wrong in a client's hands.
@@ -132,7 +132,7 @@ test('download=1 forces the whole report at the options level, ignoring a stale 
         'include_shelved' => '0',
         'include_comments' => '0',
         'include_methodology' => '0',
-        // W80 removed `figures`. The key stays in this fixture because the
+        // The report no longer has a `figures` option. The key stays in this fixture because the
         // test is about a *stale* query string, and an unknown parameter
         // being ignored rather than erroring is part of what it asserts.
         'figures' => 'qualitative',

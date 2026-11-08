@@ -2,7 +2,7 @@
 /**
  * Full-text search box over `useSearch.ts` (ui.md §5). Binds the
  * composable's `inputEl` to the real `<input>` so `focus()` — and
- * therefore W14's `/` binding — actually reaches this element.
+ * therefore the `/` shortcut (ui.md §4) — actually reaches this element.
  */
 import Icon from '@/Components/UI/Icon.vue';
 import IconButton from '@/Components/UI/IconButton.vue';

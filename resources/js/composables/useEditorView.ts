@@ -9,8 +9,8 @@ import { useFocusMode } from './useFocusMode';
 import { useSearch } from './useSearch';
 
 /**
- * The one place W15's view-state composables are instantiated (W12–W15
- * integration).
+ * The one place the view-state composables (zoom, search, filters, focus,
+ * duplicates, collapse) are instantiated.
  *
  * Each of zoom, search, filters, focus, duplicate highlighting and collapse
  * persistence holds its own reactive state, so calling the composable twice
@@ -32,14 +32,14 @@ export interface EditorViewOptions {
 }
 
 /**
- * W84/D43: `useCanvas.ts` now persists and scales each view's zoom
+ * `useCanvas.ts` persists and scales each view's zoom
  * separately, so this builds *two* instances (`chartCanvas`/`listCanvas`)
  * rather than one shared one.
  *
  * Every consumer of `view.canvas` outside this file (Show.vue, ChartView.vue,
  * Snapshots/View.vue, Toolbar.vue, the keyboard shortcuts) calls it
  * generically — `canvas.zoom.value`, `canvas.zoomIn()`, `canvas.handleWheel`
- * — with no idea which view is mounted, because before D43 there was only
+ * — with no idea which view is mounted, because there used to be only
  * one to mean. Rather than push "which canvas?" onto every one of those call
  * sites, this function returns a proxy with the exact same shape that
  * forwards each generic member to whichever instance matches the current
@@ -98,7 +98,7 @@ export function createEditorView(
     store: AssessmentStore,
     options: EditorViewOptions,
 ) {
-    // W32: chart or list. The same one-instance argument as everything else
+    // Chart or list. The same one-instance argument as everything else
     // built here — the toolbar switch and the page rendering one of the two
     // views have to be reading the same ref.
     const viewMode = useEditorViewMode({
@@ -111,11 +111,11 @@ export function createEditorView(
         activeView: () => viewMode.mode.value,
     });
     const search = useSearch(store);
-    // W43 closed the tag gap useFilters.ts documents: `NodeRecord` now
+    // This closes the tag gap useFilters.ts documents: `NodeRecord` now
     // carries labels, so the injected accessor is the store's real one
     // rather than the default "no tags on any node". The filter itself is
-    // unchanged — it has been fully implemented and tested since W15 with
-    // nothing to filter.
+    // unchanged — it has been fully implemented and tested from the
+    // start with nothing to filter.
     const filters = useFilters(store, { tagsForNode: store.tagNamesFor });
     const focus = useFocusMode(store);
     const duplicates = useDuplicateHighlight(store);

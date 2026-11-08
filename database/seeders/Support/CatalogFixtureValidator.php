@@ -4,7 +4,7 @@ namespace Database\Seeders\Support;
 
 /**
  * Validates a `database/seeders/templates/*.json` fixture of
- * `"kind": "catalog"` against the schema frozen for W22 (see
+ * `"kind": "catalog"` against the frozen fixture schema (schema.md §3.14; see
  * database/seeders/CatalogLibrarySeeder.php for the full shape
  * documentation).
  *
@@ -88,7 +88,7 @@ final class CatalogFixtureValidator
             $fail("entry '{$ref}': title is required and must be a non-empty string.");
         }
 
-        // W76: an entry with no description inserts a node whose body is
+        // An entry with no description inserts a node whose body is
         // empty. `catalog_entries.description` is nullable and always will
         // be — a user's own saved entry may legitimately have none — but a
         // shipped ISO entry exists to explain a control in this project's
@@ -116,7 +116,7 @@ final class CatalogFixtureValidator
             'defence' => null,
         };
 
-        // W76: a bundle that carries nothing is the reported emptiness, at
+        // A bundle that carries nothing is the reported emptiness, at
         // the catalogue end of it. Inserting a risk entry with no attack
         // children produces a lone risk card; inserting an attack entry
         // with no defence children produces an attack nothing mitigates.
@@ -151,7 +151,7 @@ final class CatalogFixtureValidator
                 $fail("entry '{$ref}' (kind {$kind}) can only bundle '{$expectedChildKind}' children; '{$childRef}' is '{$byRef[$childRef]['kind']}'.");
             }
 
-            // W76: `catalog_entry_links` is unique on (parent, child), so a
+            // `catalog_entry_links` is unique on (parent, child), so a
             // repeated child ref is not a second link — CatalogLibrarySeeder
             // skips the duplicate and the second entry's `defaults` are
             // silently discarded along with it. Reject it here rather than

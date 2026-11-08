@@ -18,7 +18,7 @@ return [
     |
     */
 
-    // D71: fixed, not read from SESSION_DRIVER. SessionRegistry lists and
+    // Fixed, not read from SESSION_DRIVER. SessionRegistry lists and
     // revokes sessions as rows of the `sessions` table, so under any other
     // driver the profile page's session list is empty and no password
     // change, admin reset or revoke ends another session. A fixed value also
@@ -53,7 +53,7 @@ return [
     |
     */
 
-    // W24 / security.md §5: defaults to true, not Laravel's stock false.
+    // security.md §5: defaults to true, not Laravel's stock false.
     // Sessions live in Redis (see 'driver' above and .env.example), which
     // means every session payload — including the share-token grants a
     // read-only visitor holds — sits in a datastore whose whole security
@@ -183,7 +183,7 @@ return [
     |
     */
 
-    // W24 / security.md §5, the other half of legacy defect #6 (which was
+    // security.md §5, the other half of legacy defect #6 (which was
     // `secure => false` alongside a missing `http_only`). Laravel's stock
     // value here is a bare `env('SESSION_SECURE_COOKIE')`, which is
     // **null** when the variable is unset — and null means "let Symfony

@@ -5,9 +5,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /*
- * The sidebar's shared props (W41).
+ * The sidebar's shared props.
  *
- * The pair worth stating plainly, because W41 is the package that introduces
+ * The pair worth stating plainly, because the sidebar introduces
  * the temptation to confuse them: `nav.isAdmin` decides whether a link is
  * *drawn*. `EnsureUserIsAdmin` decides whether the route *answers*. The
  * sidebar spec asserts the first, this file asserts the second, and they are
@@ -96,7 +96,7 @@ test('a shared row names the owner and never their address', function () {
 });
 
 test('a public assessment I have nothing to do with is not in my sidebar', function () {
-    // `is_public` grants read to whoever holds the link (CLAUDE.md). It does
+    // `is_public` grants read to whoever holds the link. It does
     // not put the assessment in a stranger's navigation.
     $user = User::factory()->create();
     Assessment::factory()->create(['is_public' => true]);
@@ -124,7 +124,7 @@ test('a guest page carries no nav lists at all', function () {
     // null user would be a query per anonymous request, and a crash.
     //
     // A user has to exist first: an empty `users` table redirects /login to
-    // the first-run setup screen (CLAUDE.md — accounts are admin-created,
+    // the first-run setup screen (accounts are admin-created,
     // there is no default one).
     User::factory()->create();
 
@@ -144,13 +144,13 @@ test('the sidebar does not issue a query per assessment', function () {
 
     // Titles live on the root node (schema.md), so an unguarded map over the
     // list is an N+1 on every page in the application — the exact shape
-    // CLAUDE.md names as the legacy tree render's defining defect. The bound
+    // that was the legacy tree render's defining defect. The bound
     // is loose on purpose: this is a page load, not a unit, and the assertion
     // that matters is "does not grow with the number of assessments".
     expect(count($queries))->toBeLessThan(20);
 });
 
-test('the nav prop carries the running version and its notes link (W124)', function () {
+test('the nav prop carries the running version and its notes link', function () {
     config(['arguesecure.version' => '2.7.0']);
 
     $this->actingAs(User::factory()->create())->get(route('dashboard'))
@@ -159,7 +159,7 @@ test('the nav prop carries the running version and its notes link (W124)', funct
             ->where('nav.version.notesUrl', 'https://github.com/danionita/arguesecure-onlinev2/blob/v2.7.0/docs/RELEASE-2.7.0.md'));
 });
 
-test('an unversioned build says dev and links to the releases list (W124)', function () {
+test('an unversioned build says dev and links to the releases list', function () {
     config(['arguesecure.version' => 'dev']);
 
     $this->actingAs(User::factory()->create())->get(route('dashboard'))
@@ -168,7 +168,7 @@ test('an unversioned build says dev and links to the releases list (W124)', func
             ->where('nav.version.notesUrl', 'https://github.com/danionita/arguesecure-onlinev2/releases'));
 });
 
-test('a signed-out page carries no version (W124)', function () {
+test('a signed-out page carries no version', function () {
     config(['arguesecure.version' => '2.7.0']);
     // An empty users table redirects every guest page to first-run setup.
     User::factory()->create();
@@ -179,7 +179,7 @@ test('a signed-out page carries no version (W124)', function () {
             ->missing('nav.version'));
 });
 
-test('with no build version given, the app reports the VERSION file (W129)', function () {
+test('with no build version given, the app reports the VERSION file', function () {
     // The test environment sets no ARGUESECURE_BUILD_VERSION, which is the
     // case of a source build: it must not read `dev` (the 2.6.3 report).
     expect(config('arguesecure.version'))

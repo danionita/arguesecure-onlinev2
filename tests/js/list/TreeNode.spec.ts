@@ -1,19 +1,18 @@
 /**
- * The list's row spacing and per-level indent (W84, item 16, D51).
+ * The list's row spacing and per-level indent.
  *
  * ## Why this reads the source file
  *
- * As `tests/js/tree/listViewport.spec.ts` (W70) already documents for the
+ * As `tests/js/tree/listViewport.spec.ts` already documents for the
  * neighbouring reading-measure claim: the thing being asserted here is a
  * painted gap between rows and a painted offset per tier, and jsdom computes
  * no layout at all — `getBoundingClientRect()` on every element in this tree
  * would report zeroes whether the spacing classes are present or not. So this
  * reads `Components/Tree/TreeNode.vue`'s source directly and asserts the
- * *exact* utility classes, the same instrument W70 used and for the same
+ * *exact* utility classes, the same instrument it uses and for the same
  * reason: a test asserting "some margin is present" would stay green if the
- * margin were reverted to nothing, which is precisely CLAUDE.md's documented
- * case of a presence assertion surviving the removal of the thing it
- * guarded (`ReportOptions::$figures`, W80).
+ * margin were reverted to nothing, which is precisely the case of a presence assertion surviving the removal
+ * of the thing it guarded (as `ReportOptions::$figures` once did).
  *
  * `Components/Tree/TreeNode.vue` — not `Components/List/` — is where this
  * file lives; see that component's own docblock for why it was not moved
@@ -37,7 +36,7 @@ const treeitemElement =
 /** The `<ul role="group">` element — the indented child list for one tier. */
 const groupElement = /<ul\b[^>]*\brole="group"[^>]*>/s.exec(source)?.[0] ?? '';
 
-describe('the list row carries a specified vertical gap (D51)', () => {
+describe('the list row carries a specified vertical gap', () => {
     it('has a treeitem element to check at all', () => {
         // Guards the regex above rather than the behaviour: if the element is
         // renamed or restructured, every assertion below would pass
@@ -58,12 +57,12 @@ describe('the list row carries a specified vertical gap (D51)', () => {
     });
 });
 
-describe('the list indents one level with a specified offset (D51)', () => {
+describe('the list indents one level with a specified offset', () => {
     it('has a group element to check at all', () => {
         expect(groupElement).not.toBe('');
     });
 
-    it('carries exactly ml-4 and pl-4, grown from the pre-W84 ml-2.5/pl-2.5', () => {
+    it('carries exactly ml-4 and pl-4, grown from the earlier ml-2.5/pl-2.5', () => {
         expect(groupElement).toMatch(/\bml-4\b/);
         expect(groupElement).toMatch(/\bpl-4\b/);
         // The old, smaller values must actually be gone — not merely joined
@@ -84,7 +83,7 @@ describe('the list indents one level with a specified offset (D51)', () => {
     });
 });
 
-describe('the list hands its card the child count (W127)', () => {
+describe('the list hands its card the child count', () => {
     it('passes the number of children, which the card shows while collapsed', () => {
         expect(source).toMatch(/:child-count="childUuids\.length"/);
     });

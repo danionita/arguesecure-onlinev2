@@ -9,15 +9,15 @@ use App\Models\Assessment;
 use Illuminate\Http\RedirectResponse;
 
 /**
- * Saving an assessment's scales (W65; relocated in W87, ui.md §8,
- * PLAN-2.5.md D46; one request for all three kinds since W126, D94).
+ * Saving an assessment's scales (ui.md §8, Assessment settings; one request
+ * for all three kinds).
  *
  * ## There is no screen here
  *
  * The three editors live on Assessment settings, which builds the payload
- * through the same `ScaleDescriber` the admin Defaults tab uses. W87 deleted
- * the page and its GET route rather than leaving it reachable (D46); W126
- * likewise deleted the per-kind save routes and "Reset to default" — choosing
+ * through the same `ScaleDescriber` the admin Defaults tab uses. The standalone
+ * page and its GET route were deleted rather than left reachable, and the
+ * per-kind save routes and "Reset to default" went the same way — choosing
  * a scale in the dropdown fills the editors, and Save stores them.
  *
  * ## `manage`, and the spec says so outright

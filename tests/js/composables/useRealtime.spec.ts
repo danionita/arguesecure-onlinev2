@@ -13,7 +13,7 @@ import {
 } from '../../../resources/js/stores/assessmentStore';
 
 /**
- * ui.md §6 / PLAN.md Phase 6 item 4: applyRealtimeUpdatesToStore() is what
+ * ui.md §6: applyRealtimeUpdatesToStore() is what
  * turns a granular broadcast into a store patch — "carry the changed data
  * so the client patches its store... do not repeat" the legacy
  * id-then-refetch design. This suite fakes the low-level connection (only
@@ -207,6 +207,7 @@ describe('applyRealtimeUpdatesToStore', () => {
             strength_fraction: null,
             strength_level_id: null,
             reduction_target: null,
+            rationale: null,
         };
         store.attackDefenceLinks.push(link);
         const { realtime, emit } = makeFakeRealtime();

@@ -1,12 +1,12 @@
 /**
  * "Is this the Phishing you already have?" — suggestions for the add-a-child
- * title field (ui.md §3.3, W40, PLAN-2.2.md item 10a).
+ * title field (ui.md §3.3).
  *
  * Adding a child has always created a node. That is how an assessment ends up
  * with *Phishing* three times under three risks: three nodes, three sets of
  * defences to keep in step, and a total that counts one attack as though it
  * were three separate problems. The DAG has allowed one node under several
- * parents since W5; nothing offered it at the moment someone is actually
+ * parents from the start; nothing offered it at the moment someone is actually
  * deciding, which is while they are typing the name.
  *
  * ## The fast path must not get slower
@@ -24,7 +24,7 @@
  *
  * `Components/UI/Combobox.vue` owns its own input, its own value, and its own
  * blur handling. NodeCard's title field already has a draft that commits on
- * blur, an Escape-to-revert, and a W16 lock badge, and pushing all three
+ * blur, an Escape-to-revert, and a lock badge (ui.md §6), and pushing all three
  * through a shared component used by the share dialog would be a rewrite of
  * two working things to add one. This supplies the list and the keyboard
  * state; the field stays the field.

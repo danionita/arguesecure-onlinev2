@@ -1,9 +1,8 @@
 /**
- * Canvas zoom and pan (ui.md §5 / PLAN.md W15).
+ * Canvas zoom and pan (ui.md §5).
  *
  * Zoom is a clamped, persisted number (50%-200%, per assessment per user
- * **per view** since W84/D43) that the two views spend differently — W34 /
- * PLAN-2.2.md D9. The chart scales geometrically (`canvasStyle`); the list
+ * **per view**) that the two views spend differently. The chart scales geometrically (`canvasStyle`); the list
  * scales type size and keeps its width (`listStyle`). See each computed
  * below for why.
  *
@@ -19,8 +18,8 @@
  * (app/Http/Middleware/HandleInertiaRequests.php shares it on every
  * request), so callers pass it in rather than this composable importing
  * `usePage()` itself — that keeps this file framework-router-agnostic and
- * trivially unit-testable outside a mounted Inertia page. See the W15
- * report for what a durable, cross-device server-side version would need.
+ * trivially unit-testable outside a mounted Inertia page. A durable,
+ * cross-device version would need server-side storage.
  *
  * Pan (middle-drag or space-drag) is implemented as scroll-container
  * manipulation, not a second transform, so native two-axis scrolling
@@ -31,10 +30,10 @@
  * The space-hold detector below is a *local* keydown/keyup listener scoped
  * to whatever container element the caller attaches it to (see
  * `bindContainer`), not a global document/window listener and not an entry
- * in W14's `useKeyboard*.ts` command registry. ui.md §4's keyboard map
- * assigns `Ctrl/Cmd + +/-/0` to zoom as an app-wide shortcut — W14 owns
- * wiring that binding and calls `zoomIn`/`zoomOut`/`zoomReset` below to do
- * it (see the W15 report for the exact exported surface).
+ * in the `useKeyboard*.ts` command registry. ui.md §4's keyboard map
+ * assigns `Ctrl/Cmd + +/-/0` to zoom as an app-wide shortcut — the keyboard
+ * composables wire that binding and call `zoomIn`/`zoomOut`/`zoomReset`
+ * below to do it.
  */
 import { computed, ref, type CSSProperties } from 'vue';
 import type { EditorViewMode } from './useEditorViewMode';
@@ -46,7 +45,7 @@ export const CANVAS_ZOOM_DEFAULT = 1;
 
 /**
  * `useCanvas.ts`'s own scope, wider than the editor's `EditorViewMode`
- * (Integration 2.5). The report (`Pages/Report/Show.vue`, W83) is a third
+ * (Integration 2.5). The report (`Pages/Report/Show.vue`) is a third
  * caller of this composable with its own persisted zoom and its own
  * baseline, but it is not a selectable editor view: `EditorViewMode` also
  * drives `ViewSwitcher.vue` and `useEditorViewMode.ts`'s `VALID` array and
@@ -59,8 +58,8 @@ export const CANVAS_ZOOM_DEFAULT = 1;
 export type CanvasView = EditorViewMode | 'report';
 
 /**
- * The scale `zoom.value` is measured against, **per view** since W84
- * (originally W69, PLAN-2.4.md D28; made per-view by PLAN-2.5.md D43+D51).
+ * The scale `zoom.value` is measured against, **per view** (it began as one
+ * shared baseline and was later split per view).
  *
  * Both views rendered too small at 100%, and the two obvious fixes are not
  * interchangeable. Moving `CANVAS_ZOOM_DEFAULT` to 1.1 would make the control
@@ -75,10 +74,10 @@ export type CanvasView = EditorViewMode | 'report';
  * `CANVAS_ZOOM_DEFAULT` instead of this one is the rejected alternative, not
  * a suggestion.**
  *
- * D51 ("the list breathes, and opens larger") is two separate fixes. Row
+ * "The list breathes, and opens larger" is two separate fixes. Row
  * spacing and indent (`Components/List/TreeNode.vue`) fix *density* — zoom
  * cannot, because it scales the gaps along with the text. This baseline
- * fixes *starting size*, and D43 makes each view's zoom independent, so the
+ * fixes *starting size*, and each view's zoom being independent means the
  * list's baseline can be raised without moving the chart's. The list opens
  * more zoomed in than the chart because it is the reading surface; the chart
  * wants to show the whole shape of the assessment first.
@@ -92,7 +91,7 @@ export type CanvasView = EditorViewMode | 'report';
  * `.report` (Integration 2.5) is `1.0`, not one of the other two. The report
  * is a printed/downloaded document, not a reading surface someone has
  * already opted into a larger baseline for (`.list` is 1.35 for exactly that
- * reason, per D51) — a report that opened pre-zoomed while its own control
+ * reason) — a report that opened pre-zoomed while its own control
  * still read "100%" would be lying about its own state. `Pages/Report/Show.vue`
  * reads `listStyle` (the CSS-`zoom` mechanism, not the chart's transform —
  * the report is document-shaped) with `view: 'report'`, so this entry is what
@@ -109,9 +108,9 @@ export interface UseCanvasOptions {
     /** The current user's id, for per-user persistence. Pass `usePage().props.auth.user?.id` from the caller. */
     userId?: string | number | null;
     /**
-     * Which view this instance's zoom is persisted and scaled for (D43).
+     * Which view this instance's zoom is persisted and scaled for.
      * Required rather than defaulted: a caller that forgets it would silently
-     * share one view's zoom with the other again, which is the bug D43 fixes.
+     * share one view's zoom with the other again, which was a bug.
      *
      * Typed `CanvasView`, not `EditorViewMode`, because the report
      * (`Pages/Report/Show.vue`) is a third scope with its own persisted zoom
@@ -135,9 +134,9 @@ function resolveStorage(
 }
 
 /**
- * The pre-W84 key, with no view component. A fresh instance of either view
+ * The original key, with no view component. A fresh instance of either view
  * reads it once as a seed — see `loadPersisted` below — so a zoom set before
- * this package shipped still means something on first load after the
+ * per-view zoom shipped still means something on first load after the
  * upgrade, for *both* views, rather than being silently discarded.
  */
 function legacyStorageKey(assessmentUuid: string, userId: unknown): string {
@@ -185,7 +184,7 @@ export function useCanvas(options: UseCanvasOptions) {
     }
 
     /**
-     * D43: this view's own key first; failing that, the pre-upgrade key as a
+     * This view's own key first; failing that, the pre-upgrade key as a
      * one-time seed. Both views read the same legacy value the first time
      * either is mounted after the upgrade — neither writes it, so it stays
      * there for the other view to seed from too — and they diverge the
@@ -252,7 +251,7 @@ export function useCanvas(options: UseCanvasOptions) {
     }));
 
     /**
-     * The list's zoom: type size, not geometry (PLAN-2.2.md D9).
+     * The list's zoom: type size, not geometry.
      *
      * The list used `canvasStyle` too, and a transform on a document-shaped
      * view is the wrong tool: scaling up pushed the list wider than the

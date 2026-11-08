@@ -7,11 +7,11 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * W18b, end-to-end: confirms RevisionRecorder actually fires on a real
+ * End-to-end: confirms RevisionRecorder actually fires on a real
  * edit made through the HTTP route (NodeController::update()), not only
  * when exercised directly in a unit test — and that doing so never
- * touches W14's separate assessment_operations undo stack (schema.md
- * §3.10, CLAUDE.md's Job 1 non-negotiable for this package).
+ * touches the separate assessment_operations undo stack (schema.md
+ * §3.10; this is the non-negotiable for the revision log).
  */
 function attachRecorderMember(Assessment $assessment, User $user, string $role): void
 {

@@ -6,7 +6,7 @@
  * `/v1/chat/completions`, streaming, with the app's sampling (temperature 0.4,
  * `cache_prompt`) — the same request `App\Domain\Assistant\Client` sends — and
  * not to `/completion`, which applies no chat template and returned an empty
- * string for jobs A and C on the shipped model (W59, 2.3-threads.md). A seed
+ * string for jobs A and C on the shipped model. A seed
  * is added, which the app deliberately does not send, so that two runs of the
  * harness are comparable.
  *
@@ -187,7 +187,7 @@ export const summarise = (result) => {
         wallSeconds: round(result.wallSeconds),
         firstTokenSeconds: round(result.firstTokenSeconds),
         finishReason: result.finishReason,
-        // Processed vs served from cache: the pair D21's design rests on.
+        // Processed vs served from cache: the pair the fixed-prefix design rests on.
         promptProcessed: t.prompt_n ?? null,
         promptFromCache: t.cache_n ?? null,
         promptTokensPerSecond: round(t.prompt_per_second),
@@ -206,7 +206,7 @@ export const summarise = (result) => {
 };
 
 /**
- * Job B's contract, checked the way the accept path reads it (D23): find the
+ * Job B's contract, checked the way the accept path reads it: find the
  * array wherever it sits in the reply — gemma3 fences it, qwen2.5 did not —
  * and count only elements with a non-empty string `title` and `description`.
  * Extra keys are recorded rather than counted against the item, because the

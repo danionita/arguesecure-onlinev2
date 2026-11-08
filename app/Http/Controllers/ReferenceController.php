@@ -15,8 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * CVE and friends (schema.md §3.12, ui.md §7 "References" tab, PLAN.md
- * Phase 8 item 5). **No outbound API calls, ever** — nothing here fetches
+ * CVE and friends (schema.md §3.12, ui.md §7 "References" tab). **No outbound API calls, ever** — nothing here fetches
  * or enriches anything; App\Domain\References\ReferenceValidator derives
  * every non-`url`/`other` link as a pure function of the stored
  * identifier.

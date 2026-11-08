@@ -3,10 +3,9 @@
  * A completeness-aware currency figure for one frozen baseline
  * (calculation-engine.md §6.2.3), the same "never a bare number for a
  * partial assessment" rule ReportTotal.vue applies to the live report —
- * carried into snapshots too, per the W19 task brief ("Never render a bare
- * number for a partial assessment; carry the completeness block into the
- * snapshot too"). Kept as this package's own copy since Components/Report
- * belongs to W17, a different package's file ownership.
+ * carried into snapshots too, so the completeness block travels with the
+ * snapshot. Kept as the snapshots' own copy rather than
+ * importing from Components/Report.
  */
 import Money from '@/Components/UI/Money.vue';
 import type { CalculationResult } from '@/calc';

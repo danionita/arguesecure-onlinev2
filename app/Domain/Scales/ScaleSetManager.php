@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 /**
- * The admin's side of scales (W126, D92-D94): create, rename, save, delete.
+ * The admin's side of scales create, rename, save, delete.
  *
  * Built-in scales (`is_builtin`) can be edited and never renamed or deleted:
  * `AssessmentCreator` falls back to `default` and the docs and tests name
@@ -54,7 +54,7 @@ final class ScaleSetManager
                     'unit' => $from->unit,
                     'is_system' => true,
                 ]);
-                // Identity columns, assigned as properties (CLAUDE.md).
+                // Identity columns, assigned as properties, never mass-assigned.
                 $scale->set_key = $key;
                 $scale->save();
 

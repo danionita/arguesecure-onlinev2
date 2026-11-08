@@ -10,7 +10,7 @@ use App\Models\Risk;
 use App\Models\User;
 
 /*
- * PLAN-2.7 D64: a defence cites a framework control as a `control`
+ * A defence cites a framework control as a `control`
  * reference, `FRAMEWORK:CONTROL`, from a closed list of frameworks, each
  * with its own pattern, linked to the framework and never to input.
  */

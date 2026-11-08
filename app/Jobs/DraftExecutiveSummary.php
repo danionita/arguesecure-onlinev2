@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
- * Job C, on the queue where it belongs (PLAN-2.3-ai.md W54).
+ * Job C, on the queue where it belongs.
  *
  * 249 seconds for 73 nodes on the recommended model, 499 on the slowest
  * candidate, growing with the assessment — measured on a workstation faster
@@ -97,7 +97,7 @@ class DraftExecutiveSummary implements ShouldQueue
             $graph = $loader->load($assessment);
             $results = $cache->remember($assessment, fn () => $calculator->compute($graph));
 
-            // W58. Opened after the graph and the calculation, not before: a
+            // Opened after the graph and the calculation, not before: a
             // progress row that starts ticking while the queue is still
             // loading would report a generation that has not begun, and on a
             // large assessment that is the difference between "working" and

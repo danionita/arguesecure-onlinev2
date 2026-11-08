@@ -1,5 +1,5 @@
 /**
- * The interface says "scales" (W126, D92; plan criteria 22 and 23).
+ * The interface says "scales".
  *
  * It reads the files rather than mounting them: the words matter wherever
  * they can reach a person — a template, the help pages the assistant answers
@@ -42,9 +42,11 @@ const FILES = [
         .map((f) => `resources/js/Components/Scales/${f}`),
 ];
 
-const HELP = readdirSync(join(root, 'resources/markdown/help'))
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => `resources/markdown/help/${f}`);
+const HELP = ['help', 'admin-help'].flatMap((dir) =>
+    readdirSync(join(root, `resources/markdown/${dir}`))
+        .filter((f) => f.endsWith('.md'))
+        .map((f) => `resources/markdown/${dir}/${f}`),
+);
 
 const BANNED = [
     /calibrat/i,
@@ -74,7 +76,7 @@ describe('words that no longer appear', () => {
         expect(
             templateOf('resources/js/Pages/Assessment/Settings.vue'),
         ).toContain('Scales');
-        expect(read('resources/markdown/help/administration.md')).toContain(
+        expect(read('resources/markdown/admin-help/settings.md')).toContain(
             'Standard',
         );
     });

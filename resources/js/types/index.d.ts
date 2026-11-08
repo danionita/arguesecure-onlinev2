@@ -17,7 +17,7 @@ export interface ReverbProps {
     scheme: string | null;
 }
 
-/** The `nav.version` shared prop (ReleaseInfo::for()), W124. */
+/** The `nav.version` shared prop (ReleaseInfo::for()). */
 export interface VersionProps {
     label: string;
     notesUrl: string;
@@ -30,4 +30,6 @@ export type PageProps<
         user: User;
     };
     reverb: ReverbProps;
+    /** The operator's deployment notice (APP_NOTICE), or null. */
+    notice: string | null;
 };

@@ -6,8 +6,8 @@ use App\Models\Snapshot;
 use RuntimeException;
 
 /**
- * Turns a frozen graph into the props the live editor's views already take
- * (W63), so an old version can be *read* in the chart and the list rather than
+ * Turns a frozen graph into the props the live editor's views already take,
+ * so an old version can be *read* in the chart and the list rather than
  * only as a page of counts.
  *
  * ## Why a translation layer and not a second set of views

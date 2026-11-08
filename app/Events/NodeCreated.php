@@ -12,17 +12,17 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * PLAN.md Phase 6 item 4 / ui.md §6: carries the full new node, so a
+ * ui.md §6: carries the full new node, so a
  * collaborator's client patches its store directly — the legacy design
  * broadcast only an id and re-fetched a rendered HTML fragment per change,
- * which CLAUDE.md and PLAN.md both call out by name as the thing not to
+ * which the project's own guidance calls out by name as the thing not to
  * repeat.
  *
  * Dispatched from App\Observers\NodeObserver rather than from
- * NodeController (outside this package's ownership): the observer fires on
+ * NodeController: the observer fires on
  * every concrete node subclass's `created` event regardless of which
  * service created it, so this also covers node creation from services this
- * package never has to know about (e.g. a future catalogue insert).
+ * class never has to know about (e.g. a future catalogue insert).
  *
  * Implements ShouldDispatchAfterCommit because NodeController::store()
  * creates a node and its first link inside one DB transaction — broadcasting
@@ -49,7 +49,7 @@ class NodeCreated implements ShouldBroadcast, ShouldDispatchAfterCommit
     {
         // Through the resolver, not `$node->assessment->uuid`: that was one
         // lazy-loaded SELECT per broadcast, and a bulk path fires one of these
-        // per row (W68).
+        // per row.
         $this->assessmentUuid = app(AssessmentUuids::class)->forNode($node);
         $this->node = NodeBroadcastPayload::toArray($node);
         $this->actorId = $actorId;

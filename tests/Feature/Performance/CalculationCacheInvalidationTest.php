@@ -20,7 +20,7 @@ use App\Models\ScaleLevel;
  * rather than trusting the observer registrations by inspection. Writing it
  * found the real gap: scale recalibration changed every figure and bumped
  * nothing, because TriggersRecalculation's own docblock had noted scales as
- * "territory this package does not own a model for". ScaleLevelObserver was
+ * "territory without a model of its own". ScaleLevelObserver was
  * added to close it, and the last test here is what holds it closed.
  */
 function keyFor(Assessment $assessment): string

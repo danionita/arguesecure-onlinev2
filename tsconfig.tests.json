@@ -1,0 +1,13 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "types": ["node"]
+    },
+    "include": [
+        "resources/js/types/**/*.d.ts",
+        "tests/js/**/*.ts",
+        "tests/js/**/*.vue",
+        "tests/e2e/**/*.ts",
+        "playwright.config.ts"
+    ]
+}

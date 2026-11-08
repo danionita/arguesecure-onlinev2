@@ -13,7 +13,7 @@ beforeEach(function () {
 
 /**
  * FIXED: deleting a user who owns a deleted, calibrated assessment answered
- * 500 (W113 pinned it; fixed by W121, D81). A calibrated assessment owns its
+ * 500 (first pinned as a defect, then fixed). A calibrated assessment owns its
  * scales and references them with RESTRICT, so the cascade from
  * `assessments.owner_user_id` failed with 1451 once the user row went, and
  * `DestroyUserRequest` and the transfer both skipped deleted assessments.

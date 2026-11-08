@@ -9,14 +9,14 @@
  * what you can do with a row is the drift this component removes — both pages
  * now pass their rows here and differ only in which rows they pass.
  *
- * ## Filtering (W42 item 13)
+ * ## Filtering
  *
  * Client-side, on title, description and label, case-insensitively, on a
  * plain substring: the whole list is already on the page, so a request would
  * be slower and no more correct, and a fuzzy match that surfaces the wrong
  * assessment is worse than no match.
  *
- * ## Actions, and what gates them (W42 item 20, W86 item 7)
+ * ## Actions, and what gates them
  *
  * Settings · Share · Export · Duplicate · Delete, as icons with their names
  * in the tooltip and the accessible name. Each renders from a permission the
@@ -47,7 +47,7 @@ export interface AssessmentSummary {
     can_delete: boolean;
     owner_name: string | null;
     updated_at: string | null;
-    /** Labels on the root node — the assessment's own (W43 item 18). */
+    /** Labels on the root node — the assessment's own (ui.md §7, Labels). */
     tags: string[];
 }
 
@@ -57,7 +57,7 @@ const props = defineProps<{
     emptyTitle: string;
     emptyDescription: string;
     /**
-     * How long a deleted assessment stays restorable (W113). Optional: the
+     * How long a deleted assessment stays restorable. Optional: the
      * shared page does not carry it, and says the same without the number.
      */
     retentionDays?: number;
@@ -68,7 +68,7 @@ const pendingDelete = ref<AssessmentSummary | null>(null);
 const duplicating = ref<string | null>(null);
 
 /**
- * Deleting is soft (W113), so the confirmation says where the assessment
+ * Deleting is soft, so the confirmation says where the assessment
  * goes and for how long, rather than implying it is gone.
  */
 const deleteMessage = computed(() => {
@@ -225,7 +225,7 @@ const exportOptions: ReportOptions = {
                         </Link>
                     </Tooltip>
                     <!-- Opens the editor's own sharing dialog: there is one
-                         sharing UI (W9), and a second copy here would drift. -->
+                         sharing UI, and a second copy here would drift. -->
                     <Tooltip v-if="assessment.can_manage" text="Share">
                         <Link
                             :href="route('share.index', assessment.uuid)"
@@ -235,7 +235,7 @@ const exportOptions: ReportOptions = {
                             <Icon name="share-2" :size="14" />
                         </Link>
                     </Tooltip>
-                    <!-- The editor's own ExportMenu (D40), as an icon. -->
+                    <!-- The editor's own ExportMenu, as an icon. -->
                     <ExportMenu
                         :assessment-uuid="assessment.uuid"
                         :options="exportOptions"

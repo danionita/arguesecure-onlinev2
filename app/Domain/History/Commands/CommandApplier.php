@@ -16,7 +16,7 @@ interface CommandApplier
 {
     /**
      * @param  array<string, mixed>  $command
-     * @param  int  $assessmentId  the operation's assessment: every uuid in the command is resolved inside it (D82)
+     * @param  int  $assessmentId  the operation's assessment: every uuid in the command is resolved inside it
      * @return array<string, mixed> the command that reverses what was just applied
      *
      * @throws UndoConflictException the command's preconditions no longer hold against current state

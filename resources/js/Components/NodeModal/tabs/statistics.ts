@@ -1,5 +1,5 @@
 /**
- * The Statistics tab's figures, as data (W39, PLAN-2.2.md item 11).
+ * The Statistics tab's figures, as data (ui.md §7, Statistics tab).
  *
  * Pure: it takes `CalculationResults` — the engine's own output, already on
  * the store — and returns rows. No store, no component, no formatting
@@ -9,16 +9,16 @@
  *    test can feed it a computed `results` object and assert the rows cell by
  *    cell, which is not something you can do convincingly through a mounted
  *    component full of formatted strings.
- * 2. `RiskCalculator` is not touched by this package. Every figure below is a
+ * 2. `RiskCalculator` is not touched by this tab. Every figure below is a
  *    field that already exists on a result object, or a subtraction of two of
  *    them. If a figure ever seems to need an engine change, that is a
  *    stop-and-report, not a quiet addition here.
  *
  * ## Why the numbers are laid out per baseline
  *
- * W36 took the computed figures off the list card and W37 off the chart card,
+ * The computed figures were taken off the list card and the chart card,
  * because both of those surfaces had to pick *one* baseline to show and the
- * selector that picked it is gone (PLAN-2.2.md D8). The figures did not become
+ * selector that picked it is gone. The figures did not become
  * uninteresting; they became figures that only make sense next to their two
  * siblings. This is the surface where all three stand side by side, so no
  * choice has to be made on the reader's behalf.
@@ -26,7 +26,7 @@
  * ## `—` is not `0`
  *
  * A null cell renders as the missing chip, never as zero. That is the
- * calculation engine's rule (CLAUDE.md; calculation-engine.md §6.1) applied at
+ * calculation engine's rule (calculation-engine.md §6.1) applied at
  * the display layer, and it carries real meaning in three places here:
  * `attribution` is null for a defence outside the baseline's active set,
  * `cbr` is null for an unpriced defence, and a share-of-total is null rather

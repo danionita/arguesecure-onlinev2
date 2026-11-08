@@ -10,7 +10,7 @@ use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Writer\Word2007;
 
 /**
- * The report as a real `.docx` (D34, W74 item 25): the prose sections in
+ * The report as a real `.docx`: the prose sections in
  * order, with the tables.
  *
  * This is the format for the reader who has to *change* it — add a covering
@@ -22,11 +22,11 @@ use PhpOffice\PhpWord\Writer\Word2007;
  *
  * **Every string goes in as text.** PhpWord writes text into the XML raw
  * unless output escaping is switched on — its default is off — so `export()`
- * switches it on before it builds anything (W106). Nothing here builds markup
+ * switches it on before it builds anything. Nothing here builds markup
  * from a title, a rationale or the written summary. The summary in particular
- * may be model-drafted text a person accepted (W54, D24) — the accept step is
+ * may be model-drafted text a person accepted — the accept step is
  * the guardrail, and a renderer that interpreted what it carried would be a
- * second surface for exactly what D24 exists to stop.
+ * second surface for exactly what the accept step exists to stop.
  *
  * Tables repeat their header row across pages (`tblHeader`). The
  * full-assessment section is 14 columns of a 200-row assessment; a header

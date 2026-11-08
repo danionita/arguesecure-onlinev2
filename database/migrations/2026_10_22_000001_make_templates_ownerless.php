@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * W141 (PLAN-2.7-admin-templates.md, T1 and T6): a template has no owner.
+ * A template has no owner.
  *
  * `owner_user_id` becomes nullable, existing templates are made ownerless by
  * TemplateMigrator, and a CHECK then says what the application relies on: a row
@@ -33,7 +33,7 @@ return new class extends Migration
         // them to, and failing before any change beats half a rollback.
         $admin = DB::table('users')->where('is_admin', true)->orderBy('id')->value('id');
         if ($admin === null && DB::table('assessments')->whereNull('owner_user_id')->exists()) {
-            throw new RuntimeException('Cannot roll back W141: templates need an administrator to own them.');
+            throw new RuntimeException('Cannot roll back the ownerless-templates migration: templates need an administrator to own them.');
         }
 
         DB::statement('ALTER TABLE assessments DROP CONSTRAINT assessments_template_ownerless');

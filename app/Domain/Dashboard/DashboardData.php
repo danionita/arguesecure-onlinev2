@@ -13,15 +13,15 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * The four questions someone has when they arrive (ui.md §8, W42 item 17):
+ * The four questions someone has when they arrive (ui.md §8, Dashboard):
  * what is assigned to me, who mentioned me, what do I own, and what have I
  * been invited to.
  *
  * A domain class rather than a fat controller because two of the four
  * sections are not finished yet, and the seam matters more than the code
  * currently behind it. `assignedToMe()` and `mentions()` return empty lists
- * today and are the *only* places W46 and W47 have to change — neither
- * package should have to rewrite `Dashboard.vue`, and the page is built so
+ * today and are the *only* places the assignment and mention features had to change —
+ * neither should have to rewrite `Dashboard.vue`, and the page is built so
  * that it will not need to: the sections render, the empty states already say
  * what will fill them, and the rows arrive in the shape the real data will
  * have.
@@ -69,7 +69,7 @@ class DashboardData
     }
 
     /**
-     * The tab and section counts (D91, W125): the real totals, not the length
+     * The tab and section counts (the dashboard's "see all" counts): the real totals, not the length
      * of the excerpt above. Same scopes as the lists — owned for *Mine*
      * (`/assessments`), membership for *Shared with me* (`/assessments/shared`)
      * — and `SoftDeletes` already leaves a trashed assessment out of both.
@@ -85,9 +85,9 @@ class DashboardData
     }
 
     /**
-     * Nodes assigned to this user (item 16, W46).
+     * Nodes assigned to this user (the assignment feed).
      *
-     * The row shape is the one W42 wrote down here before the data existed,
+     * The row shape is the one written down here before the data existed,
      * unchanged:
      *
      *   ['assessment_uuid', 'assessment_title', 'node_uuid', 'type',
@@ -167,10 +167,10 @@ class DashboardData
     }
 
     /**
-     * Comments mentioning this user, unresolved first (item 15, W47).
+     * Comments mentioning this user, unresolved first (the mention feed).
      *
      * Read from the notifications this user has already been sent, not by
-     * re-scanning comment bodies. W42 warned that scanning would be slow and
+     * re-scanning comment bodies. the dashboard design warned that scanning would be slow and
      * wrong — two people called Dana, or a comment about a node called "Dana's
      * laptop" — and `MentionParser` resolves that once, at write time, against
      * the assessment's collaborators only. Re-deriving it here would mean two
@@ -182,7 +182,7 @@ class DashboardData
      * closed should sort down, and a notification is otherwise a record of
      * what was true when it was sent.
      *
-     * Row shape, as W42 specified it:
+     * Row shape, as the dashboard design specified it:
      *
      *   ['assessment_uuid', 'assessment_title', 'node_uuid', 'node_title',
      *    'excerpt', 'author', 'resolved', 'created_at']
@@ -250,7 +250,7 @@ class DashboardData
     /**
      * Assessments someone else owns and this user has been invited to.
      *
-     * Public since W73 (D33), because the dashboard tab is now an excerpt of
+     * Public because the dashboard tab is now an excerpt of
      * a real page — `/assessments/shared` — and the two must not be two
      * queries that could disagree about what "shared with me" means. The
      * *only* difference between them is `$limit`: the tab shows six, the page
@@ -277,14 +277,14 @@ class DashboardData
 
     /**
      * The same collection, unabridged and policy-checked, for the page the
-     * tab's "see all" leads to (D33, W73 item 20).
+     * tab's "see all" leads to (ui.md §8, Assessments shared with me).
      *
      * Unpaginated on purpose, exactly as the assessment list is: the page
      * filters client-side, and a collection sized by how many people have
      * invited you does not need pages.
      *
-     * The `view` pass is the route's AssessmentPolicy check, which CLAUDE.md
-     * requires of every route touching an assessment and which a
+     * The `view` pass is the route's AssessmentPolicy check, which every
+     * route touching an assessment goes through (security.md §3.1) and which a
      * collection route otherwise has no executable claim to. It runs
      * *second*, after the membership scope, and being a filter it can only
      * remove rows — so it cannot reintroduce the leak it would be on its own,
@@ -317,12 +317,12 @@ class DashboardData
     {
         return Assessment::query()
             // `owner` eager-loaded because every row names who shared it —
-            // "the thing that is missing today" (PLAN-2.2.md W42). Without
+            // "the thing that is missing today" (ui.md §8, Dashboard). Without
             // the eager load that is one query per row.
-            // `members` eager-loaded since W73 for the page's per-row Gate
+            // `members` eager-loaded for the shared page's per-row Gate
             // check: AssessmentPolicy resolves a role through that relation,
             // so without it that check would be one query per row — the N+1
-            // CLAUDE.md names as the legacy tree render's defining defect.
+            // that was the legacy tree render's defining defect.
             ->with(['rootNode', 'owner', 'members:id'])
             ->where('owner_user_id', '!=', $user->id)
             ->whereHas('members', fn ($member) => $member->where('users.id', $user->id))
@@ -340,7 +340,7 @@ class DashboardData
                 $row = $this->summarise($assessment);
                 // Display name only, never the address. An assessment list is
                 // a page about other people's work, which is exactly where an
-                // address leaks (security.md, and the W17 report cover).
+                // address leaks (security.md, and the report cover).
                 $row['owner_name'] = $assessment->owner?->name;
 
                 return $row;

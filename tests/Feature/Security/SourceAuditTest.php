@@ -1,9 +1,9 @@
 <?php
 
 /**
- * W24 — the OWASP items that are *absences*, and so cannot be proved by
+ * The OWASP items that are *absences*, and so cannot be proved by
  * exercising a route: security.md §7 (input handling), §2 (no secret in
- * the tree), §6 (nothing loads from a CDN), and CLAUDE.md's `env()` rule.
+ * the tree), §6 (nothing loads from a CDN), and the rule that `env()` is called only in config files.
  *
  * A behavioural test can show that one endpoint is safe. Only a scan can
  * show that a bad pattern appears **nowhere**, which is the actual claim
@@ -87,9 +87,8 @@ it('never calls $request->all(), anywhere', function () {
 });
 
 it('never calls env() outside a config file', function () {
-    // CLAUDE.md: env() "returns null once config:cache runs, which is a
-    // latent production bug the legacy app shipped". config/ is the only
-    // legitimate caller.
+    // env() returns null once config:cache runs, which is a latent production
+    // bug the legacy app shipped. config/ is the only legitimate caller.
     // `tests` is deliberately out of scope: the rule exists because
     // `config:cache` freezes config and leaves env() returning null at
     // runtime, and the suite never runs against cached config. Scanning it

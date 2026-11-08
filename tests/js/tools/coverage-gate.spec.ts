@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-// @ts-expect-error — a plain .mjs script with no declaration file.
 import {
     evaluate,
     phpStatements,
@@ -9,7 +8,7 @@ const clover = (covered: number, total: number) =>
     `<coverage><project timestamp="1"><file name="a.php"><metrics statements="3" coveredstatements="3"/></file>` +
     `<metrics files="1" statements="${total}" coveredstatements="${covered}"/></project></coverage>`;
 
-describe('coverage gate (W119)', () => {
+describe('coverage gate', () => {
     it('reads the project total of a Clover report, not a file line', () => {
         expect(phpStatements(clover(90, 100))).toBe(90);
     });

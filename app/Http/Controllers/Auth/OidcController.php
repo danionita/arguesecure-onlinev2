@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 /**
- * Sign in with the instance's OpenID Connect provider (W117, D74-D76).
+ * Sign in with the instance's OpenID Connect provider (security.md §4).
  *
  * Both routes are plain GETs: the flow starts from a link (CSP's
  * `form-action 'self'` would block a form redirecting to the provider) and
@@ -29,7 +29,7 @@ class OidcController extends Controller
     /** How long a started flow may take: the user is typing a password at the provider. */
     private const FLOW_TTL_SECONDS = 600;
 
-    /** D79: a provider sign-in this recent counts as proof of presence. */
+    /** A provider sign-in this recent counts as proof of presence. */
     public const REAUTH_WINDOW_SECONDS = 300;
 
     public const SESSION_FLOW = 'oidc.flow';
@@ -65,7 +65,7 @@ class OidcController extends Controller
                 $flow['state'],
                 $flow['nonce'],
                 $flow['verifier'],
-                // D79: ask the provider to authenticate again, not to reuse its session.
+                // Ask the provider to authenticate again, not to reuse its session.
                 $reauth ? ['prompt' => 'login', 'max_age' => '0'] : [],
             );
         } catch (OidcException $e) {
@@ -121,7 +121,7 @@ class OidcController extends Controller
         }
 
         // Signed in by the provider: the provider's own second factor is the
-        // organisation's to enforce (D78), so the session says how it began.
+        // organisation's to enforce, so the session says how it began.
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
         $request->session()->put(self::SESSION_METHOD, 'oidc');

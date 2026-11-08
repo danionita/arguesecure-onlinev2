@@ -1,7 +1,7 @@
 /**
- * The "ask a question" control on the help index (W51, PLAN-2.3-ai.md).
+ * The "ask a question" control on the help index (docs/ASSISTANT.md).
  *
- * Three rules, and each one is a decision the plan makes explicitly rather
+ * Three rules, and each one is a decision made explicitly rather
  * than a detail of this component:
  *
  * - **Nothing is rendered where the assistant is unavailable.** No greyed-out
@@ -9,12 +9,12 @@
  *   the endpoint behind it is authenticated and a control that would 401 is
  *   worse than none.
  * - **The answer is marked as generated, at the point of use**, and survives
- *   as text. `{{ }}`, never `v-html`: W30 deleted this codebase's only
- *   user-authored-HTML renderer, and model output is the last thing that
+ *   as text. `{{ }}`, never `v-html`: this codebase's only
+ *   user-authored-HTML renderer was deleted, and model output is the last thing that
  *   should reintroduce one.
  * - **A slow answer is announced before it is asked.** ~90s versus a few
  *   seconds, because the documentation has to be read into the model's cache
- *   once. Since 2.6 that happens when the runtime starts (D57), so the slow
+ *   once. Since 2.6 that happens when the runtime starts, so the slow
  *   one is the answer asked just after a restart. A spinner with no
  *   explanation reads as a hang.
  */
@@ -89,7 +89,7 @@ describe('the ask-assistant control', () => {
             .find('[data-testid="first-answer-warning"]')
             .text();
 
-        // 2.6 (D57): the corpus is read in when the runtime starts, so the
+        // Since 2.6 the corpus is read in when the runtime starts, so the
         // slow answer is the one asked just after a restart, not every
         // session's first — and the notice must not promise either extreme.
         expect(warning).toContain('a minute or two');

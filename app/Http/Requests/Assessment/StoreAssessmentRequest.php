@@ -34,7 +34,7 @@ class StoreAssessmentRequest extends FormRequest
             // field with no ceiling is a denial-of-service affordance.
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
-            // Which admin scale the bands start from (W126). Absent means
+            // Which admin scale the bands start from. Absent means
             // Standard; a key that is not a complete scale is a 422, never a
             // quiet substitution.
             'scale_set_key' => ['nullable', 'string', Rule::in(ScaleSets::selectableKeys())],

@@ -9,7 +9,7 @@ import type {
 import { useToast } from '../../../resources/js/Components/UI/useToast';
 
 /**
- * W119: ShareDialog is the only caller of the sharing endpoints. What matters
+ * ShareDialog is the only caller of the sharing endpoints. What matters
  * is that each child event becomes the right request with the right payload
  * (a role change that PATCHed the wrong collaborator, or a "transfer" that
  * posted the wrong user, is an access-control mistake), that the dialog
@@ -187,7 +187,7 @@ describe('ShareDialog ownership transfer control', () => {
     });
 });
 
-describe('ShareDialog template control (W141)', () => {
+describe('ShareDialog template control', () => {
     it('is shown to an admin who may publish', async () => {
         const wrapper = await render({ canPublishTemplate: true });
 

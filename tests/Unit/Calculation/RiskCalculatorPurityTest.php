@@ -7,7 +7,7 @@
 // catches forbidden *function* calls (now(), rand(), file I/O, ...) that
 // arch's class-dependency analysis does not see.
 //
-// CalculationCache is the single, deliberate exception. PLAN.md's W16 row
+// CalculationCache is the single, deliberate exception. The design
 // places `Calculation\CalculationCache` in this namespace, and caching a
 // result in Redis keyed on assessments.calc_version is Eloquent and I/O by
 // definition — it is the impure boundary *around* the pure engine, not part
