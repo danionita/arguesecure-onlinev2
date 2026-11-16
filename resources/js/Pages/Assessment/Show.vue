@@ -247,7 +247,7 @@ async function redo() {
 useKeyboardOutline({
     store,
     container: treeContainer,
-    onOpenModal: (uuid) => modal.open(uuid),
+    onOpenModal: (uuid, path) => modal.open(uuid, 'details', path),
     onAddChild: (parentType, parentUuid, parentPath) => {
         if (store.abilities.update) {
             modal.openDraft(parentType, parentUuid, parentPath);

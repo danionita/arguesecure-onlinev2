@@ -19,10 +19,13 @@ use Illuminate\Support\Str;
  *  2. the active account with the token's email, linked on this first
  *     sign-in, if the email is verified (or the operator trusts the provider's
  *     emails) and that account has no identity from this issuer yet;
- *  3. a new non-admin account, if the email's domain is on the operator's list
- *     and the email is verified.
+ *  3. a new non-admin account, if registration is open and the day's cap is
+ *     not used; the provider has proved the mailbox, so nothing is mailed.
  *
- * Anything else is refused. Linking or creating only on a verified email is
+ * Step 3 also needs the email on the SSO domain list (empty is every domain)
+ * and on the email-registration list when that is set, and a claim the
+ * provider itself marks verified: "trust the provider's email" can link an
+ * existing account but never mints a new one. Anything else is refused. Linking or creating only on a verified email is
  * what stops a provider account that merely *claims* an address taking over an
  * ArgueSecure account, or minting one.
  */
@@ -62,10 +65,20 @@ final class SsoAccounts
             return $this->link($user, $issuer, $subject);
         }
 
-        $domain = Str::after($email, '@');
-
-        if (! in_array($domain, OidcConfig::allowedDomains(), true)) {
+        if (! OidcConfig::domainAllowed($email) || ! SelfRegistration::domainAllowed($email)) {
             throw new OidcException('No account, and the email domain is not allowed to create one.');
+        }
+
+        if (($claims['email_verified'] ?? null) !== true && ($claims['email_verified'] ?? null) !== 'true') {
+            throw new OidcException('No account, and the provider does not vouch for the email.');
+        }
+
+        if (! SelfRegistration::open()) {
+            throw new OidcException('No account, and registration is closed.');
+        }
+
+        if (SelfRegistration::capReached()) {
+            throw new OidcException('No account, and the day\'s registrations are used.');
         }
 
         return $this->create($email, $claims, $issuer, $subject);
@@ -133,6 +146,8 @@ final class SsoAccounts
             $user->password = Hash::make(Str::random(64));
             $user->is_admin = false;
             $user->is_active = true;
+            $user->email_verified_at = now();
+            $user->self_registered_at = now();
             $user->save();
 
             event(new SsoAccountCreated($user));

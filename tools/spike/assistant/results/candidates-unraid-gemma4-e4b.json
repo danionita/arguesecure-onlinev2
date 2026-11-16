@@ -307,7 +307,7 @@
   },
   "recorded": {
     "host": {
-      "cpu": "Intel(R) Core(TM) i9-14900K",
+      "cpu": "not published",
       "logicalCpus": 32,
       "physicalCores": 24,
       "flags": [

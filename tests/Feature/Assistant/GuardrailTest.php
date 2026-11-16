@@ -107,7 +107,7 @@ function askForSuggestions(User $user, Assessment $assessment, Node $parent)
 test('every case says what every measured model did, and every marker compiles', function () {
     $models = Injections::models();
 
-    // Three from 2.3 (Ollama, i9-9900K) and three from 2.6's own run (llama.cpp's
+    // Three from 2.3 (Ollama) and three from 2.6's own run (llama.cpp's
     // chat endpoint through the production launcher, the deployment host):
     // the old default as a control, and the two presets that replaced it. A
     // model can only be added to this list by running the red team on it.

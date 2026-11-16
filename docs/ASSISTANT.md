@@ -135,7 +135,7 @@ Below that, the tab lists both presets with the memory and download size each ne
 
 **Why 2.6 changed the default.** Asked *why doesn’t my total change when I set a reduction target?* — which the help pages answer directly — the model 2.5 shipped, `gemma-3-4b-it`, was right once in four samples: twice it answered a different question, once it quoted the formula without answering. `small` and `large` were right four times in four. In drafted executive summaries it invented figures that are not in the assessment once in four (one of them ten times the real amount); `small` and `large` did so never. On the red-team cases the presets behaved exactly as the old default did (§6). The measurements are in `docs/spikes/2.6-models.md`.
 
-**CPU inference is slow in a way that changes designs, not just timings.** Measured on the deployment host (Intel i9-14900K, 4 cores given to the container — see `spikes/2.6-models.md`; the help corpus is now ~6,500 tokens, a third larger than when 2.3 first measured this):
+**CPU inference is slow in a way that changes designs, not just timings.** Measured on the deployment host (4 cores given to the container — see `spikes/2.6-models.md`; the help corpus is now ~6,500 tokens, a third larger than when 2.3 first measured this):
 
 | Job | `small` | `large` | 2.5's default, for comparison |
 |---|---|---|---|

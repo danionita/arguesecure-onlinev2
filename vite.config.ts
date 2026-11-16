@@ -27,7 +27,10 @@ const CHUNK_BUDGET_BYTES = 400 * 1024; // per emitted JS/CSS asset, raw (pre-gzi
 // the one-time-link pages, the notification switches and the forgot-password
 // pages, about 20 KB raw together); the build with only the wording editor
 // stood at 921.6 KB.
-const TOTAL_BUDGET_BYTES = 940 * 1024; // whole public/build output, raw (pre-gzip)
+// Raised from 940 KB to 960 KB for the report's settings: four panels, each
+// switch with a one-line description (about 4 KB raw); the build before it
+// stood at about 939 KB.
+const TOTAL_BUDGET_BYTES = 960 * 1024; // whole public/build output, raw (pre-gzip)
 
 function bundleBudget(): Plugin {
     return {

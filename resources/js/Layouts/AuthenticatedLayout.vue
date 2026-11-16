@@ -160,18 +160,30 @@ const printedOn = computed(() => new Date().toLocaleDateString());
  * on the next page someone adds.
  */
 const editorPrint = computed(() => ASSESSMENT_EDITOR.test(currentUrl.value));
+
+/**
+ * The room the deployment notice takes from the content column, for the
+ * chart's fixed height (`calc(100vh - 13rem - var(--notice-h))`). One line of
+ * the notice's text-sm with its padding and border.
+ */
+const noticeHeight = computed(() => {
+    const value = (page.props as { notice?: unknown }).notice;
+
+    return typeof value === 'string' && value !== '' ? '2.25rem' : '0rem';
+});
 </script>
 
 <template>
-    <div class="bg-surface-0 min-h-screen">
+    <div
+        class="bg-surface-0 min-h-screen"
+        :style="{ '--notice-h': noticeHeight }"
+    >
         <a
             href="#main-content"
             class="bg-surface-1 text-text-primary focus:outline-focus-ring sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:px-3 focus:py-2 focus:outline-2"
         >
             Skip to content
         </a>
-
-        <DeploymentNotice />
 
         <div class="flex">
             <!-- The reserved gutter. See the header: this is the only place
@@ -201,6 +213,12 @@ const editorPrint = computed(() => ASSESSMENT_EDITOR.test(currentUrl.value));
             </div>
 
             <div class="min-w-0 flex-1">
+                <!-- Beside the sidebar, not above it: the sidebar is exactly
+                     one screen high, so a band above the whole row made the
+                     page one band taller than the screen and a second scroll
+                     bar appeared, reaching only the foot of the sidebar. -->
+                <DeploymentNotice />
+
                 <!-- The same markup this rendered inline, moved into a
                      component the report can render too. The report cannot use
                      this layout (see the file header of Pages/Report/Show.vue)

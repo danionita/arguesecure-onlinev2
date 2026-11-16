@@ -408,7 +408,8 @@ const statusOptions: { value: DefenceStatus; label: string }[] = [
                 v-if="assistantParentType !== undefined"
                 size="sm"
                 variant="secondary"
-                icon="square-plus"
+                icon="sparkles"
+                class="!text-text-link !border-text-link/40"
                 data-testid="details-ask-assistant"
                 @click="askOne"
             >

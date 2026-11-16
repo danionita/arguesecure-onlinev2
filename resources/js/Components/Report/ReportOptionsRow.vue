@@ -69,12 +69,12 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
         <SearchBox :search="search" data-print-hide />
 
         <!--
-            All the report's settings sit behind two buttons, each
+            All the report's settings sit behind four buttons, each
             group under a heading that says what it decides. Defences is
             which defences the report covers (it was Content, with two
             controls that both concerned defences and did not say so);
-            Sections is what is added to the document, and the four optional
-            appendices and details start off. There is no Filters button here: these are not node
+            Sections, Appendices and Details are what is added to the document;
+            the optional appendices and details start off. There is no Filters button here: these are not node
             filters. Defaults are `ReportOptions::fromQuery()`'s.
         -->
         <div class="flex flex-wrap items-center gap-2 text-sm" data-print-hide>
@@ -126,22 +126,24 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
                 label="Sections"
                 testid="report-sections-button"
             >
-                <div
-                    data-testid="report-option-inclusions"
-                    class="max-h-[70vh] space-y-4 overflow-y-auto"
+                <fieldset
+                    data-testid="report-option-sections"
+                    class="max-h-[70vh] space-y-2 overflow-y-auto"
                 >
-                    <fieldset class="space-y-2">
-                        <legend class="text-text-primary text-xs font-semibold">
-                            Report body
-                        </legend>
-                        <p class="text-text-muted text-xs">
-                            Switch a section off to leave it out. The figures in
-                            the others do not change, and the report names what
-                            was left out.
-                        </p>
+                    <legend class="text-text-primary text-xs font-semibold">
+                        Which sections the report contains
+                    </legend>
+                    <p class="text-text-muted text-xs">
+                        Switch a section off to leave it out. The figures in the
+                        others do not change, and the report names what was left
+                        out.
+                    </p>
+                    <div
+                        v-for="section in bodySections"
+                        :key="section.id"
+                        class="space-y-0.5"
+                    >
                         <Toggle
-                            v-for="section in bodySections"
-                            :key="section.id"
                             :model-value="isShown(section.id)"
                             :label="section.label"
                             :data-testid="`section-toggle-${section.id}`"
@@ -149,34 +151,48 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
                                 (v) => toggleSection(section.id, v)
                             "
                         />
-                    </fieldset>
-                    <fieldset class="space-y-2" data-testid="report-appendices">
-                        <legend class="text-text-primary text-xs font-semibold">
-                            Appendices
-                        </legend>
+                        <p class="text-text-muted ps-11 text-xs">
+                            {{ section.description }}
+                        </p>
+                    </div>
+                </fieldset>
+            </ReportOptionsPopover>
+
+            <ReportOptionsPopover
+                label="Appendices"
+                testid="report-appendices-button"
+            >
+                <fieldset data-testid="report-appendices" class="space-y-2">
+                    <legend class="text-text-primary text-xs font-semibold">
+                        Which appendices the report ends with
+                    </legend>
+                    <p class="text-text-muted text-xs">
+                        The methodology and the model-quality warnings start
+                        off. Leaving the warnings out replaces the appendix with
+                        a count of what was left out.
+                    </p>
+                    <div
+                        v-for="section in appendixSections"
+                        :key="section.id"
+                        class="space-y-0.5"
+                    >
                         <Toggle
-                            v-for="section in appendixSections"
-                            :key="section.id"
                             :model-value="isShown(section.id)"
-                            :label="`Include ${section.label.toLowerCase()}`"
+                            :label="section.label"
                             :data-testid="`section-toggle-${section.id}`"
                             @update:model-value="
                                 (v) => toggleSection(section.id, v)
                             "
                         />
-                        <Toggle
-                            :model-value="options.includeComments"
-                            label="Include comments"
-                            @update:model-value="
-                                (v) =>
-                                    emit('update-options', {
-                                        includeComments: v,
-                                    })
-                            "
-                        />
+                        <p class="text-text-muted ps-11 text-xs">
+                            {{ section.description }}
+                        </p>
+                    </div>
+                    <div class="space-y-0.5">
                         <Toggle
                             :model-value="options.includeMethodology"
-                            label="Include methodology"
+                            label="Methodology"
+                            data-testid="appendix-methodology"
                             @update:model-value="
                                 (v) =>
                                     emit('update-options', {
@@ -184,14 +200,15 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
                                     })
                             "
                         />
-                        <!--
-                        Default off. Leaving it out
-                        replaces the appendix with a count of what was left
-                        out.
-                    -->
+                        <p class="text-text-muted ps-11 text-xs">
+                            The assumptions the numbers rest on.
+                        </p>
+                    </div>
+                    <div class="space-y-0.5">
                         <Toggle
                             :model-value="options.includeWarnings"
-                            label="Include model-quality warnings"
+                            label="Model-quality warnings"
+                            data-testid="appendix-warnings"
                             @update:model-value="
                                 (v) =>
                                     emit('update-options', {
@@ -199,27 +216,59 @@ const plannedShown = computed(() => props.options.baseline !== 'current');
                                     })
                             "
                         />
-                    </fieldset>
-                    <fieldset class="space-y-2">
-                        <legend class="text-text-primary text-xs font-semibold">
-                            Detail
-                        </legend>
-                        <!--
-                        Default off, and no export turns it on
-                        for you: a report is a document that leaves the room,
-                        and who is responsible for which line is internal
-                        information the exporter has to choose to include.
-                    -->
+                        <p class="text-text-muted ps-11 text-xs">
+                            Gaps and oddities in the data that affect the
+                            figures.
+                        </p>
+                    </div>
+                </fieldset>
+            </ReportOptionsPopover>
+
+            <ReportOptionsPopover
+                label="Details"
+                testid="report-details-button"
+            >
+                <fieldset data-testid="report-details" class="space-y-2">
+                    <legend class="text-text-primary text-xs font-semibold">
+                        What is shown on the rows
+                    </legend>
+                    <p class="text-text-muted text-xs">
+                        Both start off. Everything expanded turns comments on
+                        but never assignees: a report leaves the room, and who
+                        is responsible for which line is internal information
+                        the exporter has to choose to include.
+                    </p>
+                    <div class="space-y-0.5">
+                        <Toggle
+                            :model-value="options.includeComments"
+                            label="Show comments"
+                            data-testid="detail-comments"
+                            @update:model-value="
+                                (v) =>
+                                    emit('update-options', {
+                                        includeComments: v,
+                                    })
+                            "
+                        />
+                        <p class="text-text-muted ps-11 text-xs">
+                            The discussion on each node, as an appendix.
+                        </p>
+                    </div>
+                    <div class="space-y-0.5">
                         <Toggle
                             :model-value="options.showAssignees"
                             label="Show assignees"
+                            data-testid="detail-assignees"
                             @update:model-value="
                                 (v) =>
                                     emit('update-options', { showAssignees: v })
                             "
                         />
-                    </fieldset>
-                </div>
+                        <p class="text-text-muted ps-11 text-xs">
+                            Who is responsible for each line of the assessment.
+                        </p>
+                    </div>
+                </fieldset>
             </ReportOptionsPopover>
         </div>
 

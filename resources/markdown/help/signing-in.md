@@ -20,7 +20,11 @@ administrator may allow only certain email domains.
 If your organisation has set it up, the sign-in page has a **Sign in with …**
 link. It takes you to your organisation's sign-in and back. The first time,
 it connects to your account by your email address (or creates one for you, if
-your administrator allows it for your organisation). A new account starts with
+your administrator allows registration and your email domain). If you first
+signed up with an email and password, signing in this way takes you to that
+same account. If you first signed in with your organisation and later want a
+password too, choose **Forgot password** on the sign-in page and set one from
+the mailed link. A new account starts with
 no access: you see only public assessments until someone shares one with you.
 
 If your administrator has turned on *Sign in with SSO only*, use that link;

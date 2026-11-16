@@ -88,7 +88,8 @@ describe('the page', () => {
     /**
      * 2.5.1: the same list as *My assessments* — the same filter and the same
      * icon actions, each gated on the permission the server computed for the
-     * row. A viewer gets Export and Duplicate; a manager Settings and Share.
+     * row. A viewer gets Export and Duplicate; a manager Share. Settings are not a row action (2.8.1): they open from the
+     * editor's action bar.
      */
     it('uses the same list and actions as My assessments', () => {
         const names = (wrapper: ReturnType<typeof render>) =>
@@ -98,7 +99,6 @@ describe('the page', () => {
 
         expect(names(render([row]))).toEqual(['Export', 'Duplicate']);
         expect(names(render([{ ...row, can_manage: true }]))).toEqual([
-            'Settings',
             'Share',
             'Export',
             'Duplicate',

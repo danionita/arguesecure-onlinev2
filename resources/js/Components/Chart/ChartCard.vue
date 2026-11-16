@@ -706,7 +706,8 @@ const tosBar = computed(() => {
                      the same label — it is the same trigger. -->
                 <IconButton
                     v-if="showAddChild && canEdit && store.assistantAvailable"
-                    icon="square-plus"
+                    icon="sparkles"
+                    variant="assistant"
                     :label="`Suggest ${assistantChildType}s`"
                     :disabled="assistantAsking"
                     data-testid="ask-assistant"

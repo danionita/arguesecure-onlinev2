@@ -89,7 +89,7 @@ The downloaded `docker-compose.deploy.yml` is the same stack as `docker-compose.
 the `build:` keys, so a failed pull is an error and never a source build.
 
 `docker compose up` pulls `ghcr.io/danionita/arguesecure:latest`. Set
-`ARGUESECURE_VERSION` in `.env` to pin a release (`2.8.0`) or to follow a
+`ARGUESECURE_VERSION` in `.env` to pin a release (`2.8.1`) or to follow a
 minor line (`2.6`); then `docker compose pull && docker compose up -d`
 upgrades it. The images are public and need no login. Everything below, from
 the first start on, is the same either way.
@@ -110,7 +110,7 @@ There is no default account, and none is ever seeded. While the `users`
 table is empty, the app shows a setup screen where you create the first
 administrator. Creating it also queues the bundled templates, which appear a few seconds later (a running queue worker loads them). After that,
 administrators create accounts under **Admin → Users**, one at a time or in
-bulk from a CSV file. Self-registration is off by default; an administrator can switch it on under **Admin → Authentication** once email works. A person then enters their email address, follows the link mailed to them, and chooses their password; the account exists only after the link is followed. An optional list of email domains limits who may register, and a daily cap bounds new accounts.
+bulk from a CSV file. Self-registration is off by default; an administrator can switch it on under **Admin → Authentication** once email or SSO works. The same switch covers signing up with SSO. A person who registers by email then enters their email address, follows the link mailed to them, and chooses their password; the account exists only after the link is followed. An optional list of email domains limits who may register, and a daily cap bounds new accounts.
 
 ### Two-factor authentication
 
@@ -133,7 +133,7 @@ is stored encrypted with `APP_KEY` and never shown again), or set the `MAIL_*`
 variables described in `.env.example`; a value in the environment wins, field by
 field. Mail turns on once **Send test email** has delivered a message to your own
 address, and switches off again when any setting changes. Only SMTP is
-supported. With mail on, a new account created without a typed password is mailed a one-time link to choose its own (never a password), with two reminders, and the message wording is editable on the same tab. An administrator can also switch on email for mentions, assignments and drafted summaries (off by default; one message per ten minutes, a link and no comment text, each person can turn it off).
+supported. With mail on, a new account created without a typed password is mailed a one-time link to choose its own (never a password), with two reminders, and the notification templates are editable on the same tab. An administrator can switch email for mentions, assignments and drafted summaries on or off under **Enabled notifications** (on by default in a new setup once email works; one message per ten minutes, a link and no comment text, each person can turn it off).
 
 ### Single sign-on
 
@@ -144,13 +144,15 @@ never shown again), or set the `OIDC_*` variables described in `.env.example`.
 A value in the environment wins, field by field, over one stored in the
 application. ArgueSecure speaks OpenID
 Connect (authorization-code flow with PKCE), which Microsoft Entra ID, Google
-Workspace, Okta, Keycloak, Authentik and Authelia all offer. Only Keycloak has
-been tested against a live provider; Google's setup is written down in
-`docs/specs/deployment.md`, and the others, Entra ID included, are expected to
-work but are unverified. A first sign-in
-links to the existing account with the same verified email; with
-`OIDC_ALLOWED_DOMAINS` it can also create a non-admin account that sees nothing
-until someone shares an assessment with it. *Sign in with SSO only* on the same
+Workspace, Okta, Keycloak, Authentik and Authelia all offer. Only Keycloak and
+Google have been tested against a live provider; Google's setup is written down
+in `docs/specs/deployment.md`, and the others, Entra ID included, are expected
+to work but are unverified. A first sign-in
+links to the existing account with the same verified email. When an
+administrator has allowed registration it can also create a non-admin account
+that sees nothing until someone shares an assessment with it; the provider has
+proved the address, so no mail is sent. `OIDC_ALLOWED_DOMAINS` limits which
+email domains may create an account this way (empty allows every domain). *Sign in with SSO only* on the same
 **Authentication** tab turns off password sign-in for everyone but
 administrators, who keep it for when the provider is down. SAML, SCIM and
 group mapping are not supported.
@@ -382,7 +384,7 @@ running it.
 
 | Document | Covers |
 |---|---|
-| [`docs/RELEASE-2.8.0.md`](docs/RELEASE-2.8.0.md) | The latest release notes |
+| [`docs/RELEASE-2.8.1.md`](docs/RELEASE-2.8.1.md) | The latest release notes |
 | [`docs/specs/schema.md`](docs/specs/schema.md) | Database, models and authorization |
 | [`docs/specs/calculation-engine.md`](docs/specs/calculation-engine.md) | The quantification model (normative) |
 | [`docs/specs/ui.md`](docs/specs/ui.md) | The editor, the keyboard map and reports |

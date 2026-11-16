@@ -49,7 +49,7 @@ description to edit it in place. The pop-up's tabs:
 |---|---|
 | Details | Title, description, labels; for a defence, its status and the transfer switch |
 | Impact / Likelihood / Cost | The value this type is quantified by |
-| Strength | A defence's strength against each attack it is linked to, and why |
+| Strength | A defence's strength against each attack it is linked to, and why. The attack you opened the defence under comes first; the defence's other attacks are folded away below it |
 | Statistics | Every computed figure, inherent, current and target side by side |
 | References | CVEs and other links; on a defence, the framework control it implements |
 | Assignees | Who is responsible for the node |

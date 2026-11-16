@@ -20,8 +20,10 @@ final class AdminHelpLibrary
     /** @var array<string, string> slug => title */
     private const PAGES = [
         'users' => 'Users',
-        'settings' => 'Settings and sign-in',
+        'settings' => 'Instance settings',
+        'authentication' => 'Authentication',
         'email' => 'Email',
+        'defaults' => 'Defaults',
         'assistant' => 'AI assistant',
         'security-log' => 'Security log',
     ];

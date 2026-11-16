@@ -186,35 +186,41 @@ describe('the report chrome', () => {
     });
 
     /*
-     * Every report setting sits behind one of two buttons, Content
-     * (what the numbers are computed from) and Sections (what is added to the
-     * document), each group under a heading. Nothing is inline, and there is
-     * no Filters button on the report.
+     * Every report setting sits behind one of four buttons, each group under
+     * a heading: Defences (what the numbers are computed from), Sections and
+     * Appendices (what is added to the document) and Details (comments and
+     * assignees). Nothing is inline, and there is no Filters button.
      */
-    it('puts every setting behind a Content or a Sections button, under headings', async () => {
+    it('puts every setting behind a button, under headings', async () => {
         const wrapper = mountReport();
+        const ids = [
+            'report-content-button',
+            'report-sections-button',
+            'report-appendices-button',
+            'report-details-button',
+        ];
 
         expect(wrapper.text()).not.toContain('Filters');
-        expect(
-            wrapper.find('[data-testid="report-option-choices"]').exists(),
-        ).toBe(false);
-        expect(
-            wrapper.find('[data-testid="report-option-inclusions"]').exists(),
-        ).toBe(false);
+        for (const t of [
+            'option-choices',
+            'option-sections',
+            'appendices',
+            'details',
+        ]) {
+            expect(wrapper.find(`[data-testid="report-${t}"]`).exists()).toBe(
+                false,
+            );
+        }
 
-        await wrapper
-            .get('[data-testid="report-content-button"]')
-            .trigger('click');
-        await wrapper
-            .get('[data-testid="report-sections-button"]')
-            .trigger('click');
+        for (const id of ids) {
+            await wrapper.get(`[data-testid="${id}"]`).trigger('click');
+        }
 
         const choices = wrapper.get('[data-testid="report-option-choices"]');
-        const inclusions = wrapper.get(
-            '[data-testid="report-option-inclusions"]',
-        );
+        const sections = wrapper.get('[data-testid="report-option-sections"]');
+        const appendices = wrapper.get('[data-testid="report-appendices"]');
+        const details = wrapper.get('[data-testid="report-details"]');
 
-        // Defences: one group, three rows, each saying it is about defences.
         expect(choices.text()).toContain('Which defences the report covers');
         expect(choices.text()).toContain('Implemented defences');
         expect(choices.text()).toContain('Planned defences');
@@ -222,24 +228,54 @@ describe('the report chrome', () => {
         expect(choices.findAll('[role="radiogroup"]')).toHaveLength(0);
         expect(wrapper.text()).not.toContain('Which state to report');
 
-        // No figures control anywhere on the page, under either label
-        // it ever wore.
+        // No figures control anywhere on the page.
         expect(wrapper.text()).not.toContain('Full figures');
         expect(wrapper.text()).not.toContain('Qualitative only');
 
-        // Sections: the inclusions, each of which adds or removes a section.
-        expect(inclusions.text()).toContain('Report body');
-        expect(inclusions.text()).toContain('Include comments');
-        expect(inclusions.text()).toContain('Include methodology');
-        expect(inclusions.text()).toContain('Include model-quality warnings');
-        expect(inclusions.text()).toContain('Show assignees');
-        expect(inclusions.findAll('[role="radiogroup"]')).toHaveLength(0);
-        expect(choices.text()).not.toContain('Include comments');
+        // Sections hold the body only; each row has a title and a description.
+        expect(sections.text()).toContain('Risk register');
+        expect(sections.text()).toContain('Every risk, its impact');
+        expect(sections.text()).not.toContain('Methodology');
+        expect(sections.text()).not.toContain('References');
+
+        expect(appendices.text()).toContain('References');
+        expect(appendices.text()).toContain('Methodology');
+        expect(appendices.text()).toContain('Model-quality warnings');
+        expect(appendices.text()).not.toContain('comments');
+
+        expect(details.text()).toContain('Show comments');
+        expect(details.text()).toContain('Show assignees');
+        expect(details.findAll('[role="switch"]')).toHaveLength(2);
     });
 
-    it('shows no count on either button, and the optional appendices start off', () => {
+    it('keeps a settings panel open while switches are flipped', async () => {
+        const wrapper = mountReport();
+
+        await wrapper
+            .get('[data-testid="report-details-button"]')
+            .trigger('click');
+        await wrapper
+            .get('[data-testid="detail-comments"] button')
+            .trigger('click');
+        await wrapper
+            .get('[data-testid="detail-assignees"] button')
+            .trigger('click');
+
+        expect(wrapper.find('[data-testid="report-details"]').exists()).toBe(
+            true,
+        );
+    });
+
+    const ids = [
+        'report-content-button',
+        'report-sections-button',
+        'report-appendices-button',
+        'report-details-button',
+    ];
+
+    it('shows no count on any button, and the optional appendices start off', () => {
         const defaults = mountReport();
-        for (const id of ['report-content-button', 'report-sections-button']) {
+        for (const id of ids) {
             expect(defaults.get(`[data-testid="${id}"]`).text()).not.toMatch(
                 /\d/,
             );
@@ -252,7 +288,7 @@ describe('the report chrome', () => {
             showAssignees: true,
             omittedSections: ['cover', 'tree'],
         });
-        for (const id of ['report-content-button', 'report-sections-button']) {
+        for (const id of ids) {
             expect(changed.get(`[data-testid="${id}"]`).text()).not.toMatch(
                 /\d/,
             );

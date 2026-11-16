@@ -53,7 +53,7 @@ class MailController extends Controller
             'limits' => ['subject' => MailTemplates::SUBJECT_MAX, 'body' => MailTemplates::BODY_MAX],
             'notifications' => collect(NotificationMail::KINDS)->map(fn (array $d, string $kind) => [
                 'kind' => $kind,
-                'label' => $d['label'],
+                'label' => $d['admin_label'],
                 'on' => (bool) InstanceSetting::singleton()->{$d['column']},
             ])->values()->all(),
             'notificationTitles' => NotificationMail::titlesAllowed(),

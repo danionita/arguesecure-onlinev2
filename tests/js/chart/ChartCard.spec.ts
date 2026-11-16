@@ -325,7 +325,8 @@ describe('ChartCard: assistant trigger visibility', () => {
         const assistantButton = findAssistantButton(wrapper);
 
         expect(assistantButton).toBeDefined();
-        expect(assistantButton?.props('icon')).toBe('square-plus');
+        expect(assistantButton?.props('icon')).toBe('sparkles');
+        expect(assistantButton?.props('variant')).toBe('assistant');
         expect(assistantButton?.props('label')).toBe('Suggest attacks');
     });
 });

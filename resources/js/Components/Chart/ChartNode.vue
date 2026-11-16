@@ -90,7 +90,7 @@ function addChild() {
 function openDetails(tab?: Parameters<typeof modal.open>[1]): void {
     if (store.frozen) return;
 
-    modal.open(props.uuid, tab);
+    modal.open(props.uuid, tab, pathKey.value);
 }
 
 const dragPayload = computed<DragPayload | null>(() =>

@@ -248,7 +248,7 @@ const canOpen = computed(() => !store.frozen);
 
 function openTab(tab: NodeModalTab = 'details') {
     if (!canOpen.value) return;
-    modal.open(props.uuid, tab);
+    modal.open(props.uuid, tab, props.pathKey);
 }
 
 /**
@@ -937,7 +937,8 @@ const reductionLabel = computed(
                         store.abilities.update &&
                         store.assistantAvailable
                     "
-                    icon="square-plus"
+                    icon="sparkles"
+                    variant="assistant"
                     :label="`Suggest ${assistantChildType}s`"
                     :disabled="assistantAsking"
                     data-testid="ask-assistant"

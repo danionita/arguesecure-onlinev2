@@ -178,7 +178,7 @@ defineExpose({ fitToWidth });
              chart the panel scrolls itself into view (ChartCard.vue). -->
         <div
             ref="container"
-            class="h-[calc(100vh-13rem)] overflow-auto pb-4"
+            class="h-[calc(100vh-13rem-var(--notice-h,0rem))] overflow-auto pb-4"
             @wheel="view?.canvas.handleWheel"
         >
             <!-- A transform does not resize the layout box, so the scroll

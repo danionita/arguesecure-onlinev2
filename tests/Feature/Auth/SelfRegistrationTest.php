@@ -74,6 +74,19 @@ test('an admin cannot switch registration on while mail is off', function () {
     expect((bool) InstanceSetting::singleton()->registration_enabled)->toBeFalse();
 });
 
+test('with SSO set up an admin can switch registration on without mail, which opens SSO sign-up only', function () {
+    fakeIdp();
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)->put('/admin/authentication', [
+        'require_two_factor' => false, 'sso_only' => false, 'registration_enabled' => true,
+    ])->assertSessionHasNoErrors();
+
+    expect((bool) InstanceSetting::singleton()->registration_enabled)->toBeTrue();
+    auth()->logout();
+    $this->get('/register')->assertNotFound();
+});
+
 test('a request creates only a pending row with no name or password', function () {
     Bus::fake();
     registrationOn();
@@ -243,7 +256,7 @@ test('expired pending registrations are pruned', function () {
     expect(SelfRegistration::prune())->toBe(1);
 });
 
-test('registration is unavailable while sign-in is limited to SSO', function () {
+test('registration by email is unavailable while sign-in is limited to SSO', function () {
     registrationOn(['sso_only' => true]);
     fakeIdp();
 

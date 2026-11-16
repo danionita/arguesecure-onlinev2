@@ -138,10 +138,10 @@ Every release is published to GitHub's container registry by `.github/workflows/
 
 | Git ref | Tags published |
 |---|---|
-| `v2.8.0`, the newest release overall | `2.8.0`, `2.8`, `latest` |
+| `v2.8.1`, the newest release overall | `2.8.1`, `2.8`, `latest` |
 | `v2.7.1`, the newest in its minor line but not overall | `2.7.1`, `2.7` |
 | `v2.6.3`, not the newest in its minor line | `2.6.3` only |
-| `v2.8.0-rc1` (any other `v*` tag) | `2.8.0-rc1` only |
+| `v2.8.1-rc1` (any other `v*` tag) | `2.8.1-rc1` only |
 | a manual run of the workflow | `sha-<commit>`, `edge` |
 
 `ARGUESECURE_VERSION` in `.env` chooses the tag (default `latest`); `ARGUESECURE_IMAGE` overrides the repository, for a fork. Both published images always carry the same tag, so a pulled app and assistant come from the same commit and read the same `models.conf`. A source build keeps that true only if it rebuilds the assistant too (§8). Only `linux/amd64` is published.
@@ -327,9 +327,9 @@ Application code never calls `env()` outside a config file, because it returns `
 
 Enter the provider on **Admin → Authentication**, or set `OIDC_ISSUER`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` (see `.env.example`; a value set there wins over one stored on the tab, field by field, so a bad stored value is fixed by editing `.env`), and register `<APP_URL>/auth/oidc/callback` as the redirect URI at the provider (Microsoft Entra ID, Google Workspace, Okta, Keycloak, Authentik, Authelia, or any OpenID Connect provider with discovery). If you move the instance to another hostname, register the new URI before switching ([§4.1](#41-changing-the-public-hostname)). The app container must reach the provider over https; the provider needs no inbound access to it. `OIDC_ALLOWED_DOMAINS` lets a first sign-in create a non-admin account for those email domains (empty creates none); the provider must send `email_verified`, or set `OIDC_TRUST_EMAIL=true` for a provider you control that does not. `OIDC_BUTTON_LABEL` sets the login link's text ("Sign in with <label>"). Leave `OIDC_ISSUER` empty for no SSO: the login page shows no link and the two `/auth/oidc` routes answer 404.
 
-Only Keycloak has been tested against this build; every other provider is expected to work because they speak standard OpenID Connect, but has not been verified.
+Only Keycloak and Google have been tested against this build; every other provider is expected to work because they speak standard OpenID Connect, but has not been verified.
 
-**Google (written from Google's documentation, not verified against a live account):** in the Google Cloud console create an OAuth client of type *Web application*, add `<APP_URL>/auth/oidc/callback` as an authorised redirect URI, and use `https://accounts.google.com` as the issuer. Google's ID tokens carry `email` and a boolean `email_verified`, which are honoured. The `hd` (hosted domain) claim is not used: restrict who may create an account with `OIDC_ALLOWED_DOMAINS` (`gmail.com` for personal Google accounts, or your own Workspace domain). A wildcard is not accepted; list each domain. Set the OAuth consent screen's publishing status to *In production*: while it is *Testing*, only listed test users can sign in and their grants expire after seven days.
+**Google (verified against a live account):** in the Google Cloud console create an OAuth client of type *Web application*, add `<APP_URL>/auth/oidc/callback` as an authorised redirect URI, and use `https://accounts.google.com` as the issuer. Google's ID tokens carry `email` and a boolean `email_verified`, which are honoured. The `hd` (hosted domain) claim is not used: restrict who may sign in with `OIDC_ALLOWED_DOMAINS` (`gmail.com`, `googlemail.com` for personal Google accounts, or your own Workspace domain; empty allows any Google account), and switch on *Allow new registrations* for first sign-ins to create accounts. A wildcard is not accepted; list each domain. Set the OAuth consent screen's publishing status to *In production*: while it is *Testing*, only listed test users can sign in and their grants expire after seven days.
 
 **Microsoft Entra ID (written from Microsoft's documentation, not verified):** register a web application, add the redirect URI above, create a client secret, and use `https://login.microsoftonline.com/<tenant-id>/v2.0` as the issuer. Entra's ID tokens carry the `email` claim only if it is added as an optional claim, and do not carry `email_verified`: for a single-tenant app whose directory you control, set `OIDC_TRUST_EMAIL=true`; do not do so for a multi-tenant app.
 

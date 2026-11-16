@@ -148,13 +148,13 @@ function actions(wrapper: ReturnType<typeof render>): string[] {
 
 describe('per-row actions', () => {
     /**
-     * Settings, Share and Export, matching `AssessmentActions.vue` minus
-     * History and Print; plus Duplicate and Delete. 2.5.1 made
-     * all five icons, named in the tooltip and the accessible name.
+     * Share and Export, matching `AssessmentActions.vue` minus Settings,
+     * History and Print; plus Duplicate and Delete. 2.5.1 made them icons,
+     * named in the tooltip and the accessible name; 2.8.1 dropped Settings,
+     * which opens from the editor's action bar.
      */
-    it('offers Settings, Share, Export, Duplicate and Delete — never Report or Download', () => {
+    it('offers Share, Export, Duplicate and Delete — never Settings, Report or Download', () => {
         expect(actions(render([row({ can_manage: true })]))).toEqual([
-            'Settings',
             'Share',
             'Export',
             'Duplicate',
@@ -166,7 +166,7 @@ describe('per-row actions', () => {
         const bar = render([row()]).get('[data-testid="assessment-actions"]');
 
         expect(bar.text().trim()).toBe('');
-        expect(bar.findAll('svg').length).toBe(5);
+        expect(bar.findAll('svg').length).toBe(4);
     });
 
     it('opens the same ExportMenu the editor uses, not a second menu with the same name', () => {
@@ -180,19 +180,6 @@ describe('per-row actions', () => {
     it('offers Export to everyone, gated on nothing — export never needed manage', () => {
         expect(actions(render([row({ can_manage: false })]))).toContain(
             'Export',
-        );
-    });
-
-    /**
-     * The mutation-tested guard: `can_manage` is what keeps Settings off a
-     * viewer's screen.
-     */
-    it('offers Settings only to someone who can manage', () => {
-        expect(actions(render([row({ can_manage: true })]))).toContain(
-            'Settings',
-        );
-        expect(actions(render([row({ can_manage: false })]))).not.toContain(
-            'Settings',
         );
     });
 

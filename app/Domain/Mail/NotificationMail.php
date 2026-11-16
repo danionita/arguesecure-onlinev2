@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\URL;
  * assignment and a drafted summary. A delivery channel, not a new kind of
  * notification.
  *
- * Three gates, all closed by default: mail is on, an administrator allows the
- * kind, and the person has not turned it off (they have it on until they do).
+ * Three gates: mail is on (off until a test message is delivered), an
+ * administrator allows the kind (every kind is allowed in a new setup), and
+ * the person has not turned it off (they have it on until they do).
  * Nothing is sent as it happens. The first notification for a person starts a
  * ten-minute window; everything that arrives in it goes out as one message, so
  * a busy thread is one email, not fifty. The message holds a sentence per
@@ -31,11 +32,14 @@ final class NotificationMail
     /** Longest title shown in a message. */
     public const TITLE_LENGTH = 80;
 
-    /** kind => instance column, label for the switches. */
+    /**
+     * kind => instance column, the label a person sees (profile, unsubscribe
+     * page) and the global label the administrator's switches carry.
+     */
     public const KINDS = [
-        'mention' => ['column' => 'mail_notify_mentions', 'label' => 'Someone mentions you in a comment'],
-        'assignment' => ['column' => 'mail_notify_assignments', 'label' => 'A node is assigned to you'],
-        'summary' => ['column' => 'mail_notify_summaries', 'label' => 'A summary draft you asked for is ready'],
+        'mention' => ['column' => 'mail_notify_mentions', 'label' => 'Someone mentions you in a comment', 'admin_label' => 'A person is mentioned in a comment'],
+        'assignment' => ['column' => 'mail_notify_assignments', 'label' => 'A node is assigned to you', 'admin_label' => 'A node is assigned to a person'],
+        'summary' => ['column' => 'mail_notify_summaries', 'label' => 'A summary draft you asked for is ready', 'admin_label' => 'A requested summary draft is ready'],
     ];
 
     /** Whether the instance allows this kind to be mailed at all. */

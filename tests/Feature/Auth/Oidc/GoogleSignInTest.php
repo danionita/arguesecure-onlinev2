@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\InstanceSetting;
 use App\Models\User;
 
 require_once __DIR__.'/helpers.php';
@@ -21,7 +22,15 @@ function googleClaims(array $overrides = []): array
     ], $overrides);
 }
 
+function openRegistration(): void
+{
+    $row = InstanceSetting::singleton();
+    $row->registration_enabled = true;
+    $row->save();
+}
+
 test('a Google-shaped token creates a non-admin account for a listed domain', function () {
+    openRegistration();
     $idp = fakeIdp(['allowed_domains' => 'gmail.com']);
 
     signInThroughIdp($this, $idp, googleClaims())->assertRedirect(route('dashboard', absolute: false));
@@ -32,6 +41,7 @@ test('a Google-shaped token creates a non-admin account for a listed domain', fu
 });
 
 test('the hd claim does not let an unlisted domain create an account', function () {
+    openRegistration();
     $idp = fakeIdp(['allowed_domains' => 'gmail.com']);
 
     signInThroughIdp($this, $idp, googleClaims(['email' => 'person@other.example', 'hd' => 'gmail.com']))->assertRedirect(route('login'));
@@ -41,6 +51,7 @@ test('the hd claim does not let an unlisted domain create an account', function 
 });
 
 test('an unverified Google email creates nothing', function () {
+    openRegistration();
     $idp = fakeIdp(['allowed_domains' => 'gmail.com']);
 
     signInThroughIdp($this, $idp, googleClaims(['email_verified' => false]))->assertSessionHasErrors(['email' => GENERIC_REFUSAL]);

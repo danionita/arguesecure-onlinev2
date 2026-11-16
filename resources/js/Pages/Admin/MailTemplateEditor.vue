@@ -124,7 +124,7 @@ async function showPreview() {
                     v-model="form.body"
                     rows="9"
                     :maxlength="limits.body"
-                    class="border-border-default bg-surface-raised mt-1 block w-full rounded-md border px-3 py-2 font-mono text-sm"
+                    class="border-border-default bg-surface-1 text-text-primary focus:border-focus-ring focus:ring-focus-ring mt-1 block w-full rounded-md border px-3 py-2 font-mono text-sm"
                 />
                 <p
                     v-if="form.errors.body"

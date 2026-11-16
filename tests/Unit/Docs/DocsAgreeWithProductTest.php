@@ -20,7 +20,7 @@ const NUMBER_WORDS = [
 ];
 
 /** The sentence that names which identity providers have been tested; it must read the same everywhere. */
-const TESTED_PROVIDERS_CLAIM = 'Only Keycloak has been tested';
+const TESTED_PROVIDERS_CLAIM = 'Only Keycloak and Google have been tested';
 
 function docsRoot(string $path = ''): string
 {

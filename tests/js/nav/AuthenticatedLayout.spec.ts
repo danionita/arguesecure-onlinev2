@@ -143,3 +143,21 @@ describe('deployment notice', () => {
         expect(render().find('[role="status"]').exists()).toBe(false);
     });
 });
+
+describe('the deployment notice', () => {
+    it('sits beside the sidebar, never above it, so the page is not taller than the screen', () => {
+        page.props = { ...page.props, notice: 'Demo instance' };
+        const wrapper = render();
+        const notice = wrapper.get('[data-test="deployment-notice"]');
+
+        // The sidebar is one screen high: a band above the row would add a
+        // second scroll bar that reaches only the foot of the sidebar.
+        expect(notice.element.parentElement).not.toBe(
+            gutter(wrapper).parentElement,
+        );
+        expect(gutter(wrapper).parentElement!.contains(notice.element)).toBe(
+            true,
+        );
+        expect(gutter(wrapper).contains(notice.element)).toBe(false);
+    });
+});

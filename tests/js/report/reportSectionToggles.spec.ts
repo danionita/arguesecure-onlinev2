@@ -129,14 +129,17 @@ describe('the Sections pop-up', () => {
                 stubs: { SummaryNarrative: true, teleport: true },
             },
         });
-        await wrapper
-            .get('[data-testid="report-sections-button"]')
-            .trigger('click');
+        for (const id of [
+            'report-sections-button',
+            'report-appendices-button',
+        ]) {
+            await wrapper.get(`[data-testid="${id}"]`).trigger('click');
+        }
 
         return wrapper;
     }
 
-    it('has one switch per section, in document order', async () => {
+    it('has one switch per section, in document order, body and appendices apart', async () => {
         const wrapper = await open();
         const ids = wrapper
             .findAll('[data-testid^="section-toggle-"]')

@@ -8,6 +8,7 @@ use App\Domain\Identity\Oidc\Events\SsoLoggedIn;
 use App\Domain\Identity\Oidc\Events\SsoLoginFailed;
 use App\Domain\Identity\Oidc\OidcClient;
 use App\Http\Controllers\Admin\UserIdentityController;
+use App\Models\InstanceSetting;
 use App\Models\User;
 use App\Models\UserIdentity;
 use Firebase\JWT\JWT;
@@ -33,6 +34,13 @@ function linkedUser(string $subject, array $attributes = []): User
     $identity->save();
 
     return $user;
+}
+
+function registrationOpen(bool $open = true): void
+{
+    $row = InstanceSetting::singleton();
+    $row->registration_enabled = $open;
+    $row->save();
 }
 
 function assertRefused($test, $response): void
@@ -240,6 +248,7 @@ test('another subject with a linked account\'s email does not sign in', function
 
 test('a listed domain with a verified email creates one non-admin account that owns and belongs to nothing', function () {
     Event::fake([SsoAccountCreated::class]);
+    registrationOpen();
     $idp = fakeIdp(['allowed_domains' => ' Corp.Example , other.example ']);
     $before = User::query()->count();
 
@@ -251,6 +260,8 @@ test('a listed domain with a verified email creates one non-admin account that o
     $this->assertAuthenticatedAs($user);
     expect($user->is_admin)->toBeFalse()
         ->and($user->is_active)->toBeTrue()
+        ->and($user->email_verified_at)->not->toBeNull()
+        ->and($user->self_registered_at)->not->toBeNull()
         ->and($user->name)->toBe('New Person')
         ->and($user->ownedAssessments()->count())->toBe(0)
         ->and($user->sharedAssessments()->count())->toBe(0)
@@ -265,6 +276,7 @@ test('a listed domain with a verified email creates one non-admin account that o
 });
 
 test('a name falls back to the email', function () {
+    registrationOpen();
     $idp = fakeIdp(['allowed_domains' => 'corp.example']);
 
     signInThroughIdp($this, $idp, ['email' => 'noname@corp.example', 'name' => null]);
@@ -272,7 +284,93 @@ test('a name falls back to the email', function () {
     expect(User::query()->where('email', 'noname@corp.example')->value('name'))->toBe('noname@corp.example');
 });
 
-test('no account is created for an unlisted domain, a subdomain, an empty list or an unverified email', function (string $list, string $email, mixed $verified) {
+test('an empty domain list allows every domain, once registration is open', function () {
+    registrationOpen();
+    $idp = fakeIdp(['allowed_domains' => '']);
+
+    signInThroughIdp($this, $idp, ['sub' => 'any-1', 'email' => 'x@anywhere.example'])->assertRedirect(route('dashboard', absolute: false));
+
+    expect(User::query()->where('email', 'x@anywhere.example')->exists())->toBeTrue();
+});
+
+test('no account is created while registration is closed, whatever the domain list says', function (string $list) {
+    registrationOpen(false);
+    $idp = fakeIdp(['allowed_domains' => $list]);
+
+    assertRefused($this, signInThroughIdp($this, $idp, ['email' => 'x@corp.example', 'email_verified' => true]));
+
+    expect(User::query()->where('email', 'x@corp.example')->exists())->toBeFalse();
+})->with(['empty list' => [''], 'domain listed' => ['corp.example']]);
+
+test('no account is created once the day\'s registrations are used', function () {
+    registrationOpen();
+    $row = InstanceSetting::singleton();
+    $row->registration_daily_cap = 1;
+    $row->save();
+    User::factory()->create(['self_registered_at' => now()]);
+    $idp = fakeIdp();
+
+    assertRefused($this, signInThroughIdp($this, $idp, ['email' => 'x@corp.example']));
+
+    expect(User::query()->where('email', 'x@corp.example')->exists())->toBeFalse();
+});
+
+test('SSO-only and registration go together: a first SSO sign-in creates the account', function () {
+    registrationOpen();
+    $row = InstanceSetting::singleton();
+    $row->sso_only = true;
+    $row->save();
+    $idp = fakeIdp();
+
+    signInThroughIdp($this, $idp, ['sub' => 'only-1', 'email' => 'x@corp.example'])->assertRedirect(route('dashboard', absolute: false));
+
+    expect(User::query()->where('email', 'x@corp.example')->exists())->toBeTrue();
+});
+
+test('the SSO domain list limits creating accounts, not linking existing ones', function () {
+    $idp = fakeIdp(['allowed_domains' => 'corp.example']);
+    $user = User::factory()->create(['email' => 'a@elsewhere.example']);
+
+    signInThroughIdp($this, $idp, ['sub' => 'sub-7', 'email' => 'a@elsewhere.example'])->assertRedirect(route('dashboard', absolute: false));
+
+    $this->assertAuthenticatedAs($user);
+});
+
+test('the email-registration domain list also limits creating accounts through SSO', function () {
+    registrationOpen();
+    $row = InstanceSetting::singleton();
+    $row->registration_domains = 'corp.example';
+    $row->save();
+    $idp = fakeIdp(['allowed_domains' => '']);
+
+    assertRefused($this, signInThroughIdp($this, $idp, ['sub' => 'r-1', 'email' => 'x@elsewhere.example']));
+    expect(User::query()->where('email', 'x@elsewhere.example')->exists())->toBeFalse();
+
+    signInThroughIdp($this, $idp, ['sub' => 'r-2', 'email' => 'x@corp.example'])->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('a trusted but unverified email can link an account but never creates one', function () {
+    registrationOpen();
+    $idp = fakeIdp(['trust_email' => true]);
+
+    assertRefused($this, signInThroughIdp($this, $idp, ['sub' => 't-1', 'email' => 'new@corp.example', 'email_verified' => null]));
+
+    expect(User::query()->where('email', 'new@corp.example')->exists())->toBeFalse();
+});
+
+test('an account registered by email is linked, not duplicated, by a later SSO sign-in', function () {
+    registrationOpen();
+    $idp = fakeIdp();
+    $user = User::factory()->create(['email' => 'a@corp.example', 'self_registered_at' => now(), 'email_verified_at' => now()]);
+
+    signInThroughIdp($this, $idp, ['sub' => 'sub-8', 'email' => 'a@corp.example'])->assertRedirect(route('dashboard', absolute: false));
+
+    $this->assertAuthenticatedAs($user);
+    expect(User::query()->where('email', 'a@corp.example')->count())->toBe(1);
+});
+
+test('no account is created for an unlisted domain, a subdomain or an unverified email', function (string $list, string $email, mixed $verified) {
+    registrationOpen();
     $idp = fakeIdp(['allowed_domains' => $list]);
     User::factory()->count(2)->create();
     $before = DB::table('users')->pluck('email', 'id')->all();
@@ -284,7 +382,6 @@ test('no account is created for an unlisted domain, a subdomain, an empty list o
 })->with([
     'domain not listed' => ['corp.example', 'x@elsewhere.example', true],
     'a subdomain of a listed one' => ['corp.example', 'x@eng.corp.example', true],
-    'the list is empty' => ['', 'x@corp.example', true],
     'listed but unverified' => ['corp.example', 'x@corp.example', false],
     'listed but the claim is absent' => ['corp.example', 'x@corp.example', null],
     'a lookalike' => ['corp.example', 'x@corp.example.evil.test', true],

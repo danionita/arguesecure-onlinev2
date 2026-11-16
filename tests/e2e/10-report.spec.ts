@@ -346,15 +346,20 @@ test.describe('the report', () => {
             page.getByRole('switch', { name: /^Shelved defences/ }),
         ).not.toBeChecked();
 
-        await page.getByRole('button', { name: /^Sections/ }).click();
-        // The four optional appendices and details start off.
-        for (const name of [
-            'Include comments',
-            'Include methodology',
-            'Include model-quality warnings',
-            'Show assignees',
-        ]) {
-            await expect(page.getByRole('switch', { name })).not.toBeChecked();
+        // The optional appendices and details start off, and a panel stays
+        // open while its switches are flipped.
+        for (const [button, names] of [
+            ['Appendices', ['Methodology', 'Model-quality warnings']],
+            ['Details', ['Show comments', 'Show assignees']],
+        ] as const) {
+            await page
+                .getByRole('button', { name: new RegExp(`^${button}`) })
+                .click();
+            for (const name of names) {
+                await expect(
+                    page.getByRole('switch', { name }),
+                ).not.toBeChecked();
+            }
         }
 
         await expect(

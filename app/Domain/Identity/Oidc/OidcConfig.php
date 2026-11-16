@@ -77,6 +77,14 @@ final class OidcConfig
         return array_values(array_filter(array_map(fn ($d) => strtolower(trim((string) $d)), $list)));
     }
 
+    /** An empty list allows every domain. */
+    public static function domainAllowed(string $email): bool
+    {
+        $domains = self::allowedDomains();
+
+        return $domains === [] || in_array(strtolower(substr(strrchr($email, '@') ?: '', 1)), $domains, true);
+    }
+
     /**
      * Where a field's effective value comes from: the environment, the
      * database, or nowhere. A boolean the environment leaves unset is "none"

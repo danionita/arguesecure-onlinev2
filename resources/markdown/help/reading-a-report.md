@@ -7,14 +7,20 @@ sending to people who don't need the editor.
 
 ## Options
 
-The row above the report has two buttons, and every change applies at once:
+The row above the report has four buttons, and every change applies at once.
+A panel stays open while you flip its switches, so you can change several
+things in one go:
 
 - **Defences** — which defences the report covers: implemented ones always,
   planned ones with the target figures, and shelved ones listed only.
-- **Sections** — switch any section on or off. Comments, the methodology, the
-  model-quality warnings and assignees start off; the methodology states the
-  assumptions the numbers rest on. A report that leaves sections out names
-  them.
+- **Sections** — switch any section of the report body on or off; each switch
+  says what the section holds.
+- **Appendices** — references, the methodology and the model-quality warnings.
+  The methodology (it states the assumptions the numbers rest on) and the
+  warnings start off.
+- **Details** — show comments and show assignees. Both start off.
+
+A report that leaves sections out names them.
 
 The search box finds text in the report; zoom changes its type size.
 
@@ -66,7 +72,7 @@ started as a draft is marked as machine-drafted in the report.
 
 **Export** (in the bar above every view) produces **HTML**, **CSV**,
 **JSON**, **Excel** or **Word**, using the options currently set.
-*Everything expanded* ignores them and includes every section except
+_Everything expanded_ ignores them and includes every section except
 assignees. JSON is a complete, portable copy of the assessment's data.
 Titles and descriptions are always written as text in every format. In the
 CSV, text starting with `=`, `+`, `-` or `@` gets a leading `'` so a

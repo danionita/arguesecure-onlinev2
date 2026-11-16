@@ -47,7 +47,7 @@ const props = defineProps<{
 
 const node = computed(() => props.store.nodes[props.uuid]);
 // False while someone else has this node open (2.5.1, useNodeModal).
-const { lockedBy } = useNodeModal();
+const { lockedBy, openedUnder } = useNodeModal();
 const canEdit = computed(
     () => props.store.abilities.update && lockedBy.value === null,
 );
@@ -107,6 +107,23 @@ const linkedAttackUuidsForDefence = computed(() =>
     node.value?.type === 'defence'
         ? props.store.attacksForDefence(props.uuid)
         : [],
+);
+
+/**
+ * The attack this defence was opened under comes first and prominently; the
+ * defence's other attacks sit in a collapsed container. With no known parent
+ * (a deep link, or only one attack) nothing is split.
+ */
+const parentAttackUuid = computed(() =>
+    openedUnder.value &&
+    linkedAttackUuidsForDefence.value.includes(openedUnder.value)
+        ? openedUnder.value
+        : null,
+);
+const otherAttackUuids = computed(() =>
+    linkedAttackUuidsForDefence.value.filter(
+        (u) => u !== parentAttackUuid.value,
+    ),
 );
 
 const availableDefencesForAttack = computed(() =>
@@ -268,35 +285,91 @@ async function removeAttackFromDefence(attackUuid: string) {
                 against one and 20% against another. Edit each here or from the
                 attack's own Links tab — it is the same link.
             </p>
-            <ul
-                v-if="linkedAttackUuidsForDefence.length"
-                class="mb-3 space-y-3"
-            >
-                <li
-                    v-for="attackUuid in linkedAttackUuidsForDefence"
-                    :key="attackUuid"
-                    class="border-border-subtle rounded-md border p-2"
+            <template v-if="linkedAttackUuidsForDefence.length">
+                <div
+                    v-if="parentAttackUuid"
+                    class="mb-3"
+                    data-testid="parent-attack"
                 >
-                    <div class="mb-2 flex items-center justify-between gap-2">
-                        <span class="text-sm font-medium">{{
-                            titleOf(attackUuid)
-                        }}</span>
-                        <IconButton
-                            v-if="canEdit"
-                            icon="x"
-                            label="Remove"
-                            @click="removeAttackFromDefence(attackUuid)"
-                        />
-                    </div>
+                    <p
+                        class="text-text-muted mb-1 text-xs font-semibold tracking-wide uppercase"
+                    >
+                        Opened under
+                    </p>
+                    <ul>
+                        <li
+                            class="border-focus-ring bg-surface-2 rounded-md border-2 p-2"
+                        >
+                            <div
+                                class="mb-2 flex items-center justify-between gap-2"
+                            >
+                                <span class="text-sm font-semibold">{{
+                                    titleOf(parentAttackUuid)
+                                }}</span>
+                                <IconButton
+                                    v-if="canEdit"
+                                    icon="x"
+                                    label="Remove"
+                                    @click="
+                                        removeAttackFromDefence(
+                                            parentAttackUuid,
+                                        )
+                                    "
+                                />
+                            </div>
+                            <LinkStrengthEditor
+                                :store="store"
+                                :attack-uuid="parentAttackUuid"
+                                :defence-uuid="uuid"
+                                :can-edit="canEdit"
+                            />
+                        </li>
+                    </ul>
+                </div>
+                <component
+                    :is="parentAttackUuid ? 'details' : 'div'"
+                    v-if="otherAttackUuids.length"
+                    class="mb-3"
+                    data-testid="other-attacks"
+                >
+                    <summary
+                        v-if="parentAttackUuid"
+                        class="text-text-muted cursor-pointer text-xs font-medium"
+                    >
+                        Other attacks this defence applies to ({{
+                            otherAttackUuids.length
+                        }})
+                    </summary>
+                    <ul class="mt-2 space-y-3">
+                        <li
+                            v-for="attackUuid in otherAttackUuids"
+                            :key="attackUuid"
+                            class="border-border-subtle rounded-md border p-2"
+                        >
+                            <div
+                                class="mb-2 flex items-center justify-between gap-2"
+                            >
+                                <span class="text-sm font-medium">{{
+                                    titleOf(attackUuid)
+                                }}</span>
+                                <IconButton
+                                    v-if="canEdit"
+                                    icon="x"
+                                    label="Remove"
+                                    @click="removeAttackFromDefence(attackUuid)"
+                                />
+                            </div>
 
-                    <LinkStrengthEditor
-                        :store="store"
-                        :attack-uuid="attackUuid"
-                        :defence-uuid="uuid"
-                        :can-edit="canEdit"
-                    />
-                </li>
-            </ul>
+                            <LinkStrengthEditor
+                                :store="store"
+                                :attack-uuid="attackUuid"
+                                :defence-uuid="uuid"
+                                :can-edit="canEdit"
+                            />
+                        </li>
+                    </ul>
+                </component>
+            </template>
             <EmptyState
                 v-else
                 icon="link-2"

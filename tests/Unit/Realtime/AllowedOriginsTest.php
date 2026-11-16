@@ -15,7 +15,7 @@ test('the default is the host of APP_URL, without scheme, port or path', functio
     ['argue.example', 'argue.example'],
     ['http://[::1]:8000', '[::1]'],
     ['http://argue_box:8000', 'argue_box'],
-    ['http://192.168.1.2:8100', '192.168.1.2'],
+    ['http://192.0.2.10:8100', '192.0.2.10'],
     ['argue.example:8080/x', 'argue.example'],
 ]);
 

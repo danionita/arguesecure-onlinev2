@@ -14,7 +14,7 @@ const props = withDefaults(
         icon: IconName;
         label: string;
         size?: 'sm' | 'md';
-        variant?: 'subtle' | 'solid' | 'danger';
+        variant?: 'subtle' | 'solid' | 'danger' | 'assistant';
         disabled?: boolean;
         pressed?: boolean;
     }>(),
@@ -42,6 +42,10 @@ const variantClasses = computed(
             subtle: 'text-text-muted hover:bg-surface-2 hover:text-text-primary focus-visible:text-text-primary',
             solid: 'text-text-secondary bg-surface-1 border border-border-default hover:bg-surface-2',
             danger: 'text-node-attack-text hover:bg-node-attack-bg',
+            // Always full contrast and outlined, so the assistant trigger
+            // never reads as the plain Add control beside it.
+            assistant:
+                'text-text-link bg-surface-2 border border-text-link/40 hover:opacity-80',
         })[props.variant],
 );
 </script>

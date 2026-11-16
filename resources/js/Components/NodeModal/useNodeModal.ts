@@ -41,6 +41,8 @@ export type NodeModalTab =
     | 'scales';
 
 const openUuid = ref<string | null>(null);
+/** Uuid of the parent the open node was opened under, when known. */
+const openedUnder = ref<string | null>(null);
 const activeTab = ref<NodeModalTab>('details');
 
 /**
@@ -104,9 +106,17 @@ function syncQueryParam(): void {
 }
 
 /** Opening an existing node always abandons a draft that was on screen. */
-function open(uuid: string, tab: NodeModalTab = 'details'): void {
+function open(
+    uuid: string,
+    tab: NodeModalTab = 'details',
+    pathKey: string | null = null,
+): void {
     draft.value = null;
     openUuid.value = uuid;
+    // The occurrence the node was opened from: its second-to-last segment is
+    // the parent it sits under. Not in the URL, so a deep link has none.
+    const segments = pathKey ? pathKey.split('/') : [];
+    openedUnder.value = segments.length >= 2 ? segments.at(-2)! : null;
     activeTab.value = tab;
     syncQueryParam();
 }
@@ -121,6 +131,7 @@ function openDraft(
     parentPath: string,
 ): void {
     openUuid.value = null;
+    openedUnder.value = null;
     activeTab.value = 'details';
     draft.value = {
         parentType,
@@ -133,6 +144,7 @@ function openDraft(
 
 function close(): void {
     openUuid.value = null;
+    openedUnder.value = null;
     draft.value = null;
     syncQueryParam();
 }
@@ -150,6 +162,7 @@ function restoreFromQuery(): void {
     if (!uuid) return;
     const tab = params.get('tab') as NodeModalTab | null;
     openUuid.value = uuid;
+    openedUnder.value = null;
     activeTab.value = tab ?? 'details';
     draft.value = null;
 }
@@ -157,6 +170,7 @@ function restoreFromQuery(): void {
 export function useNodeModal() {
     return {
         openUuid,
+        openedUnder,
         activeTab,
         draft,
         lockedBy,

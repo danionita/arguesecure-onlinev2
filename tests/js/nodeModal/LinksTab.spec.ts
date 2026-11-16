@@ -306,3 +306,51 @@ describe('a viewer', () => {
         }
     });
 });
+
+describe('the Strength tab separates the parent attack from the rest', () => {
+    function twoAttacks() {
+        const init = makeInit();
+        init.nodes.push(
+            node({ uuid: 'attack2', type: 'attack', title: 'Vishing' }),
+        );
+        init.attackDefenceLinks.push({
+            ...init.attackDefenceLinks[0],
+            attack_uuid: 'attack2',
+            position: 1,
+        });
+        return init;
+    }
+
+    it('shows the attack the defence was opened under prominently and folds the others', async () => {
+        const { useNodeModal } =
+            await import('../../../resources/js/Components/NodeModal/useNodeModal');
+        useNodeModal().open('defence1', 'links', 'root/risk1/attack2/defence1');
+        const w = mountTab('defence1', twoAttacks());
+        // A list item, because the e2e specs address an edge by role.
+        expect(w.get('[data-testid="parent-attack"] li').text()).toContain(
+            'Vishing',
+        );
+        expect(
+            w
+                .find('[data-testid="parent-attack"] li input[type="number"]')
+                .exists(),
+        ).toBe(true);
+        const others = w.get('details[data-testid="other-attacks"]');
+        expect(others.text()).toContain('Phishing');
+        expect(others.text()).not.toContain('Vishing');
+        expect(others.attributes('open')).toBeUndefined();
+        useNodeModal().close();
+    });
+
+    it('splits nothing without a known parent', async () => {
+        const { useNodeModal } =
+            await import('../../../resources/js/Components/NodeModal/useNodeModal');
+        useNodeModal().open('defence1', 'links');
+        const w = mountTab('defence1', twoAttacks());
+        expect(w.find('[data-testid="parent-attack"]').exists()).toBe(false);
+        expect(w.find('details').exists()).toBe(false);
+        expect(w.text()).toContain('Phishing');
+        expect(w.text()).toContain('Vishing');
+        useNodeModal().close();
+    });
+});

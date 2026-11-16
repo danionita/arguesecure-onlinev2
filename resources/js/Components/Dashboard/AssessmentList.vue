@@ -210,20 +210,6 @@ const exportOptions: ReportOptions = {
                     class="flex shrink-0 items-center gap-1"
                     data-testid="assessment-actions"
                 >
-                    <Tooltip v-if="assessment.can_manage" text="Settings">
-                        <Link
-                            :href="
-                                route(
-                                    'assessments.settings.edit',
-                                    assessment.uuid,
-                                )
-                            "
-                            aria-label="Settings"
-                            class="text-text-muted hover:bg-surface-2 hover:text-text-primary focus-visible:outline-focus-ring inline-flex h-6 w-6 items-center justify-center rounded outline-none focus-visible:outline-2"
-                        >
-                            <Icon name="settings" :size="14" />
-                        </Link>
-                    </Tooltip>
                     <!-- Opens the editor's own sharing dialog: there is one
                          sharing UI, and a second copy here would drift. -->
                     <Tooltip v-if="assessment.can_manage" text="Share">

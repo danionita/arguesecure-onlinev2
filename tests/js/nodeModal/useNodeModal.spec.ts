@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useNodeModal } from '../../../resources/js/Components/NodeModal/useNodeModal';
 
@@ -25,6 +26,34 @@ describe('useNodeModal', () => {
         open('node-1');
         expect(openUuid.value).toBe('node-1');
         expect(activeTab.value).toBe('details');
+    });
+
+    it('open() records the parent from the occurrence path, and every other entry forgets it', () => {
+        const m = useNodeModal();
+        m.open('d', 'links', 'root/r/a/d');
+        expect(m.openedUnder.value).toBe('a');
+        m.open('d');
+        expect(m.openedUnder.value).toBeNull();
+        m.open('d', 'links', 'root/r/a/d');
+        m.openDraft('risk', 'r', 'root/r');
+        expect(m.openedUnder.value).toBeNull();
+        m.open('d', 'links', 'root/r/a/d');
+        window.history.replaceState(null, '', '/assessments/abc?node=d');
+        m.restoreFromQuery();
+        expect(m.openedUnder.value).toBeNull();
+        m.open('d', 'links', 'root/r/a/d');
+        m.close();
+        expect(m.openedUnder.value).toBeNull();
+    });
+
+    it('the keyboard outline opens a node with its occurrence path', () => {
+        const src = readFileSync(
+            'resources/js/Pages/Assessment/Show.vue',
+            'utf8',
+        );
+        expect(src).toContain(
+            "onOpenModal: (uuid, path) => modal.open(uuid, 'details', path)",
+        );
     });
 
     it('open() accepts an explicit starting tab', () => {

@@ -41,6 +41,7 @@ const props = defineProps<{
         daily_cap: number;
         completed_today: number;
         mail_available: boolean;
+        sso_available: boolean;
     };
     enabled: boolean;
     redirectUri: string;
@@ -257,9 +258,9 @@ async function check() {
                 <div>
                     <Input
                         v-model="form.oidc_allowed_domains"
-                        label="Email domains that may create an account"
+                        label="Email domains that may create an account with SSO"
                         placeholder="example.org, example.com"
-                        help-text="A first sign-in from one of these creates a non-admin account that sees nothing until something is shared with it. Empty creates none."
+                        help-text="Only these domains can create an account by signing in with SSO (when registration is allowed); existing accounts can still link. Empty allows every domain. The email sign-up domain list below also applies."
                         :disabled="fixed(oidc.allowed_domains.source)"
                         :error="form.errors.oidc_allowed_domains"
                     />
@@ -298,9 +299,12 @@ async function check() {
                         Registration
                     </h3>
                     <p class="text-text-muted mt-1 text-xs">
-                        Lets anyone create an account with an email address and
-                        a password. Nothing exists until they follow the link
-                        mailed to them. Off by default.
+                        Lets people create their own accounts: with an email
+                        address (nothing exists until they follow the link
+                        mailed to them, and they choose a password) or, when SSO
+                        is set up, by signing in with it (the provider has
+                        proved the address, so nothing is mailed). Off by
+                        default.
                     </p>
                 </div>
 
@@ -310,15 +314,22 @@ async function check() {
                         label="Allow new registrations"
                         :disabled="
                             !registration.mail_available &&
+                            !registration.sso_available &&
                             !form.registration_enabled
                         "
                     />
                     <p class="text-text-muted mt-1 text-xs">
-                        <template v-if="!registration.mail_available">
-                            Needs email set up on the Email tab first.
+                        <template
+                            v-if="
+                                !registration.mail_available &&
+                                !registration.sso_available
+                            "
+                        >
+                            Needs email set up on the Email tab, or SSO, first.
                         </template>
                         <template v-else>
-                            Not available while sign-in is limited to SSO.
+                            Sign-up by email is not offered while sign-in is
+                            limited to SSO; sign-up with SSO is.
                         </template>
                     </p>
                     <p
@@ -332,7 +343,7 @@ async function check() {
 
                 <Input
                     v-model="form.registration_domains"
-                    label="Allowed email domains"
+                    label="Allowed email domains for email sign-up"
                     help-text="Comma-separated, exact (example.org). Empty allows any address."
                     :error="form.errors.registration_domains"
                 />

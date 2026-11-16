@@ -176,7 +176,7 @@ async function sendTest() {
                 <select
                     id="mail-encryption"
                     v-model="form.mail_encryption"
-                    class="border-border-default bg-surface-raised mt-1 block w-full rounded-md border px-3 py-2 text-sm"
+                    class="border-border-default bg-surface-1 text-text-primary focus:border-focus-ring focus:ring-focus-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                     :disabled="fixed(mail.encryption.source)"
                 >
                     <option value="starttls">
@@ -282,10 +282,10 @@ async function sendTest() {
             </div>
 
             <p class="text-text-muted text-xs">
-                The application connects to the server named here when you send
-                a test message and whenever it sends mail. Only an administrator
-                can change it. SPF, DKIM and DMARC for the sender address are
-                set up at your mail provider.
+                The application connects to the server named here when a test
+                message is sent and whenever it sends mail. Only an
+                administrator can change it. SPF, DKIM and DMARC for the sender
+                address are set up at your mail provider.
             </p>
 
             <div class="flex items-center gap-3">
@@ -325,13 +325,13 @@ async function sendTest() {
             @submit.prevent="saveNotifications"
         >
             <h3 class="text-text-primary text-base font-semibold">
-                Email for notifications
+                Enabled notifications
             </h3>
             <p class="text-text-muted text-xs">
-                Off by default. A kind you switch on is emailed to everyone who
-                has not turned it off in their profile. Messages gather for ten
-                minutes and go out as one, and hold a sentence and a link, never
-                comment or node text.
+                On by default once email is on. A kind that is on is emailed to
+                everyone who has not turned it off in their profile. Messages
+                gather for ten minutes and go out as one, and hold a sentence
+                and a link, never comment or node text.
             </p>
             <div v-for="n in notifications" :key="n.kind">
                 <Toggle v-model="notifyForm.kinds[n.kind]" :label="n.label" />
@@ -356,11 +356,11 @@ async function sendTest() {
 
         <section class="mt-10 max-w-xl space-y-3" data-testid="templates">
             <h3 class="text-text-primary text-base font-semibold">
-                Message wording
+                Notification templates
             </h3>
             <p class="text-text-muted text-xs">
-                What each kind of message says. These are used when the
-                application sends that message; editing them sends nothing.
+                What each kind of message says. A template is used whenever the
+                application sends that message; editing one sends nothing.
             </p>
             <MailTemplateEditor
                 v-for="template in templates"

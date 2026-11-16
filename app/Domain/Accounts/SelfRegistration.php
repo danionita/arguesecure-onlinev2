@@ -30,10 +30,16 @@ final class SelfRegistration
 
     private const PER_DAY = 10;
 
-    /** On, mail working, and password sign-in not switched off for everyone. */
+    /** The admin's switch. It covers both ways in: an emailed link and a first single sign-on. */
+    public static function open(): bool
+    {
+        return (bool) InstanceSetting::singleton()->registration_enabled;
+    }
+
+    /** Registration by email: open, mail working, and password sign-in not switched off for everyone. */
     public static function enabled(): bool
     {
-        return InstanceSetting::singleton()->registration_enabled
+        return self::open()
             && EmailVerification::available()
             && ! InstanceSettings::ssoOnly();
     }

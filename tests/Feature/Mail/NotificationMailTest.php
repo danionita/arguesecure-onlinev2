@@ -28,7 +28,7 @@ function notifyMailOn(array $kinds = ['mail_notify_mentions', 'mail_notify_assig
         'host' => 'smtp.example.test', 'port' => 587, 'encryption' => 'starttls', 'username' => null,
         'password' => null, 'from_address' => 'argue@example.test', 'from_name' => null,
     ]]);
-    InstanceSetting::singleton()->forceFill(array_fill_keys($kinds, true) + ['mail_notify_titles' => $titles])->save();
+    InstanceSetting::singleton()->forceFill(array_fill_keys($kinds, true) + ['mail_notify_mentions' => false, 'mail_notify_assignments' => false, 'mail_notify_summaries' => false, 'mail_notify_titles' => $titles])->save();
     InstanceSetting::singleton()->forceFill(['mail_tested_fingerprint' => MailSettings::fingerprint()])->save();
 }
 
@@ -200,10 +200,15 @@ test('the message carries the unsubscribe link in the footer and as a header val
     expect(MailTemplates::render('invitation', ['set_password_link' => 'https://x.test/a'])['unsubscribe'])->toBeNull();
 });
 
-test('only an admin changes which kinds are mailed, and the default is none', function () {
+test('only an admin changes which kinds are mailed, and a new setup allows every kind', function () {
     $this->put('/admin/email/notifications', ['kinds' => ['mention' => true], 'titles' => false])->assertRedirect('/login');
     $this->actingAs(User::factory()->create())->put('/admin/email/notifications', ['kinds' => ['mention' => true], 'titles' => false])->assertForbidden();
-    expect(InstanceSetting::singleton()->mail_notify_mentions)->toBeFalse();
+    $fresh = InstanceSetting::singleton();
+    expect($fresh->mail_notify_mentions)->toBeTrue()
+        ->and($fresh->mail_notify_assignments)->toBeTrue()
+        ->and($fresh->mail_notify_summaries)->toBeTrue()
+        // Titles pass through the mail server, so they stay opt-in.
+        ->and($fresh->mail_notify_titles)->toBeFalse();
 
     $admin = User::factory()->admin()->create();
     $this->actingAs($admin)->put('/admin/email/notifications', ['kinds' => ['mention' => true, 'assignment' => false, 'summary' => false], 'titles' => true])
@@ -255,6 +260,7 @@ test('an admin save that leaves a kind out is refused, not read as off', functio
 });
 
 test('the profile shows nothing when no kind is allowed', function () {
+    InstanceSetting::singleton()->forceFill(['mail_notify_mentions' => false, 'mail_notify_assignments' => false, 'mail_notify_summaries' => false])->save();
     $user = User::factory()->create();
 
     $this->actingAs($user)->get('/profile')->assertInertia(fn (Assert $page) => $page->has('mailNotifications', 0));
@@ -345,4 +351,31 @@ test('a flood keeps at most the cap, and a lost job does not block the next wind
     Cache::forget('mail-notify-queued:'.$user->id);
     mention($user);
     Bus::assertDispatchedTimes(SendNotificationDigest::class, 2);
+});
+
+test('the administrator sees the switches worded for the whole instance, the person keeps "you"', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)->get('/admin/email')->assertInertia(fn (Assert $page) => $page
+        ->where('notifications', fn ($rows) => collect($rows)->every(fn ($r) => ! preg_match('/\\byou(r)?\\b/i', $r['label']))
+            && collect($rows)->pluck('on')->every(fn ($on) => $on === true)));
+
+    expect(NotificationMail::KINDS['mention']['label'])->toContain('you');
+});
+
+test('the migration changes the default for a new setup and leaves a saved row alone', function () {
+    $row = InstanceSetting::singleton();
+    $row->forceFill(['mail_notify_mentions' => false, 'mail_notify_assignments' => false, 'mail_notify_summaries' => false])->save();
+
+    $migration = require base_path('database/migrations/2026_11_09_000001_default_notification_mail_on.php');
+    $migration->up();
+
+    $row = $row->fresh();
+    expect($row->mail_notify_mentions)->toBeFalse()
+        ->and($row->mail_notify_assignments)->toBeFalse()
+        ->and($row->mail_notify_summaries)->toBeFalse();
+
+    // A row inserted without those columns takes the new default.
+    DB::table('instance_settings')->where('id', 1)->delete();
+    expect(InstanceSetting::singleton()->mail_notify_summaries)->toBeTrue();
 });

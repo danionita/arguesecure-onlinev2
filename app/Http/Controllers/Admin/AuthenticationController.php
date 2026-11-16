@@ -61,6 +61,7 @@ class AuthenticationController extends Controller
                 'daily_cap' => (int) $row->registration_daily_cap,
                 'completed_today' => SelfRegistration::completedToday(),
                 'mail_available' => EmailVerification::available(),
+                'sso_available' => OidcConfig::enabled(),
             ],
             'enabled' => OidcConfig::enabled(),
             'redirectUri' => route('oidc.callback'),
@@ -149,13 +150,13 @@ class AuthenticationController extends Controller
 
             $row->save();
 
-            // Registration is proved by an emailed link, so it cannot be
-            // switched on while mail is off. Only the switch going on is
+            // Registration is proved by an emailed link or by the provider, so
+            // it cannot be switched on with neither. Only the switch going on is
             // refused, as with SSO-only below: one already on whose mail has
             // since broken must not block saving the other settings.
-            if ($row->registration_enabled && ! $wasRegistering && ! EmailVerification::available()) {
+            if ($row->registration_enabled && ! $wasRegistering && ! EmailVerification::available() && ! OidcConfig::enabled()) {
                 throw ValidationException::withMessages([
-                    'registration_enabled' => 'Set up email on the Email tab before allowing registration.',
+                    'registration_enabled' => 'Set up email on the Email tab, or single sign-on, before allowing registration.',
                 ]);
             }
 

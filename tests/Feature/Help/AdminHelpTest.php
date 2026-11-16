@@ -110,3 +110,12 @@ test('the query is capped once after trimming, and an over-long query does not e
     $this->actingAs($admin)->get('/admin/help?q='.str_repeat('a', 500))->assertOk()
         ->assertInertia(fn (Assert $page) => $page->where('query', str_repeat('a', 100)));
 });
+
+test('every tab of the Admin area has a help page of the same name', function () {
+    preg_match_all("/label: '([^']+)'/", file_get_contents(resource_path('js/Pages/Admin/AdminLayout.vue')), $m);
+    $tabs = array_values(array_diff($m[1], ['Help']));
+    $titles = collect(AdminHelpLibrary::all())->pluck('title')->all();
+
+    expect($tabs)->not->toBeEmpty()
+        ->and(array_diff($tabs, $titles))->toBe([]);
+});

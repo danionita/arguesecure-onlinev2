@@ -1,10 +1,11 @@
 <script setup lang="ts">
 /**
- * One of the report toolbar's two settings buttons: a trigger
+ * One of the report toolbar's settings buttons: a trigger
  * over a `Dropdown` panel the caller fills with headed groups. It is the Filters
  * button's look (`Toolbar/FilterBar.vue`) without its state: the report's
  * settings are server inputs that change what the document contains, not
- * client filters that dim nodes.
+ * client filters that dim nodes. The panel stays open when a switch is
+ * flipped, so several can be changed in one visit.
  */
 import Dropdown from '@/Components/UI/Dropdown.vue';
 import Icon from '@/Components/UI/Icon.vue';
@@ -16,7 +17,7 @@ defineProps<{
 </script>
 
 <template>
-    <Dropdown align="left" width="80">
+    <Dropdown align="left" width="80" :close-on-content-click="false">
         <template #trigger="{ open }">
             <button
                 type="button"

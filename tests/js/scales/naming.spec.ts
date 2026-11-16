@@ -76,7 +76,7 @@ describe('words that no longer appear', () => {
         expect(
             templateOf('resources/js/Pages/Assessment/Settings.vue'),
         ).toContain('Scales');
-        expect(read('resources/markdown/admin-help/settings.md')).toContain(
+        expect(read('resources/markdown/admin-help/defaults.md')).toContain(
             'Standard',
         );
     });

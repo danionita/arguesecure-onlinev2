@@ -998,7 +998,7 @@ describe('the scroll container', () => {
             .element.closest('.overflow-auto')!
             .className.split(/\s+/);
 
-        expect(classes).toContain('h-[calc(100vh-13rem)]');
+        expect(classes).toContain('h-[calc(100vh-13rem-var(--notice-h,0rem))]');
         expect(classes.some((c) => c.startsWith('max-h-'))).toBe(false);
     });
 });

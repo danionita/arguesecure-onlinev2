@@ -10,11 +10,11 @@ readable, so use it only for a relay on the same machine.
 
 ## Notification email
 
-Under the server settings, **Email for notifications** chooses which notifications (a mention, an assignment, a drafted summary) may also be emailed, all off by default. People can turn each off in their profile. Emails gather for ten minutes and go out as one, with a sentence and a link and no comment text. Tick **Include assessment titles** only if titles may pass through your mail server.
+Under the server settings, **Enabled notifications** chooses which notifications (a mention, an assignment, a drafted summary) may also be emailed. A new setup starts with all three on, and nothing is sent until email itself is on; an existing instance keeps the choices saved on it. People can turn each off in their profile. Emails gather for ten minutes and go out as one, with a sentence and a link and no comment text. Tick **Include assessment titles** only if titles may pass through your mail server.
 
-## Message wording
+## Notification templates
 
-**Message wording** lets you edit what each kind of message
+**Notification templates** lets you edit what each kind of message
 says. Use the placeholders listed for it, such as `{{name}}`; anything else in double
 braces is refused. Wording is plain text. A line saying why the person got the message
 is always added and cannot be removed. A subject cannot use links or the summary, because subjects show on lock screens and in mail logs. **Preview** shows the message with sample values and

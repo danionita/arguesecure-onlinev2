@@ -10,10 +10,13 @@ const props = withDefaults(
     defineProps<{
         align?: 'left' | 'right';
         width?: 'auto' | '48' | '64' | '80';
+        /** Menus close on a click inside; a panel of switches stays open. */
+        closeOnContentClick?: boolean;
     }>(),
     {
         align: 'left',
         width: 'auto',
+        closeOnContentClick: true,
     },
 );
 
@@ -80,7 +83,7 @@ defineExpose({ close: () => (open.value = false) });
                 v-if="open"
                 class="border-border-default bg-surface-1 absolute z-40 mt-1.5 rounded-md border py-1 shadow-lg"
                 :class="[widthClasses, alignClasses]"
-                @click="open = false"
+                @click="closeOnContentClick && (open = false)"
             >
                 <slot name="content" :close="() => (open = false)" />
             </div>
